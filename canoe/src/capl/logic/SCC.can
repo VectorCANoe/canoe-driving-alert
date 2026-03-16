@@ -6,7 +6,6 @@ includes
 variables
 {
   msTimer tSccCycle;
-  long gEthSocket;
   int gVehicleSpeed;
   int gDriveState;
   int gNavSpeedLimit;
@@ -17,7 +16,6 @@ variables
   dword gDecelAssistRxMs;
   dword gSelectedAlertRxMs;
   dword gNavStateRxMs;
-  char gEthRxBuffer[64];
   int gLastCruiseState;
   int gLastGapLevel;
   int gLastCruiseSetSpeed;
@@ -125,40 +123,8 @@ void publishCruiseState()
   }
 }
 
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-  int payload0;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgDecelAssist() && ethFramePayloadLen(count) >= 2)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gRiskLevel = clampRange(ethGetU8(buffer, 1), 0, 100);
-      gFailSafeMode = clampRange((payload0 >> 1) & 0x3, 0, 2);
-      gEmergencyContext = clampRange((payload0 >> 5) & 0x3, 0, 2);
-      gDecelAssistRxMs = getSimulationTimeMs();
-    }
-    else if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 1)
-    {
-      gSelectedAlertLevel = clampRange(ethGetU8(buffer, 0) & 0x7, 0, 7);
-      gSelectedAlertRxMs = getSimulationTimeMs();
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-}
-
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
   gVehicleSpeed = 0;
   gDriveState = 0;
   gNavSpeedLimit = 0;
@@ -172,10 +138,6 @@ on start
   gLastCruiseState = -1;
   gLastGapLevel = -1;
   gLastCruiseSetSpeed = -1;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   setTimer(tSccCycle, 50);
   write("[SCC] start");
 }
@@ -192,6 +154,16 @@ on message frmNavModuleStateMsg
   gNavStateRxMs = getSimulationTimeMs();
 }
 
+on message frmAdasDomainStateMsg
+{
+  gRiskLevel = clampRange((int)this.RiskLevel, 0, 100);
+  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
+  gEmergencyContext = clampRange((int)this.EmergencyContext, 0, 2);
+  gSelectedAlertLevel = clampRange((int)this.SelectedAlertLevel, 0, 7);
+  gDecelAssistRxMs = getSimulationTimeMs();
+  gSelectedAlertRxMs = gDecelAssistRxMs;
+}
+
 on timer tSccCycle
 {
 
@@ -202,6 +174,4 @@ on timer tSccCycle
 on stopMeasurement
 {
   cancelTimer(tSccCycle);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }

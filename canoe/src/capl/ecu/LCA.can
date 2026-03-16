@@ -6,8 +6,6 @@ includes
 variables
 {
   msTimer tLcaCycle;
-  long gEthSocket;
-  char gEthRxBuffer[64];
   int gLaneChangeBlock;
   int gRearRiskLevel;
   int gMergeConflict;
@@ -203,33 +201,8 @@ void publishLcaState()
   }
 }
 
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int payload0;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-  if (result == 0)
-  {
-    if (ethFrameMsgId(buffer, count) == ethMsgFailSafe() &&
-        ethFramePayloadLen(count) >= 1)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
-      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
-      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
-      gFailSafeRxMs = getSimulationTimeMs();
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-}
-
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
   gLaneChangeBlock = 0;
   gRearRiskLevel = 0;
   gMergeConflict = 0;
@@ -249,10 +222,6 @@ on start
   gLastDirection = -1;
   gLastMergeConflict = -1;
   gLastAlertLevel = -1;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   setTimer(tLcaCycle, 100);
   write("[LCA] start");
 }
@@ -278,9 +247,15 @@ on message frmVehicleStateCanMsg
   gVehicleRxMs = getSimulationTimeMs();
 }
 
+on message frmAdasDomainStateMsg
+{
+  gWarningPathStatus = clampRange((int)this.WarningPathStatus, 0, 2);
+  gE2eHealthState = clampRange((int)this.E2eHealthState, 0, 2);
+  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
+  gFailSafeRxMs = getSimulationTimeMs();
+}
+
 on stopMeasurement
 {
   cancelTimer(tLcaCycle);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }

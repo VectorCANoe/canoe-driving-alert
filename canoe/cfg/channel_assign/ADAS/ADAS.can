@@ -89,6 +89,7 @@ int deriveBaseZoneContextFromNavState(int routeClass, int guideType)
 
 void publishBackboneDecisionFrames()
 {
+  message frmAdasDomainStateMsg mDomain;
   char riskFrame[8];
   char decelFrame[8];
   char alertFrame[4];
@@ -147,6 +148,19 @@ void publishBackboneDecisionFrames()
                             (clampRange((int)@Core::mergeCutInFlag, 0, 1) << 1));
   ethSetU8(objAlertFrame, 2, clampRange((int)@Core::objectRiskClass, 0, 7));
   ethSendFrame(txSocket, gEthTargetIp, ethMsgObjectScenarioAlert(), objAlertFrame, 3);
+
+  mDomain.WarningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 3);
+  mDomain.E2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 3);
+  mDomain.FailSafeMode = clampRange((int)@Core::failSafeMode, 0, 3);
+  mDomain.DecelAssistReq = ((((int)@Core::decelAssistReq) == 1) ? 1 : 0);
+  mDomain.EmergencyContext = clampRange(emergencyContext, 0, 3);
+  mDomain.SelectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  mDomain.ObjectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
+  mDomain.RiskLevel = clampRange((int)@Core::proximityRiskLevel, 0, 100);
+  mDomain.TtcBucket = clampRange((int)@Core::objectTtcMin / 100, 0, 255);
+  mDomain.SelectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+  mDomain.TimeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+  output(mDomain);
 }
 
 int calcProximityRisk(int emergencyContext, int etaSec, int speed, int emergencyDirection, int driveState)

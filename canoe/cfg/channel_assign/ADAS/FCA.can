@@ -6,8 +6,6 @@ includes
 variables
 {
   msTimer tFcaCycle;
-  long gEthSocket;
-  char gEthRxBuffer[64];
   int gObjectRiskClass;
   int gObjectTtcMin;
   int gObjectTrackValid;
@@ -169,41 +167,8 @@ void publishFcaState()
   }
 }
 
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-  int payload0;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgObjectRiskState() && ethFramePayloadLen(count) >= 6)
-    {
-      gObjectRiskClass = clampRange(ethGetU8(buffer, 0), 0, 7);
-      gObjectTtcMin = clampRange(ethGetU16Le(buffer, 1), 0, 10000);
-      gObjectTrackValid = clampRange(ethGetU8(buffer, 4), 0, 1);
-      gObjectRiskRxMs = getSimulationTimeMs();
-    }
-    else if (msgId == ethMsgDecelAssist() && ethFramePayloadLen(count) >= 2)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gDecelAssistReq = clampRange(payload0 & 0x1, 0, 1);
-      gFailSafeMode = clampRange((payload0 >> 1) & 0x3, 0, 2);
-      gDecelRxMs = getSimulationTimeMs();
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-}
-
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
   gObjectRiskClass = 0;
   gObjectTtcMin = 10000;
   gObjectTrackValid = 0;
@@ -218,10 +183,6 @@ on start
   gLastObjectRiskClass = -1;
   gLastTtcBucket = -1;
   gLastAlertLevel = -1;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   setTimer(tFcaCycle, 100);
   write("[FCA] start");
 }
@@ -232,9 +193,18 @@ on timer tFcaCycle
   setTimer(tFcaCycle, 100);
 }
 
+on message frmAdasDomainStateMsg
+{
+  gObjectRiskClass = clampRange((int)this.ObjectRiskClass, 0, 7);
+  gObjectTtcMin = clampRange((int)this.TtcBucket * 100, 0, 10000);
+  gObjectTrackValid = (gObjectRiskClass > 0 || (int)this.TtcBucket < 255) ? 1 : 0;
+  gDecelAssistReq = clampRange((int)this.DecelAssistReq, 0, 1);
+  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
+  gObjectRiskRxMs = getSimulationTimeMs();
+  gDecelRxMs = gObjectRiskRxMs;
+}
+
 on stopMeasurement
 {
   cancelTimer(tFcaCycle);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }

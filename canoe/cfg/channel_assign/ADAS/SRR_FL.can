@@ -6,8 +6,6 @@ includes
 variables
 {
   msTimer tSrrFlCycle;
-  long gEthSocket;
-  char gEthRxBuffer[64];
   int gMergeConflict;
   int gRiskClass;
   int gTurnLampState;
@@ -154,47 +152,8 @@ void publishSrrFlState()
   }
 }
 
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-  int payload0;
-  int payload1;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgObjectScenarioAlert() && ethFramePayloadLen(count) >= 3)
-    {
-      payload1 = ethGetU8(buffer, 1);
-      gMergeConflict = clampRange((payload1 >> 1) & 0x1, 0, 1);
-      gRiskClass = clampRange(ethGetU8(buffer, 2) & 0x7, 0, 7);
-      gScenarioAlertRxMs = getSimulationTimeMs();
-    }
-    else if (msgId == ethMsgObjectRiskState() && ethFramePayloadLen(count) >= 1)
-    {
-      gRiskClass = clampRange(ethGetU8(buffer, 0) & 0x7, 0, 7);
-      gRiskStateRxMs = getSimulationTimeMs();
-    }
-    else if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
-      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
-      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
-      gFailSafeRxMs = getSimulationTimeMs();
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-}
-
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
   gMergeConflict = 0;
   gRiskClass = 0;
   gTurnLampState = 0;
@@ -213,10 +172,6 @@ on start
   gLastRisk = -1;
   gLastMerge = -1;
   gLastTurn = -1;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   setTimer(tSrrFlCycle, 100);
   write("[SRR_FL] start");
 }
@@ -233,9 +188,23 @@ on message frmLampControlMsg
   gLampRxMs = getSimulationTimeMs();
 }
 
+on message frmSrrFlInputMsg
+{
+  gMergeConflict = clampRange((int)this.MergeConflict, 0, 1);
+  gRiskClass = clampRange((int)this.RiskClass, 0, 7);
+  gScenarioAlertRxMs = getSimulationTimeMs();
+  gRiskStateRxMs = gScenarioAlertRxMs;
+}
+
+on message frmAdasDomainStateMsg
+{
+  gWarningPathStatus = clampRange((int)this.WarningPathStatus, 0, 2);
+  gE2eHealthState = clampRange((int)this.E2eHealthState, 0, 2);
+  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
+  gFailSafeRxMs = getSimulationTimeMs();
+}
+
 on stopMeasurement
 {
   cancelTimer(tSrrFlCycle);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }

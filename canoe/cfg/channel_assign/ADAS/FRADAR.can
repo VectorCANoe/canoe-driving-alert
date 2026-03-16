@@ -6,8 +6,6 @@ includes
 variables
 {
   msTimer tFradarCycle;
-  long gEthSocket;
-  char gEthRxBuffer[64];
   int gTrackValid;
   int gConfidence;
   int gRangeM;
@@ -135,43 +133,8 @@ void publishFradarState()
   }
 }
 
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int payload0;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-
-  if (result == 0)
-  {
-    if (ethFrameMsgId(buffer, count) == ethMsgObjectRiskInput() &&
-        ethFramePayloadLen(count) >= 8)
-    {
-      gTrackValid = clampRange(ethGetU8(buffer, 0) & 0x1, 0, 1);
-      gRangeM = clampRange(ethGetU16Le(buffer, 1), 0, 500);
-      gRelSpeed = clampRange(ethGetS16Le(buffer, 3), -200, 200);
-      gConfidence = clampRange(ethGetU8(buffer, 5), 0, 100);
-      gObjectInputRxMs = getSimulationTimeMs();
-    }
-    else if (ethFrameMsgId(buffer, count) == ethMsgFailSafe() &&
-             ethFramePayloadLen(count) >= 1)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
-      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
-      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
-      gFailSafeRxMs = getSimulationTimeMs();
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-}
-
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
   gTrackValid = 0;
   gConfidence = 0;
   gRangeM = 0;
@@ -187,10 +150,6 @@ on start
   gLastDetected = -1;
   gLastDistanceBucket = -1;
   gLastRelSpeedBucket = -1;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   setTimer(tFradarCycle, 100);
   write("[FRADAR] start");
 }
@@ -201,9 +160,24 @@ on timer tFradarCycle
   setTimer(tFradarCycle, 100);
 }
 
+on message frmFradarInputMsg
+{
+  gTrackValid = clampRange((int)this.ObjectTrackValid, 0, 1);
+  gRangeM = clampRange((int)this.DistanceBucket, 0, 255);
+  gRelSpeed = clampRange((int)this.RelSpeedBucket - 128, -128, 127);
+  gConfidence = clampRange((int)this.Confidence, 0, 100);
+  gObjectInputRxMs = getSimulationTimeMs();
+}
+
+on message frmAdasDomainStateMsg
+{
+  gWarningPathStatus = clampRange((int)this.WarningPathStatus, 0, 2);
+  gE2eHealthState = clampRange((int)this.E2eHealthState, 0, 2);
+  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
+  gFailSafeRxMs = getSimulationTimeMs();
+}
+
 on stopMeasurement
 {
   cancelTimer(tFradarCycle);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }

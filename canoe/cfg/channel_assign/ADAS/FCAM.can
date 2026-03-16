@@ -6,8 +6,6 @@ includes
 variables
 {
   msTimer tFcamCycle;
-  long gEthSocket;
-  char gEthRxBuffer[64];
   int gObjectTrackValid;
   int gObjectConfidence;
   int gNavRouteClass;
@@ -154,41 +152,8 @@ void publishFcamState()
   }
 }
 
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int payload0;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-
-  if (result == 0)
-  {
-    if (ethFrameMsgId(buffer, count) == ethMsgObjectRiskInput() &&
-        ethFramePayloadLen(count) >= 8)
-    {
-      gObjectTrackValid = clampRange(ethGetU8(buffer, 0) & 0x1, 0, 1);
-      gObjectConfidence = clampRange(ethGetU8(buffer, 5), 0, 100);
-      gObjectInputRxMs = getSimulationTimeMs();
-    }
-    else if (ethFrameMsgId(buffer, count) == ethMsgFailSafe() &&
-             ethFramePayloadLen(count) >= 1)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
-      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
-      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
-      gFailSafeRxMs = getSimulationTimeMs();
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-}
-
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
   gObjectTrackValid = 0;
   gObjectConfidence = 0;
   gNavRouteClass = 0;
@@ -205,10 +170,6 @@ on start
   gLastObjectDetected = -1;
   gLastLaneModelValid = -1;
   gLastConfidence = -1;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   setTimer(tFcamCycle, 100);
   write("[FCAM] start");
 }
@@ -225,9 +186,22 @@ on message frmNavModuleStateMsg
   gNavRxMs = getSimulationTimeMs();
 }
 
+on message frmFcamInputMsg
+{
+  gObjectTrackValid = clampRange((int)this.ObjectTrackValid, 0, 1);
+  gObjectConfidence = clampRange((int)this.Confidence, 0, 100);
+  gObjectInputRxMs = getSimulationTimeMs();
+}
+
+on message frmAdasDomainStateMsg
+{
+  gWarningPathStatus = clampRange((int)this.WarningPathStatus, 0, 2);
+  gE2eHealthState = clampRange((int)this.E2eHealthState, 0, 2);
+  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
+  gFailSafeRxMs = getSimulationTimeMs();
+}
+
 on stopMeasurement
 {
   cancelTimer(tFcamCycle);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }

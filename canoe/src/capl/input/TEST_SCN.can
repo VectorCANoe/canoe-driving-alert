@@ -14,13 +14,11 @@ variables
   msTimer tScenarioPhase3;
   long gEthSocket;
   dword gEthTargetIp;
-  char gEthRxBuffer[64];
   int gDemoStepIndex;
   int gDemoRunning;
   int gCurrentScenarioId;
   int gArbitrationSnapshotBaseline;
   int gScenarioInputLock;
-  int gObservedDecelReleaseReason;
   int gLockDriveState;
   int gLockVehicleSpeed;
   int gLockSteeringInput;
@@ -233,7 +231,6 @@ void stopScenarioExecution()
   gScenarioInputLock = 0;
   gCurrentScenarioId = 0;
   gArbitrationSnapshotBaseline = 0;
-  gObservedDecelReleaseReason = 0;
   cancelTimer(tDemoStep);
   cancelScenarioTransientTimers();
   EmitBackboneValidationOverrideTest(0);
@@ -437,7 +434,6 @@ void publishScenarioResultFrame()
 void beginScenarioExecution(int scenarioId)
 {
   gDemoRunning = 0;
-  gObservedDecelReleaseReason = 0;
   cancelTimer(tDemoStep);
   cancelScenarioTransientTimers();
   @Test::scenarioResult = 0;
@@ -1668,7 +1664,7 @@ void evaluateScenarioResult()
   proximityRiskLevel = (int)@Core::proximityRiskLevel;
   decelAssistReq = (int)@Core::decelAssistReq;
   failSafeMode = (int)@Core::failSafeMode;
-  driverReleaseReason = clampRange(gObservedDecelReleaseReason, 0, 3);
+  driverReleaseReason = clampRange((int)@Test::obsDecelReleaseReason, 0, 3);
   objectTrackValid = (int)@Core::objectTrackValid;
   objectRiskClass = (int)@Core::objectRiskClass;
   objectTtcMin = (int)@Core::objectTtcMin;
@@ -2404,7 +2400,6 @@ on start
 {
   gEthSocket = ethOpenDefaultSocket();
   gEthTargetIp = ethGetDefaultIpAddress();
-  gObservedDecelReleaseReason = 0;
   gDemoStepIndex = 0;
   gDemoRunning = 0;
   gCurrentScenarioId = 0;
@@ -2467,35 +2462,8 @@ on start
   gObsEcoMode = -1;
   gObsSportMode = -1;
   gObsBaseZoneContext = -1;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   setTimer(tInput100, 100);
   write("[TEST_SCN] start");
-}
-
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-  int payload0;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgDecelAssist() && ethFramePayloadLen(count) >= 1)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gObservedDecelReleaseReason = clampRange((payload0 >> 3) & 0x3, 0, 3);
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 on timer tInput100
@@ -2522,7 +2490,13 @@ on timer tInput100
   message frmVehicleModeMsg mVehicleMode;
   message frmPowerLimitMsg mPowerLimit;
   message frmEnergyFlowStateMsg mEnergyFlow;
-  message frmFcamStateMsg mFcam;
+  message frmFcamInputMsg mFcamInput;
+  message frmFradarInputMsg mFradarInput;
+  message frmLidarInputMsg mLidarInput;
+  message frmSrrFlInputMsg mSrrFlInput;
+  message frmSrrFrInputMsg mSrrFrInput;
+  message frmSrrRlInputMsg mSrrRlInput;
+  message frmSrrRrInputMsg mSrrRrInput;
   message frmParkUltrasonicStateMsg mParkUltrasonic;
   message frmAvmStateMsg mAvm;
   message frmSpasStateMsg mSpas;
@@ -2548,6 +2522,7 @@ on timer tInput100
   int intersectionConflictFlag;
   int mergeCutInFlag;
   int objectAlertHoldMs;
+  int objectRiskClass;
   int alertState;
   int emergencyType;
   int emergencyDirection;
@@ -2597,6 +2572,7 @@ on timer tInput100
   intersectionConflictFlag = clampRange((int)@Core::intersectionConflictFlag, 0, 1);
   mergeCutInFlag = clampRange((int)@Core::mergeCutInFlag, 0, 1);
   objectAlertHoldMs = clampRange((int)@Core::objectAlertHoldMs, 0, 5000);
+  objectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
 
   /* A-group 자동 감지: 페달 변화율 기반 급가속/급제동 판정
      100ms 주기당 accelPedal 20% 이상 변화 = 급격한 페달 조작
@@ -2667,6 +2643,38 @@ on timer tInput100
   mPedal.AccelPedal = accelPedal;
   mPedal.BrakePedal = brakePedal;
   output(mPedal);
+
+  mFcamInput.ObjectTrackValid = objectTrackValid;
+  mFcamInput.Confidence = objectConfidence;
+  output(mFcamInput);
+
+  mFradarInput.ObjectTrackValid = objectTrackValid;
+  mFradarInput.DistanceBucket = clampRange(objectRange, 0, 255);
+  mFradarInput.RelSpeedBucket = clampRange(objectRelSpeed + 128, 0, 255);
+  mFradarInput.Confidence = objectConfidence;
+  output(mFradarInput);
+
+  mLidarInput.TargetDetected = objectTrackValid;
+  mLidarInput.Confidence = objectConfidence;
+  mLidarInput.RangeBucket = clampRange(objectRange, 0, 255);
+  mLidarInput.EventCode = clampRange((int)@Core::objectEventCode, 0, 255);
+  output(mLidarInput);
+
+  mSrrFlInput.MergeConflict = mergeCutInFlag;
+  mSrrFlInput.RiskClass = objectRiskClass;
+  output(mSrrFlInput);
+
+  mSrrFrInput.MergeConflict = mergeCutInFlag;
+  mSrrFrInput.RiskClass = objectRiskClass;
+  output(mSrrFrInput);
+
+  mSrrRlInput.MergeConflict = mergeCutInFlag;
+  mSrrRlInput.RiskClass = objectRiskClass;
+  output(mSrrRlInput);
+
+  mSrrRrInput.MergeConflict = mergeCutInFlag;
+  mSrrRrInput.RiskClass = objectRiskClass;
+  output(mSrrRrInput);
 
   if (gCurrentScenarioId == 225)
   {
@@ -2757,11 +2765,9 @@ on timer tInput100
   }
   else if (gCurrentScenarioId == 233)
   {
-    mFcam.CameraHealth = 2;
-    mFcam.ObjectDetected = 1;
-    mFcam.LaneModelValid = 1;
-    mFcam.Confidence = 80;
-    output(mFcam);
+    mFcamInput.ObjectTrackValid = 1;
+    mFcamInput.Confidence = 80;
+    output(mFcamInput);
   }
   else if (gCurrentScenarioId == 234)
   {
@@ -3031,7 +3037,7 @@ on timer tScenarioEval
   proximityRiskLevel = (int)@Core::proximityRiskLevel;
   decelAssistReq = (int)@Core::decelAssistReq;
   failSafeMode = (int)@Core::failSafeMode;
-  driverReleaseReason = clampRange(gObservedDecelReleaseReason, 0, 3);
+  driverReleaseReason = clampRange((int)@Test::obsDecelReleaseReason, 0, 3);
   objectTrackValid = (int)@Core::objectTrackValid;
   objectRiskClass = (int)@Core::objectRiskClass;
   objectTtcMin = (int)@Core::objectTtcMin;
