@@ -1159,6 +1159,9 @@ class SdvTuiApp(App[None]):
             "doctor_report.json",
             "run_readiness.json",
             "dev2_batch_report.json",
+            "run_insight_report.md",
+            "doc_binding_bundle.md",
+            "doc_fill_template.md",
             "surface_evidence_bundle.json",
         )
         ready = sum(1 for name in tracked if (staging_root / name).exists())
@@ -1458,9 +1461,14 @@ class SdvTuiApp(App[None]):
             ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
         )
         reference_docs = (
+            ROOT / "driving-alert-workproducts" / "05_Unit_Test.md",
+            ROOT / "driving-alert-workproducts" / "06_Integration_Test.md",
+            ROOT / "driving-alert-workproducts" / "07_System_Test.md",
             ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
             ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
             ROOT / "product" / "sdv_operator" / "docs-src" / "verification-packs.md",
+            ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md",
+            ROOT / "canoe" / "docs" / "verification" / "execution-guide.md",
         )
         core_ready = sum(1 for item in core_contracts if item.exists())
         docs_ready = sum(1 for item in reference_docs if item.exists())
@@ -1473,7 +1481,7 @@ class SdvTuiApp(App[None]):
             f"현재 active suite: {pack_label}",
             f"Core config: {core_ready}/{len(core_contracts)} ready",
             f"Reference docs: {docs_ready}/{len(reference_docs)} ready",
-            "원본 JSON/MD는 Source Contract 버튼에서 바로 엽니다.",
+            "원본 JSON/README/Guide는 Source Contract 버튼에서 바로 엽니다.",
         ]
         return "\n".join(lines)
 
@@ -1908,10 +1916,16 @@ class SdvTuiApp(App[None]):
         if command.command_id.startswith("artifact.open"):
             mapping = {
                 "batch-report": "canoe/tmp/reports/verification/dev2_batch_report.md",
+                "run-insight": "canoe/tmp/reports/verification/run_insight_report.md",
+                "doc-binding-bundle": "canoe/tmp/reports/verification/doc_binding_bundle.md",
+                "doc-fill-template": "canoe/tmp/reports/verification/doc_fill_template.md",
                 "surface-bundle": "canoe/tmp/reports/verification/surface_evidence_bundle.md",
                 "readiness": "canoe/tmp/reports/verification/run_readiness.md",
                 "doctor": "canoe/tmp/reports/verification/doctor_report.md",
                 "surface-inventory": "product/sdv_operator/config/surface_ecu_inventory.json",
+                "unit-test-doc": "driving-alert-workproducts/05_Unit_Test.md",
+                "integration-test-doc": "driving-alert-workproducts/06_Integration_Test.md",
+                "system-test-doc": "driving-alert-workproducts/07_System_Test.md",
                 "test-asset-mapping": "canoe/docs/verification/test-asset-mapping.md",
                 "native-test-portfolio": "canoe/docs/verification/test-asset-mapping.md",
                 "active-test-units-guide": "canoe/tests/modules/test_units/README.md",

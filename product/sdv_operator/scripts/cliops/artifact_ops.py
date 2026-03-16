@@ -68,6 +68,12 @@ def _staging_entries(layout: dict, run_id: str) -> list[Path]:
         staging_root / "run_readiness.json",
         staging_root / "dev2_batch_report.json",
         staging_root / "dev2_batch_report.junit.xml",
+        staging_root / "run_insight_report.json",
+        staging_root / "run_insight_report.md",
+        staging_root / "doc_binding_bundle.json",
+        staging_root / "doc_binding_bundle.md",
+        staging_root / "doc_fill_template.csv",
+        staging_root / "doc_fill_template.md",
         staging_root / "surface_evidence_bundle.json",
         staging_root / "surface",
     ]
@@ -93,6 +99,9 @@ def _source_entries(layout: dict) -> list[Path]:
         ROOT / "product" / "sdv_operator" / "docs-src" / "packaging.md",
         ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
         ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
+        ROOT / "driving-alert-workproducts" / "05_Unit_Test.md",
+        ROOT / "driving-alert-workproducts" / "06_Integration_Test.md",
+        ROOT / "driving-alert-workproducts" / "07_System_Test.md",
         ROOT / "canoe" / "tests" / "modules" / "test_units" / "README.md",
         ROOT / "canoe" / "tests" / "modules" / "test_suites" / "README.md",
         ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md",
@@ -159,6 +168,12 @@ def _resolve_open_target(layout: dict, target: str, run_id: str, phase: str, lat
         return staging_root
     if target == "batch-report":
         return staging_root / "dev2_batch_report.md"
+    if target == "run-insight":
+        return staging_root / "run_insight_report.md"
+    if target == "doc-binding-bundle":
+        return staging_root / "doc_binding_bundle.md"
+    if target == "doc-fill-template":
+        return staging_root / "doc_fill_template.md"
     if target == "surface-bundle":
         return staging_root / "surface_evidence_bundle.md"
     if target == "readiness":
@@ -167,6 +182,12 @@ def _resolve_open_target(layout: dict, target: str, run_id: str, phase: str, lat
         return staging_root / "doctor_report.md"
     if target == "surface-inventory":
         return ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json"
+    if target == "unit-test-doc":
+        return ROOT / "driving-alert-workproducts" / "05_Unit_Test.md"
+    if target == "integration-test-doc":
+        return ROOT / "driving-alert-workproducts" / "06_Integration_Test.md"
+    if target == "system-test-doc":
+        return ROOT / "driving-alert-workproducts" / "07_System_Test.md"
     if target in {"test-asset-mapping", "native-test-portfolio"}:
         return ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md"
     if target in {"active-test-units-guide", "native-testcase-blueprints"}:

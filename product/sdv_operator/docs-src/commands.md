@@ -14,10 +14,16 @@ Automation / CI 확장 표면:
 ```powershell
 python scripts/run.py verify batch --run-id 20260310_0900 --campaign-id CMP_20260310 --owner DEV2 --phase pre --surface-scope ALL --repeat-count 1 --duration-minutes 0 --interval-seconds 0 --report-formats json,md,junit
 python scripts/run.py artifact open --target campaign-profiles
+python scripts/run.py artifact open --target unit-test-doc
+python scripts/run.py artifact open --target integration-test-doc
+python scripts/run.py artifact open --target system-test-doc
 python scripts/run.py artifact open --target test-asset-mapping
 python scripts/run.py artifact open --target active-test-units-guide
 python scripts/run.py artifact open --target active-test-suites-guide
 python scripts/run.py artifact open --target execution-guide
+python scripts/run.py artifact open --target run-insight
+python scripts/run.py artifact open --target doc-binding-bundle
+python scripts/run.py artifact open --target doc-fill-template
 python scripts/run.py artifact open --target verification-pack-matrix
 python scripts/run.py artifact open --target role-boundary-doc
 python scripts/run.py artifact open --target capability-matrix-doc
@@ -210,12 +216,25 @@ python scripts/run.py verify bind-doc --run-id 20260306_1930
 python scripts/run.py verify fill-template --run-id 20260306_1930 --owner-fallback DEV1
 ```
 
+- `bind-doc`
+  - 05/06/07 문서 ID와 scored evidence를 `READY / DOC_ONLY / EVIDENCE_ONLY`로 재정렬합니다.
+  - `scenario_id / native_asset / expected / rule_type / rule_ms`가 closeout carry-forward 필드로 같이 묶입니다.
+- `fill-template`
+  - 문서 반영용 `pass_fail / owner / run_date / evidence 링크` 템플릿을 만듭니다.
+  - `REVIEW_READY_ROW / RUN_AND_SCORE_REQUIRED / ADD_DOC_ID_OR_RENAME_TEST` 액션도 함께 계산합니다.
+
 #### Status and finalize
 
 ```powershell
 python scripts/run.py verify status --run-id 20260306_1930
 python scripts/run.py verify finalize --run-id 20260306_1930 --owner DEV1
 ```
+
+`verify finalize`는 아래 closeout 산출물을 같은 run 기준으로 다시 생성합니다.
+
+- `run_insight_report.json/md`
+- `doc_binding_bundle.csv/json/md`
+- `doc_fill_template.csv/md`
 
 ### Gate command set
 
@@ -263,10 +282,16 @@ python scripts/run.py artifact open --target surface-dir --latest
 python scripts/run.py artifact open --target execution-manifest --latest
 python scripts/run.py artifact open --target native-reports --latest
 python scripts/run.py artifact open --target surface-inventory
+python scripts/run.py artifact open --target unit-test-doc
+python scripts/run.py artifact open --target integration-test-doc
+python scripts/run.py artifact open --target system-test-doc
 python scripts/run.py artifact open --target test-asset-mapping
 python scripts/run.py artifact open --target active-test-units-guide
 python scripts/run.py artifact open --target active-test-suites-guide
 python scripts/run.py artifact open --target execution-guide
+python scripts/run.py artifact open --target run-insight
+python scripts/run.py artifact open --target doc-binding-bundle
+python scripts/run.py artifact open --target doc-fill-template
 python scripts/run.py artifact open --target verification-pack-matrix
 python scripts/run.py artifact open --target capability-matrix-json
 python scripts/run.py artifact open --target results-doc

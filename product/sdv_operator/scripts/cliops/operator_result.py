@@ -160,10 +160,16 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
         target = str(getattr(args, "target", "")).strip().lower()
         target_map = {
             "batch-report": VERIFICATION_ROOT / "dev2_batch_report.md",
+            "run-insight": VERIFICATION_ROOT / "run_insight_report.md",
+            "doc-binding-bundle": VERIFICATION_ROOT / "doc_binding_bundle.md",
+            "doc-fill-template": VERIFICATION_ROOT / "doc_fill_template.md",
             "surface-bundle": SURFACE_BUNDLE_MD,
             "readiness": VERIFICATION_ROOT / "run_readiness.md",
             "doctor": VERIFICATION_ROOT / "doctor_report.md",
             "surface-inventory": ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
+            "unit-test-doc": ROOT / "driving-alert-workproducts" / "05_Unit_Test.md",
+            "integration-test-doc": ROOT / "driving-alert-workproducts" / "06_Integration_Test.md",
+            "system-test-doc": ROOT / "driving-alert-workproducts" / "07_System_Test.md",
             "test-asset-mapping": ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md",
             "native-test-portfolio": ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md",
             "active-test-units-guide": ROOT / "canoe" / "tests" / "modules" / "test_units" / "README.md",
