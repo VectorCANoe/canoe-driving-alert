@@ -51,39 +51,44 @@ These nodes are expected to see multiple CAN databases as part of their normal r
 | `CGW` | cross-domain boundary and fail-safe authority; consumes `frmChassisHealthMsg`, `frmBodyHealthMsg`, and `frmInfotainmentHealthMsg`, so it requires `Chassis`, `Body`, and `Infotainment` CAN visibility in addition to its ETH runtime placement |
 | `TEST_SCN` | validation scenario orchestration and full-system signal injection/observation; emits or observes `Powertrain`, `Chassis`, `Body`, `Infotainment`, and `ADAS` domain contracts, so it requires all five domain CAN databases in addition to its ETH runtime placement |
 
-### 3.2 Cross-domain visibility consumers
+### 3.2 CAN-primary nodes that need cross-domain assignment
 
-These nodes remain single visible ECU nodes, but require additional GUI CAN/database visibility because they reference foreign-domain messages.
+These nodes stay visibly placed in their **primary CAN domain**, but may still require:
 
-| Node | Primary domain | Extra CAN visibility | Compile-validated reason |
-| --- | --- | --- | --- |
-| `PGS` | Infotainment | `ADAS` | consumes `frmParkUltrasonicStateMsg` |
-| `AFLS` | Body | `Chassis` | consumes `frmSteeringAngleMsg` |
-| `DATC` | Body | `Infotainment` | consumes `frmTmuServiceStateMsg` |
-| `ACU` | Chassis | `Body` | consumes `frmSeatBeltStateMsg` |
-| `ODS` | Chassis | `Body` | consumes `frmSeatBeltStateMsg`, `frmSeatStateMsg` |
-| `SCC` | ADAS | `Powertrain`, `Chassis` | publishes `frmCruiseStateMsg` and consumes `frmVehicleStateCanMsg` |
-| `HWP` | ADAS | `Powertrain` | consumes `frmCruiseStateMsg` |
-| `VCU` | Chassis | `Powertrain` | consumes `frmIgnitionEngineMsg`, `frmGearStateMsg`, `frmPowertrainGatewayMsg`, and `frmVehicleModeMsg` |
+- Ethernet topology placement for active backbone UDP participation
+- extra foreign-domain CAN visibility for runtime message references
 
-### 3.3 No extra CAN visibility needed for ETH transport alone
+| Node | Primary visible placement | Ethernet topology placement | Extra CAN visibility to attach | Compile-validated reason |
+| --- | --- | --- | --- | --- |
+| `PGS` | `Infotainment` | not required | `ADAS` | consumes `frmParkUltrasonicStateMsg` |
+| `AFLS` | `Body` | not required | `Chassis` | consumes `frmSteeringAngleMsg` |
+| `DATC` | `Body` | not required | `Infotainment` | consumes `frmTmuServiceStateMsg` |
+| `ACU` | `Chassis` | not required | `Body` | consumes `frmSeatBeltStateMsg` |
+| `ODS` | `Chassis` | not required | `Body` | consumes `frmSeatBeltStateMsg`, `frmSeatStateMsg` |
+| `ADAS` | `ADAS` | required | `Chassis`, `Body`, `Infotainment`, `Powertrain` | consumes `frmVehicleStateCanMsg`, `frmSteeringStateCanMsg`, `frmBrakeStatusMsg`, `frmNavModuleStateMsg`, `frmVehicleModeMsg`, `frmLampControlMsg`, and `frmSeatBeltStateMsg` while publishing/receiving backbone ETH seams |
+| `BCM` | `Body` | required | `Chassis`, `Infotainment` | consumes `frmVehicleStateCanMsg`, `frmPhoneAsKeyStateMsg`, `frmTmuServiceStateMsg`, and `frmTurnLampInputMsg` while consuming backbone ETH seams |
+| `IVI` | `Infotainment` | required | `Chassis` | consumes `frmVehicleStateCanMsg` while publishing `ethNavContextMsg` and consuming `ethSelectedAlertMsg` |
+| `SCC` | `ADAS` | not required | `Powertrain`, `Chassis` | publishes `frmCruiseStateMsg` and consumes `frmVehicleStateCanMsg` |
+| `HWP` | `ADAS` | not required | `Powertrain` | consumes `frmCruiseStateMsg` |
+| `VCU` | `Chassis` | required | `Powertrain`, `Infotainment` | consumes `frmIgnitionEngineMsg`, `frmGearStateMsg`, `frmPowertrainGatewayMsg`, `frmVehicleModeMsg`, and `frmNavModuleStateMsg` while publishing/receiving backbone ETH seams |
+| `MDPS` | `Chassis` | required | none | publishes `ethSteeringMsg`; do not add foreign CAN DBCs for ETH alone |
+| `CLU` | `Infotainment` | required | none | consumes `ethSelectedAlertMsg`; no foreign CAN DBCs required beyond infotainment CAN |
 
-The following nodes participate in the real Ethernet backbone through UDP helpers, but should **not** receive extra CAN DBC visibility merely because they publish or consume ETH contracts:
+### 3.3 ETH_Backbone-visible nodes
 
-- `MDPS`
-- `IVI`
-- `ADAS`
-- `V2X`
-- `IBOX`
-- `BCM`
-- `CLU`
-- `AEB`
-- `LDR`
-- `EDR`
+These nodes stay visibly placed on `ETH_Backbone`. Some of them still require additional CAN DBC visibility because they reference domain CAN messages.
 
-`VCU` is not a multibus anchor for Ethernet transport, but it still requires `Powertrain` foreign CAN visibility because of its active cross-domain CAN inputs.
-
-If one of these nodes also consumes a foreign-domain CAN frame, add only the specific foreign CAN database that the code actually references.
+| Node | Primary visible placement | Ethernet topology placement | Extra CAN visibility to attach | Compile-validated reason |
+| --- | --- | --- | --- | --- |
+| `CGW` | `ETH_Backbone` | required | `Chassis`, `Body`, `Infotainment` | consumes `frmChassisHealthMsg`, `frmBodyHealthMsg`, `frmInfotainmentHealthMsg`, `frmVehicleStateCanMsg`, `frmSteeringStateCanMsg`, and `frmNavigationRouteMsg` |
+| `TEST_SCN` | `ETH_Backbone` | required | `Powertrain`, `Chassis`, `Body`, `Infotainment`, `ADAS` | validation scenario orchestration and full-system cross-domain signal injection/observation |
+| `V2X` | `ETH_Backbone` | required | none | backbone emergency ingress/monitor owner; no foreign CAN DBC required |
+| `DCM` | `ETH_Backbone` | required | `Infotainment` | consumes `frmNavModuleStateMsg` and `frmClusterNotifMsg` while receiving backbone fail-safe state |
+| `ETHB` | `ETH_Backbone` | required | `Infotainment` | consumes `frmNavModuleStateMsg` and `frmClusterNotifMsg` for backbone/service summary |
+| `SGW` | `ETH_Backbone` | required | `Chassis`, `Infotainment` | consumes `frmVehicleStateCanMsg`, `frmNavModuleStateMsg`, and `frmClusterNotifMsg` while receiving backbone fail-safe state |
+| `IBOX` | `ETH_Backbone` | required | none | consumes backbone ETH seams only |
+| `EDR` | `ETH_Backbone` | required | none | consumes backbone ETH seams only |
+| `TEST_BAS` | `ETH_Backbone` | required | none | shared observer and sysvar aggregation seam; reload `project.sysvars` when observer vars drift |
 
 ## 4. Why `TEST_BAS` Stays Single-Bus
 
@@ -141,7 +146,7 @@ When rebuilding a fresh `.cfg`:
 
 Compile-guided shortcut:
 
-- if `CGW`, `TEST_SCN`, `HWP`, `SCC`, `ACU`, `ODS`, `AFLS`, `DATC`, `PGS`, or `VCU` show `Database missing?` errors, treat that as missing foreign-domain CAN visibility first
+- if `CGW`, `TEST_SCN`, `ADAS`, `BCM`, `IVI`, `DCM`, `ETHB`, `SGW`, `HWP`, `SCC`, `ACU`, `ODS`, `AFLS`, `DATC`, `PGS`, or `VCU` show `Database missing?` errors, treat that as missing foreign-domain CAN visibility first
 - if `TEST_BAS` shows `Test::base*` variable errors, reload `project.sysvars`
 - do not reintroduce a retired backbone stub DBC as a workaround for missing foreign CAN visibility
 
