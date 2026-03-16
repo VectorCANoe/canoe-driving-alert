@@ -1,0 +1,17 @@
+int clampRange(int value, int minValue, int maxValue)
+{
+  if (value < minValue)
+  {
+    return minValue;
+  }
+  if (value > maxValue)
+  {
+    return maxValue;
+  }
+  return value;
+}
+
+dword getSimulationTimeMs()
+{
+  return (dword)(timeNowInt64() / 1000000);
+}

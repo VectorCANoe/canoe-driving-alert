@@ -66,11 +66,35 @@ on timer tEscCycle
   int latAccel;
 
   decelAssistReq = (((int)@Core::decelAssistReq) == 1) ? 1 : 0;
-  appliedBrakePedal = gBrakePedal;
+  // testScenario=0: 패널 브레이크 버튼이 @Chassis::brakePressure sysvar를 직접 설정
+  // testScenario≠0: frmPedalInputCanMsg.BrakePedal → gBrakePedal 사용
+  if ((int)@Test::testScenario == 0)
+  {
+    // 버튼 눌리면 +10씩 증가(1초에 100%), 떼면 -20씩 감소(0.5초에 0%)
+    if ((int)@Chassis::brakePedalBtn == 1)
+    {
+      @Chassis::brakePressure = clampRange((int)@Chassis::brakePressure + 10, 0, 100);
+    }
+    else
+    {
+      @Chassis::brakePressure = clampRange((int)@Chassis::brakePressure - 20, 0, 100);
+    }
+    appliedBrakePedal = (int)@Chassis::brakePressure;
+  }
+  else
+  {
+    appliedBrakePedal = gBrakePedal;
+    // 시나리오 모드에서도 프로그레스바 표시 동기화
+    @Chassis::brakePressure = clampRange(appliedBrakePedal, 0, 100);
+  }
   if (decelAssistReq == 1 && appliedBrakePedal < 25)
   {
     appliedBrakePedal = 25;
   }
+
+  // 브레이크 등 / ABS sysvar 업데이트
+  @Chassis::brakeLamp = (appliedBrakePedal > 5) ? 1 : 0;
+  @Chassis::absActive = ((appliedBrakePedal > 80) && (gSpeedNorm > 10)) ? 1 : 0;
 
   brakePressure = clampRange(appliedBrakePedal * 2, 0, 255);
   absActive = ((appliedBrakePedal > 80) && (gSpeedNorm > 10)) ? 1 : 0;

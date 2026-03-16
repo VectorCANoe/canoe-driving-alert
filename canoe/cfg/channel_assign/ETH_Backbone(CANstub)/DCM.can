@@ -1,0 +1,53 @@
+includes
+{
+  #include "..\\common\\CAPL_COMMON.cin"
+}
+
+variables
+{
+  msTimer tDcmCycle;
+  int gSecuritySession;
+  int gAuthState;
+  int gSecurityFault;
+  int gSecurityPolicy;
+}
+void publishDcmStateTrace()
+{
+  write("[DCM] session=%d path=%d pending=%d sid=0x%X sec=%d auth=%d fault=%d policy=%d",
+        gSecuritySession,
+        gSecurityPolicy,
+        0,
+        0x22,
+        0,
+        gAuthState,
+        gSecurityFault,
+        gSecurityPolicy);
+}
+
+on start
+{
+  gSecuritySession = 0;
+  gAuthState = 0;
+  gSecurityFault = 0;
+  gSecurityPolicy = 0;
+  setTimer(tDcmCycle, 100);
+  write("[DCM] start");
+}
+
+on timer tDcmCycle
+{
+  setTimer(tDcmCycle, 100);
+}
+
+on message ethSecurityStateMsg
+{
+  gSecuritySession = clampRange((int)this.SecuritySession, 0, 7);
+  gAuthState = clampRange((int)this.AuthState, 0, 3);
+  gSecurityFault = clampRange((int)this.SecurityFault, 0, 15);
+  gSecurityPolicy = clampRange((int)this.SecurityPolicy, 0, 15);
+}
+
+on stopMeasurement
+{
+  cancelTimer(tDcmCycle);
+}

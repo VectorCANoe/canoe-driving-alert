@@ -60,10 +60,10 @@ BO_ 613 frmLampControlMsg: 1 BCM
  SG_ HazardLampReq    : 6|1@1+ (1,0) [0|1] "" BCM
  SG_ Reserved0        : 7|1@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 614 frmWiperStateMsg: 1 WIP
- SG_ FrontWiperState  : 0|2@1+ (1,0) [0|3] "" WIP
- SG_ RearWiperState   : 2|2@1+ (1,0) [0|3] "" WIP
- SG_ WiperInterval    : 4|4@1+ (1,0) [0|15] "" WIP
+BO_ 614 frmWiperStateMsg: 2 WIP
+ SG_ FrontWiperState  : 0|5@1+ (1,0) [0|21] "" WIP
+ SG_ RearWiperState   : 5|2@1+ (1,0) [0|3] "" WIP
+ SG_ WiperInterval    : 8|4@1+ (1,0) [0|15] "" WIP
 
 BO_ 615 frmSeatBeltStateMsg: 1 BCM
  SG_ DriverSeatBelt   : 0|1@1+ (1,0) [0|1] "" BCM,BCM

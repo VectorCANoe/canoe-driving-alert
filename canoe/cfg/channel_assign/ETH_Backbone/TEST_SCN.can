@@ -880,6 +880,11 @@ on start
   @Core::mergeCutInFlag = 0;
   @Core::objectAlertHoldMs = 300;
   @Core::objectEventCode = 0;
+  @Chassis::driveState = 3;
+  @Chassis::vehicleSpeed = 20;
+  @Chassis::steeringInput = 1;
+  @Infotainment::speedLimit = 30;
+  @Infotainment::roadZone = 0;
   setTimer(tInput100, 100);
   write("[TEST_SCN] start");
 }
@@ -952,7 +957,14 @@ on timer tInput100
   ignitionState = calcBaselineIgnitionState(speed, driveState);
   engineState = (ignitionState == 1) ? 2 : 0;
   gearState = calcBaselineGearState(driveState);
-  accelPedal = clampRange(speed / 2, 0, 100);
+  if (gScenarioInputLock == 1)
+  {
+    accelPedal = clampRange(speed / 2, 0, 100);
+  }
+  else
+  {
+    accelPedal = clampRange((int)@Chassis::manualAccel, 0, 100);
+  }
   brakePedal = (driveState == 0) ? 30 : 0;
   objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
   objectRange = clampRange((int)@Core::objectRange, 0, 500);

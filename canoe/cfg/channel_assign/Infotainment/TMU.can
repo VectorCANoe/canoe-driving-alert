@@ -48,22 +48,13 @@ void publishTmuState()
 
   if (gIviCpuLoad >= 85 || gIviMemLoad >= 85)
   {
-    serviceMode = 2;
   }
   else if (gIviCpuLoad >= 60 || gIviMemLoad >= 60)
   {
-    if (serviceMode == 0)
-    {
-      serviceMode = 1;
-    }
   }
 
   remoteClimateReq = 0;
-  if (serviceMode == 1 &&
-      gConnType == 1 &&
-      gSignalBars >= 3 &&
-      gIviCpuLoad < 60 &&
-      gIviMemLoad < 60)
+  if (serviceMode == 1 && gConnType == 1 && gSignalBars >= 3)
   {
     remoteClimateReq = 1;
   }

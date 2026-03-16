@@ -7,9 +7,6 @@ variables
 {
   msTimer tAdasCycle;
   msTimer tArbiter50;
-  long gEthSocket;
-  dword gEthTargetIp;
-  char gEthRxBuffer[64];
   int gLastWarningState;
   dword gHighwayNoSteerStartMs;
   int gLastRiskLevel;
@@ -39,52 +36,47 @@ variables
 
 void publishBackboneDecisionFrames()
 {
-  char riskFrame[8];
-  char decelFrame[8];
-  char alertFrame[4];
-  char objRiskFrame[8];
-  char objAlertFrame[6];
+  message ethEmergencyRiskMsg mRisk;
+  message ethDecelAssistReqMsg mDecel;
+  message ethSelectedAlertMsg mAlert;
+  message ethObjectRiskStateMsg mObjRisk;
+  message ethObjectScenarioAlertMsg mObjAlert;
   int emergencyContext;
 
   emergencyContext = clampRange((int)@Core::emergencyContext, 0, 2);
 
-  ethInitFrame(riskFrame, ethMsgEmergencyRisk(), 4);
-  ethSetU8(riskFrame, 0, clampRange((int)@Core::proximityRiskLevel, 0, 100));
-  ethSetU8(riskFrame, 1, clampRange((int)@V2X::eta, 0, 255));
-  ethSetU8(riskFrame, 2, clampRange((int)@Core::vehicleSpeedNorm, 0, 255));
-  ethSetU8(riskFrame, 3, clampRange((int)@V2X::emergencyDirection, 0, 3) |
-                       (clampRange(emergencyContext, 0, 3) << 2));
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyRisk(), riskFrame, 4);
+  /* Internal ADAS gateway seam for CAN-stub today, transport swap later. */
+  mRisk.RiskLevel = clampRange((int)@Core::proximityRiskLevel, 0, 100);
+  mRisk.EtaSeconds = clampRange((int)@V2X::eta, 0, 255);
+  mRisk.VehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  mRisk.EmergencyDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
+  mRisk.EmergencyType = emergencyContext;
+  output(mRisk);
 
-  ethInitFrame(decelFrame, ethMsgDecelAssist(), 2);
-  ethSetU8(decelFrame, 0, ((((int)@Core::decelAssistReq) == 1) ? 1 : 0) |
-                          (clampRange((int)@Core::failSafeMode, 0, 2) << 1) |
-                          (clampRange(gLastDriverReleaseReason, 0, 3) << 3) |
-                          (clampRange(emergencyContext, 0, 3) << 5));
-  ethSetU8(decelFrame, 1, clampRange((int)@Core::proximityRiskLevel, 0, 100));
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgDecelAssist(), decelFrame, 2);
+  mDecel.DecelAssistReq = (((int)@Core::decelAssistReq) == 1) ? 1 : 0;
+  mDecel.FailSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  mDecel.DriverReleaseReason = clampRange(gLastDriverReleaseReason, 0, 3);
+  mDecel.EmergencyContext = emergencyContext;
+  mDecel.RiskLevel = clampRange((int)@Core::proximityRiskLevel, 0, 100);
+  output(mDecel);
 
-  ethInitFrame(alertFrame, ethMsgSelectedAlert(), 2);
-  ethSetU8(alertFrame, 0, clampRange((int)@Core::selectedAlertLevel, 0, 7) |
-                          (clampRange((int)@Core::selectedAlertType, 0, 7) << 3));
-  ethSetU8(alertFrame, 1, (((int)@Core::timeoutClear) == 1) ? 1 : 0);
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgSelectedAlert(), alertFrame, 2);
+  mAlert.selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  mAlert.selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 7);
+  mAlert.timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+  output(mAlert);
 
-  ethInitFrame(objRiskFrame, ethMsgObjectRiskState(), 6);
-  ethSetU8(objRiskFrame, 0, clampRange((int)@Core::objectRiskClass, 0, 7));
-  ethSetU16Le(objRiskFrame, 1, clampRange((int)@Core::objectTtcMin, 0, 10000));
-  ethSetU8(objRiskFrame, 3, clampRange(gLastObjectRiskLevel, 0, 100));
-  ethSetU8(objRiskFrame, 4, clampRange((int)@Core::objectTrackValid, 0, 1));
-  ethSetU8(objRiskFrame, 5, clampRange((int)@Core::objectConfidence, 0, 100));
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectRiskState(), objRiskFrame, 6);
+  mObjRisk.ObjectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
+  mObjRisk.ObjectTtcMinMs = clampRange((int)@Core::objectTtcMin, 0, 10000);
+  mObjRisk.ObjectRiskLevel = clampRange(gLastObjectRiskLevel, 0, 100);
+  mObjRisk.ObjectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
+  output(mObjRisk);
 
-  ethInitFrame(objAlertFrame, ethMsgObjectScenarioAlert(), 3);
-  ethSetU8(objAlertFrame, 0, clampRange(gLastObjectAlertLevel, 0, 7) |
-                            (clampRange(gLastObjectAlertType, 0, 7) << 3));
-  ethSetU8(objAlertFrame, 1, clampRange((int)@Core::intersectionConflictFlag, 0, 1) |
-                            (clampRange((int)@Core::mergeCutInFlag, 0, 1) << 1));
-  ethSetU8(objAlertFrame, 2, clampRange((int)@Core::objectRiskClass, 0, 7));
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectScenarioAlert(), objAlertFrame, 3);
+  mObjAlert.ObjectAlertLevel = clampRange(gLastObjectAlertLevel, 0, 7);
+  mObjAlert.ObjectAlertType = clampRange(gLastObjectAlertType, 0, 7);
+  mObjAlert.IntersectionConflict = clampRange((int)@Core::intersectionConflictFlag, 0, 1);
+  mObjAlert.MergeCutIn = clampRange((int)@Core::mergeCutInFlag, 0, 1);
+  mObjAlert.ObjectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
+  output(mObjAlert);
 }
 
 int calcProximityRisk(int emergencyContext, int etaSec, int speed, int emergencyDirection, int driveState)
@@ -923,14 +915,23 @@ void updateWarningState()
   }
 }
 
-void applyObjectRiskInput(int trackValid,
-                          int rangeM,
-                          int relSpeedKph,
-                          int confidence,
-                          int intersectionConflict,
-                          int mergeCutIn,
-                          int alertHoldMs)
+on message ethObjectRiskInputMsg
 {
+  int trackValid;
+  int rangeM;
+  int relSpeedKph;
+  int confidence;
+  int intersectionConflict;
+  int mergeCutIn;
+  int alertHoldMs;
+
+  trackValid = clampRange((int)this.ObjectTrackValid, 0, 1);
+  rangeM = clampRange((int)this.ObjectRangeM, 0, 500);
+  relSpeedKph = clampRange((int)this.ObjectRelSpeedKph, -200, 200);
+  confidence = clampRange((int)this.ObjectConfidence, 0, 100);
+  intersectionConflict = clampRange((int)this.IntersectionConflict, 0, 1);
+  mergeCutIn = clampRange((int)this.MergeCutIn, 0, 1);
+  alertHoldMs = clampRange((int)this.ObjectAlertHoldMs, 0, 5000);
   if (alertHoldMs == 0)
   {
     alertHoldMs = 300;
@@ -949,36 +950,8 @@ void applyObjectRiskInput(int trackValid,
   }
 }
 
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgObjectRiskInput() && ethFramePayloadLen(count) >= 8)
-    {
-      applyObjectRiskInput(ethGetU8(buffer, 0) & 0x1,
-                           clampRange(ethGetU16Le(buffer, 1), 0, 500),
-                           clampRange(ethGetS16Le(buffer, 3), -200, 200),
-                           clampRange(ethGetU8(buffer, 5), 0, 100),
-                           (ethGetU8(buffer, 0) >> 1) & 0x1,
-                           (ethGetU8(buffer, 0) >> 2) & 0x1,
-                           clampRange(ethGetU16Le(buffer, 6), 0, 5000));
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-}
-
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
-  gEthTargetIp = ethGetDefaultIpAddress();
   gLastWarningState = -1;
   gHighwayNoSteerStartMs = 0;
   gLastRiskLevel = -1;
@@ -1016,10 +989,6 @@ on start
   @Core::objectAlertHoldMs = 300;
   @Core::objectEventCode = 0;
   @Core::decelAssistReq = 0;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   setTimer(tAdasCycle, 10);
   setTimer(tArbiter50, 50);
   write("[ADAS] start");
@@ -1033,15 +1002,5 @@ on timer tAdasCycle
 
 on timer tArbiter50
 {
-  runArbiter();
-  publishBackboneDecisionFrames();
   setTimer(tArbiter50, 50);
-}
-
-on stopMeasurement
-{
-  cancelTimer(tAdasCycle);
-  cancelTimer(tArbiter50);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }

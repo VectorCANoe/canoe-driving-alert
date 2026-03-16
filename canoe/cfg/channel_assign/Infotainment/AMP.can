@@ -47,22 +47,9 @@ void publishAmpState()
 
   if (gVolumeLevel >= 90 || ampDucking >= 6)
   {
-    ampDucking = clampRange(ampDucking + 1, 0, 7);
-    if (ampMode < 2)
-    {
-      ampMode = 2;
-    }
   }
   else if (gAudioFocusOwner > 0 || ampDucking > 0)
   {
-    if (ampDucking < 2)
-    {
-      ampDucking = 2;
-    }
-    if (ampMode == 0)
-    {
-      ampMode = 1;
-    }
   }
 
   mAmp.AmpMode = clampRange(ampMode, 0, 7);

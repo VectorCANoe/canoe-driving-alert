@@ -7,88 +7,83 @@ variables
 {
   msTimer tBodyCycle;
   msTimer tBodyBase100;
-  long gEthSocket;
-  dword gEthTargetIp;
-  char gEthRxBuffer[64];
+  msTimer tBlink;
   int gLastAmbientMode;
   int gLastAmbientColor;
   int gLastAmbientPattern;
   int gBodyAliveCnt;
-  int gBackboneAlertLevel;
-  int gBackboneAlertType;
-  int gBackboneTimeoutClear;
-  dword gBackboneAlertTsMs;
-}
-
-int useBackboneAlertState()
-{
-  dword nowMs;
-
-  if (gBackboneAlertTsMs == 0)
-  {
-    return 0;
-  }
-
-  nowMs = getSimulationTimeMs();
-  if ((nowMs - gBackboneAlertTsMs) > 500)
-  {
-    return 0;
-  }
-
-  return 1;
-}
-
-void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
-{
-  gBackboneAlertLevel = clampRange(alertLevel, 0, 7);
-  gBackboneAlertType = clampRange(alertType, 0, 7);
-  gBackboneTimeoutClear = (timeoutClear == 1) ? 1 : 0;
-  gBackboneAlertTsMs = getSimulationTimeMs();
-}
-
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 2)
-    {
-      updateBackboneAlertState(ethGetU8(buffer, 0) & 0x7,
-                               (ethGetU8(buffer, 0) >> 3) & 0x7,
-                               ethGetU8(buffer, 1) & 0x1);
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  int gBlinkState;
 }
 
 
 
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
-  gEthTargetIp = ethGetDefaultIpAddress();
   gLastAmbientMode = -1;
   gLastAmbientColor = -1;
   gLastAmbientPattern = -1;
   gBodyAliveCnt = 0;
-  gBackboneAlertLevel = 0;
-  gBackboneAlertType = 0;
-  gBackboneTimeoutClear = 0;
-  gBackboneAlertTsMs = 0;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
+  gBlinkState = 0;
   setTimer(tBodyCycle, 10);
   setTimer(tBodyBase100, 100);
+  setTimer(tBlink, 500);
   write("[BCM] start");
+}
+
+on timer tBlink
+{
+  int turnCmd;
+  int navDir;
+  gBlinkState = 1 - gBlinkState;
+  if ((int)@Test::testScenario == 0)
+  {
+    turnCmd = (int)@Body::manualTurnCmd;
+    if (turnCmd == 1)
+    {
+      @Body::blinkLeft = gBlinkState;
+      @Body::blinkRight = 0;
+    }
+    else if (turnCmd == 2)
+    {
+      @Body::blinkLeft = 0;
+      @Body::blinkRight = gBlinkState;
+    }
+    else if (turnCmd == 3)
+    {
+      @Body::blinkLeft = gBlinkState;
+      @Body::blinkRight = gBlinkState;
+    }
+    else
+    {
+      @Body::blinkLeft = 0;
+      @Body::blinkRight = 0;
+    }
+  }
+  else
+  {
+    navDir = (int)@Infotainment::navDirection;
+    if ((int)@Core::selectedAlertLevel >= 6)
+    {
+      @Body::blinkLeft = gBlinkState;
+      @Body::blinkRight = gBlinkState;
+    }
+    else if (navDir == 1)
+    {
+      @Body::blinkLeft = gBlinkState;
+      @Body::blinkRight = 0;
+    }
+    else if (navDir == 2)
+    {
+      @Body::blinkLeft = 0;
+      @Body::blinkRight = gBlinkState;
+    }
+    else
+    {
+      @Body::blinkLeft = 0;
+      @Body::blinkRight = 0;
+    }
+  }
+  setTimer(tBlink, 500);
 }
 
 on timer tBodyCycle
@@ -99,22 +94,11 @@ on timer tBodyCycle
   int ambientMode;
   int ambientColor;
   int ambientPattern;
-  int useBackbone;
   message frmAmbientControlMsg mAmbient;
 
-  useBackbone = useBackboneAlertState();
-  if (useBackbone == 1)
-  {
-    alertLevel = gBackboneAlertLevel;
-    alertType = gBackboneAlertType;
-    timeoutClear = gBackboneTimeoutClear;
-  }
-  else
-  {
-    alertLevel = (int)@Core::selectedAlertLevel;
-    alertType = (int)@Core::selectedAlertType;
-    timeoutClear = (int)@Core::timeoutClear;
-  }
+  alertLevel = (int)@Core::selectedAlertLevel;
+  alertType = (int)@Core::selectedAlertType;
+  timeoutClear = (int)@Core::timeoutClear;
   if (alertLevel < 0 || alertLevel > 7)
   {
     alertLevel = 0;
@@ -211,17 +195,14 @@ on timer tBodyBase100
   int hazardActive;
   int navDirection;
   int seatBeltOverride;
+  int driverBeltOff;
+  int passengerBeltOff;
   int ambientMode;
-  if (useBackboneAlertState() == 1)
-  {
-    hazardActive = (gBackboneAlertLevel >= 6) ? 1 : 0;
-  }
-  else
-  {
-    hazardActive = ((int)@Core::selectedAlertLevel >= 6) ? 1 : 0;
-  }
+  hazardActive = ((int)@Core::selectedAlertLevel >= 6) ? 1 : 0;
   navDirection = (int)@Infotainment::navDirection;
   seatBeltOverride = (int)@Test::seatBeltOverride;
+  driverBeltOff   = (int)@Test::driverBeltOff;
+  passengerBeltOff = (int)@Test::passengerBeltOff;
   ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
   if (navDirection < 0 || navDirection > 3)
   {
@@ -285,6 +266,15 @@ on timer tBodyBase100
   {
     mSeatBelt.PassengerSeatBelt = 0;
   }
+  // 패널 버튼 독립 제어: 운전자/동승자 벨트 개별 토글
+  if (driverBeltOff == 1)
+  {
+    mSeatBelt.DriverSeatBelt = 0;
+  }
+  if (passengerBeltOff == 1)
+  {
+    mSeatBelt.PassengerSeatBelt = 0;
+  }
   mSeatBelt.RearSeatBelt = 3;
   mSeatBelt.SeatBeltWarnLvl = 0;
   if (mSeatBelt.DriverSeatBelt == 0 || mSeatBelt.PassengerSeatBelt == 0)
@@ -336,12 +326,4 @@ on timer tBodyBase100
   gBodyAliveCnt = (gBodyAliveCnt + 1) & 0xFF;
 
   setTimer(tBodyBase100, 100);
-}
-
-on stopMeasurement
-{
-  cancelTimer(tBodyCycle);
-  cancelTimer(tBodyBase100);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }

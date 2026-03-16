@@ -1,0 +1,96 @@
+includes
+{
+  #include "..\\common\\CAPL_COMMON.cin"
+}
+
+variables
+{
+  int gLastBaseScenarioId;
+  int gBaseScenarioResult;
+  int gFlowCoverage;
+  int gTestHealth;
+  int gTraceSnapshotId;
+}
+
+int resolveBaseScenarioId()
+{
+  int scenarioId;
+
+  scenarioId = clampRange((int)@Test::testScenario, 0, 255);
+  if (scenarioId == 0)
+  {
+    scenarioId = clampRange((int)@Test::scenarioCommandAck, 0, 255);
+  }
+  if (scenarioId == 0)
+  {
+    scenarioId = gLastBaseScenarioId + 1;
+    if (scenarioId > 255)
+    {
+      scenarioId = 1;
+    }
+  }
+  return scenarioId;
+}
+
+int resolveTestHealth()
+{
+  int boundaryHealthy;
+  int e2eHealthState;
+
+  boundaryHealthy = ((int)@CoreState::domainBoundaryStatus == 1) ? 1 : 0;
+  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
+
+  if (boundaryHealthy == 1 && e2eHealthState == 2)
+  {
+    return 0xFF;
+  }
+  if (boundaryHealthy == 1 || e2eHealthState >= 1)
+  {
+    return 0x80;
+  }
+  return 0x40;
+}
+
+int resolveFlowCoverageMask(int pass)
+{
+  if (pass == 1)
+  {
+    return 0x7FFF;
+  }
+  return clampRange((int)@CoreState::routingPolicy, 0, 7) << 12;
+}
+
+on start
+{
+  gLastBaseScenarioId  = 0;
+  gBaseScenarioResult  = 0;
+  gFlowCoverage        = 0;
+  gTestHealth          = 0xFF;
+  gTraceSnapshotId     = 0;
+  write("[TEST_BAS] start");
+}
+
+on message frmTestResultMsg
+{
+  /* Aggregate SIL scenario result into base test result frame */
+  message frmBaseTestResultMsg mResult;
+  int pass;
+
+  pass = this.ScenarioResult;
+
+  gBaseScenarioResult  = pass;
+  gTraceSnapshotId     = (int)@CoreState::arbitrationSnapshotId;
+  gTestHealth          = resolveTestHealth();
+  gFlowCoverage        = resolveFlowCoverageMask(pass);
+  gLastBaseScenarioId  = resolveBaseScenarioId();
+
+  mResult.BaseScenarioId     = gLastBaseScenarioId & 0xFF;
+  mResult.BaseScenarioResult = gBaseScenarioResult & 0x1;
+  mResult.FlowCoverageMask   = gFlowCoverage & 0x7FFF;
+  mResult.TraceSnapshotId    = gTraceSnapshotId & 0xFFFF;
+  mResult.TestHealth         = gTestHealth & 0xFF;
+  output(mResult);
+
+  write("[TEST_BAS] scenario id=%d result=%d health=%d",
+        gLastBaseScenarioId, gBaseScenarioResult, gTestHealth);
+}

@@ -248,10 +248,10 @@ on timer tBodyBase100
   mRain.AutoLightState = 0;
   output(mRain);
 
-  mDoorState.DoorStateMask = 0;
-  mDoorState.DoorLockState = 1;
+  mDoorState.DoorStateMask = clampRange((int)@Body::doorOpenCmd, 0, 1);
+  mDoorState.DoorLockState = clampRange((int)@Body::doorLockCmd, 0, 1);
   mDoorState.ChildLockState = 0;
-  mDoorState.DoorOpenWarn = 0;
+  mDoorState.DoorOpenWarn = clampRange((int)@Body::doorOpenCmd, 0, 1);
   output(mDoorState);
 
   mLamp.HeadLampState = (hazardActive == 1) ? 2 : 1;

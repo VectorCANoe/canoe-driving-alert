@@ -6,9 +6,6 @@ includes
 variables
 {
   msTimer tDuplicateGuard;
-  long gEthSocket;
-  dword gEthTargetIp;
-  char gEthRxBuffer[64];
   int gLastDisplayedCode;
   dword gLastDisplayMs;
   int gBaseClusterSpeed;
@@ -32,58 +29,6 @@ variables
   int gHistorySnaps[16];
   int gHistoryWriteIdx;
   int gHistoryCount;
-  int gBackboneAlertLevel;
-  int gBackboneAlertType;
-  int gBackboneTimeoutClear;
-  dword gBackboneAlertTsMs;
-}
-
-int useBackboneAlertState()
-{
-  dword nowMs;
-
-  if (gBackboneAlertTsMs == 0)
-  {
-    return 0;
-  }
-
-  nowMs = getSimulationTimeMs();
-  if ((nowMs - gBackboneAlertTsMs) > 500)
-  {
-    return 0;
-  }
-
-  return 1;
-}
-
-void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
-{
-  gBackboneAlertLevel = clampRange(alertLevel, 0, 7);
-  gBackboneAlertType = clampRange(alertType, 0, 7);
-  gBackboneTimeoutClear = (timeoutClear == 1) ? 1 : 0;
-  gBackboneAlertTsMs = getSimulationTimeMs();
-}
-
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 2)
-    {
-      updateBackboneAlertState(ethGetU8(buffer, 0) & 0x7,
-                               (ethGetU8(buffer, 0) >> 3) & 0x7,
-                               ethGetU8(buffer, 1) & 0x1);
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 
@@ -136,7 +81,6 @@ int applyRobustPolicy(int code)
   int expectedCode;
   int coded;
   int syncMismatch;
-  int useBackbone;
 
   coded = code;
   if (coded <= 0)
@@ -155,19 +99,9 @@ int applyRobustPolicy(int code)
     coded = 0;
   }
 
-  useBackbone = useBackboneAlertState();
-  if (useBackbone == 1)
-  {
-    selectedAlertLevel = clampRange(gBackboneAlertLevel, 0, 7);
-    selectedAlertType = clampRange(gBackboneAlertType, 0, 15);
-    timeoutClear = (gBackboneTimeoutClear == 1) ? 1 : 0;
-  }
-  else
-  {
-    selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-    selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 15);
-    timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
-  }
+  selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+  timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
   expectedCode = 0;
   if (timeoutClear == 0 && selectedAlertLevel > 0)
   {
@@ -247,8 +181,6 @@ on start
 {
   int i;
 
-  gEthSocket = ethOpenDefaultSocket();
-  gEthTargetIp = ethGetDefaultIpAddress();
   gLastDisplayedCode = 0;
   gLastDisplayMs = 0;
   gBaseClusterSpeed = 0;
@@ -270,14 +202,6 @@ on start
   gClusterSyncSeq = 0;
   gHistoryWriteIdx = 0;
   gHistoryCount = 0;
-  gBackboneAlertLevel = 0;
-  gBackboneAlertType = 0;
-  gBackboneTimeoutClear = 0;
-  gBackboneAlertTsMs = 0;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   for (i = 0; i < 16; i = i + 1)
   {
     gHistoryCodes[i] = 0;
@@ -359,13 +283,6 @@ on message frmClusterSyncStateMsg
     gLastBaseSyncState = gClusterSyncState;
     gLastBaseSyncError = (int)this.ClusterSyncError;
   }
-}
-
-on stopMeasurement
-{
-  cancelTimer(tDuplicateGuard);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }
 
 on message frmClusterNotifMsg
@@ -478,3 +395,5 @@ on timer tDuplicateGuard
     setTimer(tDuplicateGuard, 100);
   }
 }
+
+

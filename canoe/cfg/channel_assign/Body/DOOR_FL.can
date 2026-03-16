@@ -20,26 +20,45 @@ on start
   write("[DOOR_FL] start");
 }
 
+
 on timer tDoorFlCycle
 {
   message frmDoorFlStateMsg mDoor;
   int lockState;
   int openState;
   int windowPos;
+  int cmd;
 
   lockState = 1;
   openState = 0;
-  windowPos = 0;
+  windowPos = (int)@Body::windowPos;
+
+  if ((int)@Test::testScenario == 0)
+  {
+    cmd = (int)@Body::windowCmd;
+    if (cmd == 1)
+    {
+      windowPos = windowPos - 10;
+      if (windowPos < 0) windowPos = 0;
+      @Body::windowPos = windowPos;
+    }
+    else if (cmd == 2)
+    {
+      windowPos = windowPos + 10;
+      if (windowPos > 90) windowPos = 90;
+      @Body::windowPos = windowPos;
+    }
+  }
+
   if ((int)@Core::timeoutClear == 1)
   {
     lockState = 0;
     openState = 1;
-    windowPos = 10;
   }
 
   mDoor.DoorFlLockState = clampRange(lockState, 0, 3);
   mDoor.DoorFlOpenState = clampRange(openState, 0, 1);
-  mDoor.DoorFlWindowPos = clampRange(windowPos, 0, 100);
+  mDoor.DoorFlWindowPos = clampRange(windowPos, 0, 90);
   output(mDoor);
 
   if (mDoor.DoorFlLockState != gLastLockState ||
