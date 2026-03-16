@@ -63,6 +63,22 @@ STATE_FILE = ROOT / "canoe" / "tmp" / "reports" / "verification" / "tui_operator
 CAMPAIGN_PROFILES_PATH = ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json"
 BASE_GROUP_NAMES = list(PRODUCT_COMMAND_GROUPS.keys())
 COMMAND_INDEX = build_command_index()
+PROFILE_SURFACE_LABELS = {
+    "quick_smoke": "Quick smoke",
+    "ci_preflight": "CI preflight",
+    "nightly_regression": "Nightly",
+    "soak_stability": "Soak",
+    "ut_active_baseline": "UT Active Baseline 37",
+    "it_active_baseline": "IT Active Baseline 45",
+    "st_active_baseline": "ST Active Baseline 46",
+    "full_active_baseline": "FULL Active Baseline 128",
+}
+PACK_SURFACE_LABELS = {
+    "ts_canoe_ut_active_baseline": "UT Active Baseline 37",
+    "ts_canoe_it_active_baseline": "IT Active Baseline 45",
+    "ts_canoe_st_active_baseline": "ST Active Baseline 46",
+    "ts_canoe_full_active_baseline": "FULL Active Baseline 128",
+}
 
 
 class SdvTuiApp(App[None]):
@@ -469,11 +485,12 @@ class SdvTuiApp(App[None]):
     }
 
     #automation-actions {
-        height: 3;
+        height: 7;
         margin-top: 1;
     }
 
     #automation-actions-primary,
+    #automation-actions-suites,
     #automation-support {
         height: 3;
         margin-bottom: 1;
@@ -769,7 +786,7 @@ class SdvTuiApp(App[None]):
                     with VerticalScroll(id="page-automation", classes="page hidden"):
                         yield Static(
                             "Automation 화면은 반복 실행과 CI/CD / Jenkins 연동을 위한 운영 영역입니다.\n"
-                            "실행 프로파일을 선택한 뒤, 상세 결과와 산출물 검토는 Results와 Artifacts에서 이어서 진행하십시오.",
+                            "운영 profile과 active baseline suite를 선택한 뒤, 상세 결과와 산출물 검토는 Results와 Artifacts에서 이어서 진행하십시오.",
                             id="automation-overview",
                         )
                         with Horizontal(id="automation-strip"):
@@ -777,22 +794,24 @@ class SdvTuiApp(App[None]):
                                 yield Static("Recommended Flow", classes="summary-title")
                                 yield Static(
                                     "1) 검증 배치 준비\n"
-                                    "2) Quick smoke 또는 CI preflight\n"
-                                    "3) Nightly/Soak으로 장시간 반복 실행",
+                                    "2) 운영 profile 선택\n"
+                                    "3) UT / IT / ST / FULL active baseline 선택",
                                     id="automation-ci-body",
                                 )
                             with Vertical(classes="automation-card"):
-                                yield Static("CI/CD / Long-run", classes="summary-title")
+                                yield Static("Active Suites", classes="summary-title")
                                 yield Static(
-                                    "CI/CD와 Jenkins는 스케줄링과 반복 실행을 담당하고,\n"
-                                    "Console은 실행 식별자와 산출물 구조를 일관되게 유지합니다.",
+                                    "UT Active Baseline 37\n"
+                                    "IT Active Baseline 45\n"
+                                    "ST Active Baseline 46\n"
+                                    "FULL Active Baseline 128",
                                     id="automation-soak-body",
                                 )
                             with Vertical(classes="automation-card"):
                                 yield Static("Profiles / Reference", classes="summary-title")
                                 yield Static(
-                                    "세부 프로파일, Pack Matrix, CI/CD / Jenkins 문서는\n"
-                                    "아래 보조 버튼이나 Artifacts의 Source Contracts에서 확인합니다.",
+                                    "test_suites / test_units README, test-asset-mapping,\n"
+                                    "execution-guide, Pack Matrix는 아래에서 바로 확인합니다.",
                                     id="automation-native-body",
                                 )
                         with Vertical(id="automation-actions"):
@@ -802,12 +821,17 @@ class SdvTuiApp(App[None]):
                                 yield Button("CI preflight", id="automation-profile-ci")
                                 yield Button("Nightly", id="automation-profile-nightly")
                                 yield Button("Soak", id="automation-profile-soak")
+                            with Horizontal(id="automation-actions-suites"):
+                                yield Button("UT 37", id="automation-profile-ut")
+                                yield Button("IT 45", id="automation-profile-it")
+                                yield Button("ST 46", id="automation-profile-st")
+                                yield Button("FULL 128", id="automation-profile-full")
                         with Horizontal(id="automation-support"):
                             yield Button("실행 프로파일", id="automation-open-profiles")
                             yield Button("Pack Matrix", id="automation-open-pack-matrix")
                             yield Button("CI/CD / Jenkins 문서", id="automation-open-ci")
                         yield Static(
-                            "Automation은 실행 프로파일 선택과 CI/CD / Jenkins 진입을 위한 화면입니다. "
+                            "Automation은 실행 프로파일과 active suite pack 선택을 위한 화면입니다. "
                             "결과 확인과 산출물 검토는 Results와 Artifacts에서 이어서 진행하십시오.",
                             id="automation-hint",
                         )
@@ -1432,8 +1456,13 @@ class SdvTuiApp(App[None]):
         )
         core_ready = sum(1 for item in core_contracts if item.exists())
         docs_ready = sum(1 for item in reference_docs if item.exists())
+        profile = self.state.get("campaign_profile", {})
+        pack_label = "-"
+        if isinstance(profile, dict):
+            pack_label = self._pack_surface_label(str(profile.get("pack_id", "")))
         lines = [
             f"기준 Contract: {self._brief_relpath(source_target)}",
+            f"현재 active suite: {pack_label}",
             f"Core config: {core_ready}/{len(core_contracts)} ready",
             f"Reference docs: {docs_ready}/{len(reference_docs)} ready",
             "원본 JSON/MD는 Source Contract 버튼에서 바로 엽니다.",
@@ -1528,6 +1557,18 @@ class SdvTuiApp(App[None]):
         target_index = self.group_names.index(target_group)
         self._refresh_commands(target_index)
 
+    def _profile_surface_label(self, profile_id: str) -> str:
+        profile_id = profile_id.strip()
+        if not profile_id:
+            return "-"
+        return PROFILE_SURFACE_LABELS.get(profile_id, profile_id)
+
+    def _pack_surface_label(self, pack_id: str) -> str:
+        pack_id = pack_id.strip()
+        if not pack_id:
+            return "-"
+        return PACK_SURFACE_LABELS.get(pack_id, pack_id)
+
     def _summarize_evidence_paths(self) -> str:
         last_result = self.state.get("last_result", {})
         if not isinstance(last_result, dict):
@@ -1553,7 +1594,8 @@ class SdvTuiApp(App[None]):
             profile_id = str(profile.get("profile_id", "")).strip()
             pack_id = str(profile.get("pack_id", "")).strip()
             if profile_id or pack_id:
-                lines.append(f"활성 profile/pack: {profile_id or '-'} / {pack_id or '-'}")
+                lines.append(f"활성 profile: {self._profile_surface_label(profile_id)}")
+                lines.append(f"활성 pack: {self._pack_surface_label(pack_id)}")
         lines.append(f"Source Contract: {self._brief_relpath(source_target)}")
         lines.append("동작: 증빙 / CANoe report / Execution Manifest / Source Contract")
         return "\n".join(lines)
@@ -1624,6 +1666,12 @@ class SdvTuiApp(App[None]):
             f"주요 확인점: {bottleneck}",
             f"다음 단계: {next_action}",
         ]
+        profile = self.state.get("campaign_profile", {})
+        if isinstance(profile, dict):
+            profile_id = str(profile.get("profile_id", "")).strip()
+            pack_id = str(profile.get("pack_id", "")).strip()
+            if profile_id or pack_id:
+                result_lines.insert(3, f"실행 묶음: {self._profile_surface_label(profile_id)} / {self._pack_surface_label(pack_id)}")
         if isinstance(related_logs, list) and related_logs:
             result_lines.append("")
             result_lines.append("근거 로그:")
@@ -1828,9 +1876,6 @@ class SdvTuiApp(App[None]):
             if scope == "source":
                 return [
                     "product/sdv_operator/config/surface_ecu_inventory.json",
-                    "product/sdv_operator/config/native_canoe_test_portfolio_v1.json",
-                    "product/sdv_operator/config/native_testcase_blueprints_v1.json",
-                    "product/sdv_operator/config/network_gateway_verification_pack_v1.json",
                     "product/sdv_operator/config/verification_pack_matrix.json",
                     "product/sdv_operator/config/campaign_profiles.json",
                     "product/sdv_operator/config/capability_boundary_matrix.json",
@@ -1839,6 +1884,10 @@ class SdvTuiApp(App[None]):
                     "product/sdv_operator/docs-src/role-boundary.md",
                     "product/sdv_operator/docs-src/capability-boundary.md",
                     "product/sdv_operator/docs-src/verification-packs.md",
+                    "canoe/tests/modules/test_units/README.md",
+                    "canoe/tests/modules/test_suites/README.md",
+                    "canoe/docs/verification/test-asset-mapping.md",
+                    "canoe/docs/verification/execution-guide.md",
                 ]
             if scope == "build":
                 return ["dist", "build", "product/sdv_operator/site"]
@@ -1852,9 +1901,9 @@ class SdvTuiApp(App[None]):
                 "readiness": "canoe/tmp/reports/verification/run_readiness.md",
                 "doctor": "canoe/tmp/reports/verification/doctor_report.md",
                 "surface-inventory": "product/sdv_operator/config/surface_ecu_inventory.json",
-                "native-test-portfolio": "product/sdv_operator/config/native_canoe_test_portfolio_v1.json",
-                "native-testcase-blueprints": "product/sdv_operator/config/native_testcase_blueprints_v1.json",
-                "network-gateway-pack": "product/sdv_operator/config/network_gateway_verification_pack_v1.json",
+                "native-test-portfolio": "canoe/docs/verification/test-asset-mapping.md",
+                "native-testcase-blueprints": "canoe/tests/modules/test_units/README.md",
+                "network-gateway-pack": "canoe/tests/modules/test_suites/README.md",
                 "verification-pack-matrix": "product/sdv_operator/config/verification_pack_matrix.json",
                 "campaign-profiles": "product/sdv_operator/config/campaign_profiles.json",
                 "capability-matrix-json": "product/sdv_operator/config/capability_boundary_matrix.json",
@@ -2219,15 +2268,15 @@ class SdvTuiApp(App[None]):
         if command_id.startswith("artifact.open_capability_matrix_json") or command_id.startswith("artifact.open_capability_boundary_doc"):
             return ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json"
         if command_id.startswith("artifact.open_native_test_portfolio"):
-            return ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json"
+            return ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md"
         if command_id.startswith("artifact.open_network_gateway_pack"):
-            return ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json"
+            return ROOT / "canoe" / "tests" / "modules" / "test_suites" / "README.md"
         if command_id.startswith("artifact.open_verification_pack_matrix"):
             return ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json"
         if command_id.startswith("verify.surface_bundle") or command_id.startswith("artifact.open_source_inventory"):
             return ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json"
         if command_id.startswith("verify.") or command_id.startswith("operate.") or command_id.startswith("inspect."):
-            return ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json"
+            return ROOT / "canoe" / "docs" / "verification" / "execution-guide.md"
         return ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json"
 
     def _open_path(self, target: Path) -> None:
@@ -2308,10 +2357,10 @@ class SdvTuiApp(App[None]):
         self._open_static_target(ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json")
 
     def action_open_native_test_portfolio(self) -> None:
-        self._open_static_target(ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json")
+        self._open_static_target(ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md")
 
     def action_open_network_gateway_pack(self) -> None:
-        self._open_static_target(ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json")
+        self._open_static_target(ROOT / "canoe" / "tests" / "modules" / "test_suites" / "README.md")
 
     def action_open_verification_pack_matrix(self) -> None:
         self._open_static_target(ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json")
@@ -2550,10 +2599,12 @@ class SdvTuiApp(App[None]):
             failed_steps = [item for item in steps if isinstance(item, dict) and int(item.get("rc", 1)) != 0]
             if failed_steps:
                 first_fail = str(failed_steps[0].get("name", "-"))
+        profile_id = str(batch.get("profile_id", "") or "")
+        pack_id = str(batch.get("pack_id", "") or "")
         lines = [
             f"Run: {batch.get('run_id', '-')}",
             f"Execution ID: {batch.get('campaign_id', '-')}",
-            f"Run Profile/Pack: {batch.get('profile_id', '-') or '-'} / {batch.get('pack_id', '-') or '-'}",
+            f"Run Profile/Pack: {self._profile_surface_label(profile_id)} / {self._pack_surface_label(pack_id)}",
             f"Phase/Status: {phase} / {status}",
             f"Surface Scope: {batch.get('campaign', {}).get('surface_scope', '-') if isinstance(batch.get('campaign', {}), dict) else '-'}",
             "Plan: "
@@ -2806,12 +2857,14 @@ class SdvTuiApp(App[None]):
             self._apply_campaign_profile("nightly_regression")
         elif event.button.id == "automation-profile-soak":
             self._apply_campaign_profile("soak_stability")
-        elif event.button.id == "automation-profile-functional6":
-            self._apply_campaign_profile("native_functional_6")
-        elif event.button.id == "automation-profile-network4":
-            self._apply_campaign_profile("network_gateway_core_4")
-        elif event.button.id == "automation-profile-networkdiag":
-            self._apply_campaign_profile("network_plus_diag_draft_5")
+        elif event.button.id == "automation-profile-ut":
+            self._apply_campaign_profile("ut_active_baseline")
+        elif event.button.id == "automation-profile-it":
+            self._apply_campaign_profile("it_active_baseline")
+        elif event.button.id == "automation-profile-st":
+            self._apply_campaign_profile("st_active_baseline")
+        elif event.button.id == "automation-profile-full":
+            self._apply_campaign_profile("full_active_baseline")
         elif event.button.id == "automation-open-profiles":
             self.action_open_campaign_profiles()
         elif event.button.id == "automation-open-pack-matrix":

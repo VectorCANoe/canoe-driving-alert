@@ -36,12 +36,15 @@
 
 ### Dev2
 
-- testcase portfolio 선정
-- testcase intent / oracle / timing / evidence blueprint 작성
+- active suite portfolio 선정
+- execution metadata / oracle / evidence binding 기준 작성
 - `profile_id / pack_id / campaign_id`와 native asset 연결
 - batch/JUnit/archive/manifest 연결
-- testcase blueprint source contract 관리
-  - `product/sdv_operator/config/native_testcase_blueprints_v1.json`
+- source contract 관리
+  - `product/sdv_operator/config/verification_pack_matrix.json`
+  - `product/sdv_operator/config/campaign_profiles.json`
+  - `canoe/docs/verification/test-asset-mapping.md`
+  - `canoe/docs/verification/execution-guide.md`
 
 ### Dev1
 
@@ -53,23 +56,27 @@
 - blueprint를 실제 runtime signal/message/assert로 연결
 - native `.vtestreport` 생성
 
-즉 Dev2는 **무엇을 어떤 기준으로 검증할지**를 정하고, Dev1은 **그 설계를 CANoe native asset으로 구현**합니다.
+즉 Dev2는 **어떤 active suite를 어떤 execution/profile 기준으로 운영할지**를 정하고, Dev1은 **그 설계를 CANoe native asset으로 구현**합니다.
 
-## testcase blueprint source
+## current source contracts
 
-Dev2가 작성하는 testcase 설계의 정본은 아래 JSON입니다.
+Dev2가 운영 표면에서 직접 참조하는 정본은 아래와 같습니다.
 
-- `product/sdv_operator/config/native_testcase_blueprints_v1.json`
+- `product/sdv_operator/config/verification_pack_matrix.json`
+- `product/sdv_operator/config/campaign_profiles.json`
+- `canoe/tests/modules/test_units/README.md`
+- `canoe/tests/modules/test_suites/README.md`
+- `canoe/docs/verification/test-asset-mapping.md`
+- `canoe/docs/verification/execution-guide.md`
 
-이 파일은 다음을 담습니다.
+이 문서/계약은 다음을 담습니다.
 
-- functional 6 / network core 4 / diagnostic draft 1 자산 목록
-- testcase intent
-- oracle summary
-- timing target
-- evidence expectation
+- active suite 수량과 wrapper 구조
+- 05/06/07과 native asset 매핑
+- native execution / harness / evidence 기준
+- batch/profile/pack 메타데이터 연결
 
-즉 문서 설명과 별개로, Console/CI/packaging이 읽을 수 있는 기계 가독 계약은 이 JSON이 담당합니다.
+즉 Console/CI/packaging은 더 이상 옛 포트폴리오 설계 JSON보다 현재 active suite와 mapping 문서를 기준으로 움직입니다.
 
 ## 왜 이렇게 나누는가
 

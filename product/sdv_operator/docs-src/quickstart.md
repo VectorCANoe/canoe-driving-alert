@@ -36,11 +36,12 @@ python scripts/run.py verify batch --run-id 20260310_0900 --campaign-id CMP_2026
 
 현재 권장 verification pack 축:
 
-- `native_functional_6`
-- `network_gateway_core_4`
-- `network_plus_diag_draft_5`
+- `ts_canoe_ut_active_baseline`
+- `ts_canoe_it_active_baseline`
+- `ts_canoe_st_active_baseline`
+- `ts_canoe_full_active_baseline`
 
-즉 제품은 `핵심 기능`, `네트워크/게이트웨이`, `진단 draft`를 같은 화면에서 다루더라도 pack은 분리해서 운영합니다.
+즉 제품은 현재 executable CANoe suite 기준으로 UT/IT/ST/FULL을 분리해서 운영합니다.
 
 ## 3. 점검 명령
 
@@ -56,13 +57,13 @@ python scripts/run.py doctor
 
 ## 4. Verification Console 기본 흐름
 
-1. Overview에서 핵심 작업 선택
-2. Campaign 화면에서 범주 버튼과 Task list를 통해 작업 선택
+1. Home에서 핵심 작업 선택
+2. Run 화면에서 범주 버튼과 Task list를 통해 작업 선택
 3. Quick form에 필요한 값 입력
 4. Run now 실행
-5. 하단 Log 패널에서 실시간 출력 확인
-6. Results에서 `Verdict / Reason / Evidence / Actions` 4블록을 먼저 확인
-7. Automation에서 CI bridge/Jenkins 샘플과 batch 경로를 확인
+5. Logs에서 실시간 출력 확인
+6. Results에서 최근 판정과 연결 산출물을 먼저 확인
+7. Automation에서 운영 profile과 active suite pack을 선택
 8. Artifacts에서 `staging / archive / source / build` 네 영역을 구분해 확인하고 필요하면 `surface archive`까지 바로 연다
 
 ## 5. Campaign 메타데이터

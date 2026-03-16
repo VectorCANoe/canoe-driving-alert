@@ -32,16 +32,18 @@ Campaign profile은 성격상 두 그룹으로 나뉩니다.
 - `soak_stability`
   - 장시간 안정성 증빙용
 
-### 2. verification pack profile
+### 2. active suite pack profile
 
-- `native_functional_6`
-  - Native Functional Portfolio 6 실행용
-- `network_gateway_core_4`
-  - Network/Gateway Core 4 실행용
-- `network_plus_diag_draft_5`
-  - Network/Gateway Core + Diagnostic draft 실행용
+- `ut_active_baseline`
+  - UT Active Baseline 37 실행용
+- `it_active_baseline`
+  - IT Active Baseline 45 실행용
+- `st_active_baseline`
+  - ST Active Baseline 46 실행용
+- `full_active_baseline`
+  - FULL Active Baseline 128 실행용
 
-운영 profile은 실행 방식에 초점을 두고, verification pack profile은 **무슨 테스트 묶음을 돌리는지**까지 같이 고정합니다.
+운영 profile은 실행 방식에 초점을 두고, active suite pack profile은 **어떤 executable suite 묶음을 돌리는지**까지 같이 고정합니다.
 
 ## `profile_id -> pack_id -> contract_ref`
 
@@ -56,9 +58,9 @@ Verification pack profile에는 아래 3개가 같이 들어갑니다.
 
 예:
 
-- `profile_id=native_functional_6`
-- `pack_id=native_functional_6`
-- `contract_ref=product/sdv_operator/config/native_canoe_test_portfolio_v1.json`
+- `profile_id=it_active_baseline`
+- `pack_id=ts_canoe_it_active_baseline`
+- `contract_ref=canoe/docs/verification/test-asset-mapping.md`
 
 즉 profile은 **실행 규약**, pack은 **검증 포트폴리오**, contract는 **정본 기준**입니다.
 
@@ -84,12 +86,14 @@ Verification pack profile에는 아래 3개가 같이 들어갑니다.
 - scheduler는 Jenkins가 담당합니다.
 - Console은 campaign metadata와 evidence normalization을 담당합니다.
 - profile은 실행 편의값이면서 동시에 reviewer-facing evidence 규약의 일부입니다.
-- verification pack profile은 `surface bundle`, `execution manifest`, `archive`에 그대로 반영됩니다.
+- active suite pack profile은 `surface bundle`, `execution manifest`, `archive`에 그대로 반영됩니다.
 
 ## 관련 원본
 
 - `product/sdv_operator/config/campaign_profiles.json`
 - `product/sdv_operator/config/verification_pack_matrix.json`
 - `product/sdv_operator/docs-src/verification-packs.md`
+- `canoe/tests/modules/test_suites/README.md`
+- `canoe/docs/verification/test-asset-mapping.md`
 - `product/sdv_operator/docs-src/role-boundary.md`
 - `product/sdv_operator/docs-src/ci-bridge.md`

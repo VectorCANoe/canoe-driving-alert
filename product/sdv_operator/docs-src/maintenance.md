@@ -69,7 +69,7 @@ Dev2가 관리하는 것은 `scripts` 전체가 아니라 `SDV Operator` 제품 
 
 대표 예:
 
-- `Overview / Campaign / Results / Artifacts / Automation`
+- `Home / Run / Results / Artifacts / Automation / Logs`
 - `Primary / Runtime / Inspect / Package`
 - `gate all / scenario run / verify quick / doctor`
 - `PASS / WARN / FAIL`
