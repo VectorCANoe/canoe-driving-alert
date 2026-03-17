@@ -35,13 +35,13 @@ Campaign profile은 성격상 두 그룹으로 나뉩니다.
 ### 2. active suite pack profile
 
 - `ut_active_baseline`
-  - UT Active Baseline 37 실행용
+  - UT Active Baseline 77 실행용
 - `it_active_baseline`
   - IT Active Baseline 45 실행용
 - `st_active_baseline`
   - ST Active Baseline 46 실행용
 - `full_active_baseline`
-  - FULL Active Baseline 128 실행용
+  - FULL Active Baseline 168 실행용
 
 운영 profile은 실행 방식에 초점을 두고, active suite pack profile은 **어떤 executable suite 묶음을 돌리는지**까지 같이 고정합니다.
 

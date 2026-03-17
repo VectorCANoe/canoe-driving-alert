@@ -6,7 +6,7 @@
 ## Active suite pack 구조
 
 1. `ts_canoe_ut_active_baseline`
-- `UT Active Baseline 37`
+- `UT Active Baseline 77`
 - 05 Unit Test 현재 실행 기준
 - source:
   - `canoe/tests/modules/test_units/README.md`
@@ -27,7 +27,7 @@
   - `canoe/docs/verification/test-asset-mapping.md`
 
 4. `ts_canoe_full_active_baseline`
-- `FULL Active Baseline 128`
+- `FULL Active Baseline 168`
 - UT/IT/ST active wrapper 기준
 - source:
   - `canoe/tests/modules/test_suites/README.md`

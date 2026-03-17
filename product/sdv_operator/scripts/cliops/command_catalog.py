@@ -1016,7 +1016,7 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             command_id="artifact.open_verification_pack_matrix",
             title="원본 verification pack matrix 열기",
             command="artifact open --target verification-pack-matrix",
-            summary="UT 37 / IT 45 / ST 46 / FULL 128 active baseline 매트릭스를 바로 엽니다.",
+            summary="UT 77 / IT 45 / ST 46 / FULL 168 active baseline 매트릭스를 바로 엽니다.",
             use_when=(
                 "어떤 active suite pack이 어떤 profile과 연결되는지 기준 파일로 확인할 때",
             ),

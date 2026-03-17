@@ -69,16 +69,16 @@ PROFILE_SURFACE_LABELS = {
     "ci_preflight": "CI preflight",
     "nightly_regression": "Nightly",
     "soak_stability": "Soak",
-    "ut_active_baseline": "UT Active Baseline 37",
+    "ut_active_baseline": "UT Active Baseline 77",
     "it_active_baseline": "IT Active Baseline 45",
     "st_active_baseline": "ST Active Baseline 46",
-    "full_active_baseline": "FULL Active Baseline 128",
+    "full_active_baseline": "FULL Active Baseline 168",
 }
 PACK_SURFACE_LABELS = {
-    "ts_canoe_ut_active_baseline": "UT Active Baseline 37",
+    "ts_canoe_ut_active_baseline": "UT Active Baseline 77",
     "ts_canoe_it_active_baseline": "IT Active Baseline 45",
     "ts_canoe_st_active_baseline": "ST Active Baseline 46",
-    "ts_canoe_full_active_baseline": "FULL Active Baseline 128",
+    "ts_canoe_full_active_baseline": "FULL Active Baseline 168",
 }
 
 HOME_REFERENCE_PREVIEWS: dict[str, tuple[str, Path, str]] = {
@@ -955,10 +955,10 @@ class SdvTuiApp(App[None]):
                             with Vertical(classes="automation-card"):
                                 yield Static("Active Suites", classes="summary-title")
                                 yield Static(
-                                    "UT Active Baseline 37\n"
+                                    "UT Active Baseline 77\n"
                                     "IT Active Baseline 45\n"
                                     "ST Active Baseline 46\n"
-                                    "FULL Active Baseline 128",
+                                    "FULL Active Baseline 168",
                                     id="automation-soak-body",
                                 )
                             with Vertical(classes="automation-card"):
@@ -976,10 +976,10 @@ class SdvTuiApp(App[None]):
                                 yield Button("Nightly", id="automation-profile-nightly")
                                 yield Button("Soak", id="automation-profile-soak")
                             with Horizontal(id="automation-actions-suites"):
-                                yield Button("UT 37", id="automation-profile-ut")
+                                yield Button("UT 77", id="automation-profile-ut")
                                 yield Button("IT 45", id="automation-profile-it")
                                 yield Button("ST 46", id="automation-profile-st")
-                                yield Button("FULL 128", id="automation-profile-full")
+                                yield Button("FULL 168", id="automation-profile-full")
                         with Horizontal(id="automation-support"):
                             yield Button("실행 프로파일", id="automation-open-profiles")
                             yield Button("Pack Matrix", id="automation-open-pack-matrix")

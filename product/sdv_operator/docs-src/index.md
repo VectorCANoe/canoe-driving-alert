@@ -24,7 +24,7 @@
    - CANoe TEST / Jenkins / Console 역할 분리
    - capability boundary source contract
    - campaign profile source contract
-   - UT 37 / IT 45 / ST 46 / FULL 128 active suite 구분
+   - UT 77 / IT 45 / ST 46 / FULL 168 active suite 구분
 
 ## One-Line Flow
 
