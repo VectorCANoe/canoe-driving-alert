@@ -88,6 +88,8 @@ Note:
   - optional `raw_write_window.txt` import from the canonical drop root `canoe/logging/evidence/incoming/`
   - supplementary trace exports from `canoe/logging/evidence/incoming/<TIER>/trace/`
   - supplementary logging exports from `canoe/logging/evidence/incoming/<TIER>/logging/`
+  - when canonical supplementary dirs are empty, recent-file auto-discovery from cfg-derived logging output roots
+  - `native_execute_context.json` marker consumption for recent-file window anchoring
   - legacy `canoe/tmp/write_window/` is fallback-only for migration
 - `check_run_readiness.py` outputs run readiness report:
   - template/raw/scored existence by UT/IT/ST
@@ -132,6 +134,8 @@ Recommended post-run flow:
    CANoe native trace/logging exports도 canonical supplementary path에 저장:
    - `canoe/logging/evidence/incoming/<TIER>/trace/`
    - `canoe/logging/evidence/incoming/<TIER>/logging/`
+   제품 native execute를 사용한 경우 supplementary path가 비어 있어도
+   cfg-derived logging output root에서 recent-file auto-discovery가 시도됩니다.
 4. `python scripts/quality/run_verification_pipeline.py post-run --run-id <RUN_ID> --tier <UT|IT|ST> --owner <OWNER>`
 5. `python scripts/quality/run_verification_pipeline.py bind-doc --run-id <RUN_ID>`
 6. `python scripts/quality/run_verification_pipeline.py fill-template --run-id <RUN_ID>`

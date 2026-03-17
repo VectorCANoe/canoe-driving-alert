@@ -58,6 +58,10 @@ def cmd_verify_collect(args: argparse.Namespace) -> int:
         cmd.extend(['--raw-log-source', str(args.raw_log_source)])
     if args.allow_missing_raw_log:
         cmd.append('--allow-missing-raw-log')
+    if getattr(args, 'supplementary_lookback_minutes', 90) != 90:
+        cmd.extend(['--supplementary-lookback-minutes', str(args.supplementary_lookback_minutes)])
+    if getattr(args, 'disable_supplementary_auto_discovery', False):
+        cmd.append('--disable-supplementary-auto-discovery')
     return run_cmd(cmd)
 
 
@@ -81,6 +85,10 @@ def cmd_verify_post_run(args: argparse.Namespace) -> int:
         cmd.extend(['--raw-log-source', str(args.raw_log_source)])
     if args.allow_missing_raw_log:
         cmd.append('--allow-missing-raw-log')
+    if getattr(args, 'supplementary_lookback_minutes', 90) != 90:
+        cmd.extend(['--supplementary-lookback-minutes', str(args.supplementary_lookback_minutes)])
+    if getattr(args, 'disable_supplementary_auto_discovery', False):
+        cmd.append('--disable-supplementary-auto-discovery')
     if args.no_strict_metadata:
         cmd.append('--no-strict-metadata')
     if args.no_strict_axis:
@@ -363,15 +371,19 @@ def _batch_artifact_rows(run_id: str, phase: str) -> list[dict[str, object]]:
         'canoe/tmp/reports/verification/doc_fill_template.csv',
         'canoe/tmp/reports/verification/doc_fill_template.md',
         'canoe/logging/evidence/incoming/UT/raw_write_window.txt',
+        'canoe/logging/evidence/incoming/UT/native_execute_context.json',
         'canoe/logging/evidence/incoming/UT/trace',
         'canoe/logging/evidence/incoming/UT/logging',
         'canoe/logging/evidence/incoming/IT/raw_write_window.txt',
+        'canoe/logging/evidence/incoming/IT/native_execute_context.json',
         'canoe/logging/evidence/incoming/IT/trace',
         'canoe/logging/evidence/incoming/IT/logging',
         'canoe/logging/evidence/incoming/ST/raw_write_window.txt',
+        'canoe/logging/evidence/incoming/ST/native_execute_context.json',
         'canoe/logging/evidence/incoming/ST/trace',
         'canoe/logging/evidence/incoming/ST/logging',
         'canoe/logging/evidence/incoming/FULL/raw_write_window.txt',
+        'canoe/logging/evidence/incoming/FULL/native_execute_context.json',
         'canoe/logging/evidence/incoming/FULL/trace',
         'canoe/logging/evidence/incoming/FULL/logging',
         f'artifacts/verification_runs/{run_id}/{phase}',
@@ -694,6 +706,7 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                     argparse.Namespace(
                         tier=args.execute_native_tier,
                         config_name='',
+                        run_id=args.run_id,
                         timeout_seconds=args.native_timeout_seconds,
                         poll_ms=args.native_poll_ms,
                         no_ensure_running=False,

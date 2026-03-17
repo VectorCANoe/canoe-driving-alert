@@ -166,6 +166,8 @@ def add_verify_collect_args(p: argparse.ArgumentParser, handlers: HandlerMap) ->
     )
     p.add_argument("--raw-log-source", default="", help="Optional raw log source override")
     p.add_argument("--allow-missing-raw-log", action="store_true")
+    p.add_argument("--supplementary-lookback-minutes", type=int, default=90)
+    p.add_argument("--disable-supplementary-auto-discovery", action="store_true")
     p.set_defaults(func=handlers["cmd_verify_collect"], operator_command_id="verify.collect_native")
 
 
@@ -181,6 +183,8 @@ def add_verify_post_run_args(p: argparse.ArgumentParser, handlers: HandlerMap) -
     )
     p.add_argument("--raw-log-source", default="", help="Optional raw log source override")
     p.add_argument("--allow-missing-raw-log", action="store_true")
+    p.add_argument("--supplementary-lookback-minutes", type=int, default=90)
+    p.add_argument("--disable-supplementary-auto-discovery", action="store_true")
     p.add_argument("--baseline-csv", default="", help="Optional baseline scored CSV for regression comparison")
     p.add_argument("--no-strict-metadata", action="store_true")
     p.add_argument("--no-strict-axis", action="store_true")
@@ -655,6 +659,7 @@ def add_canoe_test_config_status_args(p: argparse.ArgumentParser, handlers: Hand
 
 def add_canoe_test_config_run_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
     add_canoe_test_config_common_args(p)
+    p.add_argument("--run-id", default="", help="Optional verification run ID for evidence context")
     p.add_argument("--timeout-seconds", type=int, default=1800, help="Execution timeout in seconds")
     p.add_argument("--poll-ms", type=int, default=500, help="Polling interval in milliseconds")
     p.add_argument("--no-ensure-running", action="store_true", help="Do not auto-start measurement before execution")

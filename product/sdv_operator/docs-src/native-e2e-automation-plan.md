@@ -125,6 +125,8 @@ CANoe 변경:
 
 - 제품은 native execute 직전에 `incoming/<TIER>/raw_write_window.txt`를 비우고
   evidence drop 디렉토리를 보장한다.
+- 제품은 native execute 직전에 `incoming/<TIER>/native_execute_context.json`을 기록하고
+  canonical supplementary drop 디렉토리 내용은 `.gitkeep`를 제외하고 비운다.
 - CANoe harness는 `Test::nativeExecTierCode`, `Test::evidenceAutoWrite`를 보고
   `TEST_SCN`의 `[EVIDENCE_IN]`, `[EVIDENCE_OUT]`를 Write Window와 raw file에 동시 기록한다.
 - 이 구현은 차량 비즈니스 로직이 아니라 SIL verification harness 책임으로
@@ -151,6 +153,9 @@ CANoe 변경:
 - 제품 `verify batch`는 `UT/IT/ST` post/full 단계에서 `verify post-run <TIER>`를 직접 호출한다.
 - `verify finalize`는 `--skip-fill-score`를 받아 이미 scoring된 tier를 다시 채우지 않는다.
 - 즉 제품 표면 기준 `post-run -> official report bundle -> finalize -> materialize` 순서가 고정됐다.
+- `collect_native_run_artifacts.py`는 canonical `incoming/<TIER>/trace|logging`가 비어 있으면
+  `native_execute_context.json`의 최근 실행 시각과 `CAN_v2_topology.cfg`의 logging output path를 기준으로
+  supplementary trace/logging 파일을 자동 발견한다.
 
 ### Wave 4 - Multi-Tier Expansion
 

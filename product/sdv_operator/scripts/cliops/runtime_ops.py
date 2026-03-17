@@ -3,6 +3,7 @@
 import argparse
 import datetime as dt
 import json
+import shutil
 from pathlib import Path
 
 from cliops.canoe_com import CanoeComBridge, CanoeComError
@@ -72,18 +73,70 @@ def _native_summary_payload(summary, *, tier: str | None = None) -> dict[str, ob
 def _prepare_native_evidence_drop(tier: str) -> None:
     contract = resolve_tier_contract(tier)
     raw_path = ROOT / contract.incoming_raw
+    trace_dir = ROOT / contract.incoming_trace_dir
+    logging_dir = ROOT / contract.incoming_logging_dir
     raw_path.parent.mkdir(parents=True, exist_ok=True)
     raw_path.write_text("", encoding="utf-8")
-    (ROOT / contract.incoming_trace_dir).mkdir(parents=True, exist_ok=True)
-    (ROOT / contract.incoming_logging_dir).mkdir(parents=True, exist_ok=True)
+    trace_dir.mkdir(parents=True, exist_ok=True)
+    logging_dir.mkdir(parents=True, exist_ok=True)
 
 
-def _seed_native_execution_context(bridge: CanoeComBridge, tier: str | None) -> None:
+def _clear_drop_directory(path: Path) -> None:
+    if not path.exists() or not path.is_dir():
+        return
+    for item in path.iterdir():
+        if item.name == ".gitkeep":
+            continue
+        if item.is_dir():
+            shutil.rmtree(item, ignore_errors=True)
+        else:
+            try:
+                item.unlink()
+            except OSError:
+                pass
+
+
+def _native_execute_context_path(tier: str) -> Path:
+    return ROOT / "canoe" / "logging" / "evidence" / "incoming" / tier / "native_execute_context.json"
+
+
+def _write_native_execute_context(tier: str, payload: dict[str, object]) -> None:
+    path = _native_execute_context_path(tier)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def _seed_native_execution_context(
+    bridge: CanoeComBridge,
+    tier: str | None,
+    *,
+    run_id: str | None,
+    config_name: str | None,
+) -> None:
     if not tier:
         return
     try:
         contract = resolve_tier_contract(tier)
         _prepare_native_evidence_drop(tier)
+        trace_dir = ROOT / contract.incoming_trace_dir
+        logging_dir = ROOT / contract.incoming_logging_dir
+        _clear_drop_directory(trace_dir)
+        _clear_drop_directory(logging_dir)
+        _write_native_execute_context(
+            tier,
+            {
+                "generated_at": dt.datetime.now().isoformat(timespec="seconds"),
+                "started_at": dt.datetime.now().isoformat(timespec="seconds"),
+                "state": "prepared",
+                "run_id": run_id or "",
+                "tier": tier,
+                "config_name": config_name or contract.config_name,
+                "summary_report": str(contract.summary_report_path),
+                "incoming_raw": contract.incoming_raw,
+                "incoming_trace_dir": contract.incoming_trace_dir,
+                "incoming_logging_dir": contract.incoming_logging_dir,
+            },
+        )
         bridge.set_sysvar('Test', 'nativeExecTierCode', contract.tier_code)
         bridge.set_sysvar('Test', 'evidenceAutoWrite', 1)
     except NativeContractError as ex:
@@ -106,6 +159,7 @@ def execute_native_test_configuration(
     *,
     tier: str | None,
     config_name: str | None,
+    run_id: str | None,
     timeout_seconds: int,
     poll_ms: int,
     ensure_running: bool,
@@ -116,7 +170,12 @@ def execute_native_test_configuration(
     resolved_name, resolved_tier = _resolve_config_name(
         argparse.Namespace(config_name=config_name or '', tier=tier or '')
     )
-    _seed_native_execution_context(bridge, resolved_tier)
+    _seed_native_execution_context(
+        bridge,
+        resolved_tier,
+        run_id=run_id,
+        config_name=resolved_name,
+    )
     try:
         bridge.start_test_configuration(
             resolved_name,
@@ -128,6 +187,26 @@ def execute_native_test_configuration(
             timeout_seconds=timeout_seconds,
             poll_ms=poll_ms,
         )
+        if resolved_tier:
+            _write_native_execute_context(
+                resolved_tier,
+                {
+                    "generated_at": dt.datetime.now().isoformat(timespec="seconds"),
+                    "started_at": load_native_execute_context_started_at(resolved_tier),
+                    "completed_at": dt.datetime.now().isoformat(timespec="seconds"),
+                    "state": "completed",
+                    "run_id": run_id or "",
+                    "tier": resolved_tier,
+                    "config_name": resolved_name,
+                    "summary_report": str(resolve_tier_contract(resolved_tier).summary_report_path),
+                    "verdict_raw": summary.verdict,
+                    "verdict": _verdict_label(summary.verdict),
+                    "test_unit_count": summary.test_unit_count,
+                    "incoming_raw": resolve_tier_contract(resolved_tier).incoming_raw,
+                    "incoming_trace_dir": resolve_tier_contract(resolved_tier).incoming_trace_dir,
+                    "incoming_logging_dir": resolve_tier_contract(resolved_tier).incoming_logging_dir,
+                },
+            )
     finally:
         _clear_native_execution_context(bridge)
     payload = _native_summary_payload(summary, tier=resolved_tier)
@@ -135,6 +214,17 @@ def execute_native_test_configuration(
     if fail_on_verdict and summary.verdict == 2:
         rc = 2
     return rc, payload
+
+
+def load_native_execute_context_started_at(tier: str) -> str:
+    path = _native_execute_context_path(tier)
+    if not path.exists() or not path.is_file():
+        return ""
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, json.JSONDecodeError):
+        return ""
+    return str(payload.get("started_at", ""))
 
 
 def coerce_cli_value(raw_value: str, value_type: str) -> object:
@@ -384,6 +474,7 @@ def cmd_canoe_test_config_run(args: argparse.Namespace) -> int:
         rc, payload = execute_native_test_configuration(
             tier=(getattr(args, 'tier', '') or '').strip().upper() or None,
             config_name=(getattr(args, 'config_name', '') or '').strip() or None,
+            run_id=(getattr(args, 'run_id', '') or '').strip() or None,
             timeout_seconds=args.timeout_seconds,
             poll_ms=args.poll_ms,
             ensure_running=not args.no_ensure_running,

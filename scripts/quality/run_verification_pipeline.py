@@ -69,6 +69,10 @@ def cmd_collect(args: argparse.Namespace) -> int:
         cmd.extend(["--raw-log-source", str(args.raw_log_source)])
     if args.allow_missing_raw_log:
         cmd.append("--allow-missing-raw-log")
+    if getattr(args, "supplementary_lookback_minutes", 90) != 90:
+        cmd.extend(["--supplementary-lookback-minutes", str(args.supplementary_lookback_minutes)])
+    if getattr(args, "disable_supplementary_auto_discovery", False):
+        cmd.append("--disable-supplementary-auto-discovery")
     return run_cmd(cmd)
 
 
@@ -136,6 +140,10 @@ def cmd_post_run(args: argparse.Namespace) -> int:
         collect_cmd.extend(["--raw-log-source", str(args.raw_log_source)])
     if args.allow_missing_raw_log:
         collect_cmd.append("--allow-missing-raw-log")
+    if getattr(args, "supplementary_lookback_minutes", 90) != 90:
+        collect_cmd.extend(["--supplementary-lookback-minutes", str(args.supplementary_lookback_minutes)])
+    if getattr(args, "disable_supplementary_auto_discovery", False):
+        collect_cmd.append("--disable-supplementary-auto-discovery")
     rc = run_cmd(collect_cmd)
     if rc != 0:
         return rc
@@ -419,6 +427,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_collect.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
     p_collect.add_argument("--raw-log-source", type=Path, default=None)
     p_collect.add_argument("--allow-missing-raw-log", action="store_true")
+    p_collect.add_argument("--supplementary-lookback-minutes", type=int, default=90)
+    p_collect.add_argument("--disable-supplementary-auto-discovery", action="store_true")
     p_collect.set_defaults(func=cmd_collect)
 
     p_fill = sub.add_parser("fill-score", help="Fill and score one tier run from raw Write log")
@@ -448,6 +458,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_post.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
     p_post.add_argument("--raw-log-source", type=Path, default=None)
     p_post.add_argument("--allow-missing-raw-log", action="store_true")
+    p_post.add_argument("--supplementary-lookback-minutes", type=int, default=90)
+    p_post.add_argument("--disable-supplementary-auto-discovery", action="store_true")
     p_post.add_argument(
         "--baseline-csv",
         type=Path,

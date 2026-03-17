@@ -1,14 +1,14 @@
 {
   "schema": "canoe.test.verification.native-e2e-execution-contract.v1",
   "owner": "Dev1+Dev2",
-  "status": "wave3_in_progress",
+  "status": "wave3_complete",
   "purpose": "Freeze the execution/evidence contract required to evolve verify batch into end-to-end native verification automation.",
   "current_state": {
     "native_tier_execute_from_product": true,
     "raw_evidence_auto_write": true,
     "official_report_cli_export": true,
     "official_report_data_api_parse": true,
-    "supplementary_trace_auto_collect": false,
+    "supplementary_trace_auto_collect": true,
     "verify_batch_calls_collect": true,
     "verify_batch_calls_post_run": true
   },
@@ -45,6 +45,17 @@
       }
     ],
     "operating_rule": "Product automation must use CLI + Data API. Viewer GUI is reviewer-facing fallback. Selector is not part of the primary automation path."
+  },
+  "supplementary_auto_discovery": {
+    "enabled": true,
+    "context_marker": "canoe/logging/evidence/incoming/<TIER>/native_execute_context.json",
+    "fallback_lookback_minutes": 90,
+    "source_precedence": [
+      "explicit --trace-source-dir / --logging-source-dir",
+      "canonical incoming/<TIER>/trace and incoming/<TIER>/logging",
+      "recent-file auto-discovery from cfg-derived logging output directories"
+    ],
+    "cfg_probe_source": "canoe/cfg/CAN_v2_topology.cfg VFileName logging output entries"
   },
   "tiers": [
     {
