@@ -15,6 +15,7 @@ from cliops.gate_ops import (
     cmd_gate_doc_sync,
     cmd_gate_multibus_dbc,
 )
+from cliops.native_contract import NativeContractError, resolve_tier_contract
 from cliops.verification_policy import classify_step_status, load_phase_policy
 
 
@@ -38,6 +39,25 @@ def cmd_verify_smoke(args: argparse.Namespace) -> int:
         '--run-date',
         args.run_date,
     ])
+
+
+def cmd_verify_collect(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPTS / 'quality' / 'run_verification_pipeline.py'),
+        'collect',
+        '--run-id',
+        args.run_id,
+        '--tier',
+        args.tier,
+    ]
+    if args.evidence_root:
+        cmd.extend(['--evidence-root', str(args.evidence_root)])
+    if args.raw_log_source:
+        cmd.extend(['--raw-log-source', str(args.raw_log_source)])
+    if args.allow_missing_raw_log:
+        cmd.append('--allow-missing-raw-log')
+    return run_cmd(cmd)
 
 
 def cmd_verify_fill_score(args: argparse.Namespace) -> int:
@@ -558,6 +578,7 @@ def _finalize_batch_reports(*, args: argparse.Namespace, policy: dict, report_fo
 
 def cmd_verify_batch(args: argparse.Namespace) -> int:
     from cliops.runtime_ops import cmd_doctor
+    from cliops.runtime_ops import cmd_canoe_test_config_run
 
     try:
         report_formats = _normalize_report_formats(args.report_formats)
@@ -567,6 +588,23 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
 
     steps: list[dict[str, object]] = []
     policy = load_phase_policy(args.phase)
+    selected_tiers = ['UT', 'IT', 'ST']
+    if getattr(args, 'execute_native_tier', ''):
+        try:
+            contract = resolve_tier_contract(args.execute_native_tier)
+        except NativeContractError as ex:
+            print(f'[VERIFY_BATCH] FAIL: {ex}')
+            return 2
+        if not args.profile_id:
+            args.profile_id = contract.profile_id
+        if not args.pack_id:
+            args.pack_id = contract.pack_id
+        if not args.suite_id:
+            args.suite_id = contract.suite_id
+        if not args.assign_folder:
+            args.assign_folder = contract.assign_folder
+        if args.execute_native_tier != 'FULL':
+            selected_tiers = [args.execute_native_tier]
 
     def run_step(name: str, fn) -> int:
         rc = fn()
@@ -604,6 +642,25 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
             ('verify smoke', lambda: cmd_verify_smoke(argparse.Namespace(owner=args.owner, run_date=args.run_date))),
             ('verify status', lambda: cmd_verify_status(argparse.Namespace(run_id=args.run_id, evidence_root='', output_json='canoe/tmp/reports/verification/run_readiness.json', output_md='canoe/tmp/reports/verification/run_readiness.md'))),
         ]
+        if getattr(args, 'execute_native_tier', ''):
+            pre_steps.insert(
+                3,
+                (
+                    f'native execute {args.execute_native_tier}',
+                    lambda: cmd_canoe_test_config_run(
+                        argparse.Namespace(
+                            tier=args.execute_native_tier,
+                            config_name='',
+                            timeout_seconds=args.native_timeout_seconds,
+                            poll_ms=args.native_poll_ms,
+                            no_ensure_running=False,
+                            restart_if_running=args.native_restart_if_running,
+                            fail_on_verdict=args.native_fail_on_verdict,
+                            json=False,
+                        )
+                    ),
+                ),
+            )
         for name, fn in pre_steps:
             rc = run_step(name, fn)
             if name == 'doctor' and rc != 0:
@@ -612,9 +669,24 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                 return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
 
     if args.phase in {'post', 'full'}:
+        for tier in selected_tiers:
+            rc = run_step(
+                f'verify collect {tier}',
+                lambda tier=tier: cmd_verify_collect(
+                    argparse.Namespace(
+                        run_id=args.run_id,
+                        tier=tier,
+                        evidence_root='',
+                        raw_log_source='',
+                        allow_missing_raw_log=False,
+                    )
+                ),
+            )
+            if rc != 0 and args.stop_on_fail and steps[-1].get('status') == 'FAIL':
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
         finalize_ns = argparse.Namespace(
             run_id=args.run_id,
-            tiers=['UT', 'IT', 'ST'],
+            tiers=selected_tiers,
             owner=args.owner,
             run_date=args.run_date,
             owner_fallback=args.owner,

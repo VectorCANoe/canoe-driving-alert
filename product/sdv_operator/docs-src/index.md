@@ -56,3 +56,9 @@ python scripts/run.py verify batch --run-id 20260308_0900 --campaign-id CMP_2026
 9. Packaging
 10. Maintenance
 11. Repo Surfaces
+12. Native E2E Automation Plan
+
+## 현재 확장 설계
+
+- native end-to-end 자동화 확장 계획:
+  - `native-e2e-automation-plan.md`

@@ -1,0 +1,130 @@
+{
+  "schema": "canoe.test.verification.native-e2e-execution-contract.v1",
+  "owner": "Dev1+Dev2",
+  "status": "wave1_in_progress",
+  "purpose": "Freeze the execution/evidence contract required to evolve verify batch into end-to-end native verification automation.",
+  "current_state": {
+    "native_tier_execute_from_product": true,
+    "raw_evidence_auto_write": false,
+    "supplementary_trace_auto_collect": false,
+    "verify_batch_calls_collect": false,
+    "verify_batch_calls_post_run": false
+  },
+  "target_state": {
+    "native_tier_execute_from_product": true,
+    "raw_evidence_auto_write": true,
+    "supplementary_trace_auto_collect": true,
+    "verify_batch_calls_collect": true,
+    "verify_batch_calls_post_run": true
+  },
+  "tiers": [
+    {
+      "tier": "UT",
+      "tier_code": 1,
+      "config_name": "UT_ACTIVE_BASELINE",
+      "execute_supported": true,
+      "profile_id": "ut_active_baseline",
+      "pack_id": "ts_canoe_ut_active_baseline",
+      "suite_id": "TS_CANOE_UT_ACTIVE_BASELINE",
+      "assign_folder": "canoe/tests/modules/test_units/assign/UT_ACTIVE_BASELINE",
+      "summary_report": "canoe/cfg/Report_UT_ACTIVE_BASELINE.vtestreport",
+      "incoming_raw": "canoe/logging/evidence/incoming/UT/raw_write_window.txt",
+      "incoming_trace_dir": "canoe/logging/evidence/incoming/UT/trace",
+      "incoming_logging_dir": "canoe/logging/evidence/incoming/UT/logging"
+    },
+    {
+      "tier": "IT",
+      "tier_code": 2,
+      "config_name": "IT_ACTIVE_BASELINE",
+      "execute_supported": true,
+      "profile_id": "it_active_baseline",
+      "pack_id": "ts_canoe_it_active_baseline",
+      "suite_id": "TS_CANOE_IT_ACTIVE_BASELINE",
+      "assign_folder": "canoe/tests/modules/test_units/assign/IT_ACTIVE_BASELINE",
+      "summary_report": "canoe/cfg/Report_IT_ACTIVE_BASELINE.vtestreport",
+      "incoming_raw": "canoe/logging/evidence/incoming/IT/raw_write_window.txt",
+      "incoming_trace_dir": "canoe/logging/evidence/incoming/IT/trace",
+      "incoming_logging_dir": "canoe/logging/evidence/incoming/IT/logging"
+    },
+    {
+      "tier": "ST",
+      "tier_code": 3,
+      "config_name": "ST_ACTIVE_BASELINE",
+      "execute_supported": true,
+      "profile_id": "st_active_baseline",
+      "pack_id": "ts_canoe_st_active_baseline",
+      "suite_id": "TS_CANOE_ST_ACTIVE_BASELINE",
+      "assign_folder": "canoe/tests/modules/test_units/assign/ST_ACTIVE_BASELINE",
+      "summary_report": "canoe/cfg/Report_ST_ACTIVE_BASELINE.vtestreport",
+      "incoming_raw": "canoe/logging/evidence/incoming/ST/raw_write_window.txt",
+      "incoming_trace_dir": "canoe/logging/evidence/incoming/ST/trace",
+      "incoming_logging_dir": "canoe/logging/evidence/incoming/ST/logging"
+    },
+    {
+      "tier": "FULL",
+      "tier_code": 4,
+      "config_name": "",
+      "execute_supported": false,
+      "profile_id": "full_active_baseline",
+      "pack_id": "ts_canoe_full_active_baseline",
+      "suite_id": "TS_CANOE_FULL_ACTIVE_BASELINE",
+      "assign_folder": "canoe/tests/modules/test_units/assign/FULL_ACTIVE_BASELINE",
+      "summary_report": "canoe/cfg/Report_FULL_ACTIVE_BASELINE.vtestreport",
+      "incoming_raw": "canoe/logging/evidence/incoming/FULL/raw_write_window.txt",
+      "incoming_trace_dir": "canoe/logging/evidence/incoming/FULL/trace",
+      "incoming_logging_dir": "canoe/logging/evidence/incoming/FULL/logging"
+    }
+  ],
+  "run_metadata_contract": {
+    "required_fields": [
+      "run_id",
+      "phase",
+      "owner",
+      "tier",
+      "profile_id",
+      "pack_id",
+      "surface_scope"
+    ],
+    "target_delivery_modes": [
+      "product-managed execution context",
+      "CAPL helper injection",
+      "sysvar handshake for execution status"
+    ]
+  },
+  "planned_canoe_handshake": {
+    "sysvars": [
+      "Test::nativeExecRequest",
+      "Test::nativeExecAck",
+      "Test::nativeExecState",
+      "Test::nativeExecVerdict",
+      "Test::evidenceAutoWrite"
+    ],
+    "capl_hooks": [
+      "ValidationHarness_SetExecutionContext",
+      "ValidationHarness_ClearExecutionContext",
+      "ValidationHarness_GetExecutionStatus"
+    ]
+  },
+  "wave_sequence": [
+    {
+      "wave": "wave0",
+      "goal": "freeze the execution/evidence contract"
+    },
+    {
+      "wave": "wave1",
+      "goal": "pilot product-driven native execute for ST_ACTIVE_BASELINE"
+    },
+    {
+      "wave": "wave2",
+      "goal": "dual-write EVIDENCE_IN/EVIDENCE_OUT into raw evidence file"
+    },
+    {
+      "wave": "wave3",
+      "goal": "inline collect/post-run into verify batch"
+    },
+    {
+      "wave": "wave4",
+      "goal": "expand end-to-end execution to UT/IT/FULL and CI"
+    }
+  ]
+}

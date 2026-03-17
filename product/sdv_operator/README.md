@@ -80,6 +80,7 @@ python -m mkdocs build -f product/sdv_operator/mkdocs.yml --strict
 6. [`docs-src/packaging.md`](docs-src/packaging.md)
 7. [`docs-src/repo-surfaces.md`](docs-src/repo-surfaces.md)
 8. [`docs-src/maintenance.md`](docs-src/maintenance.md)
+9. [`docs-src/native-e2e-automation-plan.md`](docs-src/native-e2e-automation-plan.md)
 
 ## 패키징 계약
 

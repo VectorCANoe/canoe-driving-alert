@@ -5,6 +5,7 @@ This module centralizes CANoe COM access so command handlers stay thin.
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass
 from typing import Any
 
@@ -20,6 +21,17 @@ class DoctorCheck:
     name: str
     ok: bool
     detail: str
+
+
+@dataclass(frozen=True)
+class TestConfigurationSummary:
+    name: str
+    caption: str
+    enabled: bool
+    running: bool
+    verdict: int
+    test_unit_count: int
+    type_code: int
 
 
 class CanoeComBridge:
@@ -57,6 +69,94 @@ class CanoeComBridge:
         if self.measurement_running():
             self.measurement_stop()
         self.measurement_start()
+
+    def _test_configuration_collection(self) -> Any:
+        try:
+            return self._app.Configuration.TestConfigurations
+        except Exception as ex:
+            raise CanoeComError(f"TestConfigurations collection unavailable: {ex}") from ex
+
+    def _summarize_test_configuration(self, item: Any) -> TestConfigurationSummary:
+        try:
+            unit_count = int(item.TestUnits.Count)
+        except Exception:
+            unit_count = 0
+        return TestConfigurationSummary(
+            name=str(item.Name),
+            caption=str(getattr(item, "Caption", item.Name)),
+            enabled=bool(item.Enabled),
+            running=bool(item.Running),
+            verdict=int(item.Verdict),
+            test_unit_count=unit_count,
+            type_code=int(item.Type),
+        )
+
+    def list_test_configurations(self) -> list[TestConfigurationSummary]:
+        configs = self._test_configuration_collection()
+        out: list[TestConfigurationSummary] = []
+        for idx in range(1, int(configs.Count) + 1):
+            out.append(self._summarize_test_configuration(configs.Item(idx)))
+        return out
+
+    def _resolve_test_configuration(self, config_name: str) -> Any:
+        key = config_name.strip().lower()
+        configs = self._test_configuration_collection()
+        for idx in range(1, int(configs.Count) + 1):
+            item = configs.Item(idx)
+            item_name = str(item.Name).strip().lower()
+            item_caption = str(getattr(item, "Caption", item.Name)).strip().lower()
+            if item_name == key or item_caption == key:
+                return item
+        raise CanoeComError(f"Test configuration not found: {config_name}")
+
+    def get_test_configuration_summary(self, config_name: str) -> TestConfigurationSummary:
+        return self._summarize_test_configuration(self._resolve_test_configuration(config_name))
+
+    def start_test_configuration(self, config_name: str, *, ensure_measurement: bool = True, restart_if_running: bool = False) -> TestConfigurationSummary:
+        item = self._resolve_test_configuration(config_name)
+        if ensure_measurement and not self.measurement_running():
+            self.measurement_start()
+        if bool(item.Running):
+            if not restart_if_running:
+                raise CanoeComError(f"Test configuration already running: {config_name}")
+            item.Stop()
+            time.sleep(0.5)
+        item.Start()
+        return self._summarize_test_configuration(item)
+
+    def stop_test_configuration(self, config_name: str) -> TestConfigurationSummary:
+        item = self._resolve_test_configuration(config_name)
+        if bool(item.Running):
+            item.Stop()
+        return self._summarize_test_configuration(item)
+
+    def wait_test_configuration_complete(
+        self,
+        config_name: str,
+        *,
+        timeout_seconds: int,
+        poll_ms: int = 500,
+        require_running_transition: bool = True,
+    ) -> TestConfigurationSummary:
+        item = self._resolve_test_configuration(config_name)
+        initial_verdict = int(item.Verdict)
+        deadline = time.monotonic() + timeout_seconds
+        started = not require_running_transition
+        while True:
+            summary = self._summarize_test_configuration(item)
+            if summary.running:
+                started = True
+            elif started:
+                return summary
+            elif not require_running_transition and not summary.running:
+                return summary
+            elif summary.verdict != initial_verdict:
+                return summary
+            if time.monotonic() >= deadline:
+                raise CanoeComError(
+                    f"Timed out waiting for test configuration completion: {config_name} ({timeout_seconds}s)"
+                )
+            time.sleep(max(poll_ms, 50) / 1000.0)
 
     def resolve_sysvar(self, namespace: str, variable: str) -> Any:
         attempts = [
