@@ -25,7 +25,7 @@ export testcase TC_CANOE_UT_OUT_006_DECEL_ASSIST_REQ()
   {
     return;
   }
-  if (!launchScenarioAndWait(18, 1500, 0))
+  if (!launchScenarioAndWait(18, 1500, 1000))
   {
     return;
   }

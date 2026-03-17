@@ -10,7 +10,7 @@ export testcase TC_CANOE_UT_EXT_013_WARNING_DELIVERY_BOUNDARY()
   {
     return;
   }
-  if (!launchScenarioAndWait(18, 1500, 0))
+  if (!launchScenarioAndWait(18, 1500, 1000))
   {
     return;
   }

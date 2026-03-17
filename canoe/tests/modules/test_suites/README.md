@@ -6,7 +6,8 @@ Active suite policy:
 - suite composition follows active executable assets, not historical umbrella IDs
 
 Available suites:
-- TS_CANOE_UT_ACTIVE_BASELINE : 37 assets
+- TS_CANOE_UT_ACTIVE_BASELINE : 77 assets
 - TS_CANOE_IT_ACTIVE_BASELINE : 45 assets
 - TS_CANOE_ST_ACTIVE_BASELINE : 46 assets
 - TS_CANOE_FULL_ACTIVE_BASELINE : UT/IT/ST active baseline wrapper
+
