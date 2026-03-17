@@ -241,9 +241,9 @@ Use this document together with:
 | Official Scope | Native Asset | TEST_SCN Scenario | Primary Producer Wiring | Current Gate |
 | --- | --- | --- | --- | --- |
 | UT_063 | `TC_CANOE_UT_EXT_063_SGW_SECURITY_STATE` | `203` | `SGW.can -> Diag::SecurityState, Diag::RouteOwner` | Executable unit contract fixed |
-| UT_064 | `TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE` | `204` | `DCM.can -> Diag::ServiceState, Diag::ResponseKind, Diag::ReasonCode, Diag::LastRequestSid, Diag::LastResponseCode, Diag::LastResponseOk` | Executable unit contract fixed |
-| IT_040 | `TC_CANOE_IT_EXT_040_SERVICE_SECURITY_DIAG` | `205` | `SGW + DCM integrated diagnostic seam` | Producer wiring fixed, runtime evidence pending |
-| ST_043 | `TC_CANOE_ST_EXT_043_SERVICE_SECURITY_DIAG_CONTEXT` | `202` | `SGW + DCM integrated diagnostic seam with scenario phase tracking` | Producer wiring fixed, runtime evidence pending |
+| UT_064 | `TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE` | `204` | `DCM.can -> Diag::ServiceState, Diag::ResponseKind, Diag::ReasonCode, Diag::LastRequest*, Diag::LastResponse*` | Executable unit contract fixed |
+| IT_040 | `TC_CANOE_IT_EXT_040_SERVICE_SECURITY_DIAG` | `205` | `SGW + DCM integrated diagnostic seam including external request/response summary` | Producer wiring fixed, runtime evidence pending |
+| ST_043 | `TC_CANOE_ST_EXT_043_SERVICE_SECURITY_DIAG_CONTEXT` | `202` | `SGW + DCM integrated diagnostic seam with scenario phase tracking and external request/response summary` | Producer wiring fixed, runtime evidence pending |
 
 ## Wave 2 direct-ownership UT baseline
 

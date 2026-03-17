@@ -10,7 +10,7 @@ variables
 
 export testcase TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE()
 {
-  // Verify DCM diagnostic state, SID class, and response interpretation.
+  // Verify DCM diagnostic state plus request/response observation summary.
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -22,11 +22,23 @@ export testcase TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE()
   }
 
   assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("request-target", 2, (long)@Diag::LastRequestTarget, "LastRequestTarget");
   assertIntEq("last-sid", 0x22, (long)@Diag::LastRequestSid, "LastRequestSid");
+  assertIntEq("request-did-high", 0, (long)@Diag::LastRequestDidHigh, "LastRequestDidHigh");
+  assertIntEq("request-did-low", 0, (long)@Diag::LastRequestDidLow, "LastRequestDidLow");
+  assertIntEq("request-source-bus", 1, (long)@Diag::LastRequestSourceBus, "LastRequestSourceBus");
+  assertLongGe("request-counter", (long)@Diag::RequestCounter, 1, "RequestCounter");
+  assertLongGe("request-time", (long)@Diag::LastRequestTimeMs, 1, "LastRequestTimeMs");
   assertIntEq("response-kind", 4, (long)@Diag::ResponseKind, "ResponseKind");
   assertIntEq("reason-code", 2, (long)@Diag::ReasonCode, "ReasonCode");
+  assertIntEq("response-target", 2, (long)@Diag::LastResponseTarget, "LastResponseTarget");
   assertIntEq("response-code", 0x7F, (long)@Diag::LastResponseCode, "LastResponseCode");
+  assertIntEq("response-data0", 1, (long)@Diag::LastResponseData0, "LastResponseData0");
+  assertIntEq("response-data1", 4, (long)@Diag::LastResponseData1, "LastResponseData1");
   assertIntEq("response-ok", 0, (long)@Diag::LastResponseOk, "LastResponseOk");
+  assertIntEq("response-source-bus", 1, (long)@Diag::LastResponseSourceBus, "LastResponseSourceBus");
+  assertLongGe("response-counter", (long)@Diag::ResponseCounter, 1, "ResponseCounter");
+  assertLongGe("response-time", (long)@Diag::LastResponseTimeMs, 1, "LastResponseTimeMs");
 
   resetValidationHarnessIfNeeded();
 }
