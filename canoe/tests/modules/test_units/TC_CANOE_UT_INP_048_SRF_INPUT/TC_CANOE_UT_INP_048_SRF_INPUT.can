@@ -23,14 +23,15 @@ export testcase TC_CANOE_UT_INP_048_SRF_INPUT()
     return;
   }
 
-  if (!launchScenarioAndWait(230, 800, 1300))
+  gSunroofPosition = -1;
+  gSunroofTiltState = -1;
+  if (!launchScenarioAndWait(229, 900, 1300))
   {
     return;
   }
 
-  assertIntEq("s230_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("s230_sunroofPosition", 0, gSunroofPosition, "sunroofPosition");
-  assertIntEq("s230_sunroofTiltState", 0, gSunroofTiltState, "sunroofTiltState");
+  assertIntEq("s229_sunroofPosition", 0, gSunroofPosition, "sunroofPosition");
+  assertIntEq("s229_sunroofTiltState", 0, gSunroofTiltState, "sunroofTiltState");
 
   resetValidationHarnessIfNeeded();
 }

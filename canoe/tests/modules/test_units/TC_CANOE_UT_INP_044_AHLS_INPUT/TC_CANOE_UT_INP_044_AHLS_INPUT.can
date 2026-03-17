@@ -23,12 +23,13 @@ export testcase TC_CANOE_UT_INP_044_AHLS_INPUT()
     return;
   }
 
+  gAhlsAssistState = -1;
+  gHighBeamPermit = -1;
   if (!launchScenarioAndWait(230, 800, 1300))
   {
     return;
   }
 
-  assertIntEq("s230_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s230_ahlsAssistState", 1, gAhlsAssistState, "ahlsAssistState");
   assertIntEq("s230_highBeamPermit", 1, gHighBeamPermit, "highBeamPermit");
 

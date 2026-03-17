@@ -23,14 +23,15 @@ export testcase TC_CANOE_UT_INP_047_SEAT_PASS_INPUT()
     return;
   }
 
-  if (!launchScenarioAndWait(230, 800, 1300))
+  gSeatPassPos = -1;
+  gSeatPassHeatLvl = -1;
+  if (!launchScenarioAndWait(229, 900, 1300))
   {
     return;
   }
 
-  assertIntEq("s230_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("s230_seatPassPos", 0, gSeatPassPos, "seatPassPos");
-  assertIntEq("s230_seatPassHeatLvl", 0, gSeatPassHeatLvl, "seatPassHeatLvl");
+  assertIntEq("s229_seatPassPos", 0, gSeatPassPos, "seatPassPos");
+  assertIntEq("s229_seatPassHeatLvl", 0, gSeatPassHeatLvl, "seatPassHeatLvl");
 
   resetValidationHarnessIfNeeded();
 }

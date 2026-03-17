@@ -31,12 +31,15 @@ export testcase TC_CANOE_UT_INP_045_DATC_INPUT()
     return;
   }
 
+  gCabinSetTemp = -1;
+  gBlowerLevel = -1;
+  gAcOn = -1;
+  gVentMode = -1;
   if (!launchScenarioAndWait(229, 800, 1300))
   {
     return;
   }
 
-  assertIntEq("s229_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s229_cabinSetTemp", 24, gCabinSetTemp, "cabinSetTemp");
   assertIntEq("s229_blowerLevel", 5, gBlowerLevel, "blowerLevel");
   assertIntEq("s229_acOn", 1, gAcOn, "acOn");

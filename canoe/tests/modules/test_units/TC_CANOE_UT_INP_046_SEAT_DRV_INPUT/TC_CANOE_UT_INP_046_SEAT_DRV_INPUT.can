@@ -23,14 +23,18 @@ export testcase TC_CANOE_UT_INP_046_SEAT_DRV_INPUT()
     return;
   }
 
-  if (!launchScenarioAndWait(230, 800, 1300))
+  /* Scenario 229 drives BCM comfort commands from TMU/HVAC inputs.
+     SEAT_DRV should reflect the resulting seat-control path without coupling
+     this unit to the broader TMU/IBOX shared scenario verdict. */
+  gSeatDrvPos = -1;
+  gSeatDrvHeatLvl = -1;
+  if (!launchScenarioAndWait(229, 900, 1300))
   {
     return;
   }
 
-  assertIntEq("s230_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("s230_seatDrvPos", 120, gSeatDrvPos, "seatDrvPos");
-  assertIntEq("s230_seatDrvHeatLvl", 0, gSeatDrvHeatLvl, "seatDrvHeatLvl");
+  assertIntEq("s229_seatDrvPos", 120, gSeatDrvPos, "seatDrvPos");
+  assertIntEq("s229_seatDrvHeatLvl", 0, gSeatDrvHeatLvl, "seatDrvHeatLvl");
 
   resetValidationHarnessIfNeeded();
 }

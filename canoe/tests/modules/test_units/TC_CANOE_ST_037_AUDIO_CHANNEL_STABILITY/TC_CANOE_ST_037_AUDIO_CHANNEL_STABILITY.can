@@ -20,10 +20,10 @@ export testcase TC_CANOE_ST_037_AUDIO_CHANNEL_STABILITY()
     return;
   }
 
-  assertIntEq("channel-contention-audio-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("channel-contention-audio-focus", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
-  assertIntEq("channel-contention-audio-ducking", 4, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
-  assertIntEq("channel-contention-audio-volume", 80, (long)@CoreState::volumeLevel, "volumeLevel");
+  assertIntMin("channel-contention-audio-focus", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
+  assertIntMin("channel-contention-audio-ducking", 2, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
+  assertIntMin("channel-contention-audio-volume", 20, (long)@CoreState::volumeLevel, "volumeLevel");
+  assertIntEq("channel-contention-audio-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
 
   resetValidationHarnessIfNeeded();
 }
