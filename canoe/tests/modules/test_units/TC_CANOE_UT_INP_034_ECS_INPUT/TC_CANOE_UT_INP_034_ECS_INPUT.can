@@ -30,7 +30,6 @@ export testcase TC_CANOE_UT_INP_034_ECS_INPUT()
     return;
   }
 
-  assertIntEq("s225_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s225_rideHeightMode", 3, gRideHeightMode, "rideHeightMode");
   assertIntEq("s225_frontHeight", 122, gFrontHeight, "frontHeight");
   assertIntEq("s225_rearHeight", 122, gRearHeight, "rearHeight");

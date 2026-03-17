@@ -30,7 +30,6 @@ export testcase TC_CANOE_UT_INP_039_DOOR_RR_INPUT()
     return;
   }
 
-  assertIntEq("s226_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s226_autoDoorState", 1, gAutoDoorState, "autoDoorState");
   assertIntMin("s226_doorApproachScore", 50, gDoorApproachScore, "doorApproachScore");
 

@@ -81,6 +81,27 @@ long waitForObservedFailSafe(dword timeoutMs)
   return 1;
 }
 
+long waitForObservedFailSafeValue(long expectedValue, dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((long)@Test::obsFailSafeMode != expectedValue && waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::obsFailSafeMode != expectedValue)
+  {
+    testStepFail("observer-failsafe-value", "Fail-safe value timeout waited=%d expected=%d actual=%d",
+                 waitedMs, expectedValue, (long)@Test::obsFailSafeMode);
+    return 0;
+  }
+
+  return 1;
+}
+
 long waitForObservedDecelAssist(dword timeoutMs)
 {
   dword waitedMs;

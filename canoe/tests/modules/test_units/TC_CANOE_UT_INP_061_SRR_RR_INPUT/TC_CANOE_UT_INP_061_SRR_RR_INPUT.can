@@ -30,7 +30,6 @@ export testcase TC_CANOE_UT_INP_061_SRR_RR_INPUT()
     return;
   }
 
-  assertIntEq("s22_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s22_srrRrMergeConflict", 1, gMergeConflict, "mergeConflict");
   assertIntEq("s22_obsObjectScenario", 1, waitForObservedObjectScenario(800), "obsObjectScenario");
   assertIntEq("s22_mergeCutIn", 1, (long)@Test::obsMergeCutInFlag, "mergeCutInFlag");

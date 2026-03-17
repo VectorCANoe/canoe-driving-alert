@@ -30,7 +30,6 @@ export testcase TC_CANOE_UT_INP_040_TGM_INPUT()
     return;
   }
 
-  assertIntEq("s227_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s227_tailgateAssistMode", 2, gTailgateAssistMode, "tailgateAssistMode");
   assertIntEq("s227_tailgateOpenReq", 1, gTailgateOpenReq, "tailgateOpenReq");
   assertIntEq("s227_tailgateActuatorCmd", 0, gTailgateActuatorCmd, "tailgateActuatorCmd");

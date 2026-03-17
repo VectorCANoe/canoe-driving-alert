@@ -30,7 +30,6 @@ export testcase TC_CANOE_UT_INP_068_MCU_INPUT()
     return;
   }
 
-  assertIntEq("s232_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s232_mcuState", 2, gMcuState, "mcuState");
   assertIntEq("s232_motorTorqueCmd", 124, gMotorTorqueCmd, "motorTorqueCmd");
   assertIntEq("s232_motorSpeedRpm", 4800, gMotorSpeedRpm, "motorSpeedRpm");

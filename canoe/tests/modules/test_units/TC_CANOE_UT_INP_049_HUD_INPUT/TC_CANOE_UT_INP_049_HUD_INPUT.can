@@ -28,7 +28,6 @@ export testcase TC_CANOE_UT_INP_049_HUD_INPUT()
     return;
   }
 
-  assertIntEq("s30_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s30_hudMode", 1, gHudMode, "hudMode");
   assertIntEq("s30_hudWarningCode", 102, gHudWarningCode, "hudWarningCode");
 

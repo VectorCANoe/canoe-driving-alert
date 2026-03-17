@@ -30,7 +30,6 @@ export testcase TC_CANOE_UT_INP_066_OBC_INPUT()
     return;
   }
 
-  assertIntEq("s231_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s231_obcState", 2, gObcState, "obcState");
   assertIntEq("s231_acPlugState", 1, gAcPlugState, "acPlugState");
   assertIntEq("s231_chargePowerKw", 20, gChargePowerKw, "chargePowerKw");

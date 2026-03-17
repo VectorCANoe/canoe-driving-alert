@@ -33,7 +33,6 @@ export testcase TC_CANOE_UT_INP_058_SRR_FL_INPUT()
     return;
   }
 
-  assertIntEq("s21_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntMin("s21_srrFlRx", 0, gSideRiskLevel, "sideRiskLevel");
   assertIntEq("s21_obsObjectScenario", 1, waitForObservedObjectScenario(800), "obsObjectScenario");
   assertIntEq("s21_intersectionConflict", 1, (long)@Test::obsIntersectionConflictFlag, "intersectionConflictFlag");

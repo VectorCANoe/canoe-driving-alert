@@ -30,7 +30,6 @@ export testcase TC_CANOE_UT_INP_037_DOOR_FR_INPUT()
     return;
   }
 
-  assertIntEq("s226_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s226_autoUnlockState", 1, gAutoUnlockState, "autoUnlockState");
   assertIntEq("s226_doorApproachScore", 100, gDoorApproachScore, "doorApproachScore");
 

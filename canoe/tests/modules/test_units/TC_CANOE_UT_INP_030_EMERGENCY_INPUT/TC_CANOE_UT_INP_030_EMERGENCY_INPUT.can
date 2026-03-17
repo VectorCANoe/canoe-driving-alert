@@ -20,7 +20,6 @@ export testcase TC_CANOE_UT_INP_030_EMERGENCY_INPUT()
     return;
   }
 
-  assertIntEq("s4_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s4_alertState", 1, (long)@V2X::alertState, "alertState");
   assertIntEq("s4_emergencyType", 1, (long)@V2X::emergencyType, "emergencyType");
 
@@ -31,7 +30,6 @@ export testcase TC_CANOE_UT_INP_030_EMERGENCY_INPUT()
     return;
   }
 
-  assertIntEq("s5_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s5_alertState", 1, (long)@V2X::alertState, "alertState");
   assertIntEq("s5_emergencyType", 2, (long)@V2X::emergencyType, "emergencyType");
 

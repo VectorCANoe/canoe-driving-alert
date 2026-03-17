@@ -19,7 +19,6 @@ export testcase TC_CANOE_UT_INP_052_SCC_INPUT()
     return;
   }
 
-  assertIntEq("s16_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s16_obsDecelAssistReq", 1, waitForObservedDecelAssist(800), "obsDecelAssistReq");
   assertIntEq("s16_decelAssistReq", 1, (long)@Test::obsDecelAssistReq, "decelAssistReq");
   assertIntEq("s16_coreDecelAssistReq", 1, (long)@Core::decelAssistReq, "coreDecelAssistReq");

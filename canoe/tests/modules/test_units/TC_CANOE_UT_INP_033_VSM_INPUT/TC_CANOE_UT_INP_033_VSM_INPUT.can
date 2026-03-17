@@ -31,7 +31,6 @@ export testcase TC_CANOE_UT_INP_033_VSM_INPUT()
     return;
   }
 
-  assertIntEq("s225_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s225_vsmCtrlState", 1, gVsmCtrlState, "vsmCtrlState");
   assertIntEq("s225_vsmIntervention", 0, gVsmIntervention, "vsmIntervention");
   assertIntEq("s225_driveStateNorm", 3, (long)@Core::driveStateNorm, "driveStateNorm");

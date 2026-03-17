@@ -21,7 +21,7 @@ export testcase TC_CANOE_ST_036_FAILSAFE_RECOVERY_STABILITY()
   }
 
   assertIntEq("delay-stability-recovery-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedFailSafe(800))
+  if (!waitForObservedFailSafeValue(0, 800))
   {
     resetValidationHarnessIfNeeded();
     return;

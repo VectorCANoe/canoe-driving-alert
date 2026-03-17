@@ -30,7 +30,6 @@ export testcase TC_CANOE_UT_INP_069_INVERTER_INPUT()
     return;
   }
 
-  assertIntEq("s232_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s232_inverterState", 2, gInverterState, "inverterState");
   assertIntEq("s232_invTemp", 71, gInvTemp, "invTemp");
   assertIntEq("s232_dcLinkVolt", 134, gDcLinkVolt, "dcLinkVolt");

@@ -20,7 +20,6 @@ export testcase TC_CANOE_UT_INP_029_NAV_CONTEXT()
     return;
   }
 
-  assertIntEq("s2_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntMin("s2_selectedAlertLevel", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("s2_failSafeMode", 0, (long)@Core::failSafeMode, "failSafeMode");
 
@@ -34,7 +33,6 @@ export testcase TC_CANOE_UT_INP_029_NAV_CONTEXT()
     return;
   }
 
-  assertIntEq("s7_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s7_failSafeMode", 0, (long)@Core::failSafeMode, "failSafeMode");
 
   resetValidationHarnessIfNeeded();

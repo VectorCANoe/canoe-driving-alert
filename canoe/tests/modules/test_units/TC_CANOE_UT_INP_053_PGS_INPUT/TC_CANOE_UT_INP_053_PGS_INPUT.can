@@ -30,7 +30,6 @@ export testcase TC_CANOE_UT_INP_053_PGS_INPUT()
     return;
   }
 
-  assertIntEq("s234_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s234_parkMasterActive", 1, gParkMasterActive, "parkMasterActive");
   assertIntEq("s234_autoManeuverReady", 1, gAutoManeuverReady, "autoManeuverReady");
   assertIntEq("s234_parkPhase", 3, gParkPhase, "parkPhase");

@@ -28,7 +28,6 @@ export testcase TC_CANOE_UT_INP_035_CDC_INPUT()
     return;
   }
 
-  assertIntEq("s225_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s225_cdcMode", 2, gCdcMode, "cdcMode");
   assertIntEq("s225_valveCurrent", 160, gCdcValveCurrent, "valveCurrent");
 

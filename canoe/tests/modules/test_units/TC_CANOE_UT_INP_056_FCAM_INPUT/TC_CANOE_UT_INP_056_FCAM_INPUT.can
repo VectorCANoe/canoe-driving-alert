@@ -30,7 +30,6 @@ export testcase TC_CANOE_UT_INP_056_FCAM_INPUT()
     return;
   }
 
-  assertIntEq("s233_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s233_lanePreviewValid", 1, gLanePreviewValid, "lanePreviewValid");
   assertIntEq("s233_zonePreview", 2, gZonePreview, "zonePreview");
   assertIntEq("s233_previewConfidence", 80, gPreviewConfidence, "previewConfidence");

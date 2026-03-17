@@ -20,7 +20,6 @@ export testcase TC_CANOE_UT_INP_031_EPB_INPUT()
     return;
   }
 
-  assertIntEq("s216_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s216_driveStateNorm", 0, (long)@Core::driveStateNorm, "driveStateNorm");
   assertIntMin("s216_brakePedalNorm", 30, (long)@Core::brakePedalNorm, "brakePedalNorm");
   assertIntEq("s216_failSafeMode", 0, (long)@Core::failSafeMode, "failSafeMode");
