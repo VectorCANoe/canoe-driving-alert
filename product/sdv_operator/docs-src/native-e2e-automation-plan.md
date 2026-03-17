@@ -121,6 +121,15 @@ CANoe 변경:
 - GUI export 없이 `canoe/logging/evidence/incoming/<TIER>/raw_write_window.txt`가 자동 생성됨
 - 기존 parser가 그대로 `fill-score` 가능
 
+현 시점 구현 상태:
+
+- 제품은 native execute 직전에 `incoming/<TIER>/raw_write_window.txt`를 비우고
+  evidence drop 디렉토리를 보장한다.
+- CANoe harness는 `Test::nativeExecTierCode`, `Test::evidenceAutoWrite`를 보고
+  `TEST_SCN`의 `[EVIDENCE_IN]`, `[EVIDENCE_OUT]`를 Write Window와 raw file에 동시 기록한다.
+- 이 구현은 차량 비즈니스 로직이 아니라 SIL verification harness 책임으로
+  `TEST_SCN.can`에 한정해 넣는다.
+
 ### Wave 3 - Collect/Post-Run Inline
 
 목표:

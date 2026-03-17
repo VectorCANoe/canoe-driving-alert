@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from cliops.canoe_com import CanoeComBridge, CanoeComError
-from cliops.common import fail_unavailable, iso_today
+from cliops.common import ROOT, fail_unavailable, iso_today
 from cliops.native_contract import NativeContractError, resolve_tier_contract
 from cliops.operator_result import SCENARIO_SUMMARY_JSON, SCENARIO_SUMMARY_MD
 from cliops.platform_caps import canoe_runtime_check, platform_label
@@ -69,6 +69,39 @@ def _native_summary_payload(summary, *, tier: str | None = None) -> dict[str, ob
     return payload
 
 
+def _prepare_native_evidence_drop(tier: str) -> None:
+    contract = resolve_tier_contract(tier)
+    raw_path = ROOT / contract.incoming_raw
+    raw_path.parent.mkdir(parents=True, exist_ok=True)
+    raw_path.write_text("", encoding="utf-8")
+    (ROOT / contract.incoming_trace_dir).mkdir(parents=True, exist_ok=True)
+    (ROOT / contract.incoming_logging_dir).mkdir(parents=True, exist_ok=True)
+
+
+def _seed_native_execution_context(bridge: CanoeComBridge, tier: str | None) -> None:
+    if not tier:
+        return
+    try:
+        contract = resolve_tier_contract(tier)
+        _prepare_native_evidence_drop(tier)
+        bridge.set_sysvar('Test', 'nativeExecTierCode', contract.tier_code)
+        bridge.set_sysvar('Test', 'evidenceAutoWrite', 1)
+    except NativeContractError as ex:
+        raise CanoeComError(str(ex)) from ex
+    except Exception as ex:
+        raise CanoeComError(
+            "Native execution evidence sysvars are unavailable. Reload the CANoe configuration after project.sysvars update."
+        ) from ex
+
+
+def _clear_native_execution_context(bridge: CanoeComBridge) -> None:
+    try:
+        bridge.set_sysvar('Test', 'evidenceAutoWrite', 0)
+        bridge.set_sysvar('Test', 'nativeExecTierCode', 0)
+    except Exception:
+        pass
+
+
 def execute_native_test_configuration(
     *,
     tier: str | None,
@@ -83,16 +116,20 @@ def execute_native_test_configuration(
     resolved_name, resolved_tier = _resolve_config_name(
         argparse.Namespace(config_name=config_name or '', tier=tier or '')
     )
-    bridge.start_test_configuration(
-        resolved_name,
-        ensure_measurement=ensure_running,
-        restart_if_running=restart_if_running,
-    )
-    summary = bridge.wait_test_configuration_complete(
-        resolved_name,
-        timeout_seconds=timeout_seconds,
-        poll_ms=poll_ms,
-    )
+    _seed_native_execution_context(bridge, resolved_tier)
+    try:
+        bridge.start_test_configuration(
+            resolved_name,
+            ensure_measurement=ensure_running,
+            restart_if_running=restart_if_running,
+        )
+        summary = bridge.wait_test_configuration_complete(
+            resolved_name,
+            timeout_seconds=timeout_seconds,
+            poll_ms=poll_ms,
+        )
+    finally:
+        _clear_native_execution_context(bridge)
     payload = _native_summary_payload(summary, tier=resolved_tier)
     rc = 0
     if fail_on_verdict and summary.verdict == 2:
