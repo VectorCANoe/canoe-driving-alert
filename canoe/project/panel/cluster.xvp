@@ -5,7 +5,7 @@
       <Property Name="Name">X3ff1eacce69bfe474fe8784e126ebe4c07fd</Property>
       <Property Name="Size">90, 61</Property>
       <Property Name="Location">90, 195</Property>
-      <Property Name="SymbolConfiguration">8;16;V2X;;;emergencyType;2;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;2;adas_can;ADAS;ethEmergencyRiskMsg;EmergencyType;1;ADAS;;-1;;;Value;;;0</Property>
       <Property Name="ImageFile">Bitmaps\emergencyType.png</Property>
       <Property Name="IsProportional">False</Property>
       <Property Name="TabIndex">13</Property>
@@ -39,8 +39,8 @@
       <Property Name="Name">Xd51696a6e4f58e464deb6e1ed252cf4b2fb3</Property>
       <Property Name="Size">45, 51</Property>
       <Property Name="Location">198, 198</Property>
-      <Property Name="SymbolConfiguration">8;16;V2X;;;emergencyDirection;2;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">Bitmaps\roadFlowDirection.png</Property>
+      <Property Name="SymbolConfiguration">8;2;adas_can;ADAS;ethEmergencyRiskMsg;EmergencyDirection;1;ADAS;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">Bitmaps\emergencyDirection.png</Property>
       <Property Name="IsProportional">False</Property>
       <Property Name="TabIndex">15</Property>
       <Property Name="Epsilon">0</Property>
@@ -51,14 +51,6 @@
       <Property Name="SwitchValuesVT">1;4;0/Lower/0;1/Lower/1;2/Lower/2;3/Lower/3</Property>
       <Property Name="SwitchValues">1;4;0;1;2;3</Property>
       <Property Name="SwitchValuesRx">1;4;0;1;2;3</Property>
-    </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X12f13d2ae25aae4aa9eb3d4ec467f02b1f54" ControlName="Static Text 3">
-      <Property Name="Name">X12f13d2ae25aae4aa9eb3d4ec467f02b1f54</Property>
-      <Property Name="Size">72, 27</Property>
-      <Property Name="Location">334, 30</Property>
-      <Property Name="ForeColor">White</Property>
-      <Property Name="Text">NavDirection
-(need mod)</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xde7ba635e56dce40d7ea917e473d1937d224" ControlName="Static Text 2">
       <Property Name="Name">Xde7ba635e56dce40d7ea917e473d1937d224</Property>
@@ -90,28 +82,11 @@
       <Property Name="DescriptionSize">95, 21</Property>
       <Property Name="SymbolConfiguration">8;16;Cluster;;;warningTextCode;1;;;-1;;;Value;;;0</Property>
     </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X06bd68e7ec840e4077e98b7e37983409cfe6" ControlName="renderDirection">
-      <Property Name="Name">X06bd68e7ec840e4077e98b7e37983409cfe6</Property>
-      <Property Name="Size">40, 40</Property>
-      <Property Name="Location">288, 23</Property>
-      <Property Name="SymbolConfiguration">8;16;UiRender;;;roadFlowDirection;2;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">Bitmaps\roadFlowDirection.png</Property>
-      <Property Name="IsProportional">False</Property>
-      <Property Name="TabIndex">11</Property>
-      <Property Name="Epsilon">0</Property>
-      <Property Name="Increment">1</Property>
-      <Property Name="StartValue">0</Property>
-      <Property Name="StateCnt">3</Property>
-      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;3&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;2&lt;/TxValue&gt;</Property>
-      <Property Name="SwitchValuesVT">1;3;0/Lower/0;1/Lower/1;2/Lower/2</Property>
-      <Property Name="SwitchValues">1;3;0;1;2</Property>
-      <Property Name="SwitchValuesRx">1;3;0;1;2</Property>
-    </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2476954ae2f8de4efbe9294ea2878df459d7" ControlName="alertType">
       <Property Name="Name">X2476954ae2f8de4efbe9294ea2878df459d7</Property>
       <Property Name="Size">90, 61</Property>
       <Property Name="Location">19, 12</Property>
-      <Property Name="SymbolConfiguration">8;16;UiRender;;;activeAlertType;1;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;2;adas_can;ADAS;ethSelectedAlertMsg;selectedAlertType;1;ADAS;;-1;;;Value;;;0</Property>
       <Property Name="ImageFile">Bitmaps\alertType.png</Property>
       <Property Name="IsProportional">False</Property>
       <Property Name="TabIndex">10</Property>
@@ -145,7 +120,7 @@
       <Property Name="Name">X7e61aaa6e7482e41bae8531eaba1a0016893</Property>
       <Property Name="Size">114, 56</Property>
       <Property Name="Location">276, 207</Property>
-      <Property Name="SymbolConfiguration">8;16;Chassis;;;vehicleSpeed;1;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;2;chassis_can;VCU;frmVehicleStateCanMsg;gVehicleSpeed;1;Chassis;;-1;;;Value;;;0</Property>
       <Property Name="ScaleMax">255</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X29ba83f5ea5c4e4901e8980e88f92aeb0812" ControlName="Static Text 1">
