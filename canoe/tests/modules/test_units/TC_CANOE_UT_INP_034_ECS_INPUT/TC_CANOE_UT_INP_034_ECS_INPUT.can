@@ -9,21 +9,13 @@ variables
   int gRideHeightMode;
   int gFrontHeight;
   int gRearHeight;
-  int gCdcMode;
-  int gValveCurrent;
 }
 
 on message frmAirSuspensionStateMsg
 {
   gRideHeightMode = this.RideHeightMode;
-  gFrontHeight = this.FrontSuspHeight;
-  gRearHeight = this.RearSuspHeight;
-}
-
-on message frmCdcStateMsg
-{
-  gCdcMode = this.CdcMode;
-  gValveCurrent = this.ValveCurrent;
+  gFrontHeight = this.FrontHeight;
+  gRearHeight = this.RearHeight;
 }
 
 export testcase TC_CANOE_UT_INP_034_ECS_INPUT()

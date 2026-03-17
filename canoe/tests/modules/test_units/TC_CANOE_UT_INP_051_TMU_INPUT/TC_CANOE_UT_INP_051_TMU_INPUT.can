@@ -15,7 +15,7 @@ variables
 on message frmTmuServiceStateMsg
 {
   gTmuLinkState = this.TmuLinkState;
-  gTmuServiceMode = this.ServiceMode;
+  gTmuServiceMode = this.TmuServiceMode;
   gRemoteClimateReq = this.RemoteClimateReq;
   gSignalBars = this.SignalBars;
 }

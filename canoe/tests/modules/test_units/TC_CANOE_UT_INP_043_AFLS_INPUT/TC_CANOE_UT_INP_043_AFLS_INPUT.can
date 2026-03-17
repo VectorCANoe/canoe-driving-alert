@@ -7,13 +7,13 @@ includes
 variables
 {
   int gAflsMode;
-  int gHeadlampAngle;
+  int gLevelStep;
 }
 
 on message frmAflsStateMsg
 {
   gAflsMode = this.AflsMode;
-  gHeadlampAngle = this.HeadlampAngle;
+  gLevelStep = this.LevelStep;
 }
 
 export testcase TC_CANOE_UT_INP_043_AFLS_INPUT()
@@ -30,7 +30,7 @@ export testcase TC_CANOE_UT_INP_043_AFLS_INPUT()
 
   assertIntEq("s230_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s230_aflsMode", 1, gAflsMode, "aflsMode");
-  assertIntMin("s230_headlampAngle", 1, gHeadlampAngle, "headlampAngle");
+  assertIntMin("s230_levelStep", 1, gLevelStep, "levelStep");
 
   resetValidationHarnessIfNeeded();
 }

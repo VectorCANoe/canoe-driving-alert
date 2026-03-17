@@ -6,16 +6,18 @@ includes
 
 variables
 {
-  int gTmuLinkState;
-  int gTmuServiceMode;
-  int gRemoteClimateReq;
+  int gDKeyState;
+  int gVehicleAccessState;
+  int gSecurityGrade;
+  int gKeyPresence;
 }
 
-on message frmTmuServiceStateMsg
+on message frmDigitalKeyStateMsg
 {
-  gTmuLinkState = this.TmuLinkState;
-  gTmuServiceMode = this.ServiceMode;
-  gRemoteClimateReq = this.RemoteClimateReq;
+  gDKeyState = this.DKeyState;
+  gVehicleAccessState = this.VehicleAccessState;
+  gSecurityGrade = this.SecurityGrade;
+  gKeyPresence = this.KeyPresence;
 }
 
 export testcase TC_CANOE_UT_INP_062_IBOX_INPUT()
@@ -31,9 +33,10 @@ export testcase TC_CANOE_UT_INP_062_IBOX_INPUT()
   }
 
   assertIntEq("s229_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("s229_tmuLinkState", 2, gTmuLinkState, "tmuLinkState");
-  assertIntEq("s229_tmuServiceMode", 1, gTmuServiceMode, "tmuServiceMode");
-  assertIntEq("s229_remoteClimateReq", 1, gRemoteClimateReq, "remoteClimateReq");
+  assertIntEq("s229_dKeyState", 2, gDKeyState, "dKeyState");
+  assertIntEq("s229_vehicleAccessState", 2, gVehicleAccessState, "vehicleAccessState");
+  assertIntEq("s229_securityGrade", 2, gSecurityGrade, "securityGrade");
+  assertIntEq("s229_keyPresence", 1, gKeyPresence, "keyPresence");
 
   resetValidationHarnessIfNeeded();
 }

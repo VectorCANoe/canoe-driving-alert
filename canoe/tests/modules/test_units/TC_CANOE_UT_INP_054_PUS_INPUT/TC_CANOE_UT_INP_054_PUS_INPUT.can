@@ -10,9 +10,13 @@ variables
   int gProximityClass;
 }
 
-on message frmSurroundParkMasterStateMsg
+on message frmParkUltrasonicStateMsg
 {
   gMinDistanceCm = this.MinDistanceCm;
+}
+
+on message frmSurroundParkMasterStateMsg
+{
   gProximityClass = this.ProximityClass;
 }
 

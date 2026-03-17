@@ -6,14 +6,14 @@ includes
 
 variables
 {
-  int gAhlsAssist;
-  int gHighBeamActive;
+  int gAhlsAssistState;
+  int gHighBeamPermit;
 }
 
 on message frmAhlsStateMsg
 {
-  gAhlsAssist = this.AhlsAssist;
-  gHighBeamActive = this.HighBeamActive;
+  gAhlsAssistState = this.AhlsAssistState;
+  gHighBeamPermit = this.HighBeamPermit;
 }
 
 export testcase TC_CANOE_UT_INP_044_AHLS_INPUT()
@@ -29,8 +29,8 @@ export testcase TC_CANOE_UT_INP_044_AHLS_INPUT()
   }
 
   assertIntEq("s230_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("s230_ahlsAssist", 1, gAhlsAssist, "ahlsAssist");
-  assertIntEq("s230_highBeamActive", 1, gHighBeamActive, "highBeamActive");
+  assertIntEq("s230_ahlsAssistState", 1, gAhlsAssistState, "ahlsAssistState");
+  assertIntEq("s230_highBeamPermit", 1, gHighBeamPermit, "highBeamPermit");
 
   resetValidationHarnessIfNeeded();
 }

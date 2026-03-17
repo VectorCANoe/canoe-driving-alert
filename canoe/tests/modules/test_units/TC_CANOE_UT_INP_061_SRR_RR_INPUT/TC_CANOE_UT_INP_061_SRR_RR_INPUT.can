@@ -6,14 +6,14 @@ includes
 
 variables
 {
-  int gSurroundActive;
-  int gProximityClass;
+  int gMergeConflict;
+  int gTurnLampState;
 }
 
-on message frmSurroundParkMasterStateMsg
+on message frmSrrRrStateMsg
 {
-  gSurroundActive = this.SurroundActive;
-  gProximityClass = this.ProximityClass;
+  gMergeConflict = this.MergeConflict;
+  gTurnLampState = this.TurnLampState;
 }
 
 export testcase TC_CANOE_UT_INP_061_SRR_RR_INPUT()
@@ -23,14 +23,17 @@ export testcase TC_CANOE_UT_INP_061_SRR_RR_INPUT()
     return;
   }
 
-  if (!launchScenarioAndWait(234, 800, 1300))
+  gMergeConflict = -1;
+  gTurnLampState = -1;
+  if (!launchScenarioAndWait(22, 1000, 1200))
   {
     return;
   }
 
-  assertIntEq("s234_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("s234_surroundActive", 1, gSurroundActive, "surroundActive");
-  assertIntEq("s234_proximityClass", 3, gProximityClass, "proximityClass");
+  assertIntEq("s22_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s22_srrRrMergeConflict", 1, gMergeConflict, "mergeConflict");
+  assertIntEq("s22_obsObjectScenario", 1, waitForObservedObjectScenario(800), "obsObjectScenario");
+  assertIntEq("s22_mergeCutIn", 1, (long)@Test::obsMergeCutInFlag, "mergeCutInFlag");
 
   resetValidationHarnessIfNeeded();
 }

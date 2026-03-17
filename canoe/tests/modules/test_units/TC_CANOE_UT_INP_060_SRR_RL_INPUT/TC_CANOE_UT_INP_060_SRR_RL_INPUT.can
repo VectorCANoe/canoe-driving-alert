@@ -6,31 +6,36 @@ includes
 
 variables
 {
-  int gBrakeHoldReq;
-  int gAssistStage;
+  int gMergeConflict;
+  int gTurnLampState;
 }
 
-on message frmSurroundParkMasterStateMsg
+on message frmSrrRlStateMsg
 {
-  gBrakeHoldReq = this.BrakeHoldReq;
-  gAssistStage = this.AssistStage;
+  gMergeConflict = this.MergeConflict;
+  gTurnLampState = this.TurnLampState;
 }
 
 export testcase TC_CANOE_UT_INP_060_SRR_RL_INPUT()
 {
+  /* Scenario 22 broadcasts merge-risk input to all SRR channels.
+     Rear-left SRR should expose the merge-conflict state on its local bus. */
   if (!resetValidationHarnessIfNeeded())
   {
     return;
   }
 
-  if (!launchScenarioAndWait(234, 800, 1300))
+  gMergeConflict = -1;
+  gTurnLampState = -1;
+  if (!launchScenarioAndWait(22, 1000, 1200))
   {
     return;
   }
 
-  assertIntEq("s234_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("s234_brakeHoldReq", 1, gBrakeHoldReq, "brakeHoldReq");
-  assertIntEq("s234_assistStage", 2, gAssistStage, "assistStage");
+  assertIntEq("s22_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s22_srrRlMergeConflict", 1, gMergeConflict, "mergeConflict");
+  assertIntEq("s22_obsObjectScenario", 1, waitForObservedObjectScenario(800), "obsObjectScenario");
+  assertIntEq("s22_mergeCutIn", 1, (long)@Test::obsMergeCutInFlag, "mergeCutInFlag");
 
   resetValidationHarnessIfNeeded();
 }

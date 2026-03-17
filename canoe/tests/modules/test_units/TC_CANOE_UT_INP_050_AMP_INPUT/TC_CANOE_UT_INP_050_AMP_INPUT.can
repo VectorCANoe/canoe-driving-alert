@@ -7,15 +7,15 @@ includes
 variables
 {
   int gAmpMute;
-  int gDuckingLvl;
-  int gVolumeLevel;
+  int gAmpDuckingLvl;
+  int gAmpVolumeLevel;
 }
 
 on message frmAmpStateMsg
 {
   gAmpMute = this.AmpMute;
-  gDuckingLvl = this.DuckingLvl;
-  gVolumeLevel = this.VolumeLevel;
+  gAmpDuckingLvl = this.AmpDuckingLvl;
+  gAmpVolumeLevel = this.AmpVolumeLevel;
 }
 
 export testcase TC_CANOE_UT_INP_050_AMP_INPUT()
@@ -32,8 +32,8 @@ export testcase TC_CANOE_UT_INP_050_AMP_INPUT()
 
   assertIntEq("s215_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s215_ampMute", 0, gAmpMute, "ampMute");
-  assertIntEq("s215_duckingLvl", 4, gDuckingLvl, "duckingLvl");
-  assertIntEq("s215_volumeLevel", 80, gVolumeLevel, "volumeLevel");
+  assertIntEq("s215_ampDuckingLvl", 4, gAmpDuckingLvl, "ampDuckingLvl");
+  assertIntEq("s215_ampVolumeLevel", 80, gAmpVolumeLevel, "ampVolumeLevel");
 
   resetValidationHarnessIfNeeded();
 }

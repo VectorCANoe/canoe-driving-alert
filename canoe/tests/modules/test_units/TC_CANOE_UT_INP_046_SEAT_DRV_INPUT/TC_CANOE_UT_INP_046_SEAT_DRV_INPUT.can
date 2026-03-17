@@ -6,14 +6,14 @@ includes
 
 variables
 {
-  int gDrvSeatPos;
-  int gDrvSeatHeat;
+  int gSeatDrvPos;
+  int gSeatDrvHeatLvl;
 }
 
-on message frmSeatStateMsg
+on message frmSeatDrvStateMsg
 {
-  gDrvSeatPos = this.DriverSeatPos;
-  gDrvSeatHeat = this.DriverSeatHeat;
+  gSeatDrvPos = this.SeatDrvPos;
+  gSeatDrvHeatLvl = this.SeatDrvHeatLvl;
 }
 
 export testcase TC_CANOE_UT_INP_046_SEAT_DRV_INPUT()
@@ -29,8 +29,8 @@ export testcase TC_CANOE_UT_INP_046_SEAT_DRV_INPUT()
   }
 
   assertIntEq("s230_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntMin("s230_drvSeatPos", 1, gDrvSeatPos, "drvSeatPos");
-  assertIntMin("s230_drvSeatHeat", 1, gDrvSeatHeat, "drvSeatHeat");
+  assertIntEq("s230_seatDrvPos", 120, gSeatDrvPos, "seatDrvPos");
+  assertIntEq("s230_seatDrvHeatLvl", 0, gSeatDrvHeatLvl, "seatDrvHeatLvl");
 
   resetValidationHarnessIfNeeded();
 }

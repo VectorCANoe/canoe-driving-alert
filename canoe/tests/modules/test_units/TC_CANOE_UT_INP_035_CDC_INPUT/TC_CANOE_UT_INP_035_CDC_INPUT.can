@@ -6,24 +6,14 @@ includes
 
 variables
 {
-  int gRideHeightMode;
-  int gFrontHeight;
-  int gRearHeight;
   int gCdcMode;
-  int gValveCurrent;
-}
-
-on message frmAirSuspensionStateMsg
-{
-  gRideHeightMode = this.RideHeightMode;
-  gFrontHeight = this.FrontSuspHeight;
-  gRearHeight = this.RearSuspHeight;
+  int gCdcValveCurrent;
 }
 
 on message frmCdcStateMsg
 {
   gCdcMode = this.CdcMode;
-  gValveCurrent = this.ValveCurrent;
+  gCdcValveCurrent = this.CdcValveCurrent;
 }
 
 export testcase TC_CANOE_UT_INP_035_CDC_INPUT()
@@ -40,7 +30,7 @@ export testcase TC_CANOE_UT_INP_035_CDC_INPUT()
 
   assertIntEq("s225_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("s225_cdcMode", 2, gCdcMode, "cdcMode");
-  assertIntEq("s225_valveCurrent", 160, gValveCurrent, "valveCurrent");
+  assertIntEq("s225_valveCurrent", 160, gCdcValveCurrent, "valveCurrent");
 
   resetValidationHarnessIfNeeded();
 }

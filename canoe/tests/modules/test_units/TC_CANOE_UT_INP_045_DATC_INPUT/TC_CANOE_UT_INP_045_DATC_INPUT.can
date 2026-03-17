@@ -17,6 +17,10 @@ on message frmHvacStateMsg
   gCabinSetTemp = this.CabinSetTemp;
   gBlowerLevel = this.BlowerLevel;
   gAcOn = this.AcCompressorOn;
+}
+
+on message frmHvacActuatorMsg
+{
   gVentMode = this.VentMode;
 }
 
