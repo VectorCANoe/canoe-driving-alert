@@ -96,6 +96,7 @@ These nodes stay grouped under `ETH_Backbone` in source/mirror and visible owner
 | `CGW` | `ETH_Backbone` | required | `Chassis`, `Body`, `Infotainment` | consumes `frmChassisHealthMsg`, `frmBodyHealthMsg`, `frmInfotainmentHealthMsg`, `frmVehicleStateCanMsg`, `frmSteeringStateCanMsg`, and `frmNavigationRouteMsg` |
 | `TEST_SCN` | `ETH_Backbone` | required | `Powertrain`, `Chassis`, `Body`, `Infotainment`, `ADAS` | validation scenario orchestration and full-system cross-domain signal injection/observation |
 | `V2X` | `ETH_Backbone` | required | none | backbone emergency ingress/monitor owner; direct RX is retained for `EmergencyAlert` ingress only |
+| `EXT_DIAG` | `ETH_Backbone` | not required | none | logical external diagnostic observer/requester placeholder; reads `Diag::*` only, adds no new DBC dependency, and has no direct backbone RX/TX in the current baseline |
 | `DCM` | `ETH_Backbone` | not required | `Infotainment` | keep node grouped under `ETH_Backbone` in source/mirror, but remove GUI Ethernet runtime placement; consumes `frmNavModuleStateMsg` and `frmClusterNotifMsg`, and reads fail-safe from internal contracts; no direct backbone RX or ETH TX path remains |
 | `ETHB` | `ETH_Backbone` | not required | `Infotainment` | keep node grouped under `ETH_Backbone` in source/mirror, but remove GUI Ethernet runtime placement; consumes `frmNavModuleStateMsg` and `frmClusterNotifMsg`, and reads fail-safe from internal contracts; no direct backbone RX or ETH TX path remains |
 | `SGW` | `ETH_Backbone` | not required | `Chassis`, `Infotainment` | keep node grouped under `ETH_Backbone` in source/mirror, but remove GUI Ethernet runtime placement; consumes `frmVehicleStateCanMsg`, `frmNavModuleStateMsg`, and `frmClusterNotifMsg`, and reads fail-safe from internal contracts; no direct backbone RX or ETH TX path remains |
@@ -167,6 +168,7 @@ Compile-guided shortcut:
 
 - if `CGW`, `TEST_SCN`, `ADAS`, `BCM`, `IVI`, `CLU`, `DCM`, `ETHB`, `SGW`, `IBOX`, `EDR`, `HWP`, `SCC`, `ACU`, `ODS`, `AFLS`, `DATC`, `PGS`, or `VCU` show `Database missing?` errors, treat that as missing foreign-domain CAN visibility first
 - if `TEST_BAS` shows `Test::base*` variable errors, reload `project.sysvars`
+- if `EXT_DIAG` shows `Diag::*` variable errors, reload `project.sysvars`; do not add foreign CAN DBCs as a workaround
 - do not reintroduce a retired backbone stub DBC as a workaround for missing foreign CAN visibility
 
 ## 6. Current DBC Set For Multibus Assignment

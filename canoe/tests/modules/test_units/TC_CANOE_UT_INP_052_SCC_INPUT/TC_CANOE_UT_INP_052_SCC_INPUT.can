@@ -1,0 +1,27 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+export testcase TC_CANOE_UT_INP_052_SCC_INPUT()
+{
+  /* Scenario 16: proximity decel scenario.
+     Current DBC has no dedicated SCC state frame, so this TC closes on the
+     scenario contract through the decel-assist observer and Core state. */
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(16, 1000, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("s16_obsDecelAssistReq", 1, waitForObservedDecelAssist(800), "obsDecelAssistReq");
+  assertIntEq("s16_decelAssistReq", 1, (long)@Test::obsDecelAssistReq, "decelAssistReq");
+  assertIntEq("s16_coreDecelAssistReq", 1, (long)@Core::decelAssistReq, "coreDecelAssistReq");
+
+  resetValidationHarnessIfNeeded();
+}

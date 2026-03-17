@@ -1,0 +1,38 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gInverterState;
+  int gInvTemp;
+  int gDcLinkVolt;
+}
+
+on message frmInverterStateMsg
+{
+  gInverterState = this.InverterState;
+  gInvTemp = this.InvTemp;
+  gDcLinkVolt = this.DcLinkVolt;
+}
+
+export testcase TC_CANOE_UT_INP_069_INVERTER_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(232, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s232_inverterState", 2, gInverterState, "inverterState");
+  assertIntEq("s232_invTemp", 71, gInvTemp, "invTemp");
+  assertIntEq("s232_dcLinkVolt", 134, gDcLinkVolt, "dcLinkVolt");
+
+  resetValidationHarnessIfNeeded();
+}

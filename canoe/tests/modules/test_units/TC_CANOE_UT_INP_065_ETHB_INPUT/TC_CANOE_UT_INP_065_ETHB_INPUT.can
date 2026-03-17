@@ -1,0 +1,28 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_INP_065_ETHB_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(18, 1500, 1000))
+  {
+    return;
+  }
+
+  assertIntEq("s18_obsFailSafe", 1, waitForObservedFailSafe(800), "obsFailSafe");
+  assertIntEq("s18_failSafeMode", 1, (long)@Test::obsFailSafeMode, "obsFailSafeMode");
+  assertIntEq("s18_coreFailSafe", 1, (long)@Core::failSafeMode, "coreFailSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

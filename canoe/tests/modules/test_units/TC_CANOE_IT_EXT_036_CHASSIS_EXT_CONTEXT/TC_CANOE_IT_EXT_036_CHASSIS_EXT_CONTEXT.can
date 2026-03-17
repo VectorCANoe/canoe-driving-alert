@@ -1,0 +1,26 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_EXT_036_CHASSIS_EXT_CONTEXT()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(218, 900, 1300)) { return; }
+  assertIntEq("it-chassis-steer-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("it-chassis-steer-input", 1, (long)@Core::steeringInputNorm, "steeringInputNorm");
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(219, 900, 1300)) { return; }
+  assertIntEq("it-chassis-brake-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntMin("it-chassis-brake-pedal", 30, (long)@Core::brakePedalNorm, "brakePedalNorm");
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(237, 900, 1300)) { return; }
+  assertIntEq("it-chassis-accel-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("it-chassis-drive-mode", 2, (long)@CoreState::driveMode, "driveMode");
+  resetValidationHarnessIfNeeded();
+}

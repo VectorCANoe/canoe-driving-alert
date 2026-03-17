@@ -1,0 +1,103 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gAutoDoorState;
+  long gAutoUnlockState;
+  long gDoorApproachScore;
+  long gTailgateAssistMode;
+  long gTailgateOpenReq;
+  long gTailgateActuatorCmd;
+  long gDeploymentArmed;
+  long gPretensionReq;
+  long gAirbagWarn;
+  long gOccupantDetected;
+  long gWeightClass;
+  long gAirbagSuppress;
+  long gChildSeatDetected;
+}
+
+on message frmAutoDoorCtrlStateMsg
+{
+  gAutoDoorState = this.AutoDoorState;
+  gAutoUnlockState = this.AutoUnlockState;
+  gDoorApproachScore = this.DoorApproachScore;
+}
+
+on message frmPowerTailgateCtrlStateMsg
+{
+  gTailgateAssistMode = this.TailgateAssistMode;
+  gTailgateOpenReq = this.OpenRequestState;
+  gTailgateActuatorCmd = this.TailgateActuatorCmd;
+}
+
+on message frmAcuStateMsg
+{
+  gDeploymentArmed = this.DeploymentArmed;
+  gPretensionReq = this.PretensionReq;
+  gAirbagWarn = this.AirbagWarn;
+}
+
+on message frmOdsStateMsg
+{
+  gOccupantDetected = this.OccupantDetected;
+  gWeightClass = this.WeightClass;
+  gAirbagSuppress = this.AirbagSuppress;
+  gChildSeatDetected = this.ChildSeatDetected;
+}
+
+export testcase TC_CANOE_ST_EXT_040_OCCUPANT_COMFORT_CONTEXT()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+
+  gAutoDoorState = -1;
+  gAutoUnlockState = -1;
+  gDoorApproachScore = -1;
+  if (!launchScenarioAndWait(226, 900, 1300)) { return; }
+  assertIntEq("st-door-entry-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("st-door-entry-state", 1, gAutoDoorState, "AutoDoorState");
+  assertIntEq("st-door-entry-unlock", 1, gAutoUnlockState, "AutoUnlockState");
+  assertIntEq("st-door-entry-score", 100, gDoorApproachScore, "DoorApproachScore");
+
+  if (!resetValidationHarnessIfNeeded()) { return; }
+
+  gTailgateAssistMode = -1;
+  gTailgateOpenReq = -1;
+  gTailgateActuatorCmd = -1;
+  if (!launchScenarioAndWait(227, 900, 1300)) { return; }
+  assertIntEq("st-tailgate-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("st-tailgate-mode", 2, gTailgateAssistMode, "TailgateAssistMode");
+  assertIntEq("st-tailgate-open", 1, gTailgateOpenReq, "OpenRequestState");
+  assertIntEq("st-tailgate-cmd", 0, gTailgateActuatorCmd, "TailgateActuatorCmd");
+
+  if (!resetValidationHarnessIfNeeded()) { return; }
+
+  gDeploymentArmed = -1;
+  gPretensionReq = -1;
+  gAirbagWarn = -1;
+  gOccupantDetected = -1;
+  gWeightClass = -1;
+  gAirbagSuppress = -1;
+  gChildSeatDetected = -1;
+  if (!launchScenarioAndWait(228, 900, 1300)) { return; }
+  assertIntEq("st-occupant-protection-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("st-occupant-armed", 0, gDeploymentArmed, "DeploymentArmed");
+  assertIntEq("st-occupant-pretension", 1, gPretensionReq, "PretensionReq");
+  assertIntEq("st-occupant-airbag-warn", 1, gAirbagWarn, "AirbagWarn");
+  assertIntEq("st-occupant-detected", 1, gOccupantDetected, "OccupantDetected");
+  assertIntEq("st-occupant-weight-class", 1, gWeightClass, "WeightClass");
+  assertIntEq("st-occupant-airbag-suppress", 1, gAirbagSuppress, "AirbagSuppress");
+  assertIntEq("st-occupant-child-seat", 1, gChildSeatDetected, "ChildSeatDetected");
+
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(229, 1300, 1700)) { return; }
+  assertIntEq("st-comfort-service-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("st-comfort-drive-state", 0, (long)@Core::driveStateNorm, "driveStateNorm");
+  assertIntEq("st-comfort-speed", 0, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
+  assertIntEq("st-comfort-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+  resetValidationHarnessIfNeeded();
+}

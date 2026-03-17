@@ -1,0 +1,41 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gVsmCtrlState;
+  int gVsmIntervention;
+}
+
+on message frmVsmStateMsg
+{
+  gVsmCtrlState = this.VsmCtrlState;
+  gVsmIntervention = this.VsmIntervention;
+}
+
+export testcase TC_CANOE_UT_INP_033_VSM_INPUT()
+{
+  /* Scenario 225: chassis dynamics preset.
+     VSM stable (no active intervention) => CGW_CHS_GW forwards state,
+     ADAS_WARN_CTRL must NOT raise alert for a stable chassis. */
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(225, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s225_vsmCtrlState", 1, gVsmCtrlState, "vsmCtrlState");
+  assertIntEq("s225_vsmIntervention", 0, gVsmIntervention, "vsmIntervention");
+  assertIntEq("s225_driveStateNorm", 3, (long)@Core::driveStateNorm, "driveStateNorm");
+  assertIntEq("s225_selectedAlertLevel", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("s225_failSafeMode", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

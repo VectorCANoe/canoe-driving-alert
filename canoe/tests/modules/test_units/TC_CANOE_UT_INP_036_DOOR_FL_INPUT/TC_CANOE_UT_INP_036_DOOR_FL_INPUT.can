@@ -1,0 +1,37 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gAutoDoorState;
+  int gAutoUnlockState;
+  int gDoorApproachScore;
+}
+
+on message frmAutoDoorCtrlStateMsg
+{
+  gAutoDoorState = this.AutoDoorState;
+  gAutoUnlockState = this.AutoUnlockState;
+  gDoorApproachScore = this.DoorApproachScore;
+}
+
+export testcase TC_CANOE_UT_INP_036_DOOR_FL_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(226, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s226_autoDoorState", 1, gAutoDoorState, "autoDoorState");
+  assertIntEq("s226_doorApproachScore", 100, gDoorApproachScore, "doorApproachScore");
+
+  resetValidationHarnessIfNeeded();
+}

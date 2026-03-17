@@ -1,0 +1,8 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: DomainBoundaryFailsafe
+    description: Native verification for TC_CANOE_UT_008_EXT_DOMAIN_BOUNDARY_FAILSAFE.
+    elements:
+      - capl-test-case: TC_CANOE_UT_EXT_008_DOMAIN_BOUNDARY_FAILSAFE
+        title: TC_CANOE_UT_008_EXT_DOMAIN_BOUNDARY_FAILSAFE

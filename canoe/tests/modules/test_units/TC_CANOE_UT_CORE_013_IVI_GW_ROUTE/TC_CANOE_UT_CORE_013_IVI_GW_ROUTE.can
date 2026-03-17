@@ -1,0 +1,51 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_CORE_013_IVI_GW_ROUTE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(209, 800, 1300))
+  {
+    return;
+  }
+  assertIntEq("ivi-gw-text-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("ivi-gw-text-route", 2, (long)@CoreState::routingPolicy, "routingPolicy");
+  assertIntEq("ivi-gw-text-code", 101, (long)@Cluster::warningTextCode, "warningTextCode");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  if (!launchScenarioAndWait(30, 800, 1300))
+  {
+    return;
+  }
+  assertIntEq("ivi-gw-police-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("ivi-gw-police-code", 102, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("ivi-gw-police-dir", 2, (long)@UiRender::renderDirection, "renderDirection");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  if (!launchScenarioAndWait(33, 800, 1300))
+  {
+    return;
+  }
+  assertIntEq("ivi-gw-ambulance-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("ivi-gw-ambulance-code", 201, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("ivi-gw-ambulance-dir", 1, (long)@UiRender::renderDirection, "renderDirection");
+
+  resetValidationHarnessIfNeeded();
+}

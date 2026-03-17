@@ -8,6 +8,11 @@ variables
 {
 }
 
+/*
+  This asset fixes the system-level stimulus contract for the police external
+  transport path, but the final 100ms periodicity verdict must be closed by
+  Ethernet trace evidence rather than CAPL-only oracle values.
+*/
 export testcase TC_CANOE_ST_018_POLICE_TX_PERIOD()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -29,6 +34,12 @@ export testcase TC_CANOE_ST_018_POLICE_TX_PERIOD()
     return;
   }
   assertIntEq("eth-police-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+
+  /*
+    Final verdict closure for ST_018:
+    - Ethernet trace must show the police external TX path at 100ms cadence
+    - CAPL assertions here only confirm scenario contract and alert activation
+  */
 
   resetValidationHarnessIfNeeded();
 }

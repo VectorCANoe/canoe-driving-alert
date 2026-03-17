@@ -1,0 +1,45 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gDKeyState;
+  int gVehicleAccessState;
+  int gSecurityGrade;
+  int gKeyPresence;
+}
+
+on message frmDigitalKeyStateMsg
+{
+  gDKeyState = this.DKeyState;
+  gVehicleAccessState = this.VehicleAccessState;
+  gSecurityGrade = this.SecurityGrade;
+  gKeyPresence = this.KeyPresence;
+}
+
+export testcase TC_CANOE_UT_INP_062_IBOX_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gDKeyState = -1;
+  gVehicleAccessState = -1;
+  gSecurityGrade = -1;
+  gKeyPresence = -1;
+  if (!launchScenarioAndWait(229, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s229_dKeyState", 2, gDKeyState, "dKeyState");
+  assertIntEq("s229_vehicleAccessState", 2, gVehicleAccessState, "vehicleAccessState");
+  assertIntEq("s229_securityGrade", 2, gSecurityGrade, "securityGrade");
+  assertIntEq("s229_keyPresence", 1, gKeyPresence, "keyPresence");
+
+  resetValidationHarnessIfNeeded();
+}

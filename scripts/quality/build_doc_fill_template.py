@@ -74,9 +74,12 @@ def to_pass_fail(binding_status: str, computed_verdict: str) -> str:
     return ""
 
 
-def to_action(binding_status: str) -> str:
-    if binding_status == "READY":
+def to_action(binding_status: str, computed_verdict: str) -> str:
+    verdict = (computed_verdict or "").strip().upper()
+    if binding_status == "READY" and verdict in {"PASS", "FAIL"}:
         return "APPLY_TO_DOC"
+    if binding_status == "READY":
+        return "REVIEW_READY_ROW"
     if binding_status == "DOC_ONLY":
         return "RUN_AND_SCORE_REQUIRED"
     if binding_status == "EVIDENCE_ONLY":
@@ -96,6 +99,7 @@ def main() -> int:
     by_status = Counter()
     by_doc = Counter()
     by_pass_fail = Counter()
+    by_action = Counter()
     pending_by_doc: dict[str, list[str]] = defaultdict(list)
 
     for row in rows:
@@ -107,7 +111,7 @@ def main() -> int:
         run_date = (row.get("run_date") or "").strip()
 
         pass_fail = to_pass_fail(binding_status, computed_verdict)
-        action_required = to_action(binding_status)
+        action_required = to_action(binding_status, computed_verdict)
 
         if binding_status == "READY":
             owner = owner or args.owner_fallback
@@ -125,7 +129,11 @@ def main() -> int:
             "run_date": run_date,
             "computed_verdict": computed_verdict,
             "computed_latency_ms": (row.get("computed_latency_ms") or "").strip(),
+            "rule_type": (row.get("rule_type") or "").strip(),
             "rule_ms": (row.get("rule_ms") or "").strip(),
+            "expected": (row.get("expected") or "").strip(),
+            "scenario_id": (row.get("scenario_id") or "").strip(),
+            "native_asset": (row.get("native_asset") or "").strip(),
             "evidence_log_path": (row.get("evidence_log_path") or "").strip(),
             "evidence_capture_path": (row.get("evidence_capture_path") or "").strip(),
             "computed_fail_reasons": (row.get("computed_fail_reasons") or "").strip(),
@@ -137,6 +145,7 @@ def main() -> int:
 
         by_status[binding_status] += 1
         by_doc[doc_file] += 1
+        by_action[action_required] += 1
         if pass_fail:
             by_pass_fail[pass_fail] += 1
         if action_required != "APPLY_TO_DOC":
@@ -156,7 +165,11 @@ def main() -> int:
         "run_date",
         "computed_verdict",
         "computed_latency_ms",
+        "rule_type",
         "rule_ms",
+        "expected",
+        "scenario_id",
+        "native_asset",
         "evidence_log_path",
         "evidence_capture_path",
         "computed_fail_reasons",
@@ -181,6 +194,13 @@ def main() -> int:
         f"- READY: {by_status['READY']}",
         f"- DOC_ONLY: {by_status['DOC_ONLY']}",
         f"- EVIDENCE_ONLY: {by_status['EVIDENCE_ONLY']}",
+        "",
+        "## Action Summary",
+        f"- APPLY_TO_DOC: {by_action['APPLY_TO_DOC']}",
+        f"- REVIEW_READY_ROW: {by_action['REVIEW_READY_ROW']}",
+        f"- RUN_AND_SCORE_REQUIRED: {by_action['RUN_AND_SCORE_REQUIRED']}",
+        f"- ADD_DOC_ID_OR_RENAME_TEST: {by_action['ADD_DOC_ID_OR_RENAME_TEST']}",
+        f"- REVIEW_REQUIRED: {by_action['REVIEW_REQUIRED']}",
         "",
         "## Verdict Summary (READY rows)",
         f"- PASS: {by_pass_fail['PASS']}",

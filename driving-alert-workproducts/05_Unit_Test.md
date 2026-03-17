@@ -3,8 +3,8 @@
 **Document ID**: PROJ-05-UT
 **ISO 26262 Reference**: Part 6, Cl.9 (Software Unit Verification)
 **ASPICE Reference**: SWE.4 (Software Unit Verification)
-**Version**: 2.25
-**Date**: 2026-03-09
+**Version**: 2.26
+**Date**: 2026-03-17
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -48,48 +48,48 @@
 |  |  | UT_025 - CGW (경고 전달 경계 관리, 백본 서비스 확장) | 백본 및 경고 서비스 상태 정보를 수신하여 전달 경계 상태와 fail-safe 동작에 반영 | Ready |  |  |
 |  |  | UT_026 - CGW (`DOMAIN_ROUTER`, 구동 확장) | 모터와 인버터 상태를 수신하여 차량 구동 상태에 반영 | Ready |  |  |
 |  |  | UT_027 - CGW (`DOMAIN_ROUTER`, 전력·충전 확장) | 전력 변환과 충전 상태를 수신하여 차량 구동 상태에 반영 | Ready |  |  |
-| 가상 노드 (Simulator) | 입력 | UT_028 - Vehicle/Steering Input | 차량 속도(km/h), 주행 상태, 조향 각도 입력 정보를 생성 |  |  |  |
-|  |  | UT_029 - Nav Context Input | 구간, 방향, 거리(m), 제한속도(km/h) 입력 정보를 생성 |  |  |  |
-|  |  | UT_030 - Emergency Input | 경찰, 구급 긴급 접근 정보와 도착예정시간(s) 입력을 생성 |  |  |  |
-|  |  | UT_031 - EPB Input | 전동 주차 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_032 - EHB Input | 제동 보조 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_033 - VSM Input | 차체안정 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_034 - ECS Input | 차고 제어 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_035 - CDC Input | 감쇠 제어 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_036 - DOOR_FL Input | 좌전 도어 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_037 - DOOR_FR Input | 우전 도어 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_038 - DOOR_RL Input | 좌후 도어 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_039 - DOOR_RR Input | 우후 도어 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_040 - TGM Input | 테일게이트 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_041 - ACU Input | 에어백 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_042 - ODS Input | 탑승자 감지 상태를 입력 |  |  |  |
-|  |  | UT_043 - AFLS Input | 전조등 방향 제어 상태를 입력 |  |  |  |
-|  |  | UT_044 - AHLS Input | 전조등 높이 제어 상태를 입력 |  |  |  |
-|  |  | UT_045 - DATC Input | 공조 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_046 - SEAT_DRV Input | 운전석 시트 편의 상태를 입력 |  |  |  |
-|  |  | UT_047 - SEAT_PASS Input | 동승석 시트 편의 상태를 입력 |  |  |  |
-|  |  | UT_048 - SRF Input | 선루프 ECU 상태를 입력 |  |  |  |
-|  |  | UT_049 - HUD Input | 전면 표시 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_050 - AMP Input | 음향 출력 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_051 - TMU Input | 텔레매틱스 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_052 - SCC Input | 주행 보조 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_053 - PGS Input | 주차 보조 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_054 - PUS Input | 주차 초음파 센서 상태를 입력 |  |  |  |
-|  |  | UT_055 - AVM Input | 주변 영상 ECU 상태를 입력 |  |  |  |
-|  |  | UT_056 - FCAM Input | 전방 카메라 센서 상태를 입력 |  |  |  |
-|  |  | UT_057 - FRADAR Input | 전방 레이더 센서 상태를 입력 |  |  |  |
-|  |  | UT_058 - SRR_FL Input | 좌전 측후방 레이더 상태를 입력 |  |  |  |
-|  |  | UT_059 - SRR_FR Input | 우전 측후방 레이더 상태를 입력 |  |  |  |
-|  |  | UT_060 - SRR_RL Input | 좌후 측후방 레이더 상태를 입력 |  |  |  |
-|  |  | UT_061 - SRR_RR Input | 우후 측후방 레이더 상태를 입력 |  |  |  |
-|  |  | UT_062 - IBOX Input | 차량 서비스 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_063 - SGW Input | 보안 게이트웨이 상태를 입력 | Ready |  |  |
-|  |  | UT_064 - DCM Input | 진단 제어 상태를 입력 | Ready |  |  |
-|  |  | UT_065 - ETHB Input | 백본 서비스 상태를 입력 |  |  |  |
-|  |  | UT_066 - OBC Input | 충전 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_067 - DCDC Input | 전력 변환 ECU 상태를 입력 |  |  |  |
-|  |  | UT_068 - MCU Input | 모터 제어 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_069 - INVERTER Input | 인버터 상태를 입력 |  |  |  |
+| 가상 노드 (Simulator) | 입력 | UT_028 - Vehicle/Steering Input | 차량 속도(km/h), 주행 상태, 조향 각도 입력 정보를 생성 | Ready |  |  |
+|  |  | UT_029 - Nav Context Input | 구간, 방향, 거리(m), 제한속도(km/h) 입력 정보를 생성 | Ready |  |  |
+|  |  | UT_030 - Emergency Input | 경찰, 구급 긴급 접근 정보와 도착예정시간(s) 입력을 생성 | Ready |  |  |
+|  |  | UT_031 - EPB Input | 전동 주차 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_032 - EHB Input | 제동 보조 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_033 - VSM Input | 차체안정 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_034 - ECS Input | 차고 제어 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_035 - CDC Input | 감쇠 제어 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_036 - DOOR_FL Input | 좌전 도어 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_037 - DOOR_FR Input | 우전 도어 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_038 - DOOR_RL Input | 좌후 도어 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_039 - DOOR_RR Input | 우후 도어 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_040 - TGM Input | 테일게이트 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_041 - ACU Input | 에어백 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_042 - ODS Input | 탑승자 감지 상태를 입력 | Ready |  |  |
+|  |  | UT_043 - AFLS Input | 전조등 방향 제어 상태를 입력 | Ready |  |  |
+|  |  | UT_044 - AHLS Input | 전조등 높이 제어 상태를 입력 | Ready |  |  |
+|  |  | UT_045 - DATC Input | 공조 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_046 - SEAT_DRV Input | 운전석 시트 편의 상태를 입력 | Ready |  |  |
+|  |  | UT_047 - SEAT_PASS Input | 동승석 시트 편의 상태를 입력 | Ready |  |  |
+|  |  | UT_048 - SRF Input | 선루프 ECU 상태를 입력 | Ready |  |  |
+|  |  | UT_049 - HUD Input | 전면 표시 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_050 - AMP Input | 음향 출력 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_051 - TMU Input | 텔레매틱스 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_052 - SCC Input | 주행 보조 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_053 - PGS Input | 주차 보조 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_054 - PUS Input | 주차 초음파 센서 상태를 입력 | Ready |  |  |
+|  |  | UT_055 - AVM Input | 주변 영상 ECU 상태를 입력 | Ready |  |  |
+|  |  | UT_056 - FCAM Input | 전방 카메라 센서 상태를 입력 | Ready |  |  |
+|  |  | UT_057 - FRADAR Input | 전방 레이더 센서 상태를 입력 | Ready |  |  |
+|  |  | UT_058 - SRR_FL Input | 좌전 측후방 레이더 상태를 입력 | Ready |  |  |
+|  |  | UT_059 - SRR_FR Input | 우전 측후방 레이더 상태를 입력 | Ready |  |  |
+|  |  | UT_060 - SRR_RL Input | 좌후 측후방 레이더 상태를 입력 | Ready |  |  |
+|  |  | UT_061 - SRR_RR Input | 우후 측후방 레이더 상태를 입력 | Ready |  |  |
+|  |  | UT_062 - IBOX Input | 차량 서비스 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_063 - SGW Input | 보안 게이트웨이 상태를 입력하여 진단 보안 상태와 경로 소유 해석에 반영 | Ready |  |  |
+|  |  | UT_064 - DCM Input | 진단 제어 상태를 입력하여 진단 요청/응답 요약과 서비스 판단 상태에 반영 | Ready |  |  |
+|  |  | UT_065 - ETHB Input | 백본 서비스 상태를 입력 | Ready |  |  |
+|  |  | UT_066 - OBC Input | 충전 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_067 - DCDC Input | 전력 변환 ECU 상태를 입력 | Ready |  |  |
+|  |  | UT_068 - MCU Input | 모터 제어 ECU 상태 정보를 입력 | Ready |  |  |
+|  |  | UT_069 - INVERTER Input | 인버터 상태를 입력 | Ready |  |  |
 |  | 출력 | UT_070 - BCM (앰비언트 경고 출력) | 경고 상태에 따라 앰비언트 모드, 색상, 패턴을 출력 | Ready |  |  |
 |  |  | UT_071 - IVI (클러스터/HMI 출력) | 경고 문구, 거리/방향, 팝업, 테마, 오디오 포커스 정보를 생성하여 표시 채널에 전달 | Ready |  |  |
 |  |  | UT_072 - CLU (클러스터 표시 처리) | 경고 문구와 팝업, 테마 정보를 수신하여 클러스터 표시에 반영 | Ready |  |  |

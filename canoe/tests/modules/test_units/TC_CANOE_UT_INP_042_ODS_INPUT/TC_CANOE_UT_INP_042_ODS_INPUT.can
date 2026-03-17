@@ -1,0 +1,38 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gOccupantDetected;
+  int gWeightClass;
+  int gChildSeatDetected;
+}
+
+on message frmOdsStateMsg
+{
+  gOccupantDetected = this.OccupantDetected;
+  gWeightClass = this.WeightClass;
+  gChildSeatDetected = this.ChildSeatDetected;
+}
+
+export testcase TC_CANOE_UT_INP_042_ODS_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(228, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s228_occupantDetected", 1, gOccupantDetected, "occupantDetected");
+  assertIntEq("s228_weightClass", 1, gWeightClass, "weightClass");
+  assertIntEq("s228_childSeatDetected", 1, gChildSeatDetected, "childSeatDetected");
+
+  resetValidationHarnessIfNeeded();
+}

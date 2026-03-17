@@ -1,0 +1,38 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gParkMasterActive;
+  int gAutoManeuverReady;
+  int gParkPhase;
+}
+
+on message frmParkMasterStateMsg
+{
+  gParkMasterActive = this.ParkMasterActive;
+  gAutoManeuverReady = this.AutoManeuverReady;
+  gParkPhase = this.ParkPhase;
+}
+
+export testcase TC_CANOE_UT_INP_053_PGS_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(234, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s234_parkMasterActive", 1, gParkMasterActive, "parkMasterActive");
+  assertIntEq("s234_autoManeuverReady", 1, gAutoManeuverReady, "autoManeuverReady");
+  assertIntEq("s234_parkPhase", 3, gParkPhase, "parkPhase");
+
+  resetValidationHarnessIfNeeded();
+}

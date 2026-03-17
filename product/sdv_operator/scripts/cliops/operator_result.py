@@ -106,12 +106,17 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
         )
         if run_id:
             paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase)
+            paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "evidence")
             paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "manifests" / "execution_manifest.json")
             paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "manifests" / "execution_manifest.md")
+            for tier in ("UT", "IT", "ST", "FULL"):
+                paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "evidence" / tier / "supplementary" / "trace")
+                paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "evidence" / tier / "supplementary" / "logging")
     elif command_id == "verify.surface_bundle":
         paths.extend([SURFACE_BUNDLE_JSON, SURFACE_BUNDLE_MD])
         if run_id:
             paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase)
+            paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "evidence")
             paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "manifests" / "execution_manifest.json")
             paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "manifests" / "execution_manifest.md")
     elif command_id in {"verify.quick_verify", "verify.run_readiness_status"}:
@@ -119,6 +124,8 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
         if run_id:
             for tier in ("UT", "IT", "ST"):
                 paths.append(ROOT / "canoe" / "logging" / "evidence" / tier / run_id / "verification_log.csv")
+                paths.append(ROOT / "canoe" / "logging" / "evidence" / tier / run_id / "supplementary" / "trace")
+                paths.append(ROOT / "canoe" / "logging" / "evidence" / tier / run_id / "supplementary" / "logging")
     elif command_id == "operate.scenario_trigger":
         paths.extend([SCENARIO_SUMMARY_JSON, SCENARIO_SUMMARY_MD])
     elif command_id == "package.portable_bundle":
@@ -133,13 +140,20 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             paths.extend(
                 [
                     ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
-                    ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json",
-                    ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json",
                     ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json",
                     ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
                     ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json",
                     ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
                     ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json",
+                    ROOT / "driving-alert-workproducts" / "05_Unit_Test.md",
+                    ROOT / "driving-alert-workproducts" / "06_Integration_Test.md",
+                    ROOT / "driving-alert-workproducts" / "07_System_Test.md",
+                    ROOT / "canoe" / "tests" / "modules" / "test_units" / "README.md",
+                    ROOT / "canoe" / "tests" / "modules" / "test_suites" / "README.md",
+                    ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md",
+                    ROOT / "canoe" / "docs" / "verification" / "execution-guide.md",
+                    ROOT / "canoe" / "docs" / "verification" / "VECTOR_ALIGNED_CLOSEOUT_STANDARD.md",
+                    ROOT / "canoe" / "docs" / "verification" / "evidence-policy.md",
                     ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
                     ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
                 ]
@@ -156,14 +170,21 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             paths.append(ROOT / "artifacts" / "verification_runs")
         else:
             paths.append(VERIFICATION_ROOT)
+            paths.append(ROOT / "canoe" / "logging" / "evidence" / "incoming")
     elif command_id.startswith("artifact.open"):
         target = str(getattr(args, "target", "")).strip().lower()
         target_map = {
             "batch-report": VERIFICATION_ROOT / "dev2_batch_report.md",
+            "run-insight": VERIFICATION_ROOT / "run_insight_report.md",
+            "doc-binding-bundle": VERIFICATION_ROOT / "doc_binding_bundle.md",
+            "doc-fill-template": VERIFICATION_ROOT / "doc_fill_template.md",
             "surface-bundle": SURFACE_BUNDLE_MD,
             "readiness": VERIFICATION_ROOT / "run_readiness.md",
             "doctor": VERIFICATION_ROOT / "doctor_report.md",
             "surface-inventory": ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
+            "unit-test-doc": ROOT / "driving-alert-workproducts" / "05_Unit_Test.md",
+            "integration-test-doc": ROOT / "driving-alert-workproducts" / "06_Integration_Test.md",
+            "system-test-doc": ROOT / "driving-alert-workproducts" / "07_System_Test.md",
             "test-asset-mapping": ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md",
             "native-test-portfolio": ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md",
             "active-test-units-guide": ROOT / "canoe" / "tests" / "modules" / "test_units" / "README.md",
@@ -171,6 +192,8 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             "active-test-suites-guide": ROOT / "canoe" / "tests" / "modules" / "test_suites" / "README.md",
             "network-gateway-pack": ROOT / "canoe" / "tests" / "modules" / "test_suites" / "README.md",
             "execution-guide": ROOT / "canoe" / "docs" / "verification" / "execution-guide.md",
+            "closeout-standard": ROOT / "canoe" / "docs" / "verification" / "VECTOR_ALIGNED_CLOSEOUT_STANDARD.md",
+            "evidence-policy": ROOT / "canoe" / "docs" / "verification" / "evidence-policy.md",
             "verification-pack-matrix": ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json",
             "campaign-profiles": ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
             "capability-matrix-json": ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json",
@@ -179,17 +202,22 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             "phase-policy": ROOT / "product" / "sdv_operator" / "config" / "verification_phase_policy.json",
             "manifest": ROOT / "product" / "sdv_operator" / "manifest.json",
             "commands-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "commands.md",
+            "ci-bridge-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "ci-bridge.md",
             "results-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "results.md",
+            "maintenance-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "maintenance.md",
             "packaging-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "packaging.md",
             "role-boundary-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
             "capability-matrix-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
+            "incoming-root": ROOT / "canoe" / "logging" / "evidence" / "incoming",
+            "incoming-trace-root": ROOT / "canoe" / "logging" / "evidence" / "incoming" / "UT" / "trace",
+            "incoming-logging-root": ROOT / "canoe" / "logging" / "evidence" / "incoming" / "UT" / "logging",
         }
         resolved = target_map.get(target)
         if resolved:
             paths.append(resolved)
         elif target == "build-root":
             paths.append(ROOT / "dist")
-        elif target in {"execution-manifest", "archive-run", "reports-dir", "surface-dir", "native-reports"}:
+        elif target in {"execution-manifest", "archive-run", "reports-dir", "surface-dir", "native-reports", "evidence-dir", "supplementary-trace", "supplementary-logging"}:
             paths.append(ROOT / "artifacts" / "verification_runs")
     return paths
 

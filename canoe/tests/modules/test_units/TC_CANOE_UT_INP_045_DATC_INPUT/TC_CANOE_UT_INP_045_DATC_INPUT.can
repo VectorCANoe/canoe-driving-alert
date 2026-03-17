@@ -1,0 +1,49 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gCabinSetTemp;
+  int gBlowerLevel;
+  int gAcOn;
+  int gVentMode;
+}
+
+on message frmHvacStateMsg
+{
+  gCabinSetTemp = this.CabinSetTemp;
+  gBlowerLevel = this.BlowerLevel;
+  gAcOn = this.AcCompressorOn;
+}
+
+on message frmHvacActuatorMsg
+{
+  gVentMode = this.VentMode;
+}
+
+export testcase TC_CANOE_UT_INP_045_DATC_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gCabinSetTemp = -1;
+  gBlowerLevel = -1;
+  gAcOn = -1;
+  gVentMode = -1;
+  if (!launchScenarioAndWait(229, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s229_cabinSetTemp", 24, gCabinSetTemp, "cabinSetTemp");
+  assertIntEq("s229_blowerLevel", 5, gBlowerLevel, "blowerLevel");
+  assertIntEq("s229_acOn", 1, gAcOn, "acOn");
+  assertIntEq("s229_ventMode", 2, gVentMode, "ventMode");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -1,0 +1,38 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gLanePreviewValid;
+  int gZonePreview;
+  int gPreviewConfidence;
+}
+
+on message frmRoadPreviewCameraStateMsg
+{
+  gLanePreviewValid = this.LanePreviewValid;
+  gZonePreview = this.ZonePreview;
+  gPreviewConfidence = this.PreviewConfidence;
+}
+
+export testcase TC_CANOE_UT_INP_056_FCAM_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(233, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s233_lanePreviewValid", 1, gLanePreviewValid, "lanePreviewValid");
+  assertIntEq("s233_zonePreview", 2, gZonePreview, "zonePreview");
+  assertIntEq("s233_previewConfidence", 80, gPreviewConfidence, "previewConfidence");
+
+  resetValidationHarnessIfNeeded();
+}

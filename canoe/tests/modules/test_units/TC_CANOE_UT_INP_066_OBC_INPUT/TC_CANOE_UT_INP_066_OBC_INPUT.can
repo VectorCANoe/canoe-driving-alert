@@ -1,0 +1,38 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gObcState;
+  int gAcPlugState;
+  int gChargePowerKw;
+}
+
+on message frmObcStateMsg
+{
+  gObcState = this.ObcState;
+  gAcPlugState = this.AcPlugState;
+  gChargePowerKw = this.ChargePowerKw;
+}
+
+export testcase TC_CANOE_UT_INP_066_OBC_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(231, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s231_obcState", 2, gObcState, "obcState");
+  assertIntEq("s231_acPlugState", 1, gAcPlugState, "acPlugState");
+  assertIntEq("s231_chargePowerKw", 20, gChargePowerKw, "chargePowerKw");
+
+  resetValidationHarnessIfNeeded();
+}

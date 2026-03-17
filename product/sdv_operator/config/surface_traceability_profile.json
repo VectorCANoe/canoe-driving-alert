@@ -1,10 +1,9 @@
-﻿{
-  "schema": "sdv.surface.traceability.profile.v1",
+{
+  "schema": "sdv.surface.traceability.profile.v2",
   "owner": "Dev2",
   "policy": {
     "stable_identifiers": [
       "surface_id",
-      "req_ids",
       "test_case_ids",
       "scenario_ids",
       "native_test_assets"
@@ -15,7 +14,7 @@
       "owner",
       "run_date"
     ],
-    "rule": "confirmed mappings only; unknown coverage remains partial or planned"
+    "rule": "exact executable 05/06/07 rows only; retired umbrella rows are excluded from active traceability; FULL is regression-only and not an official closeout seed"
   },
   "source_docs": [
     "driving-alert-workproducts/governance/00e_ECU_Naming_Standard.md",
@@ -23,235 +22,398 @@
     "driving-alert-workproducts/05_Unit_Test.md",
     "driving-alert-workproducts/06_Integration_Test.md",
     "driving-alert-workproducts/07_System_Test.md",
-    "canoe/docs/operations/verification/CANOE_TEST_POC_SCOPE_2026-03-08.md"
+    "canoe/docs/verification/test-asset-mapping.md",
+    "canoe/docs/verification/execution-guide.md",
+    "canoe/docs/verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md",
+    "canoe/docs/verification/evidence-policy.md"
   ],
   "surfaces": [
     {
-      "surface_id": "ECM",
-      "mapping_status": "reviewed",
-      "req_ids": ["Req_101"],
+      "surface_id": "EMS",
+      "mapping_status": "partial",
+      "req_ids": [],
       "test_case_ids": {
-        "ut": ["UT_BASE_PT_001"],
-        "it": ["IT_BASE_PT_001"],
-        "st": ["ST_BASE_PT_001"]
+        "ut": ["UT_010"],
+        "it": ["IT_019", "IT_020"],
+        "st": []
       },
       "scenario_ids": [],
-      "native_test_assets": [],
-      "doc_refs": [
-        "driving-alert-workproducts/04_SW_Implementation.md:187",
-        "driving-alert-workproducts/06_Integration_Test.md:56",
-        "driving-alert-workproducts/07_System_Test.md:97"
+      "native_test_assets": [
+        "TC_CANOE_UT_CORE_005_EMS_ALERT_TXRX",
+        "TC_CANOE_IT_019_POWERTRAIN_PARKED_BASELINE",
+        "TC_CANOE_IT_020_POWERTRAIN_DRIVE_BASELINE"
       ],
-      "notes": "Req_110 gateway coupling is owned by CGW and is not attributed to ECM."
+      "doc_refs": [
+        "driving-alert-workproducts/04_SW_Implementation.md",
+        "driving-alert-workproducts/06_Integration_Test.md",
+        "canoe/docs/verification/test-asset-mapping.md"
+      ],
+      "notes": "EMS is covered today through shared powertrain baseline rows plus the emergency tx/rx seam. Dedicated EMS-only official closeout rows are not isolated yet."
     },
     {
-      "surface_id": "TCM",
-      "mapping_status": "reviewed",
-      "req_ids": ["Req_102"],
+      "surface_id": "TCU",
+      "mapping_status": "partial",
+      "req_ids": [],
       "test_case_ids": {
-        "ut": ["UT_BASE_PT_001"],
-        "it": ["IT_BASE_PT_001"],
-        "st": ["ST_BASE_PT_001"]
+        "ut": [],
+        "it": ["IT_019", "IT_020"],
+        "st": []
       },
       "scenario_ids": [],
-      "native_test_assets": [],
-      "doc_refs": [
-        "driving-alert-workproducts/04_SW_Implementation.md:188",
-        "driving-alert-workproducts/06_Integration_Test.md:56",
-        "driving-alert-workproducts/07_System_Test.md:97"
+      "native_test_assets": [
+        "TC_CANOE_IT_019_POWERTRAIN_PARKED_BASELINE",
+        "TC_CANOE_IT_020_POWERTRAIN_DRIVE_BASELINE"
       ],
-      "notes": "Transmission baseline is verified through shared powertrain baseline tests."
+      "doc_refs": [
+        "driving-alert-workproducts/04_SW_Implementation.md",
+        "driving-alert-workproducts/06_Integration_Test.md",
+        "canoe/docs/verification/test-asset-mapping.md"
+      ],
+      "notes": "TCU coverage is represented by the exact parked and drive baseline integration rows. The console treats it as shared powertrain evidence until a TCU-direct unit row is introduced."
     },
     {
       "surface_id": "VCU",
-      "mapping_status": "reviewed",
-      "req_ids": ["Req_103"],
+      "mapping_status": "partial",
+      "req_ids": [],
       "test_case_ids": {
-        "ut": ["UT_BASE_CH_001"],
-        "it": ["IT_BASE_CH_001"],
-        "st": ["ST_BASE_CH_001"]
+        "ut": [],
+        "it": ["IT_020", "IT_023", "IT_041"],
+        "st": ["ST_039", "ST_044"]
       },
       "scenario_ids": [],
-      "native_test_assets": [],
-      "doc_refs": [
-        "driving-alert-workproducts/04_SW_Implementation.md:189",
-        "driving-alert-workproducts/06_Integration_Test.md:57",
-        "driving-alert-workproducts/07_System_Test.md:98"
+      "native_test_assets": [
+        "TC_CANOE_IT_020_POWERTRAIN_DRIVE_BASELINE",
+        "TC_CANOE_IT_023_CHASSIS_ACCEL_BASELINE",
+        "TC_CANOE_IT_EXT_011_CHARGE_POWER_CONTEXT",
+        "TC_CANOE_ST_EXT_014_CHASSIS_CONTEXT",
+        "TC_CANOE_ST_EXT_019_CHARGE_POWER_CONTEXT"
       ],
-      "notes": "Longitudinal vehicle control coverage is shared with chassis baseline tests."
+      "doc_refs": [
+        "driving-alert-workproducts/04_SW_Implementation.md",
+        "driving-alert-workproducts/06_Integration_Test.md",
+        "driving-alert-workproducts/07_System_Test.md",
+        "canoe/docs/verification/test-asset-mapping.md"
+      ],
+      "notes": "VCU closeout is anchored by drive, acceleration, and charge/power context rows. Direct unit ownership is still shared with propulsion domain assets."
     },
     {
-      "surface_id": "ESP",
-      "mapping_status": "reviewed",
-      "req_ids": ["Req_104"],
+      "surface_id": "ESC",
+      "mapping_status": "partial",
+      "req_ids": [],
       "test_case_ids": {
-        "ut": ["UT_BASE_CH_001"],
-        "it": ["IT_BASE_CH_001"],
-        "st": ["ST_BASE_CH_001"]
+        "ut": ["UT_016", "UT_031", "UT_032", "UT_033"],
+        "it": ["IT_022", "IT_036"],
+        "st": ["ST_039"]
       },
       "scenario_ids": [],
-      "native_test_assets": [],
-      "doc_refs": [
-        "driving-alert-workproducts/04_SW_Implementation.md:190",
-        "driving-alert-workproducts/06_Integration_Test.md:57",
-        "driving-alert-workproducts/07_System_Test.md:98"
+      "native_test_assets": [
+        "TC_CANOE_UT_EXT_004_CHS_BRAKE_EXT",
+        "TC_CANOE_UT_INP_031_EPB_INPUT",
+        "TC_CANOE_UT_INP_032_EHB_INPUT",
+        "TC_CANOE_UT_INP_033_VSM_INPUT",
+        "TC_CANOE_IT_022_CHASSIS_BRAKE_BASELINE",
+        "TC_CANOE_IT_EXT_006_CHASSIS_EXT_CONTEXT",
+        "TC_CANOE_ST_EXT_014_CHASSIS_CONTEXT"
       ],
-      "notes": "Brake/stability coverage is anchored through shared chassis baseline tests."
+      "doc_refs": [
+        "driving-alert-workproducts/04_SW_Implementation.md",
+        "driving-alert-workproducts/05_Unit_Test.md",
+        "driving-alert-workproducts/06_Integration_Test.md",
+        "driving-alert-workproducts/07_System_Test.md",
+        "canoe/docs/verification/test-asset-mapping.md"
+      ],
+      "notes": "ESC evidence is exact-row based but still shared with EHB, EPB, and VSM domain inputs, so the surface remains partial rather than fully isolated."
     },
     {
-      "surface_id": "EPS",
-      "mapping_status": "reviewed",
-      "req_ids": ["Req_105"],
+      "surface_id": "MDPS",
+      "mapping_status": "partial",
+      "req_ids": [],
       "test_case_ids": {
-        "ut": ["UT_BASE_CH_001"],
-        "it": ["IT_BASE_CH_001"],
-        "st": ["ST_BASE_CH_001"]
+        "ut": ["UT_017", "UT_028"],
+        "it": ["IT_021"],
+        "st": ["ST_008", "ST_039"]
       },
-      "scenario_ids": [],
-      "native_test_assets": [],
-      "doc_refs": [
-        "driving-alert-workproducts/04_SW_Implementation.md:191",
-        "driving-alert-workproducts/06_Integration_Test.md:57",
-        "driving-alert-workproducts/07_System_Test.md:98"
+      "scenario_ids": [3, 244],
+      "native_test_assets": [
+        "TC_CANOE_UT_EXT_005_CHS_DYNAMICS_EXT",
+        "TC_CANOE_UT_INP_028_VEHICLE_STEERING",
+        "TC_CANOE_IT_021_CHASSIS_STEERING_BASELINE",
+        "TC_CANOE_ST_CORE_008_STEERING_INACTIVITY",
+        "TC_CANOE_ST_EXT_014_CHASSIS_CONTEXT"
       ],
-      "notes": "Steering coverage is anchored through shared chassis baseline tests."
+      "doc_refs": [
+        "driving-alert-workproducts/04_SW_Implementation.md",
+        "driving-alert-workproducts/05_Unit_Test.md",
+        "driving-alert-workproducts/06_Integration_Test.md",
+        "driving-alert-workproducts/07_System_Test.md",
+        "canoe/docs/verification/test-asset-mapping.md"
+      ],
+      "notes": "MDPS is tied to exact steering-input and no-steer executable rows. Chassis-context rows remain shared with the wider chassis domain."
     },
     {
       "surface_id": "BCM",
-      "mapping_status": "partial",
-      "req_ids": ["Req_106", "Req_107", "Req_111"],
+      "mapping_status": "reviewed",
+      "req_ids": [],
       "test_case_ids": {
-        "ut": ["UT_BASE_BODY_001"],
-        "it": ["IT_BASE_BODY_001", "IT_OUT_001"],
-        "st": ["ST_BASE_BODY_001"]
+        "ut": ["UT_012", "UT_014", "UT_018", "UT_020", "UT_070"],
+        "it": ["IT_007", "IT_024", "IT_025", "IT_027", "IT_028", "IT_029", "IT_032", "IT_033", "IT_034", "IT_036", "IT_037"],
+        "st": ["ST_030", "ST_032", "ST_034", "ST_035", "ST_036", "ST_040"]
       },
-      "scenario_ids": [],
-      "native_test_assets": [],
-      "doc_refs": [
-        "driving-alert-workproducts/04_SW_Implementation.md:192",
-        "driving-alert-workproducts/04_SW_Implementation.md:193",
-        "driving-alert-workproducts/06_Integration_Test.md:58",
-        "driving-alert-workproducts/06_Integration_Test.md:73",
-        "driving-alert-workproducts/07_System_Test.md:99"
+      "scenario_ids": [12, 35, 214],
+      "native_test_assets": [
+        "TC_CANOE_UT_CORE_007_BODY_GW_ROUTE",
+        "TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY",
+        "TC_CANOE_UT_EXT_006_BODY_ENTRY_EXIT",
+        "TC_CANOE_UT_EXT_008_BODY_COMFORT",
+        "TC_CANOE_UT_OUT_001_BCM_AMBIENT",
+        "TC_CANOE_IT_CORE_007_AMBIENT_OUTPUT",
+        "TC_CANOE_IT_BASE_003_BODY_STATE",
+        "TC_CANOE_IT_EXT_010_WINDOW_STATE",
+        "TC_CANOE_IT_BASE_005_COMFORT_CONTEXT",
+        "TC_CANOE_IT_EXT_014_BODY_CONTROL_LOCK",
+        "TC_CANOE_IT_EXT_015_WIPER_RAIN_BASELINE",
+        "TC_CANOE_ST_030_SEATBELT_CONTEXT_ADJUST",
+        "TC_CANOE_ST_EXT_010_USER_SETTING_CHANGE",
+        "TC_CANOE_ST_034_DUPLICATE_POPUP_GUARD"
       ],
-      "notes": "Ambient/output behavior is shared with CLUSTER through IT_OUT_001, so output coverage remains partial."
+      "doc_refs": [
+        "driving-alert-workproducts/04_SW_Implementation.md",
+        "driving-alert-workproducts/05_Unit_Test.md",
+        "driving-alert-workproducts/06_Integration_Test.md",
+        "driving-alert-workproducts/07_System_Test.md",
+        "canoe/docs/verification/test-asset-mapping.md"
+      ],
+      "notes": "BCM is one of the strongest exact-row surfaces in the current baseline. Ambient, entry/exit, comfort, fallback, and stability rows are all anchored in active executable assets."
     },
     {
       "surface_id": "IVI",
-      "mapping_status": "partial",
-      "req_ids": ["Req_109", "Req_111"],
+      "mapping_status": "reviewed",
+      "req_ids": [],
       "test_case_ids": {
-        "ut": ["UT_BASE_IVI_001"],
-        "it": ["IT_BASE_IVI_001"],
-        "st": ["ST_BASE_IVI_001"]
+        "ut": ["UT_009", "UT_013", "UT_015", "UT_021", "UT_022", "UT_071"],
+        "it": ["IT_026", "IT_031", "IT_035", "IT_038", "IT_042", "IT_043"],
+        "st": ["ST_009", "ST_010", "ST_031", "ST_032", "ST_033", "ST_037", "ST_038", "ST_041"]
       },
-      "scenario_ids": [],
-      "native_test_assets": [],
-      "doc_refs": [
-        "driving-alert-workproducts/04_SW_Implementation.md:194",
-        "driving-alert-workproducts/06_Integration_Test.md:59",
-        "driving-alert-workproducts/07_System_Test.md:100"
+      "scenario_ids": [7, 8, 215, 222],
+      "native_test_assets": [
+        "TC_CANOE_UT_CORE_004_NAV_CTX_MGR",
+        "TC_CANOE_UT_CORE_008_IVI_GW_ROUTE",
+        "TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING",
+        "TC_CANOE_UT_EXT_009_IVI_DISPLAY_SERVICE",
+        "TC_CANOE_UT_EXT_010_IVI_SERVICE_ACCESS",
+        "TC_CANOE_UT_OUT_002_IVI_HMI",
+        "TC_CANOE_IT_BASE_004_BASIC_DISPLAY_UI",
+        "TC_CANOE_IT_031_AUDIO_GUIDE_RUNTIME",
+        "TC_CANOE_IT_EXT_005_DISTANCE_HISTORY",
+        "TC_CANOE_IT_EXT_008_DISPLAY_SERVICE_CONTEXT",
+        "TC_CANOE_IT_EXT_012_DISPLAY_CHANNELS",
+        "TC_CANOE_IT_EXT_013_AUDIO_GUIDE_CHANNEL",
+        "TC_CANOE_ST_CORE_009_GUIDE_LEFT",
+        "TC_CANOE_ST_CORE_010_GUIDE_RIGHT_CLEAR",
+        "TC_CANOE_ST_031_DISTANCE_DISPLAY_CONSISTENCY",
+        "TC_CANOE_ST_EXT_011_HISTORY_QUERY",
+        "TC_CANOE_ST_037_AUDIO_CHANNEL_STABILITY",
+        "TC_CANOE_ST_038_VISUAL_CHANNEL_STABILITY",
+        "TC_CANOE_ST_EXT_016_DISPLAY_SERVICE_CONTEXT"
       ],
-      "notes": "Navigation/output behavior is split between IVI and CLUSTER, so reviewer-facing coverage remains partial."
+      "doc_refs": [
+        "driving-alert-workproducts/04_SW_Implementation.md",
+        "driving-alert-workproducts/05_Unit_Test.md",
+        "driving-alert-workproducts/06_Integration_Test.md",
+        "driving-alert-workproducts/07_System_Test.md",
+        "canoe/docs/verification/test-asset-mapping.md",
+        "canoe/docs/verification/execution-guide.md"
+      ],
+      "notes": "IVI is anchored by exact executable rows for navigation/HMI/service/history/audio guidance. Operator closeout should start from 05/06/07 and then confirm native execution details in test-asset-mapping and execution-guide."
     },
     {
-      "surface_id": "CLUSTER",
-      "mapping_status": "partial",
-      "req_ids": ["Req_019", "Req_020", "Req_035", "Req_037"],
+      "surface_id": "CLU",
+      "mapping_status": "reviewed",
+      "req_ids": [],
       "test_case_ids": {
-        "ut": ["UT_CLU_001"],
-        "it": ["IT_OUT_001"],
-        "st": ["ST_HMI_DIR_001", "ST_HMI_DIR_002", "ST_GUIDE_001", "ST_GUIDE_002"]
+        "ut": ["UT_007", "UT_015", "UT_072", "UT_073"],
+        "it": ["IT_008", "IT_014", "IT_042"],
+        "st": ["ST_013", "ST_014", "ST_031", "ST_038", "ST_041"]
       },
-      "scenario_ids": [],
-      "native_test_assets": [],
-      "doc_refs": [
-        "driving-alert-workproducts/06_Integration_Test.md:73",
-        "driving-alert-workproducts/07_System_Test.md:83",
-        "driving-alert-workproducts/07_System_Test.md:84",
-        "driving-alert-workproducts/07_System_Test.md:88",
-        "driving-alert-workproducts/07_System_Test.md:89"
+      "scenario_ids": [30, 33, 222],
+      "native_test_assets": [
+        "TC_CANOE_UT_EXT_002_CLU_CONTEXT_ADJUST",
+        "TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING",
+        "TC_CANOE_UT_OUT_003_CLU_DISPLAY",
+        "TC_CANOE_UT_OUT_004_HUD_DISPLAY",
+        "TC_CANOE_IT_CORE_008_CLUSTER_DIRECTION_OUTPUT",
+        "TC_CANOE_IT_014_DISPLAY_POLICY",
+        "TC_CANOE_IT_EXT_012_DISPLAY_CHANNELS",
+        "TC_CANOE_ST_CORE_013_POLICE_DIRECTION_RIGHT",
+        "TC_CANOE_ST_CORE_014_AMBULANCE_DIRECTION_LEFT",
+        "TC_CANOE_ST_031_DISTANCE_DISPLAY_CONSISTENCY",
+        "TC_CANOE_ST_038_VISUAL_CHANNEL_STABILITY",
+        "TC_CANOE_ST_EXT_016_DISPLAY_SERVICE_CONTEXT"
       ],
-      "notes": "Cluster is reviewer-facing output surface; most coverage is shared with BCM via IT_OUT_001."
+      "doc_refs": [
+        "driving-alert-workproducts/governance/00e_ECU_Naming_Standard.md",
+        "driving-alert-workproducts/04_SW_Implementation.md",
+        "driving-alert-workproducts/05_Unit_Test.md",
+        "driving-alert-workproducts/06_Integration_Test.md",
+        "driving-alert-workproducts/07_System_Test.md",
+        "canoe/docs/verification/test-asset-mapping.md"
+      ],
+      "notes": "The reviewer-facing cluster surface follows the current canonical name `CLU`. Exact executable rows cover direct output, direction rendering, and visual stability; shared IVI/HUD output context is still documented in the notes."
     },
     {
       "surface_id": "ADAS",
       "mapping_status": "reviewed",
-      "req_ids": ["Req_001", "Req_002", "Req_003", "Req_004", "Req_006", "Req_010", "Req_011", "Req_012"],
+      "req_ids": [],
       "test_case_ids": {
-        "ut": ["UT_ADAS_001"],
-        "it": ["IT_CORE_001"],
-        "st": ["ST_SPEED_001", "ST_STEER_001"]
+        "ut": ["UT_005", "UT_006", "UT_011", "UT_023", "UT_024", "UT_052", "UT_056", "UT_057", "UT_058", "UT_059", "UT_060", "UT_061"],
+        "it": ["IT_010", "IT_012", "IT_018", "IT_039"],
+        "st": ["ST_022", "ST_023", "ST_024", "ST_027", "ST_028", "ST_029", "ST_042"]
       },
-      "scenario_ids": [4],
-      "native_test_assets": ["TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION"],
-      "doc_refs": [
-        "canoe/docs/operations/verification/CANOE_TEST_POC_SCOPE_2026-03-08.md:40",
-        "driving-alert-workproducts/05_Unit_Test.md:85",
-        "driving-alert-workproducts/06_Integration_Test.md:44",
-        "driving-alert-workproducts/07_System_Test.md:81",
-        "driving-alert-workproducts/07_System_Test.md:85"
+      "scenario_ids": [19, 20, 21, 22, 213],
+      "native_test_assets": [
+        "TC_CANOE_UT_CORE_005_ADAS_DECEL_ASSIST",
+        "TC_CANOE_UT_EXT_001_OBJECT_RISK",
+        "TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION",
+        "TC_CANOE_UT_EXT_011_ADAS_DRIVE_ASSIST",
+        "TC_CANOE_UT_EXT_012_ADAS_PARKING_PERCEPTION",
+        "TC_CANOE_UT_INP_052_SCC_INPUT",
+        "TC_CANOE_UT_INP_056_FCAM_INPUT",
+        "TC_CANOE_UT_INP_057_FRADAR_INPUT",
+        "TC_CANOE_UT_INP_058_SRR_FL_INPUT",
+        "TC_CANOE_UT_INP_059_SRR_FR_INPUT",
+        "TC_CANOE_UT_INP_060_SRR_RL_INPUT",
+        "TC_CANOE_UT_INP_061_SRR_RR_INPUT",
+        "TC_CANOE_IT_V2_005_DECEL_ASSIST",
+        "TC_CANOE_IT_EXT_001_OBJECT_RISK_EVENTLOG",
+        "TC_CANOE_IT_EXT_003_EMERGENCY_PLUS_TTC",
+        "TC_CANOE_IT_EXT_009_ADAS_PERCEPTION_CONTEXT",
+        "TC_CANOE_ST_EXT_001_INTERSECTION_DECEL",
+        "TC_CANOE_ST_EXT_002_MERGE_DECEL",
+        "TC_CANOE_ST_EXT_003_DRIVER_INTERVENTION_CLEAR",
+        "TC_CANOE_ST_EXT_006_FRONTAL_OBJECT_RISK",
+        "TC_CANOE_ST_EXT_007_LATERAL_OBJECT_RISK",
+        "TC_CANOE_ST_EXT_008_CUTIN_OBJECT_RISK",
+        "TC_CANOE_ST_EXT_017_ADAS_PERCEPTION_CONTEXT"
       ],
-      "notes": "Primary safety path; native CANoe PoC and external smoke both anchor this surface."
+      "doc_refs": [
+        "driving-alert-workproducts/04_SW_Implementation.md",
+        "driving-alert-workproducts/05_Unit_Test.md",
+        "driving-alert-workproducts/06_Integration_Test.md",
+        "driving-alert-workproducts/07_System_Test.md",
+        "canoe/docs/verification/test-asset-mapping.md",
+        "canoe/docs/verification/evidence-policy.md"
+      ],
+      "notes": "ADAS is now tied to exact executable rows for warning selection, object risk, perception context, and emergency-plus-TTC sequences. This surface is one of the primary official closeout anchors."
     },
     {
       "surface_id": "V2X",
       "mapping_status": "reviewed",
-      "req_ids": ["Req_017", "Req_023", "Req_127", "Req_128", "Req_129"],
+      "req_ids": [],
       "test_case_ids": {
-        "ut": ["UT_EMS_POL_001", "UT_EMS_AMB_001", "UT_EMS_RX_001", "UT_V2_FAILSAFE_001"],
-        "it": ["IT_EMS_001", "IT_V2_FAILSAFE_001"],
-        "st": ["ST_EMS_001", "ST_EMS_002", "ST_V2_FAILSAFE_001"]
+        "ut": ["UT_004", "UT_010", "UT_076", "UT_077"],
+        "it": ["IT_004", "IT_005", "IT_006", "IT_009", "IT_010", "IT_011", "IT_044", "IT_045"],
+        "st": ["ST_011", "ST_012", "ST_015", "ST_016", "ST_017", "ST_018", "ST_019", "ST_020", "ST_021"]
       },
-      "scenario_ids": [18],
-      "native_test_assets": ["TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY"],
-      "doc_refs": [
-        "canoe/docs/operations/verification/CANOE_TEST_POC_SCOPE_2026-03-08.md:41",
-        "driving-alert-workproducts/06_Integration_Test.md:45",
-        "driving-alert-workproducts/06_Integration_Test.md:76",
-        "driving-alert-workproducts/07_System_Test.md:86",
-        "driving-alert-workproducts/07_System_Test.md:87",
-        "driving-alert-workproducts/07_System_Test.md:105"
+      "scenario_ids": [4, 5, 10, 11, 18, 30, 33, 35, 212, 223, 224],
+      "native_test_assets": [
+        "TC_CANOE_UT_CORE_004_V2X_EVENT_MAINTAIN",
+        "TC_CANOE_UT_CORE_005_EMS_ALERT_TXRX",
+        "TC_CANOE_UT_OUT_007_POLICE_TX",
+        "TC_CANOE_UT_OUT_008_AMBULANCE_TX",
+        "TC_CANOE_IT_V2_001_POLICE_RX",
+        "TC_CANOE_IT_V2_002_AMBULANCE_RX",
+        "TC_CANOE_IT_V2_003_ARBITRATION",
+        "TC_CANOE_IT_V2_004_TIMEOUT_CLEAR",
+        "TC_CANOE_IT_V2_005_DECEL_ASSIST",
+        "TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING",
+        "TC_CANOE_IT_ETH_001_POLICE_TX",
+        "TC_CANOE_IT_ETH_002_AMBULANCE_TX",
+        "TC_CANOE_ST_V2_001_POLICE_OVERRIDE",
+        "TC_CANOE_ST_V2_002_AMBULANCE_OVERRIDE",
+        "TC_CANOE_ST_V2_005_AMBULANCE_PRIORITY",
+        "TC_CANOE_ST_V2_006_POLICE_TIEBREAK",
+        "TC_CANOE_ST_V2_007_AMBULANCE_TIEBREAK",
+        "TC_CANOE_ST_018_POLICE_TX_PERIOD",
+        "TC_CANOE_ST_019_AMBULANCE_TX_PERIOD",
+        "TC_CANOE_ST_V2_008_TIMEOUT_CLEAR",
+        "TC_CANOE_ST_CORE_020_EMERGENCY_CLEAR_RESTORE"
       ],
-      "notes": "Emergency receive/timeout/fail-safe path is fully reviewer-facing and tied to native PoC plus scenario 18."
+      "doc_refs": [
+        "driving-alert-workproducts/05_Unit_Test.md",
+        "driving-alert-workproducts/06_Integration_Test.md",
+        "driving-alert-workproducts/07_System_Test.md",
+        "canoe/docs/verification/test-asset-mapping.md",
+        "canoe/docs/verification/execution-guide.md",
+        "canoe/docs/verification/evidence-policy.md"
+      ],
+      "notes": "V2X is fully driven by exact emergency receive, arbitration, timeout clear, and external transport rows. FULL evidence may supplement this surface, but official closeout remains per-tier UT/IT/ST."
     },
     {
       "surface_id": "CGW",
       "mapping_status": "reviewed",
-      "req_ids": ["Req_110", "Req_111", "Req_127", "Req_128", "Req_129"],
+      "req_ids": [],
       "test_case_ids": {
-        "ut": ["UT_BASE_GW_001", "UT_V2_FAILSAFE_001"],
-        "it": ["IT_BASE_001", "IT_BASE_PT_001", "IT_BASE_CH_001", "IT_BASE_BODY_001", "IT_BASE_IVI_001", "IT_V2_FAILSAFE_001"],
-        "st": ["ST_BASE_001", "ST_BASE_PT_001", "ST_BASE_CH_001", "ST_BASE_BODY_001", "ST_BASE_IVI_001", "ST_V2_FAILSAFE_001"]
+        "ut": ["UT_001", "UT_002", "UT_003", "UT_025", "UT_026", "UT_027", "UT_063", "UT_064", "UT_065"],
+        "it": ["IT_030", "IT_040"],
+        "st": ["ST_025", "ST_026", "ST_043", "ST_046"]
       },
-      "scenario_ids": [18],
-      "native_test_assets": ["TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY"],
-      "doc_refs": [
-        "driving-alert-workproducts/05_Unit_Test.md:103",
-        "driving-alert-workproducts/05_Unit_Test.md:107",
-        "driving-alert-workproducts/06_Integration_Test.md:55",
-        "driving-alert-workproducts/06_Integration_Test.md:76",
-        "driving-alert-workproducts/07_System_Test.md:109",
-        "driving-alert-workproducts/07_System_Test.md:105"
+      "scenario_ids": [18, 202, 203, 204, 205, 206, 207, 208, 209],
+      "native_test_assets": [
+        "TC_CANOE_UT_CORE_001_CGW_CHS_GW",
+        "TC_CANOE_UT_CORE_002_CGW_INFOTAINMENT_GW",
+        "TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS",
+        "TC_CANOE_UT_EXT_013_WARNING_DELIVERY_BOUNDARY",
+        "TC_CANOE_UT_EXT_014_DOMAIN_ROUTER_PROPULSION",
+        "TC_CANOE_UT_EXT_015_DOMAIN_ROUTER_POWER_CHARGE",
+        "TC_CANOE_UT_EXT_016_SGW_SECURITY_STATE",
+        "TC_CANOE_UT_EXT_017_DCM_DIAGNOSTIC_STATE",
+        "TC_CANOE_UT_INP_065_ETHB_INPUT",
+        "TC_CANOE_IT_BASE_005_BODY_SECURITY_CONTEXT",
+        "TC_CANOE_IT_EXT_010_SERVICE_SECURITY_DIAG",
+        "TC_CANOE_ST_EXT_004_FAILSAFE_ENTRY",
+        "TC_CANOE_ST_EXT_005_FAILSAFE_RECOVERY",
+        "TC_CANOE_ST_EXT_018_SERVICE_SECURITY_DIAG_CONTEXT",
+        "TC_CANOE_ST_EXT_041_FAILSAFE_RECOVERY"
       ],
-      "notes": "Gateway/domain-boundary coverage is shared across baseline and fail-safe chains."
+      "doc_refs": [
+        "driving-alert-workproducts/governance/00e_ECU_Naming_Standard.md",
+        "driving-alert-workproducts/04_SW_Implementation.md",
+        "driving-alert-workproducts/05_Unit_Test.md",
+        "driving-alert-workproducts/06_Integration_Test.md",
+        "driving-alert-workproducts/07_System_Test.md",
+        "canoe/docs/verification/test-asset-mapping.md",
+        "canoe/docs/verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md"
+      ],
+      "notes": "CGW is the strongest infrastructure closeout surface. Gateway, domain-boundary, service/security/diagnostic, and fail-safe boundary rows are all exact executable mappings."
     },
     {
       "surface_id": "ETH_BACKBONE",
-      "mapping_status": "planned",
+      "mapping_status": "partial",
       "req_ids": [],
       "test_case_ids": {
-        "ut": [],
-        "it": [],
-        "st": []
+        "ut": ["UT_065", "UT_076", "UT_077"],
+        "it": ["IT_044", "IT_045"],
+        "st": ["ST_018", "ST_019"]
       },
-      "scenario_ids": [],
-      "native_test_assets": [],
-      "doc_refs": [
-        "driving-alert-workproducts/governance/00e_ECU_Naming_Standard.md:91",
-        "driving-alert-workproducts/ops/change-orders/TARGET_SURFACE_ECU_INVENTORY_V2_2026-03-09.md:39"
+      "scenario_ids": [4, 5],
+      "native_test_assets": [
+        "TC_CANOE_UT_INP_065_ETHB_INPUT",
+        "TC_CANOE_UT_OUT_007_POLICE_TX",
+        "TC_CANOE_UT_OUT_008_AMBULANCE_TX",
+        "TC_CANOE_IT_ETH_001_POLICE_TX",
+        "TC_CANOE_IT_ETH_002_AMBULANCE_TX",
+        "TC_CANOE_ST_018_POLICE_TX_PERIOD",
+        "TC_CANOE_ST_019_AMBULANCE_TX_PERIOD"
       ],
-      "notes": "Current coverage is runtime doctor/health oriented. Dedicated native or 05/06/07 testcase is not anchored yet."
+      "doc_refs": [
+        "driving-alert-workproducts/governance/00e_ECU_Naming_Standard.md",
+        "driving-alert-workproducts/04_SW_Implementation.md",
+        "driving-alert-workproducts/05_Unit_Test.md",
+        "driving-alert-workproducts/06_Integration_Test.md",
+        "driving-alert-workproducts/07_System_Test.md",
+        "canoe/docs/verification/test-asset-mapping.md"
+      ],
+      "notes": "ETH backbone evidence is exact where external TX and transport-period rows exist, but the surface is still partial because broader backbone health remains shared with CGW and fail-safe orchestration."
     },
     {
       "surface_id": "VALIDATION_HARNESS",
@@ -262,17 +424,23 @@
         "it": [],
         "st": []
       },
-      "scenario_ids": [4, 6, 18],
+      "scenario_ids": [1, 4, 5, 18, 202, 203, 204, 205, 206, 207, 208, 209, 212, 213, 214, 223, 224, 244],
       "native_test_assets": [
+        "TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS",
         "TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION",
-        "TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY"
+        "TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY",
+        "TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING",
+        "TC_CANOE_IT_EXT_003_EMERGENCY_PLUS_TTC",
+        "TC_CANOE_IT_EXT_010_SERVICE_SECURITY_DIAG",
+        "TC_CANOE_ST_EXT_018_SERVICE_SECURITY_DIAG_CONTEXT"
       ],
       "doc_refs": [
-        "canoe/docs/operations/verification/CANOE_TEST_POC_SCOPE_2026-03-08.md:55",
-        "canoe/docs/operations/verification/CANOE_TEST_POC_SCOPE_2026-03-08.md:72",
-        "driving-alert-workproducts/ops/handoff/TMP_HANDOFF.md:82"
+        "driving-alert-workproducts/04_SW_Implementation.md",
+        "canoe/docs/verification/test-asset-mapping.md",
+        "canoe/docs/verification/execution-guide.md",
+        "canoe/docs/verification/evidence-policy.md"
       ],
-      "notes": "Non-production harness for scenario injection, baseline aggregation, and evidence orchestration."
+      "notes": "Validation harness is non-production. It owns scenario injection, seed creation, and evidence collection discipline, but it is not an official closeout surface by itself."
     }
   ]
 }

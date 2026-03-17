@@ -3,8 +3,8 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.25
-**Date**: 2026-03-11
+**Version**: 2.26
+**Date**: 2026-03-17
 **Status**: Draft (Submission Summary)
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -25,6 +25,7 @@
 | 구현 모듈 | 기능 상세 | 비고 |
 |---|---|---|
 | Gateway / Service Bridge | `CGW`, `ETHB`, `SGW`, `DCM`, `IBOX`가 경고 정보 전달 경계 통신과 서비스 연계 기능을 담당한다. | 중앙 경계 계층 |
+| Diagnostic Observation Surface | `EXT_DIAG`가 차량 서비스, 보안, 진단 상태를 외부 진단 관측면으로 제공한다. | 진단 관측 계층 |
 | Powertrain Layer | `EMS`, `TCU`, `VCU`와 동력 계열 ECU가 동력 상태와 차량 기초 상태를 생성한다. | 동력 상태 계층 |
 | Chassis Layer | `ESC`, `MDPS`와 제동/조향 계열 ECU가 주행 제어 상태를 생성한다. | 주행 제어 계층 |
 | Body Layer | `BCM`, `DATC`, `SMK`, `AFLS`와 바디 ECU가 차체/실내 상태와 앰비언트 출력을 담당한다. | 차체/편의 계층 |

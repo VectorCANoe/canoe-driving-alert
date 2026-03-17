@@ -15,6 +15,8 @@ from cliops.gate_ops import (
     cmd_gate_doc_sync,
     cmd_gate_multibus_dbc,
 )
+from cliops.native_contract import NativeContractError, resolve_tier_contract
+from cliops.report_viewer_ops import cmd_verify_report_bundle, cmd_verify_report_tools
 from cliops.verification_policy import classify_step_status, load_phase_policy
 
 
@@ -38,6 +40,62 @@ def cmd_verify_smoke(args: argparse.Namespace) -> int:
         '--run-date',
         args.run_date,
     ])
+
+
+def cmd_verify_collect(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPTS / 'quality' / 'run_verification_pipeline.py'),
+        'collect',
+        '--run-id',
+        args.run_id,
+        '--tier',
+        args.tier,
+    ]
+    if args.evidence_root:
+        cmd.extend(['--evidence-root', str(args.evidence_root)])
+    if args.raw_log_source:
+        cmd.extend(['--raw-log-source', str(args.raw_log_source)])
+    if args.allow_missing_raw_log:
+        cmd.append('--allow-missing-raw-log')
+    if getattr(args, 'supplementary_lookback_minutes', 90) != 90:
+        cmd.extend(['--supplementary-lookback-minutes', str(args.supplementary_lookback_minutes)])
+    if getattr(args, 'disable_supplementary_auto_discovery', False):
+        cmd.append('--disable-supplementary-auto-discovery')
+    return run_cmd(cmd)
+
+
+def cmd_verify_post_run(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPTS / 'quality' / 'run_verification_pipeline.py'),
+        'post-run',
+        '--run-id',
+        args.run_id,
+        '--tier',
+        args.tier,
+        '--owner',
+        args.owner,
+        '--run-date',
+        args.run_date,
+    ]
+    if args.evidence_root:
+        cmd.extend(['--evidence-root', str(args.evidence_root)])
+    if args.raw_log_source:
+        cmd.extend(['--raw-log-source', str(args.raw_log_source)])
+    if args.allow_missing_raw_log:
+        cmd.append('--allow-missing-raw-log')
+    if getattr(args, 'supplementary_lookback_minutes', 90) != 90:
+        cmd.extend(['--supplementary-lookback-minutes', str(args.supplementary_lookback_minutes)])
+    if getattr(args, 'disable_supplementary_auto_discovery', False):
+        cmd.append('--disable-supplementary-auto-discovery')
+    if args.no_strict_metadata:
+        cmd.append('--no-strict-metadata')
+    if args.no_strict_axis:
+        cmd.append('--no-strict-axis')
+    if args.baseline_csv:
+        cmd.extend(['--baseline-csv', str(args.baseline_csv)])
+    return run_cmd(cmd)
 
 
 def cmd_verify_fill_score(args: argparse.Namespace) -> int:
@@ -174,6 +232,8 @@ def cmd_verify_finalize(args: argparse.Namespace) -> int:
         cmd.append('--no-strict-metadata')
     if args.no_strict_axis:
         cmd.append('--no-strict-axis')
+    if getattr(args, 'skip_fill_score', False):
+        cmd.append('--skip-fill-score')
     return run_cmd(cmd)
 
 
@@ -280,15 +340,28 @@ def _batch_artifact_rows(run_id: str, phase: str) -> list[dict[str, object]]:
     paths = [
         f'canoe/logging/evidence/UT/{run_id}/verification_log.csv',
         f'canoe/logging/evidence/UT/{run_id}/verification_log_scored.csv',
+        f'canoe/logging/evidence/UT/{run_id}/supplementary/trace',
+        f'canoe/logging/evidence/UT/{run_id}/supplementary/logging',
         f'canoe/logging/evidence/IT/{run_id}/verification_log.csv',
         f'canoe/logging/evidence/IT/{run_id}/verification_log_scored.csv',
+        f'canoe/logging/evidence/IT/{run_id}/supplementary/trace',
+        f'canoe/logging/evidence/IT/{run_id}/supplementary/logging',
         f'canoe/logging/evidence/ST/{run_id}/verification_log.csv',
         f'canoe/logging/evidence/ST/{run_id}/verification_log_scored.csv',
+        f'canoe/logging/evidence/ST/{run_id}/supplementary/trace',
+        f'canoe/logging/evidence/ST/{run_id}/supplementary/logging',
+        f'canoe/logging/evidence/FULL/{run_id}',
+        f'canoe/logging/evidence/FULL/{run_id}/supplementary/trace',
+        f'canoe/logging/evidence/FULL/{run_id}/supplementary/logging',
         'canoe/tmp/reports/verification/dev_completeness_smoke.csv',
         'canoe/tmp/reports/verification/dev_completeness_smoke.md',
         'canoe/tmp/reports/verification/run_readiness.json',
         'canoe/tmp/reports/verification/run_readiness.md',
         'canoe/tmp/reports/verification/dev2_batch_report.junit.xml',
+        'canoe/tmp/reports/verification/official_reports',
+        'canoe/tmp/reports/verification/official_report_tooling.json',
+        'canoe/tmp/reports/verification/official_report_manifest.json',
+        'canoe/tmp/reports/verification/official_report_manifest.md',
         'canoe/tmp/reports/verification/surface_evidence_bundle.json',
         'canoe/tmp/reports/verification/surface_evidence_bundle.md',
         'canoe/tmp/reports/verification/run_insight_report.json',
@@ -297,7 +370,33 @@ def _batch_artifact_rows(run_id: str, phase: str) -> list[dict[str, object]]:
         'canoe/tmp/reports/verification/doc_binding_bundle.md',
         'canoe/tmp/reports/verification/doc_fill_template.csv',
         'canoe/tmp/reports/verification/doc_fill_template.md',
+        'canoe/logging/evidence/incoming/UT/raw_write_window.txt',
+        'canoe/logging/evidence/incoming/UT/native_execute_context.json',
+        'canoe/logging/evidence/incoming/UT/trace',
+        'canoe/logging/evidence/incoming/UT/logging',
+        'canoe/logging/evidence/incoming/IT/raw_write_window.txt',
+        'canoe/logging/evidence/incoming/IT/native_execute_context.json',
+        'canoe/logging/evidence/incoming/IT/trace',
+        'canoe/logging/evidence/incoming/IT/logging',
+        'canoe/logging/evidence/incoming/ST/raw_write_window.txt',
+        'canoe/logging/evidence/incoming/ST/native_execute_context.json',
+        'canoe/logging/evidence/incoming/ST/trace',
+        'canoe/logging/evidence/incoming/ST/logging',
+        'canoe/logging/evidence/incoming/FULL/raw_write_window.txt',
+        'canoe/logging/evidence/incoming/FULL/native_execute_context.json',
+        'canoe/logging/evidence/incoming/FULL/trace',
+        'canoe/logging/evidence/incoming/FULL/logging',
         f'artifacts/verification_runs/{run_id}/{phase}',
+        f'artifacts/verification_runs/{run_id}/{phase}/evidence',
+        f'artifacts/verification_runs/{run_id}/{phase}/evidence/UT/supplementary/trace',
+        f'artifacts/verification_runs/{run_id}/{phase}/evidence/UT/supplementary/logging',
+        f'artifacts/verification_runs/{run_id}/{phase}/evidence/IT/supplementary/trace',
+        f'artifacts/verification_runs/{run_id}/{phase}/evidence/IT/supplementary/logging',
+        f'artifacts/verification_runs/{run_id}/{phase}/evidence/ST/supplementary/trace',
+        f'artifacts/verification_runs/{run_id}/{phase}/evidence/ST/supplementary/logging',
+        f'artifacts/verification_runs/{run_id}/{phase}/evidence/FULL/supplementary/trace',
+        f'artifacts/verification_runs/{run_id}/{phase}/evidence/FULL/supplementary/logging',
+        f'artifacts/verification_runs/{run_id}/{phase}/reports/official_reports',
         f'artifacts/verification_runs/{run_id}/{phase}/manifests/artifact_manifest.json',
         f'artifacts/verification_runs/{run_id}/{phase}/manifests/artifact_manifest.md',
         f'artifacts/verification_runs/{run_id}/{phase}/manifests/execution_manifest.json',
@@ -528,6 +627,7 @@ def _finalize_batch_reports(*, args: argparse.Namespace, policy: dict, report_fo
 
 def cmd_verify_batch(args: argparse.Namespace) -> int:
     from cliops.runtime_ops import cmd_doctor
+    from cliops.runtime_ops import cmd_canoe_test_config_run
 
     try:
         report_formats = _normalize_report_formats(args.report_formats)
@@ -537,12 +637,32 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
 
     steps: list[dict[str, object]] = []
     policy = load_phase_policy(args.phase)
+    selected_tiers = ['UT', 'IT', 'ST']
+    if getattr(args, 'execute_native_tier', ''):
+        try:
+            contract = resolve_tier_contract(args.execute_native_tier)
+        except NativeContractError as ex:
+            print(f'[VERIFY_BATCH] FAIL: {ex}')
+            return 2
+        if not args.profile_id:
+            args.profile_id = contract.profile_id
+        if not args.pack_id:
+            args.pack_id = contract.pack_id
+        if not args.suite_id:
+            args.suite_id = contract.suite_id
+        if not args.assign_folder:
+            args.assign_folder = contract.assign_folder
+        if args.execute_native_tier != 'FULL':
+            selected_tiers = [args.execute_native_tier]
 
     def run_step(name: str, fn) -> int:
         rc = fn()
         step_status, severity = classify_step_status(name, rc, policy)
         steps.append({'name': name, 'rc': rc, 'status': step_status, 'severity': severity})
         return rc
+
+    def should_stop(rc: int) -> bool:
+        return rc != 0 and args.stop_on_fail and steps[-1].get('status') == 'FAIL'
 
     if args.phase in {'pre', 'full'}:
         if not args.skip_gates:
@@ -572,19 +692,115 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
             ),
             ('verify prepare', lambda: cmd_verify_prepare(argparse.Namespace(run_id=args.run_id))),
             ('verify smoke', lambda: cmd_verify_smoke(argparse.Namespace(owner=args.owner, run_date=args.run_date))),
-            ('verify status', lambda: cmd_verify_status(argparse.Namespace(run_id=args.run_id, evidence_root='', output_json='canoe/tmp/reports/verification/run_readiness.json', output_md='canoe/tmp/reports/verification/run_readiness.md'))),
         ]
         for name, fn in pre_steps:
             rc = run_step(name, fn)
             if name == 'doctor' and rc != 0:
                 return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
-            if rc != 0 and args.stop_on_fail and steps[-1].get('status') == 'FAIL':
+            if should_stop(rc):
                 return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+        if getattr(args, 'execute_native_tier', ''):
+            native_rc = run_step(
+                f'native execute {args.execute_native_tier}',
+                lambda: cmd_canoe_test_config_run(
+                    argparse.Namespace(
+                        tier=args.execute_native_tier,
+                        config_name='',
+                        run_id=args.run_id,
+                        timeout_seconds=args.native_timeout_seconds,
+                        poll_ms=args.native_poll_ms,
+                        no_ensure_running=False,
+                        restart_if_running=args.native_restart_if_running,
+                        fail_on_verdict=args.native_fail_on_verdict,
+                        json=False,
+                    )
+                ),
+            )
+            native_should_stop = should_stop(native_rc)
+            report_tools_rc = run_step(
+                'official report tooling',
+                lambda: cmd_verify_report_tools(argparse.Namespace(json=False)),
+            )
+            if should_stop(report_tools_rc):
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+            report_bundle_rc = run_step(
+                f'official report bundle {args.execute_native_tier}',
+                lambda: cmd_verify_report_bundle(
+                    argparse.Namespace(
+                        tier=args.execute_native_tier,
+                        report='',
+                        include_pdf=False,
+                        json=False,
+                    )
+                ),
+            )
+            if native_should_stop or should_stop(report_bundle_rc):
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+        status_rc = run_step(
+            'verify status',
+            lambda: cmd_verify_status(
+                argparse.Namespace(
+                    run_id=args.run_id,
+                    evidence_root='',
+                    output_json='canoe/tmp/reports/verification/run_readiness.json',
+                    output_md='canoe/tmp/reports/verification/run_readiness.md',
+                )
+            ),
+        )
+        if should_stop(status_rc):
+            return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
 
     if args.phase in {'post', 'full'}:
+        for tier in selected_tiers:
+            if tier in {'UT', 'IT', 'ST'}:
+                rc = run_step(
+                    f'verify post-run {tier}',
+                    lambda tier=tier: cmd_verify_post_run(
+                        argparse.Namespace(
+                            run_id=args.run_id,
+                            tier=tier,
+                            owner=args.owner,
+                            run_date=args.run_date,
+                            evidence_root='',
+                            raw_log_source='',
+                            allow_missing_raw_log=False,
+                            baseline_csv='',
+                            no_strict_metadata=False,
+                            no_strict_axis=False,
+                        )
+                    ),
+                )
+            else:
+                rc = run_step(
+                    f'verify collect {tier}',
+                    lambda tier=tier: cmd_verify_collect(
+                        argparse.Namespace(
+                            run_id=args.run_id,
+                            tier=tier,
+                            evidence_root='',
+                            raw_log_source='',
+                            allow_missing_raw_log=False,
+                        )
+                    ),
+                )
+            if should_stop(rc):
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+            rc = run_step(
+                f'official report bundle {tier}',
+                lambda tier=tier: cmd_verify_report_bundle(
+                    argparse.Namespace(
+                        tier=tier,
+                        report='',
+                        include_pdf=False,
+                        json=False,
+                    )
+                ),
+            )
+            if should_stop(rc):
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
         finalize_ns = argparse.Namespace(
             run_id=args.run_id,
-            tiers=['UT', 'IT', 'ST'],
+            tiers=selected_tiers,
             owner=args.owner,
             run_date=args.run_date,
             owner_fallback=args.owner,
@@ -592,6 +808,7 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
             baseline_run_id='',
             no_strict_metadata=False,
             no_strict_axis=False,
+            skip_fill_score=True,
             evidence_root='',
             docs_root='',
             insight_md='canoe/tmp/reports/verification/run_insight_report.md',
@@ -602,7 +819,7 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
             fill_csv='canoe/tmp/reports/verification/doc_fill_template.csv',
             fill_md='canoe/tmp/reports/verification/doc_fill_template.md',
         )
-        if run_step('verify finalize', lambda: cmd_verify_finalize(finalize_ns)) != 0 and args.stop_on_fail and steps[-1].get('status') == 'FAIL':
+        if should_stop(run_step('verify finalize', lambda: cmd_verify_finalize(finalize_ns))):
             return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
         run_step('verify status', lambda: cmd_verify_status(argparse.Namespace(run_id=args.run_id, evidence_root='', output_json='canoe/tmp/reports/verification/run_readiness.json', output_md='canoe/tmp/reports/verification/run_readiness.md')))
 

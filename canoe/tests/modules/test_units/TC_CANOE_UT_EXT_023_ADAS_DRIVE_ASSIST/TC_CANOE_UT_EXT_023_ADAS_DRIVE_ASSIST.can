@@ -1,0 +1,57 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gLaneDepartureWarn;
+  long gLaneKeepAssistActive;
+  long gLaneGuideState;
+  long gSelectedAlertLevel;
+  long gPreviewHealth;
+  long gLanePreviewValid;
+  long gZonePreview;
+  long gSpeedLimit;
+  long gPreviewConfidence;
+}
+
+on message frmLdwsLkasStateMsg
+{
+  gLaneDepartureWarn = this.LaneDepartureWarn;
+  gLaneKeepAssistActive = this.LaneKeepAssistActive;
+  gLaneGuideState = this.LaneGuideState;
+  gSelectedAlertLevel = this.SelectedAlertLevel;
+}
+
+on message frmRoadPreviewCameraStateMsg
+{
+  gPreviewHealth = this.PreviewHealth;
+  gLanePreviewValid = this.LanePreviewValid;
+  gZonePreview = this.ZonePreview;
+  gSpeedLimit = this.SpeedLimit;
+  gPreviewConfidence = this.PreviewConfidence;
+}
+
+export testcase TC_CANOE_UT_EXT_023_ADAS_DRIVE_ASSIST()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  if (!launchScenarioAndWait(233, 1500, 450))
+  {
+    return;
+  }
+  assertIntEq("adas-drive-lkas-active", 1, gLaneKeepAssistActive, "LaneKeepAssistActive");
+  assertIntEq("adas-drive-lane-guide", 2, gLaneGuideState, "LaneGuideState");
+  assertIntEq("adas-drive-alert-level", 3, gSelectedAlertLevel, "SelectedAlertLevel");
+  assertIntEq("adas-drive-preview-health", 2, gPreviewHealth, "PreviewHealth");
+  assertIntEq("adas-drive-lane-preview", 1, gLanePreviewValid, "LanePreviewValid");
+  assertIntEq("adas-drive-zone-preview", 2, gZonePreview, "ZonePreview");
+  assertIntEq("adas-drive-speed-limit", 100, gSpeedLimit, "SpeedLimit");
+  assertIntEq("adas-drive-preview-confidence", 80, gPreviewConfidence, "PreviewConfidence");
+
+  resetValidationHarnessIfNeeded();
+}

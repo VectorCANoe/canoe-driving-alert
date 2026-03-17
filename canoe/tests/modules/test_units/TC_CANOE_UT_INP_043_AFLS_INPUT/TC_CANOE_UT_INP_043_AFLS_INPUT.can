@@ -1,0 +1,37 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gAflsMode;
+  int gLevelStep;
+}
+
+on message frmAflsStateMsg
+{
+  gAflsMode = this.AflsMode;
+  gLevelStep = this.LevelStep;
+}
+
+export testcase TC_CANOE_UT_INP_043_AFLS_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gAflsMode = -1;
+  gLevelStep = -1;
+  if (!launchScenarioAndWait(230, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s230_aflsMode", 1, gAflsMode, "aflsMode");
+  assertIntMin("s230_levelStep", 1, gLevelStep, "levelStep");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -4,6 +4,9 @@
 > This document reflects the current development baseline and the planned target architecture.
 > Some runtime, diagnostic, and verification details are still under implementation and may change.
 
+Related operating standard:
+- `canoe/docs/verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md`
+
 ## 1) 목적
 - `05_Unit_Test.md`, `06_Integration_Test.md`, `07_System_Test.md`에 입력할 증빙 로그 포맷을 단일화한다.
 - 검증 축을 `로직(Logic) / 통신(Comm) / 주기(Period)`로 분리해 PASS 근거를 명확히 한다.
@@ -31,19 +34,57 @@
   - `UT/<run_id>/`
   - `IT/<run_id>/`
   - `ST/<run_id>/`
+  - `FULL/<run_id>/` (회귀 전용, 공식 closeout seed 없음)
 - 각 run 폴더 최소 파일:
   - `verification_log.csv`
   - `raw_write_window.txt`
   - `capture_index.csv`
+  - `captures/`
+  - `native_reports/`
+  - `native_report_manifest.json`
+  - `supplementary/trace/`
+  - `supplementary/logging/`
+
+### Write Window Drop Root
+- 루트: `canoe/logging/evidence/incoming/`
+- tier별 표준 저장 파일:
+  - `UT/raw_write_window.txt`
+  - `IT/raw_write_window.txt`
+  - `ST/raw_write_window.txt`
+  - `FULL/raw_write_window.txt`
+- GUI에서 Write Window export는 위 경로를 기본값으로 고정한다.
+- `post-run` 자동화는 위 표준 경로를 우선 수집하고, 기존 `canoe/tmp/write_window/`는 migration fallback으로만 사용한다.
+
+### Trace and Logging Drop Root
+- 루트: `canoe/logging/evidence/incoming/`
+- tier별 표준 supplementary 경로:
+  - `UT/trace/`, `IT/trace/`, `ST/trace/`, `FULL/trace/`
+  - `UT/logging/`, `IT/logging/`, `ST/logging/`, `FULL/logging/`
+- CAN/Ethernet trace export, logging block output, BLF/ASC/MF4/PCAP 계열 산출은 위 경로에 저장한다.
+- `post-run`은 위 경로를 자동 수집해 run-local `supplementary/trace`, `supplementary/logging`으로 복사한다.
 
 ### Write Window 키워드 규칙
 - 입력 이벤트: `[EVIDENCE_IN] scenario=<id> inputTsMs=<ms>`
 - 출력 이벤트: `[EVIDENCE_OUT] scenario=<id> outputTsMs=<ms> result=<0|1> ...`
 - `inputTsMs`, `outputTsMs`를 이용해 `latency_ms`를 계산한다.
 
+### Seed Source 규칙
+- `verification_log.csv` 초기 row는 수동 템플릿 복사가 아니라 `scripts/quality/init_evidence_run.py`로 생성한다.
+- seed SoT:
+  - `driving-alert-workproducts/05_Unit_Test.md`
+  - `driving-alert-workproducts/06_Integration_Test.md`
+  - `driving-alert-workproducts/07_System_Test.md`
+  - `canoe/docs/verification/test-asset-mapping.md`
+  - `canoe/tests/modules/test_units/<asset>/<asset>.can`
+- `expected`는 공식 `05/06/07` 표에서 추출한다.
+- `scenario_id`는 native CAPL의 `launchScenarioAndWait(...)` 호출에서 시드한다.
+- `rule_type` / `rule_ms`는 공식 표 문장에 대한 deterministic seed이며, 애매한 행은 `note`로 manual confirmation을 남긴다.
+- `FULL`은 regression tier이므로 `prepare` seed 대상이 아니며, `collect/post-run`으로 native report와 raw log만 저장한다.
+
 ## 5) verification_log.csv 필수 컬럼
 - `tier`: `UT|IT|ST`
 - `test_id`
+- `native_asset`
 - `scenario_id`
 - `input_ts_ms`
 - `output_ts_ms`
@@ -60,6 +101,13 @@
 - `evidence_log_path`
 - `evidence_capture_path`
 - `note`
+
+### 관찰 문자열(observed) 표준
+- `observed`는 현재 `[EVIDENCE_OUT]`의 핵심 필드를 key/value 문자열로 저장한다.
+- 기본 포함 필드:
+  - `level`, `type`, `code`, `timeout`, `risk`, `decel`, `failSafe`, `renderType`, `renderCode`
+- 선택 포함 필드:
+  - `release`, `objValid`, `objClass`, `objTtc`, `objEvent`
 
 ## 6) 판정 규칙
 ### 6.1 주기(Period)
@@ -106,3 +154,9 @@ python scripts/run.py verify fill-score --tier UT --run-id 20260306_1930 --owner
 - `computed_verdict` 기준으로 문서 상단 `Pass/Fail` 입력
 - `evidence_log_path`, `evidence_capture_path`를 테스트 ID와 1:1로 연결
 - 문서 값과 scored report 값이 다르면 문서를 FAIL로 처리한다.
+- trace/log-relevant 테스트는 `supplementary/trace` 또는 `supplementary/logging` 없이 closeout 완료로 보지 않는다.
+
+## 11) 승인 규칙
+- 자동화는 candidate verdict까지만 생성한다.
+- 공식 `PASS/FAIL` 반영 전에는 reviewer approval이 필요하다.
+- `FAIL` 또는 `ERROR`는 `templates/fail_disposition_template.md` 기준 disposition을 남긴다.

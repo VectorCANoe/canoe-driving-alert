@@ -1,0 +1,35 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gViewMode;
+  int gSurroundActive;
+}
+
+on message frmSurroundParkMasterStateMsg
+{
+  gViewMode = this.ViewMode;
+  gSurroundActive = this.SurroundActive;
+}
+
+export testcase TC_CANOE_UT_INP_055_AVM_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(234, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s234_viewMode", 3, gViewMode, "viewMode");
+  assertIntEq("s234_surroundActive", 1, gSurroundActive, "surroundActive");
+
+  resetValidationHarnessIfNeeded();
+}

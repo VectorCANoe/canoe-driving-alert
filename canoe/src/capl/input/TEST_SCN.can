@@ -148,6 +148,101 @@ dword getTestScnLocalIp()
   return IpGetAddressAsNumber("192.168.1.8");
 }
 
+int getEvidenceTierCode()
+{
+  return clampRange((int)@Test::nativeExecTierCode, 0, 4);
+}
+
+int evidenceAutoWriteEnabled()
+{
+  return (((int)@Test::evidenceAutoWrite == 1) &&
+          getEvidenceTierCode() > 0) ? 1 : 0;
+}
+
+dword openEvidenceRawFile()
+{
+  int tierCode;
+
+  if (!evidenceAutoWriteEnabled())
+  {
+    return 0;
+  }
+
+  tierCode = getEvidenceTierCode();
+  if (tierCode == 1)
+  {
+    return OpenFile("..\\logging\\evidence\\incoming\\UT\\raw_write_window.txt", "a");
+  }
+  if (tierCode == 2)
+  {
+    return OpenFile("..\\logging\\evidence\\incoming\\IT\\raw_write_window.txt", "a");
+  }
+  if (tierCode == 3)
+  {
+    return OpenFile("..\\logging\\evidence\\incoming\\ST\\raw_write_window.txt", "a");
+  }
+  if (tierCode == 4)
+  {
+    return OpenFile("..\\logging\\evidence\\incoming\\FULL\\raw_write_window.txt", "a");
+  }
+
+  return 0;
+}
+
+void writeEvidenceInLine(int scenarioId, dword inputTsMs)
+{
+  dword fileHandle;
+
+  write("[EVIDENCE_IN] scenario=%d inputTsMs=%lu",
+        scenarioId, inputTsMs);
+
+  fileHandle = openEvidenceRawFile();
+  if (fileHandle > 0)
+  {
+    FPrint(fileHandle,
+           "[EVIDENCE_IN] scenario=%d inputTsMs=%lu\n",
+           scenarioId, inputTsMs);
+    CloseFile(fileHandle);
+  }
+}
+
+void writeEvidenceOutLine(int scenarioId,
+                          dword outputTsMs,
+                          int result,
+                          int level,
+                          int type,
+                          int code,
+                          int timeoutClear,
+                          int proximityRiskLevel,
+                          int decelAssistReq,
+                          int failSafeMode,
+                          int driverReleaseReason,
+                          int objectTrackValid,
+                          int objectRiskClass,
+                          int objectTtcMin,
+                          int objectEventCode,
+                          int renderAlertType,
+                          int renderTextCode)
+{
+  dword fileHandle;
+
+  write("[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d release=%d objValid=%d objClass=%d objTtc=%d objEvent=%d renderType=%d renderCode=%d",
+        scenarioId, outputTsMs, result, level, type, code, timeoutClear, proximityRiskLevel,
+        decelAssistReq, failSafeMode, driverReleaseReason, objectTrackValid, objectRiskClass,
+        objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
+
+  fileHandle = openEvidenceRawFile();
+  if (fileHandle > 0)
+  {
+    FPrint(fileHandle,
+           "[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d release=%d objValid=%d objClass=%d objTtc=%d objEvent=%d renderType=%d renderCode=%d\n",
+           scenarioId, outputTsMs, result, level, type, code, timeoutClear, proximityRiskLevel,
+           decelAssistReq, failSafeMode, driverReleaseReason, objectTrackValid, objectRiskClass,
+           objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
+    CloseFile(fileHandle);
+  }
+}
+
 void pushLockedScenarioInputs()
 {
   @Chassis::driveState = clampRange(gLockDriveState, 0, 3);
@@ -1135,6 +1230,28 @@ void applyScenarioPreset(int scenarioId)
     gLockForceFailSafe = 0;
     gLockSuppressEmergencyFrame = 0;
   }
+  else if (scenarioId == 238)
+  {
+    /* ST_023: ambulance emergency must stay primary even with simultaneous TTC merge/cut-in risk */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 78;
+    gLockRoadZone = 2;
+    gLockSteeringInput = 1;
+    gLockSpeedLimit = 80;
+    gLockAlertState = 1;
+    gLockEmergencyType = 2;
+    gLockEta = 5;
+    gLockSourceId = 95;
+    gLockEmergencyDirection = 1;
+    gLockObjectTrackValid = 1;
+    gLockObjectRange = 28;
+    gLockObjectRelSpeed = -55;
+    gLockObjectConfidence = 90;
+    gLockIntersectionConflictFlag = 0;
+    gLockMergeCutInFlag = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
   else if (scenarioId == 214)
   {
     /* IT_013(partial): seat-belt warning context must escalate active school-zone warning */
@@ -1492,8 +1609,7 @@ void applyScenarioPreset(int scenarioId)
   }
 
   pushLockedScenarioInputs();
-  write("[EVIDENCE_IN] scenario=%d inputTsMs=%lu",
-        scenarioId, getSimulationTimeMs());
+  writeEvidenceInLine(scenarioId, getSimulationTimeMs());
 }
 
 void scheduleScenarioEvaluation(int scenarioId)
@@ -1605,6 +1721,10 @@ void scheduleScenarioEvaluation(int scenarioId)
     evalDelayMs = 700;
   }
   else if (scenarioId == 213)
+  {
+    evalDelayMs = 800;
+  }
+  else if (scenarioId == 238)
   {
     evalDelayMs = 800;
   }
@@ -2010,6 +2130,15 @@ void evaluateScenarioResult()
   {
     result = ((int)@V2X::emergencyType == 2 &&
               (int)@Core::intersectionConflictFlag == 1 &&
+              (int)@Core::decelAssistReq == 1 &&
+              (int)@Core::selectedAlertLevel == 7 &&
+              (int)@Core::selectedAlertType == 2 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 238)
+  {
+    result = ((int)@V2X::emergencyType == 2 &&
+              (int)@Core::mergeCutInFlag == 1 &&
               (int)@Core::decelAssistReq == 1 &&
               (int)@Core::selectedAlertLevel == 7 &&
               (int)@Core::selectedAlertType == 2 &&
@@ -2926,12 +3055,6 @@ on sysvar Test::scenarioCommand
   int scenarioId;
   scenarioId = (int)@Test::scenarioCommand;
 
-  if (gScenarioCmdInternalClear == 1)
-  {
-    gScenarioCmdInternalClear = 0;
-    return;
-  }
-
   if (scenarioId == 100)
   {
     beginAutoDemoExecution();
@@ -2959,8 +3082,6 @@ on sysvar Test::scenarioCommand
   }
 
   @Test::scenarioCommandAck = clampRange(scenarioId, 0, 255);
-  gScenarioCmdInternalClear = 1;
-  @Test::scenarioCommand = 0;
 }
 
 on sysvar Test::testScenario
@@ -3056,11 +3177,10 @@ on timer tScenarioEval
   renderTextCode = (int)@UiRender::renderTextCode;
   clusterCode = (int)@Cluster::warningTextCode;
 
-write("[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d release=%d objValid=%d objClass=%d objTtc=%d objEvent=%d renderType=%d renderCode=%d",
-        gCurrentScenarioId, getSimulationTimeMs(), (int)@Test::scenarioResult,
-        coreLevel, coreType, clusterCode, timeoutClear, proximityRiskLevel,
-        decelAssistReq, failSafeMode, driverReleaseReason, objectTrackValid, objectRiskClass,
-        objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
+  writeEvidenceOutLine(gCurrentScenarioId, getSimulationTimeMs(), (int)@Test::scenarioResult,
+                       coreLevel, coreType, clusterCode, timeoutClear, proximityRiskLevel,
+                       decelAssistReq, failSafeMode, driverReleaseReason, objectTrackValid, objectRiskClass,
+                       objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
 
 }
 

@@ -1,0 +1,37 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gAhlsAssistState;
+  int gHighBeamPermit;
+}
+
+on message frmAhlsStateMsg
+{
+  gAhlsAssistState = this.AhlsAssistState;
+  gHighBeamPermit = this.HighBeamPermit;
+}
+
+export testcase TC_CANOE_UT_INP_044_AHLS_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gAhlsAssistState = -1;
+  gHighBeamPermit = -1;
+  if (!launchScenarioAndWait(230, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s230_ahlsAssistState", 1, gAhlsAssistState, "ahlsAssistState");
+  assertIntEq("s230_highBeamPermit", 1, gHighBeamPermit, "highBeamPermit");
+
+  resetValidationHarnessIfNeeded();
+}

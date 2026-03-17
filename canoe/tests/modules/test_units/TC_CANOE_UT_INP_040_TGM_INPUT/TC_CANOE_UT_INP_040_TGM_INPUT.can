@@ -1,0 +1,38 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gTailgateAssistMode;
+  int gTailgateOpenReq;
+  int gTailgateActuatorCmd;
+}
+
+on message frmPowerTailgateCtrlStateMsg
+{
+  gTailgateAssistMode = this.TailgateAssistMode;
+  gTailgateOpenReq = this.OpenRequestState;
+  gTailgateActuatorCmd = this.TailgateActuatorCmd;
+}
+
+export testcase TC_CANOE_UT_INP_040_TGM_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(227, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s227_tailgateAssistMode", 2, gTailgateAssistMode, "tailgateAssistMode");
+  assertIntEq("s227_tailgateOpenReq", 1, gTailgateOpenReq, "tailgateOpenReq");
+  assertIntEq("s227_tailgateActuatorCmd", 0, gTailgateActuatorCmd, "tailgateActuatorCmd");
+
+  resetValidationHarnessIfNeeded();
+}

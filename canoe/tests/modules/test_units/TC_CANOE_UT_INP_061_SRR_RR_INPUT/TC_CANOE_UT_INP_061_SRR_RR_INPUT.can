@@ -1,0 +1,38 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gMergeConflict;
+  int gTurnLampState;
+}
+
+on message frmSrrRrStateMsg
+{
+  gMergeConflict = this.MergeConflict;
+  gTurnLampState = this.TurnLampState;
+}
+
+export testcase TC_CANOE_UT_INP_061_SRR_RR_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gMergeConflict = -1;
+  gTurnLampState = -1;
+  if (!launchScenarioAndWait(22, 1000, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("s22_srrRrMergeConflict", 1, gMergeConflict, "mergeConflict");
+  assertIntEq("s22_obsObjectScenario", 1, waitForObservedObjectScenario(800), "obsObjectScenario");
+  assertIntEq("s22_mergeCutIn", 1, (long)@Test::obsMergeCutInFlag, "mergeCutInFlag");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -1,0 +1,38 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gDeploymentArmed;
+  int gPretensionReq;
+  int gAirbagWarn;
+}
+
+on message frmAcuStateMsg
+{
+  gDeploymentArmed = this.DeploymentArmed;
+  gPretensionReq = this.PretensionReq;
+  gAirbagWarn = this.AirbagWarn;
+}
+
+export testcase TC_CANOE_UT_INP_041_ACU_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(228, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s228_deploymentArmed", 0, gDeploymentArmed, "deploymentArmed");
+  assertIntEq("s228_pretensionReq", 1, gPretensionReq, "pretensionReq");
+  assertIntEq("s228_airbagWarn", 1, gAirbagWarn, "airbagWarn");
+
+  resetValidationHarnessIfNeeded();
+}

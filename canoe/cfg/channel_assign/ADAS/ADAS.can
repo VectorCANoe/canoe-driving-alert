@@ -511,7 +511,7 @@ void runArbiter()
   }
   else
   {
-    driveState = 0;
+    driveState = clampRange((int)@Chassis::driveState, 0, 3);
   }
   if (ethIsRecentTick(gSteeringStateRxMs, 300) == 1)
   {
@@ -830,6 +830,10 @@ void runArbiter()
   }
 
   gPrevEmergencyContext = emergencyContext;
+
+  @Core::brakePedalNorm    = brakePedal;
+  @CoreState::driveMode    = driveMode;
+  @CoreState::sportMode    = sportMode;
 }
 
 void updateWarningState()
@@ -869,8 +873,8 @@ void updateWarningState()
   }
   else
   {
-    speed = 0;
-    driveState = 0;
+    speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+    driveState = clampRange((int)@Chassis::driveState, 0, 3);
   }
   if (ethIsRecentTick(gSteeringStateRxMs, 300) == 1)
   {
@@ -1152,6 +1156,12 @@ void updateWarningState()
           objectConfidence, objectHoldActive);
     gLastObjectEventCode = (int)@Core::objectEventCode;
   }
+
+  @Core::vehicleSpeedNorm  = speed;
+  @Core::driveStateNorm    = driveState;
+  @Core::steeringInputNorm = steeringInput;
+  @Core::speedLimitNorm    = speedLimit;
+  @Core::baseZoneContext   = baseZoneContext;
 }
 
 void applyObjectRiskInput(int trackValid,

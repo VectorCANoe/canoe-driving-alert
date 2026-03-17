@@ -74,6 +74,15 @@ def _copy_native_reports(glob_pattern: str, dst_root: Path) -> list[str]:
     return copied
 
 
+def _supplementary_subset(copied_paths: list[str], kind: str) -> list[str]:
+    marker = f"/supplementary/{kind}/"
+    return [item for item in copied_paths if marker in item]
+
+
+def _supplementary_dirs(copied_paths: list[str]) -> list[str]:
+    return sorted({item.rsplit("/", 1)[0] for item in copied_paths})
+
+
 def _execution_manifest_payload(
     *,
     run_id: str,
@@ -88,6 +97,8 @@ def _execution_manifest_payload(
     copied_surface: list[str],
     copied_native_reports: list[str],
     copied_evidence_files: list[str],
+    copied_supplementary_trace_files: list[str],
+    copied_supplementary_logging_files: list[str],
 ) -> dict:
     batch = _load_json(staging_root / "dev2_batch_report.json")
     readiness = _load_json(staging_root / "run_readiness.json")
@@ -168,6 +179,8 @@ def _execution_manifest_payload(
         "copied_surface_files": copied_surface,
         "copied_native_reports": copied_native_reports,
         "copied_evidence_files": copied_evidence_files,
+        "copied_supplementary_trace_files": copied_supplementary_trace_files,
+        "copied_supplementary_logging_files": copied_supplementary_logging_files,
         "surface_summary": surface_summary,
     }
 
@@ -205,13 +218,19 @@ def main() -> int:
         copied = _copy_if_exists(staging_root / name, reports_dir / name)
         if copied:
             copied_reports.append(copied)
+    for name in layout.get("copied_report_trees", []):
+        copied_reports.extend(_copy_tree(staging_root / name, reports_dir / name))
 
     copied_surface = _copy_tree(surface_root, surface_dir)
     copied_native_reports = _copy_native_reports(layout.get("native_report_glob", "canoe/**/*.vtestreport"), native_reports_dir)
 
     copied_evidence_files: list[str] = []
-    for tier in ("UT", "IT", "ST"):
+    for tier in layout.get("archived_tiers", ["UT", "IT", "ST", "FULL"]):
         copied_evidence_files.extend(_copy_tree(evidence_root / tier / args.run_id, evidence_dir / tier))
+    copied_supplementary_trace_files = _supplementary_subset(copied_evidence_files, "trace")
+    copied_supplementary_logging_files = _supplementary_subset(copied_evidence_files, "logging")
+    copied_supplementary_trace_dirs = _supplementary_dirs(copied_supplementary_trace_files)
+    copied_supplementary_logging_dirs = _supplementary_dirs(copied_supplementary_logging_files)
 
     batch = _load_json(staging_root / "dev2_batch_report.json")
     artifact_manifest = {
@@ -231,6 +250,10 @@ def main() -> int:
         "copied_surface_files": copied_surface,
         "copied_native_reports": copied_native_reports,
         "copied_evidence_files": copied_evidence_files,
+        "copied_supplementary_trace_dirs": copied_supplementary_trace_dirs,
+        "copied_supplementary_trace_files": copied_supplementary_trace_files,
+        "copied_supplementary_logging_dirs": copied_supplementary_logging_dirs,
+        "copied_supplementary_logging_files": copied_supplementary_logging_files,
     }
 
     artifact_manifest_json = manifests_dir / "artifact_manifest.json"
@@ -248,6 +271,8 @@ def main() -> int:
         f"- Surface Dir: `{_rel(surface_dir)}`",
         f"- Native Reports Dir: `{_rel(native_reports_dir)}`",
         f"- Evidence Dir: `{_rel(evidence_dir)}`",
+        f"- Supplementary Trace Files: `{len(copied_supplementary_trace_files)}`",
+        f"- Supplementary Logging Files: `{len(copied_supplementary_logging_files)}`",
         f"- Staging Root: `{_rel(staging_root)}`",
         "",
         "## Copied Reports",
@@ -262,6 +287,12 @@ def main() -> int:
         artifact_md_lines.append(f"- `{item}`")
     artifact_md_lines += ["", "## Copied Evidence Files"]
     for item in copied_evidence_files:
+        artifact_md_lines.append(f"- `{item}`")
+    artifact_md_lines += ["", "## Supplementary Trace Directories"]
+    for item in copied_supplementary_trace_dirs:
+        artifact_md_lines.append(f"- `{item}`")
+    artifact_md_lines += ["", "## Supplementary Logging Directories"]
+    for item in copied_supplementary_logging_dirs:
         artifact_md_lines.append(f"- `{item}`")
     artifact_manifest_md.write_text("\n".join(artifact_md_lines) + "\n", encoding="utf-8")
 
@@ -278,6 +309,8 @@ def main() -> int:
         copied_surface=copied_surface,
         copied_native_reports=copied_native_reports,
         copied_evidence_files=copied_evidence_files,
+        copied_supplementary_trace_files=copied_supplementary_trace_files,
+        copied_supplementary_logging_files=copied_supplementary_logging_files,
     )
     execution_manifest_json = manifests_dir / "execution_manifest.json"
     execution_manifest_md = manifests_dir / "execution_manifest.md"
@@ -298,6 +331,7 @@ def main() -> int:
         f"- Executed Scenarios: `{', '.join(str(item) for item in execution_manifest['execution'].get('executed_scenario_ids', [])) or '-'}`",
         f"- Smoke Cases: `{', '.join(execution_manifest['execution'].get('smoke_case_ids', [])) or '-'}`",
         f"- Doctor / Readiness / Batch / Surface: `{execution_manifest['doctor_status']}` / `{execution_manifest['readiness_status']}` / `{execution_manifest['batch_status']}` / `{execution_manifest['surface_bundle_status']}`",
+        f"- Supplementary Trace / Logging: `{len(execution_manifest.get('copied_supplementary_trace_files', []))}` / `{len(execution_manifest.get('copied_supplementary_logging_files', []))}`",
         "",
         "## Surface Summary",
         "",
@@ -313,7 +347,8 @@ def main() -> int:
     print(
         f"[ARTIFACT_LAYOUT] run={args.run_id} phase={args.phase} "
         f"reports={len(copied_reports)} surface_files={len(copied_surface)} "
-        f"native_reports={len(copied_native_reports)} evidence_files={len(copied_evidence_files)}"
+        f"native_reports={len(copied_native_reports)} evidence_files={len(copied_evidence_files)} "
+        f"trace_files={len(copied_supplementary_trace_files)} logging_files={len(copied_supplementary_logging_files)}"
     )
     print(f"[OUT] {_rel(artifact_manifest_json)}")
     print(f"[OUT] {_rel(artifact_manifest_md)}")

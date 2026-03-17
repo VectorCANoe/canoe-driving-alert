@@ -1,0 +1,35 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gCdcMode;
+  int gCdcValveCurrent;
+}
+
+on message frmCdcStateMsg
+{
+  gCdcMode = this.CdcMode;
+  gCdcValveCurrent = this.CdcValveCurrent;
+}
+
+export testcase TC_CANOE_UT_INP_035_CDC_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(225, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s225_cdcMode", 2, gCdcMode, "cdcMode");
+  assertIntEq("s225_valveCurrent", 160, gCdcValveCurrent, "valveCurrent");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -1,0 +1,35 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gHudMode;
+  int gHudWarningCode;
+}
+
+on message frmHudStateMsg
+{
+  gHudMode = this.HudMode;
+  gHudWarningCode = this.HudWarningCode;
+}
+
+export testcase TC_CANOE_UT_INP_049_HUD_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(30, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("s30_hudMode", 1, gHudMode, "hudMode");
+  assertIntEq("s30_hudWarningCode", 102, gHudWarningCode, "hudWarningCode");
+
+  resetValidationHarnessIfNeeded();
+}

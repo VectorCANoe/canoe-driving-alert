@@ -3,10 +3,12 @@
 import argparse
 import datetime as dt
 import json
+import shutil
 from pathlib import Path
 
 from cliops.canoe_com import CanoeComBridge, CanoeComError
-from cliops.common import fail_unavailable, iso_today
+from cliops.common import ROOT, fail_unavailable, iso_today
+from cliops.native_contract import NativeContractError, resolve_tier_contract
 from cliops.operator_result import SCENARIO_SUMMARY_JSON, SCENARIO_SUMMARY_MD
 from cliops.platform_caps import canoe_runtime_check, platform_label
 from cliops.verify_ops import cmd_verify_batch
@@ -14,6 +16,215 @@ from cliops.verify_ops import cmd_verify_batch
 
 def get_canoe_bridge() -> CanoeComBridge:
     return CanoeComBridge.connect()
+
+
+def _verdict_label(raw_verdict: int) -> str:
+    mapping = {
+        0: 'not-available',
+        1: 'passed',
+        2: 'failed',
+        3: 'inconclusive',
+        4: 'none',
+    }
+    return mapping.get(raw_verdict, f'value-{raw_verdict}')
+
+
+def _resolve_config_name(args: argparse.Namespace) -> tuple[str, str | None]:
+    config_name = (getattr(args, 'config_name', '') or '').strip()
+    tier = (getattr(args, 'tier', '') or '').strip().upper()
+    if config_name and tier:
+        return config_name, tier
+    if config_name:
+        return config_name, None
+    if not tier:
+        raise CanoeComError('either --config-name or --tier is required')
+    try:
+        contract = resolve_tier_contract(tier)
+    except NativeContractError as ex:
+        raise CanoeComError(str(ex)) from ex
+    if not contract.execute_supported or not contract.config_name:
+        raise CanoeComError(f'native execute is not supported for tier: {tier}')
+    return contract.config_name, tier
+
+
+def _native_summary_payload(summary, *, tier: str | None = None) -> dict[str, object]:
+    payload: dict[str, object] = {
+        'config_name': summary.name,
+        'caption': summary.caption,
+        'enabled': summary.enabled,
+        'running': summary.running,
+        'verdict_raw': summary.verdict,
+        'verdict': _verdict_label(summary.verdict),
+        'test_unit_count': summary.test_unit_count,
+        'type_code': summary.type_code,
+    }
+    if tier:
+        payload['tier'] = tier
+        try:
+            contract = resolve_tier_contract(tier)
+            payload['summary_report'] = str(contract.summary_report_path)
+            payload['suite_id'] = contract.suite_id
+            payload['assign_folder'] = contract.assign_folder
+        except NativeContractError:
+            pass
+    return payload
+
+
+def _prepare_native_evidence_drop(tier: str) -> None:
+    contract = resolve_tier_contract(tier)
+    raw_path = ROOT / contract.incoming_raw
+    trace_dir = ROOT / contract.incoming_trace_dir
+    logging_dir = ROOT / contract.incoming_logging_dir
+    raw_path.parent.mkdir(parents=True, exist_ok=True)
+    raw_path.write_text("", encoding="utf-8")
+    trace_dir.mkdir(parents=True, exist_ok=True)
+    logging_dir.mkdir(parents=True, exist_ok=True)
+
+
+def _clear_drop_directory(path: Path) -> None:
+    if not path.exists() or not path.is_dir():
+        return
+    for item in path.iterdir():
+        if item.name == ".gitkeep":
+            continue
+        if item.is_dir():
+            shutil.rmtree(item, ignore_errors=True)
+        else:
+            try:
+                item.unlink()
+            except OSError:
+                pass
+
+
+def _native_execute_context_path(tier: str) -> Path:
+    return ROOT / "canoe" / "logging" / "evidence" / "incoming" / tier / "native_execute_context.json"
+
+
+def _write_native_execute_context(tier: str, payload: dict[str, object]) -> None:
+    path = _native_execute_context_path(tier)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def _seed_native_execution_context(
+    bridge: CanoeComBridge,
+    tier: str | None,
+    *,
+    run_id: str | None,
+    config_name: str | None,
+) -> None:
+    if not tier:
+        return
+    try:
+        contract = resolve_tier_contract(tier)
+        _prepare_native_evidence_drop(tier)
+        trace_dir = ROOT / contract.incoming_trace_dir
+        logging_dir = ROOT / contract.incoming_logging_dir
+        _clear_drop_directory(trace_dir)
+        _clear_drop_directory(logging_dir)
+        _write_native_execute_context(
+            tier,
+            {
+                "generated_at": dt.datetime.now().isoformat(timespec="seconds"),
+                "started_at": dt.datetime.now().isoformat(timespec="seconds"),
+                "state": "prepared",
+                "run_id": run_id or "",
+                "tier": tier,
+                "config_name": config_name or contract.config_name,
+                "summary_report": str(contract.summary_report_path),
+                "incoming_raw": contract.incoming_raw,
+                "incoming_trace_dir": contract.incoming_trace_dir,
+                "incoming_logging_dir": contract.incoming_logging_dir,
+            },
+        )
+        bridge.set_sysvar('Test', 'nativeExecTierCode', contract.tier_code)
+        bridge.set_sysvar('Test', 'evidenceAutoWrite', 1)
+    except NativeContractError as ex:
+        raise CanoeComError(str(ex)) from ex
+    except Exception as ex:
+        raise CanoeComError(
+            "Native execution evidence sysvars are unavailable. Reload the CANoe configuration after project.sysvars update."
+        ) from ex
+
+
+def _clear_native_execution_context(bridge: CanoeComBridge) -> None:
+    try:
+        bridge.set_sysvar('Test', 'evidenceAutoWrite', 0)
+        bridge.set_sysvar('Test', 'nativeExecTierCode', 0)
+    except Exception:
+        pass
+
+
+def execute_native_test_configuration(
+    *,
+    tier: str | None,
+    config_name: str | None,
+    run_id: str | None,
+    timeout_seconds: int,
+    poll_ms: int,
+    ensure_running: bool,
+    restart_if_running: bool,
+    fail_on_verdict: bool,
+) -> tuple[int, dict[str, object]]:
+    bridge = get_canoe_bridge()
+    resolved_name, resolved_tier = _resolve_config_name(
+        argparse.Namespace(config_name=config_name or '', tier=tier or '')
+    )
+    _seed_native_execution_context(
+        bridge,
+        resolved_tier,
+        run_id=run_id,
+        config_name=resolved_name,
+    )
+    try:
+        bridge.start_test_configuration(
+            resolved_name,
+            ensure_measurement=ensure_running,
+            restart_if_running=restart_if_running,
+        )
+        summary = bridge.wait_test_configuration_complete(
+            resolved_name,
+            timeout_seconds=timeout_seconds,
+            poll_ms=poll_ms,
+        )
+        if resolved_tier:
+            _write_native_execute_context(
+                resolved_tier,
+                {
+                    "generated_at": dt.datetime.now().isoformat(timespec="seconds"),
+                    "started_at": load_native_execute_context_started_at(resolved_tier),
+                    "completed_at": dt.datetime.now().isoformat(timespec="seconds"),
+                    "state": "completed",
+                    "run_id": run_id or "",
+                    "tier": resolved_tier,
+                    "config_name": resolved_name,
+                    "summary_report": str(resolve_tier_contract(resolved_tier).summary_report_path),
+                    "verdict_raw": summary.verdict,
+                    "verdict": _verdict_label(summary.verdict),
+                    "test_unit_count": summary.test_unit_count,
+                    "incoming_raw": resolve_tier_contract(resolved_tier).incoming_raw,
+                    "incoming_trace_dir": resolve_tier_contract(resolved_tier).incoming_trace_dir,
+                    "incoming_logging_dir": resolve_tier_contract(resolved_tier).incoming_logging_dir,
+                },
+            )
+    finally:
+        _clear_native_execution_context(bridge)
+    payload = _native_summary_payload(summary, tier=resolved_tier)
+    rc = 0
+    if fail_on_verdict and summary.verdict == 2:
+        rc = 2
+    return rc, payload
+
+
+def load_native_execute_context_started_at(tier: str) -> str:
+    path = _native_execute_context_path(tier)
+    if not path.exists() or not path.is_file():
+        return ""
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, json.JSONDecodeError):
+        return ""
+    return str(payload.get("started_at", ""))
 
 
 def coerce_cli_value(raw_value: str, value_type: str) -> object:
@@ -212,6 +423,75 @@ def cmd_canoe_capl_call(args: argparse.Namespace) -> int:
         return 2
     print(f'[CANOE] capl-call {args.function_name} result={result}')
     return 0
+
+
+def cmd_canoe_test_config_list(_: argparse.Namespace) -> int:
+    platform_rc = fail_unavailable('canoe test-config-list')
+    if platform_rc != 0:
+        return platform_rc
+    try:
+        bridge = get_canoe_bridge()
+        configs = bridge.list_test_configurations()
+    except Exception as ex:
+        print(f'[CANOE] FAIL: {ex}')
+        return 2
+    print('[CANOE] native test configurations')
+    for item in configs:
+        print(
+            f"- name={item.name} enabled={str(item.enabled).lower()} "
+            f"running={str(item.running).lower()} verdict={_verdict_label(item.verdict)}({item.verdict}) "
+            f"test_units={item.test_unit_count}"
+        )
+    return 0
+
+
+def cmd_canoe_test_config_status(args: argparse.Namespace) -> int:
+    platform_rc = fail_unavailable('canoe test-config-status')
+    if platform_rc != 0:
+        return platform_rc
+    try:
+        bridge = get_canoe_bridge()
+        config_name, tier = _resolve_config_name(args)
+        payload = _native_summary_payload(bridge.get_test_configuration_summary(config_name), tier=tier)
+    except Exception as ex:
+        print(f'[CANOE] FAIL: {ex}')
+        return 2
+    if getattr(args, 'json', False):
+        print(json.dumps(payload, indent=2))
+        return 0
+    print(f"[CANOE] test-config {payload['config_name']}")
+    for key in ['tier', 'suite_id', 'assign_folder', 'summary_report', 'enabled', 'running', 'verdict', 'verdict_raw', 'test_unit_count']:
+        if key in payload:
+            print(f"- {key}: {payload[key]}")
+    return 0
+
+
+def cmd_canoe_test_config_run(args: argparse.Namespace) -> int:
+    platform_rc = fail_unavailable('canoe test-config-run')
+    if platform_rc != 0:
+        return platform_rc
+    try:
+        rc, payload = execute_native_test_configuration(
+            tier=(getattr(args, 'tier', '') or '').strip().upper() or None,
+            config_name=(getattr(args, 'config_name', '') or '').strip() or None,
+            run_id=(getattr(args, 'run_id', '') or '').strip() or None,
+            timeout_seconds=args.timeout_seconds,
+            poll_ms=args.poll_ms,
+            ensure_running=not args.no_ensure_running,
+            restart_if_running=args.restart_if_running,
+            fail_on_verdict=args.fail_on_verdict,
+        )
+    except Exception as ex:
+        print(f'[CANOE] FAIL: {ex}')
+        return 2
+    if getattr(args, 'json', False):
+        print(json.dumps(payload, indent=2))
+    else:
+        print(f"[CANOE] native execute finished: {payload['config_name']}")
+        for key in ['tier', 'suite_id', 'summary_report', 'verdict', 'verdict_raw', 'test_unit_count']:
+            if key in payload:
+                print(f"- {key}: {payload[key]}")
+    return rc
 
 
 def cmd_start_demo(args: argparse.Namespace) -> int:
