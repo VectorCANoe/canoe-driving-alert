@@ -17,10 +17,15 @@
 
 현재 source contract의 기본 축:
 
+- `driving-alert-workproducts/05_Unit_Test.md`
+- `driving-alert-workproducts/06_Integration_Test.md`
+- `driving-alert-workproducts/07_System_Test.md`
 - `canoe/tests/modules/test_units/README.md`
 - `canoe/tests/modules/test_suites/README.md`
 - `canoe/docs/verification/test-asset-mapping.md`
 - `canoe/docs/verification/execution-guide.md`
+- `canoe/docs/verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md`
+- `canoe/docs/verification/evidence-policy.md`
 
 ## 언어 표면 규칙
 

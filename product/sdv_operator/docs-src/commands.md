@@ -21,6 +21,8 @@ python scripts/run.py artifact open --target test-asset-mapping
 python scripts/run.py artifact open --target active-test-units-guide
 python scripts/run.py artifact open --target active-test-suites-guide
 python scripts/run.py artifact open --target execution-guide
+python scripts/run.py artifact open --target closeout-standard
+python scripts/run.py artifact open --target evidence-policy
 python scripts/run.py artifact open --target run-insight
 python scripts/run.py artifact open --target doc-binding-bundle
 python scripts/run.py artifact open --target doc-fill-template
@@ -145,6 +147,9 @@ python scripts/run.py verify batch --run-id 20260308_0900 --campaign-id CMP_2026
 - `phase`에 따라 verdict policy가 달라집니다.
   - `pre`: advisory gate 허용 (`WARN`)
   - `full`: closeout strict (`FAIL`)
+- tier authority는 별도입니다.
+  - `UT / IT / ST`: official closeout seed
+  - `FULL`: regression-only wrapper
 - `campaign_id`는 build/nightly/repeat 묶음 식별자입니다.
 - `surface_scope`는 reviewer-facing으로 집중해서 볼 surface ECU 범위입니다.
 - `repeat_count / duration_minutes / interval_seconds`는 반복 실행 의도와 운영 profile 기록입니다.
@@ -174,7 +179,7 @@ python scripts/run.py verify surface-bundle
 
 사용 시점:
 - reviewer-facing 결과를 runtime module이 아니라 surface ECU 기준으로 다시 묶을 때
-- Jenkins archive를 `BCM / IVI / CLUSTER / ADAS / V2X ...` 번들로 정리할 때
+- Jenkins archive를 `BCM / IVI / CLU / ADAS / V2X ...` 번들로 정리할 때
 
 참고:
 - `verify batch`는 내부적으로 이 단계를 자동 수행합니다.
@@ -296,6 +301,8 @@ python scripts/run.py artifact open --target test-asset-mapping
 python scripts/run.py artifact open --target active-test-units-guide
 python scripts/run.py artifact open --target active-test-suites-guide
 python scripts/run.py artifact open --target execution-guide
+python scripts/run.py artifact open --target closeout-standard
+python scripts/run.py artifact open --target evidence-policy
 python scripts/run.py artifact open --target run-insight
 python scripts/run.py artifact open --target doc-binding-bundle
 python scripts/run.py artifact open --target doc-fill-template

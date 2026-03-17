@@ -118,6 +118,8 @@ def _source_entries(layout: dict) -> list[Path]:
         ROOT / "canoe" / "tests" / "modules" / "test_suites" / "README.md",
         ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md",
         ROOT / "canoe" / "docs" / "verification" / "execution-guide.md",
+        ROOT / "canoe" / "docs" / "verification" / "VECTOR_ALIGNED_CLOSEOUT_STANDARD.md",
+        ROOT / "canoe" / "docs" / "verification" / "evidence-policy.md",
     ]
 
 
@@ -231,6 +233,10 @@ def _resolve_open_target(layout: dict, target: str, run_id: str, phase: str, lat
         return ROOT / "canoe" / "tests" / "modules" / "test_suites" / "README.md"
     if target == "execution-guide":
         return ROOT / "canoe" / "docs" / "verification" / "execution-guide.md"
+    if target == "closeout-standard":
+        return ROOT / "canoe" / "docs" / "verification" / "VECTOR_ALIGNED_CLOSEOUT_STANDARD.md"
+    if target == "evidence-policy":
+        return ROOT / "canoe" / "docs" / "verification" / "evidence-policy.md"
     if target == "verification-pack-matrix":
         return ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json"
     if target == "campaign-profiles":

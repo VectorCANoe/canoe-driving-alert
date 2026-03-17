@@ -338,6 +338,8 @@ def add_artifact_open_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
             "active-test-units-guide",
             "active-test-suites-guide",
             "execution-guide",
+            "closeout-standard",
+            "evidence-policy",
             "native-test-portfolio",
             "native-testcase-blueprints",
             "network-gateway-pack",

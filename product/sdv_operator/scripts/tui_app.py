@@ -62,23 +62,18 @@ RUNNER = ROOT / "scripts" / "run.py"
 FORM_SLOTS = 10
 STATE_FILE = ROOT / "canoe" / "tmp" / "reports" / "verification" / "tui_operator_state.json"
 CAMPAIGN_PROFILES_PATH = ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json"
+VERIFICATION_PACK_MATRIX_PATH = ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json"
 BASE_GROUP_NAMES = list(PRODUCT_COMMAND_GROUPS.keys())
 COMMAND_INDEX = build_command_index()
-PROFILE_SURFACE_LABELS = {
+PROFILE_TITLE_FALLBACKS = {
     "quick_smoke": "Quick smoke",
     "ci_preflight": "CI preflight",
     "nightly_regression": "Nightly",
     "soak_stability": "Soak",
-    "ut_active_baseline": "UT Active Baseline 77",
-    "it_active_baseline": "IT Active Baseline 45",
-    "st_active_baseline": "ST Active Baseline 46",
-    "full_active_baseline": "FULL Active Baseline 168",
-}
-PACK_SURFACE_LABELS = {
-    "ts_canoe_ut_active_baseline": "UT Active Baseline 77",
-    "ts_canoe_it_active_baseline": "IT Active Baseline 45",
-    "ts_canoe_st_active_baseline": "ST Active Baseline 46",
-    "ts_canoe_full_active_baseline": "FULL Active Baseline 168",
+    "ut_active_baseline": "UT Active Baseline",
+    "it_active_baseline": "IT Active Baseline",
+    "st_active_baseline": "ST Active Baseline",
+    "full_active_baseline": "FULL Active Baseline",
 }
 
 HOME_REFERENCE_PREVIEWS: dict[str, tuple[str, Path, str]] = {
@@ -940,7 +935,7 @@ class SdvTuiApp(App[None]):
                     with VerticalScroll(id="page-automation", classes="page hidden"):
                         yield Static(
                             "Automation 화면은 반복 실행과 CI/CD / Jenkins 연동을 위한 운영 영역입니다.\n"
-                            "운영 profile과 active baseline suite를 선택한 뒤, 상세 결과와 산출물 검토는 Results와 Artifacts에서 이어서 진행하십시오.",
+                            "운영 profile과 active baseline suite를 선택한 뒤, UT/IT/ST official closeout과 FULL regression 규칙을 분리해서 사용하십시오.",
                             id="automation-overview",
                         )
                         with Horizontal(id="automation-strip"):
@@ -949,23 +944,24 @@ class SdvTuiApp(App[None]):
                                 yield Static(
                                     "1) 검증 배치 준비\n"
                                     "2) 운영 profile 선택\n"
-                                    "3) UT / IT / ST / FULL active baseline 선택",
+                                    "3) UT / IT / ST official 또는 FULL regression 선택",
                                     id="automation-ci-body",
                                 )
                             with Vertical(classes="automation-card"):
                                 yield Static("Active Suites", classes="summary-title")
                                 yield Static(
-                                    "UT Active Baseline 77\n"
-                                    "IT Active Baseline 45\n"
-                                    "ST Active Baseline 46\n"
-                                    "FULL Active Baseline 168",
+                                    "UT Active Baseline\n"
+                                    "IT Active Baseline\n"
+                                    "ST Active Baseline\n"
+                                    "FULL Active Baseline (regression-only)",
                                     id="automation-soak-body",
                                 )
                             with Vertical(classes="automation-card"):
                                 yield Static("Profiles / Reference", classes="summary-title")
                                 yield Static(
                                     "test_suites / test_units README, test-asset-mapping,\n"
-                                    "execution-guide, Pack Matrix는 아래에서 바로 확인합니다.",
+                                    "execution-guide, closeout-standard, evidence-policy,\n"
+                                    "Pack Matrix는 아래에서 바로 확인합니다.",
                                     id="automation-native-body",
                                 )
                         with Vertical(id="automation-actions"):
@@ -976,17 +972,17 @@ class SdvTuiApp(App[None]):
                                 yield Button("Nightly", id="automation-profile-nightly")
                                 yield Button("Soak", id="automation-profile-soak")
                             with Horizontal(id="automation-actions-suites"):
-                                yield Button("UT 77", id="automation-profile-ut")
-                                yield Button("IT 45", id="automation-profile-it")
-                                yield Button("ST 46", id="automation-profile-st")
-                                yield Button("FULL 168", id="automation-profile-full")
+                                yield Button("UT", id="automation-profile-ut")
+                                yield Button("IT", id="automation-profile-it")
+                                yield Button("ST", id="automation-profile-st")
+                                yield Button("FULL", id="automation-profile-full")
                         with Horizontal(id="automation-support"):
                             yield Button("실행 프로파일", id="automation-open-profiles")
                             yield Button("Pack Matrix", id="automation-open-pack-matrix")
                             yield Button("CI/CD / Jenkins 문서", id="automation-open-ci")
                         yield Static(
                             "Automation은 실행 프로파일과 active suite pack 선택을 위한 화면입니다. "
-                            "결과 확인과 산출물 검토는 Results와 Artifacts에서 이어서 진행하십시오.",
+                            "UT/IT/ST는 official closeout 후보, FULL은 regression-only로 보고 결과 확인과 산출물 검토는 Results와 Artifacts에서 이어서 진행하십시오.",
                             id="automation-hint",
                         )
                     with Vertical(id="page-logs", classes="page hidden"):
@@ -1154,6 +1150,23 @@ class SdvTuiApp(App[None]):
             if not isinstance(item, dict):
                 continue
             key = str(item.get("profile_id", "")).strip()
+            if key:
+                out[key] = item
+        return out
+
+    def _load_verification_packs(self) -> dict[str, dict[str, object]]:
+        try:
+            raw = json.loads(VERIFICATION_PACK_MATRIX_PATH.read_text(encoding="utf-8-sig"))
+        except Exception:
+            return {}
+        packs = raw.get("packs", []) if isinstance(raw, dict) else []
+        out: dict[str, dict[str, object]] = {}
+        if not isinstance(packs, list):
+            return out
+        for item in packs:
+            if not isinstance(item, dict):
+                continue
+            key = str(item.get("pack_id", "")).strip()
             if key:
                 out[key] = item
         return out
@@ -1678,6 +1691,8 @@ class SdvTuiApp(App[None]):
             ROOT / "product" / "sdv_operator" / "docs-src" / "verification-packs.md",
             ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md",
             ROOT / "canoe" / "docs" / "verification" / "execution-guide.md",
+            ROOT / "canoe" / "docs" / "verification" / "VECTOR_ALIGNED_CLOSEOUT_STANDARD.md",
+            ROOT / "canoe" / "docs" / "verification" / "evidence-policy.md",
         )
         core_ready = sum(1 for item in core_contracts if item.exists())
         docs_ready = sum(1 for item in reference_docs if item.exists())
@@ -1690,7 +1705,7 @@ class SdvTuiApp(App[None]):
             f"현재 active suite: {pack_label}",
             f"Core config: {core_ready}/{len(core_contracts)} ready",
             f"Reference docs: {docs_ready}/{len(reference_docs)} ready",
-            "원본 JSON/README/Guide는 Source Contract 버튼에서 바로 엽니다.",
+            "05/06/07, test-asset-mapping, execution-guide, closeout/evidence 정책은 Source Contract에서 바로 엽니다.",
         ]
         return "\n".join(lines)
 
@@ -1786,13 +1801,23 @@ class SdvTuiApp(App[None]):
         profile_id = profile_id.strip()
         if not profile_id:
             return "-"
-        return PROFILE_SURFACE_LABELS.get(profile_id, profile_id)
+        profile = self._load_campaign_profiles().get(profile_id)
+        if isinstance(profile, dict):
+            title = str(profile.get("title", "")).strip()
+            if title:
+                return title
+        return PROFILE_TITLE_FALLBACKS.get(profile_id, profile_id)
 
     def _pack_surface_label(self, pack_id: str) -> str:
         pack_id = pack_id.strip()
         if not pack_id:
             return "-"
-        return PACK_SURFACE_LABELS.get(pack_id, pack_id)
+        pack = self._load_verification_packs().get(pack_id)
+        if isinstance(pack, dict):
+            title = str(pack.get("title", "")).strip()
+            if title:
+                return title
+        return pack_id
 
     def _summarize_evidence_paths(self) -> str:
         last_result = self.state.get("last_result", {})
@@ -2142,6 +2167,8 @@ class SdvTuiApp(App[None]):
                 "active-test-suites-guide": "canoe/tests/modules/test_suites/README.md",
                 "network-gateway-pack": "canoe/tests/modules/test_suites/README.md",
                 "execution-guide": "canoe/docs/verification/execution-guide.md",
+                "closeout-standard": "canoe/docs/verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md",
+                "evidence-policy": "canoe/docs/verification/evidence-policy.md",
                 "verification-pack-matrix": "product/sdv_operator/config/verification_pack_matrix.json",
                 "campaign-profiles": "product/sdv_operator/config/campaign_profiles.json",
                 "capability-matrix-json": "product/sdv_operator/config/capability_boundary_matrix.json",

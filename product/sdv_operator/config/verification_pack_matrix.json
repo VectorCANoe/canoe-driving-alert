@@ -4,55 +4,72 @@
   "packs": [
     {
       "pack_id": "ts_canoe_ut_active_baseline",
-      "title": "UT Active Baseline 77",
+      "title": "UT Active Baseline",
       "status": "mandatory",
       "category": "unit",
-      "review_focus": "05 Unit Test current executable baseline",
+      "review_focus": "05 Unit Test exact executable baseline for official closeout",
+      "closeout_role": "official",
+      "closeout_tier": "UT",
       "asset_count": 77,
       "suite_id": "TS_CANOE_UT_ACTIVE_BASELINE",
       "assign_folder": "canoe/tests/modules/test_units/assign/UT_ACTIVE_BASELINE",
       "campaign_profile_id": "ut_active_baseline",
+      "official_doc_ref": "driving-alert-workproducts/05_Unit_Test.md",
       "source_contracts": [
+        "driving-alert-workproducts/05_Unit_Test.md",
         "canoe/tests/modules/test_units/README.md",
-        "canoe/docs/verification/test-asset-mapping.md"
+        "canoe/docs/verification/test-asset-mapping.md",
+        "canoe/docs/verification/evidence-policy.md"
       ]
     },
     {
       "pack_id": "ts_canoe_it_active_baseline",
-      "title": "IT Active Baseline 45",
+      "title": "IT Active Baseline",
       "status": "mandatory",
       "category": "integration",
-      "review_focus": "06 Integration Test current executable baseline",
+      "review_focus": "06 Integration Test exact executable baseline for official closeout",
+      "closeout_role": "official",
+      "closeout_tier": "IT",
       "asset_count": 45,
       "suite_id": "TS_CANOE_IT_ACTIVE_BASELINE",
       "assign_folder": "canoe/tests/modules/test_units/assign/IT_ACTIVE_BASELINE",
       "campaign_profile_id": "it_active_baseline",
+      "official_doc_ref": "driving-alert-workproducts/06_Integration_Test.md",
       "source_contracts": [
+        "driving-alert-workproducts/06_Integration_Test.md",
         "canoe/tests/modules/test_suites/README.md",
-        "canoe/docs/verification/test-asset-mapping.md"
+        "canoe/docs/verification/test-asset-mapping.md",
+        "canoe/docs/verification/evidence-policy.md"
       ]
     },
     {
       "pack_id": "ts_canoe_st_active_baseline",
-      "title": "ST Active Baseline 46",
+      "title": "ST Active Baseline",
       "status": "mandatory",
       "category": "system",
-      "review_focus": "07 System Test current executable baseline",
+      "review_focus": "07 System Test exact executable baseline for official closeout",
+      "closeout_role": "official",
+      "closeout_tier": "ST",
       "asset_count": 46,
       "suite_id": "TS_CANOE_ST_ACTIVE_BASELINE",
       "assign_folder": "canoe/tests/modules/test_units/assign/ST_ACTIVE_BASELINE",
       "campaign_profile_id": "st_active_baseline",
+      "official_doc_ref": "driving-alert-workproducts/07_System_Test.md",
       "source_contracts": [
+        "driving-alert-workproducts/07_System_Test.md",
         "canoe/tests/modules/test_suites/README.md",
-        "canoe/docs/verification/test-asset-mapping.md"
+        "canoe/docs/verification/test-asset-mapping.md",
+        "canoe/docs/verification/evidence-policy.md"
       ]
     },
     {
       "pack_id": "ts_canoe_full_active_baseline",
-      "title": "FULL Active Baseline 168",
-      "status": "mandatory",
+      "title": "FULL Active Baseline",
+      "status": "regression-only",
       "category": "full_stack",
-      "review_focus": "UT/IT/ST active baseline wrapper execution",
+      "review_focus": "UT/IT/ST active baseline wrapper regression run; not an official closeout seed",
+      "closeout_role": "regression_only",
+      "closeout_tier": "FULL",
       "asset_count": 168,
       "suite_id": "TS_CANOE_FULL_ACTIVE_BASELINE",
       "assign_folder": "canoe/tests/modules/test_units/assign/FULL_ACTIVE_BASELINE",
@@ -60,7 +77,9 @@
       "source_contracts": [
         "canoe/tests/modules/test_suites/README.md",
         "canoe/docs/verification/execution-guide.md",
-        "canoe/docs/verification/test-asset-mapping.md"
+        "canoe/docs/verification/test-asset-mapping.md",
+        "canoe/docs/verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md",
+        "canoe/docs/verification/evidence-policy.md"
       ]
     }
   ]

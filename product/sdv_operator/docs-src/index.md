@@ -24,7 +24,8 @@
    - CANoe TEST / Jenkins / Console 역할 분리
    - capability boundary source contract
    - campaign profile source contract
-   - UT 77 / IT 45 / ST 46 / FULL 168 active suite 구분
+   - UT / IT / ST official active suite
+   - FULL regression-only wrapper 구분
 
 ## One-Line Flow
 

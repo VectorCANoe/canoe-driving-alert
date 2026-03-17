@@ -158,7 +158,7 @@ def print_shell_help() -> None:
     print('  /verify quick [run_id] [owner]  # prepare + smoke + readiness status')
     print('  /gate all|doc-sync|text-integrity|cfg-hygiene|capl-sync|multibus-dbc|cli-readiness')
     print('  /artifact list [staging|archive|source] [--latest|--run-id <id>] [--phase <pre|post|full>]')
-    print('  /artifact open --target <batch-report|run-insight|doc-binding-bundle|doc-fill-template|surface-bundle|readiness|doctor|surface-inventory|unit-test-doc|integration-test-doc|system-test-doc|test-asset-mapping|active-test-units-guide|active-test-suites-guide|execution-guide|verification-pack-matrix|campaign-profiles|traceability-profile|artifact-layout|phase-policy|manifest|commands-doc|results-doc|packaging-doc|archive-run|reports-dir|surface-dir|native-reports|execution-manifest>')
+    print('  /artifact open --target <batch-report|run-insight|doc-binding-bundle|doc-fill-template|surface-bundle|readiness|doctor|surface-inventory|unit-test-doc|integration-test-doc|system-test-doc|test-asset-mapping|active-test-units-guide|active-test-suites-guide|execution-guide|closeout-standard|evidence-policy|verification-pack-matrix|campaign-profiles|traceability-profile|artifact-layout|phase-policy|manifest|commands-doc|results-doc|packaging-doc|archive-run|reports-dir|surface-dir|native-reports|execution-manifest>')
     print('  /artifact clean [staging|archive|build|all] [run_id] [phase] [--yes]')
     print('  /package portable [onefolder|onefile]')
     print('  /package exe [onefolder|onefile]')

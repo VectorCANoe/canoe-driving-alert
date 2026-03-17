@@ -63,7 +63,7 @@ python scripts/run.py package build-exe --mode onefolder
 - `reports/`
   - doctor / readiness / batch / junit / surface summary
 - `surface/`
-  - `BCM`, `IVI`, `CLUSTER`, `ADAS`, `V2X`, `CGW` ... 기준 reviewer bundle
+  - `BCM`, `IVI`, `CLU`, `ADAS`, `V2X`, `CGW` ... 기준 reviewer bundle
 - `native_reports/`
   - Dev1 native CANoe `.vtestreport` 원본
 - `evidence/`

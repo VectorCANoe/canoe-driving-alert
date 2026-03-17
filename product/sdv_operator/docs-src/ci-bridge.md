@@ -4,7 +4,7 @@
 
 Dev2의 역할은 CANoe native test를 대체하는 것이 아니라, native 결과와 외부 검증 산출물을
 Jenkins가 바로 수집할 수 있는 형태로 정규화하는 것입니다. reviewer-facing 결과는 runtime module이 아니라
-`BCM / IVI / CLUSTER / ADAS / V2X ...` 같은 surface ECU 기준으로 다시 묶습니다.
+`BCM / IVI / CLU / ADAS / V2X ...` 같은 surface ECU 기준으로 다시 묶습니다.
 
 Campaign 반복 규약은 `campaign_profiles.json`에서 정의하고, Jenkins는 그 profile을 스케줄링에 반영합니다.
 즉 Jenkins가 scheduler를 담당하고, Console은 campaign metadata/evidence 규약을 담당합니다.
