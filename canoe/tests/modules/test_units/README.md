@@ -64,9 +64,12 @@ Recommended path:
 1. Open the active CANoe configuration in the GUI.
 2. Use `Add Test Unit` and register `*.vtestunit.yaml` descriptors, not `*.can` files directly.
 3. For bulk import, use `assign/UT_ACTIVE_BASELINE`, `assign/IT_ACTIVE_BASELINE`, `assign/ST_ACTIVE_BASELINE`, or `assign/FULL_ACTIVE_BASELINE`.
-4. The `test_suites/TS_*/*.vtestunit.yaml` files are repository suite manifests and are not the direct GUI import files.
-5. Enable only executable assets in the active suite. Keep any remaining placeholder-only assets in `retire/` until concrete assertions are fixed.
-6. Save the configuration through the GUI only.
+4. Assign wrapper filenames are maintained as ID-first for stable GUI import ordering:
+   `TC_CANOE_<UT|IT|ST>_<CATEGORY>_<ID>_<REST>` -> `TC_CANOE_<UT|IT|ST>_<ID>_<CATEGORY>_<REST>`.
+   Native asset folder names, `.can` filenames, and CAPL testcase names remain unchanged.
+5. The `test_suites/TS_*/*.vtestunit.yaml` files are repository suite manifests and are not the direct GUI import files.
+6. Enable only executable assets in the active suite. Keep any remaining placeholder-only assets in `retire/` until concrete assertions are fixed.
+7. Save the configuration through the GUI only.
 
 ## Evidence
 - Native CANoe test report (`.vtestreport`)
