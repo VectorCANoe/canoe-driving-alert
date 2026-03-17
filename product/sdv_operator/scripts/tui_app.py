@@ -49,6 +49,7 @@ from cliops.tui_text import (
 from textual import work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.screen import ModalScreen
 from textual.widgets import Button, Footer, Header, Input, OptionList, ProgressBar, RichLog, Static
 from textual.widgets.option_list import Option
 from textual.css.query import NoMatches
@@ -79,6 +80,101 @@ PACK_SURFACE_LABELS = {
     "ts_canoe_st_active_baseline": "ST Active Baseline 46",
     "ts_canoe_full_active_baseline": "FULL Active Baseline 128",
 }
+
+HOME_REFERENCE_PREVIEWS: dict[str, tuple[str, Path, str]] = {
+    "docs": (
+        "01~07 공식 문서",
+        ROOT / "driving-alert-workproducts",
+        "리뷰 기준 문서 묶음입니다. 01 Requirements부터 07 System Test까지 공식 표준 양식을 한 번에 확인합니다.",
+    ),
+    "comm-matrix": (
+        "Contract Matrix",
+        ROOT / "canoe" / "docs" / "contracts" / "communication-matrix.md",
+        "CANoe 프로젝트의 frame-level sender/receiver, 소비 ECU, 버스 경계를 확인하는 핵심 contract 문서입니다.",
+    ),
+    "test-asset": (
+        "Test Asset Mapping",
+        ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md",
+        "05/06/07 공식 시험 문서와 executable CANoe asset/oracle/evidence 연결 기준을 확인합니다.",
+    ),
+    "execution-guide": (
+        "Execution Guide",
+        ROOT / "canoe" / "docs" / "verification" / "execution-guide.md",
+        "active suite 실행 순서, harness 기준, evidence 수집 순서를 확인하는 운영 기준 문서입니다.",
+    ),
+    "pack-matrix": (
+        "Pack Matrix",
+        ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json",
+        "현재 operator console이 따르는 verification pack 구성과 source contract 연결을 확인합니다.",
+    ),
+}
+
+
+class ReferencePreviewScreen(ModalScreen[None]):
+    CSS = """
+    ReferencePreviewScreen {
+        align: center middle;
+        background: rgba(5, 8, 12, 0.72);
+    }
+
+    #reference-preview {
+        width: 88;
+        max-width: 92%;
+        padding: 1 2;
+        background: #17202b;
+        border: round #4ea1ff;
+    }
+
+    #reference-preview-title {
+        color: #f6c177;
+        text-style: bold;
+        margin-bottom: 1;
+    }
+
+    #reference-preview-body {
+        color: #d7e7f2;
+        margin-bottom: 1;
+    }
+
+    #reference-preview-path {
+        color: #8fb8ff;
+        margin-bottom: 1;
+    }
+
+    #reference-preview-actions {
+        height: 3;
+    }
+    """
+
+    def __init__(self, title: str, target: Path, summary: str) -> None:
+        super().__init__()
+        self.reference_title = title
+        self.reference_target = target
+        self.reference_summary = summary
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id="reference-preview"):
+            yield Static(self.reference_title, id="reference-preview-title")
+            yield Static(self.reference_summary, id="reference-preview-body")
+            yield Static(str(self.reference_target), id="reference-preview-path")
+            with Horizontal(id="reference-preview-actions"):
+                yield Button("원본 열기", id="reference-preview-open", variant="primary")
+                yield Button("경로 복사", id="reference-preview-copy")
+                yield Button("닫기", id="reference-preview-close")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "reference-preview-open":
+            self.app._open_static_target(self.reference_target)  # type: ignore[attr-defined]
+            self.dismiss(None)
+        elif event.button.id == "reference-preview-copy":
+            copied = self.app._copy_text_to_clipboard(str(self.reference_target))  # type: ignore[attr-defined]
+            if copied:
+                self.app._write_log(artifact_copied(str(self.reference_target)))  # type: ignore[attr-defined]
+            else:
+                self.app._write_log(f"[bold yellow]경로 복사를 사용할 수 없습니다.[/] {self.reference_target}")  # type: ignore[attr-defined]
+            self.dismiss(None)
+        else:
+            self.dismiss(None)
 
 
 class SdvTuiApp(App[None]):
@@ -189,6 +285,22 @@ class SdvTuiApp(App[None]):
         background: #17202b;
         border: round #33536f;
         min-height: 7;
+    }
+
+    #home-reference-actions {
+        margin-top: 1;
+        height: 4;
+    }
+
+    .home-ref-button {
+        width: 1fr;
+        height: 4;
+        margin-right: 1;
+        content-align: center middle;
+    }
+
+    .home-ref-button:last-child {
+        margin-right: 0;
     }
 
     #home-core-flow {
@@ -653,11 +765,16 @@ class SdvTuiApp(App[None]):
                     with VerticalScroll(id="page-home", classes="page"):
                         yield Static(
                             "CANoe Test Verification Console\n\n"
-                            "이 콘솔은 CANoe SIL 검증의 실행, 결과 확인, 증빙 검토, 자동화 운영을 위한 작업 화면입니다.\n"
-                            "기본 흐름은 Gate all -> Scenario run -> Verify quick 순서로 진행합니다.\n"
-                            "실행은 Run, 결과 판정은 Results, 산출물 확인은 Artifacts, 반복 실행은 Automation에서 이어서 진행하십시오.",
+                            "V-model 기준의 CANoe SIL 운영 콘솔입니다.\n"
+                            "ASPICE SWE.4 / SWE.5와 ISO 26262 Traceability Matrix 기준으로 01~07 공식 문서, communication-matrix, test-asset-mapping, execution-guide를 함께 검토합니다.",
                             id="home-body",
                         )
+                        with Horizontal(id="home-reference-actions"):
+                            yield Button("01~07\n문서", id="home-open-docs", classes="home-ref-button")
+                            yield Button("Contract\nMatrix", id="home-open-comm-matrix", classes="home-ref-button")
+                            yield Button("Test Asset\nMapping", id="home-open-test-asset", classes="home-ref-button")
+                            yield Button("Execution\nGuide", id="home-open-execution-guide", classes="home-ref-button")
+                            yield Button("Pack\nMatrix", id="home-open-pack-matrix", classes="home-ref-button")
                         yield Static(id="home-summary")
                         with Horizontal(id="home-core-flow"):
                             with Vertical(classes="home-task-card"):
@@ -2447,6 +2564,14 @@ class SdvTuiApp(App[None]):
     def action_open_build_root(self) -> None:
         self._open_static_target(ROOT / "dist")
 
+    def _show_home_reference_preview(self, key: str) -> None:
+        reference = HOME_REFERENCE_PREVIEWS.get(key)
+        if reference is None:
+            self._write_log(f"[yellow]등록되지 않은 HOME reference입니다.[/] {key}")
+            return
+        title, target, summary = reference
+        self.push_screen(ReferencePreviewScreen(title, target, summary))
+
     def action_copy_artifact(self) -> None:
         target = self._resolve_artifact_target()
         if target is None:
@@ -2813,6 +2938,16 @@ class SdvTuiApp(App[None]):
             self._open_core_task("operate.scenario_trigger", focus="form")
         elif event.button.id == "home-verify":
             self._open_core_task("verify.quick_verify", focus="form")
+        elif event.button.id == "home-open-docs":
+            self._show_home_reference_preview("docs")
+        elif event.button.id == "home-open-comm-matrix":
+            self._show_home_reference_preview("comm-matrix")
+        elif event.button.id == "home-open-test-asset":
+            self._show_home_reference_preview("test-asset")
+        elif event.button.id == "home-open-execution-guide":
+            self._show_home_reference_preview("execution-guide")
+        elif event.button.id == "home-open-pack-matrix":
+            self._show_home_reference_preview("pack-matrix")
         elif event.button.id == "group-primary":
             self._set_command_group("Primary Workflow")
         elif event.button.id == "group-runtime":
