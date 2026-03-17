@@ -118,8 +118,9 @@ class ReferencePreviewScreen(ModalScreen[None]):
     }
 
     #reference-preview {
-        width: 88;
+        width: 74;
         max-width: 92%;
+        height: auto;
         padding: 1 2;
         background: #17202b;
         border: round #4ea1ff;
@@ -141,22 +142,33 @@ class ReferencePreviewScreen(ModalScreen[None]):
         margin-bottom: 1;
     }
 
+    #reference-preview-details {
+        max-height: 12;
+        margin-bottom: 1;
+        padding: 1;
+        background: #11161c;
+        border: round #2d3e50;
+        color: #c7d3df;
+    }
+
     #reference-preview-actions {
         height: 3;
     }
     """
 
-    def __init__(self, title: str, target: Path, summary: str) -> None:
+    def __init__(self, title: str, target: Path, summary: str, preview: str) -> None:
         super().__init__()
         self.reference_title = title
         self.reference_target = target
         self.reference_summary = summary
+        self.reference_preview = preview
 
     def compose(self) -> ComposeResult:
         with Vertical(id="reference-preview"):
             yield Static(self.reference_title, id="reference-preview-title")
             yield Static(self.reference_summary, id="reference-preview-body")
             yield Static(str(self.reference_target), id="reference-preview-path")
+            yield Static(self.reference_preview, id="reference-preview-details")
             with Horizontal(id="reference-preview-actions"):
                 yield Button("원본 열기", id="reference-preview-open", variant="primary")
                 yield Button("경로 복사", id="reference-preview-copy")
@@ -2644,13 +2656,66 @@ class SdvTuiApp(App[None]):
     def action_open_build_root(self) -> None:
         self._open_static_target(ROOT / "dist")
 
+    def _build_home_reference_preview(self, key: str, target: Path) -> str:
+        if key == "docs":
+            docs = [
+                "01_Requirements.md",
+                "02_Concept_design.md",
+                "03_Function_definition.md",
+                "0301_SysFuncAnalysis.md",
+                "0302_NWflowDef.md",
+                "0303_Communication_Specification.md",
+                "0304_System_Variables.md",
+                "04_SW_Implementation.md",
+                "05_Unit_Test.md",
+                "06_Integration_Test.md",
+                "07_System_Test.md",
+            ]
+            available = [name for name in docs if (target / name).exists()]
+            return "포함 문서\n" + "\n".join(f"- {name}" for name in available)
+
+        if target.suffix == ".json":
+            try:
+                data = json.loads(target.read_text(encoding="utf-8-sig"))
+                if target.name == "verification_pack_matrix.json" and isinstance(data, dict):
+                    packs = data.get("packs", [])
+                    if isinstance(packs, list):
+                        lines = ["현재 pack"]
+                        for item in packs[:6]:
+                            if isinstance(item, dict):
+                                lines.append(f"- {item.get('title', item.get('pack_id', '-'))}")
+                        return "\n".join(lines)
+            except Exception:
+                pass
+            return "미리보기\n- JSON target\n- 원본 열기 또는 경로 복사로 확인하십시오."
+
+        if target.suffix == ".md":
+            try:
+                lines = target.read_text(encoding="utf-8-sig").splitlines()
+            except Exception:
+                return "미리보기를 읽을 수 없습니다."
+            preview_lines: list[str] = []
+            for raw in lines:
+                line = raw.strip()
+                if not line:
+                    continue
+                if line.startswith("|") and len(preview_lines) >= 4:
+                    continue
+                preview_lines.append(line)
+                if len(preview_lines) == 7:
+                    break
+            return "미리보기\n" + "\n".join(preview_lines) if preview_lines else "미리보기를 읽을 수 없습니다."
+
+        return self._brief_relpath(target)
+
     def _show_home_reference_preview(self, key: str) -> None:
         reference = HOME_REFERENCE_PREVIEWS.get(key)
         if reference is None:
             self._write_log(f"[yellow]등록되지 않은 HOME reference입니다.[/] {key}")
             return
         title, target, summary = reference
-        self.push_screen(ReferencePreviewScreen(title, target, summary))
+        preview = self._build_home_reference_preview(key, target)
+        self.push_screen(ReferencePreviewScreen(title, target, summary, preview))
 
     def action_copy_artifact(self) -> None:
         target = self._resolve_artifact_target()
