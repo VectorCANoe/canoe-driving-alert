@@ -289,6 +289,59 @@ def _load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8-sig"))
 
 
+def _report_signature(report_path: Path) -> dict[str, object]:
+    stat = report_path.stat()
+    return {
+        "report_size_bytes": stat.st_size,
+        "report_mtime_ns": stat.st_mtime_ns,
+    }
+
+
+def _bundle_paths_exist(bundle: dict, *, include_pdf: bool) -> bool:
+    exports = bundle.get("exports", {})
+    required = ["xml", "xunit", "data_api_json"]
+    if include_pdf:
+        required.append("pdf")
+    for key in required:
+        raw = exports.get(key, "")
+        if not raw or not Path(raw).exists():
+            return False
+    bundle_json = bundle.get("bundle_json", "")
+    bundle_md = bundle.get("bundle_md", "")
+    if not bundle_json or not Path(bundle_json).exists():
+        return False
+    if not bundle_md or not Path(bundle_md).exists():
+        return False
+    return True
+
+
+def _try_load_cached_bundle(
+    *,
+    output_dir: Path,
+    base_name: str,
+    report_path: Path,
+    include_pdf: bool,
+) -> dict | None:
+    bundle_json = output_dir / f"{base_name}.bundle.json"
+    if not bundle_json.exists():
+        return None
+    try:
+        bundle = _load_json(bundle_json)
+    except Exception:
+        return None
+    expected_path = _display_path(report_path)
+    if bundle.get("report_path", "") != expected_path:
+        return None
+    signature = _report_signature(report_path)
+    if bundle.get("report_size_bytes") != signature["report_size_bytes"]:
+        return None
+    if bundle.get("report_mtime_ns") != signature["report_mtime_ns"]:
+        return None
+    if not _bundle_paths_exist(bundle, include_pdf=include_pdf):
+        return None
+    return bundle
+
+
 def _write_bundle_summary_md(path: Path, bundle: dict) -> None:
     lines = [
         "# Official Report Bundle",
@@ -368,6 +421,17 @@ def build_official_report_bundle(*, tier: str | None, explicit_report: str | Non
     if not report_path.exists():
         raise ReportViewerError(f"native report not found: {report_path}")
     output_dir = _official_tier_dir(resolved_tier)
+    cached_bundle = _try_load_cached_bundle(
+        output_dir=output_dir,
+        base_name=base_name,
+        report_path=report_path,
+        include_pdf=include_pdf,
+    )
+    if cached_bundle is not None:
+        _update_manifest(tooling=tooling, bundle=cached_bundle)
+        return cached_bundle
+
+    signature = _report_signature(report_path)
     exports = _export_with_cli(
         tooling=tooling,
         report_path=report_path,
@@ -402,6 +466,8 @@ def build_official_report_bundle(*, tier: str | None, explicit_report: str | Non
         "generated_at": datetime.now().isoformat(),
         "tier": resolved_tier,
         "report_path": _display_path(report_path),
+        "report_size_bytes": signature["report_size_bytes"],
+        "report_mtime_ns": signature["report_mtime_ns"],
         "report_title": data_api_payload.get("report", {}).get("title", base_name),
         "report_verdict": data_api_payload.get("report", {}).get("verdict", ""),
         "exports": exports,

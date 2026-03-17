@@ -636,8 +636,10 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
         return 2
 
     steps: list[dict[str, object]] = []
+    bundled_tiers: set[str] = set()
     policy = load_phase_policy(args.phase)
     selected_tiers = ['UT', 'IT', 'ST']
+    native_restart_if_running = bool(getattr(args, 'native_restart_if_running', False))
     if getattr(args, 'execute_native_tier', ''):
         try:
             contract = resolve_tier_contract(args.execute_native_tier)
@@ -654,6 +656,8 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
             args.assign_folder = contract.assign_folder
         if args.execute_native_tier != 'FULL':
             selected_tiers = [args.execute_native_tier]
+        # Batch-native execution is treated as a fresh authoritative run.
+        native_restart_if_running = True
 
     def run_step(name: str, fn) -> int:
         rc = fn()
@@ -710,7 +714,7 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                         timeout_seconds=args.native_timeout_seconds,
                         poll_ms=args.native_poll_ms,
                         no_ensure_running=False,
-                        restart_if_running=args.native_restart_if_running,
+                        restart_if_running=native_restart_if_running,
                         fail_on_verdict=args.native_fail_on_verdict,
                         json=False,
                     )
@@ -734,6 +738,8 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                     )
                 ),
             )
+            if report_bundle_rc == 0:
+                bundled_tiers.add(args.execute_native_tier)
             if native_should_stop or should_stop(report_bundle_rc):
                 return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
         status_rc = run_step(
@@ -785,17 +791,25 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                 )
             if should_stop(rc):
                 return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
-            rc = run_step(
-                f'official report bundle {tier}',
-                lambda tier=tier: cmd_verify_report_bundle(
-                    argparse.Namespace(
-                        tier=tier,
-                        report='',
-                        include_pdf=False,
-                        json=False,
-                    )
-                ),
-            )
+            if tier in bundled_tiers:
+                rc = run_step(
+                    f'official report bundle {tier} (cached)',
+                    lambda: 0,
+                )
+            else:
+                rc = run_step(
+                    f'official report bundle {tier}',
+                    lambda tier=tier: cmd_verify_report_bundle(
+                        argparse.Namespace(
+                            tier=tier,
+                            report='',
+                            include_pdf=False,
+                            json=False,
+                        )
+                    ),
+                )
+                if rc == 0:
+                    bundled_tiers.add(tier)
             if should_stop(rc):
                 return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
         finalize_ns = argparse.Namespace(

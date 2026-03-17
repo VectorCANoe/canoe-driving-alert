@@ -311,6 +311,10 @@ def cmd_finalize(args: argparse.Namespace) -> int:
         for item in empty_markers:
             print(f"- {item}")
         print("[FINALIZE] run CANoe scenarios and export Write Window evidence lines before finalize.")
+        print("[FINALIZE] if product native execute was used, verify that:")
+        print("- the active mirror canoe/cfg/channel_assign/ETH_Backbone/TEST_SCN.can contains the dual-write evidence hook")
+        print("- the CANoe configuration was reloaded/saved after project.sysvars update")
+        print("- TEST_SCN/TEST_BAS were recompiled in the active configuration before rerun")
         return 2
 
     if not args.skip_fill_score:
