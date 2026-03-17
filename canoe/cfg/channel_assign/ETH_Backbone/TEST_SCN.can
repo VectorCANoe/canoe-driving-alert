@@ -172,39 +172,47 @@ dword openEvidenceRawFile()
   tierCode = getEvidenceTierCode();
   if (tierCode == 1)
   {
-    return OpenFile("..\logging\evidence\incoming\UT\raw_write_window.txt", "a");
+    return openFileWrite("..\\logging\\evidence\\incoming\\UT\\raw_write_window.txt", 2);
   }
   if (tierCode == 2)
   {
-    return OpenFile("..\logging\evidence\incoming\IT\raw_write_window.txt", "a");
+    return openFileWrite("..\\logging\\evidence\\incoming\\IT\\raw_write_window.txt", 2);
   }
   if (tierCode == 3)
   {
-    return OpenFile("..\logging\evidence\incoming\ST\raw_write_window.txt", "a");
+    return openFileWrite("..\\logging\\evidence\\incoming\\ST\\raw_write_window.txt", 2);
   }
   if (tierCode == 4)
   {
-    return OpenFile("..\logging\evidence\incoming\FULL\raw_write_window.txt", "a");
+    return openFileWrite("..\\logging\\evidence\\incoming\\FULL\\raw_write_window.txt", 2);
   }
 
   return 0;
 }
 
-void writeEvidenceInLine(int scenarioId, dword inputTsMs)
+void appendEvidenceRawLine(char line[])
 {
   dword fileHandle;
-
-  write("[EVIDENCE_IN] scenario=%d inputTsMs=%lu",
-        scenarioId, inputTsMs);
 
   fileHandle = openEvidenceRawFile();
   if (fileHandle > 0)
   {
-    FPrint(fileHandle,
+    filePutString(line, strlen(line), fileHandle);
+    fileClose(fileHandle);
+  }
+}
+
+void writeEvidenceInLine(int scenarioId, dword inputTsMs)
+{
+  char line[128];
+
+  write("[EVIDENCE_IN] scenario=%d inputTsMs=%lu",
+        scenarioId, inputTsMs);
+
+  snprintf(line, elcount(line),
            "[EVIDENCE_IN] scenario=%d inputTsMs=%lu\n",
            scenarioId, inputTsMs);
-    CloseFile(fileHandle);
-  }
+  appendEvidenceRawLine(line);
 }
 
 void writeEvidenceOutLine(int scenarioId,
@@ -225,23 +233,19 @@ void writeEvidenceOutLine(int scenarioId,
                           int renderAlertType,
                           int renderTextCode)
 {
-  dword fileHandle;
+  char line[384];
 
   write("[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d release=%d objValid=%d objClass=%d objTtc=%d objEvent=%d renderType=%d renderCode=%d",
         scenarioId, outputTsMs, result, level, type, code, timeoutClear, proximityRiskLevel,
         decelAssistReq, failSafeMode, driverReleaseReason, objectTrackValid, objectRiskClass,
         objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
 
-  fileHandle = openEvidenceRawFile();
-  if (fileHandle > 0)
-  {
-    FPrint(fileHandle,
+  snprintf(line, elcount(line),
            "[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d release=%d objValid=%d objClass=%d objTtc=%d objEvent=%d renderType=%d renderCode=%d\n",
            scenarioId, outputTsMs, result, level, type, code, timeoutClear, proximityRiskLevel,
            decelAssistReq, failSafeMode, driverReleaseReason, objectTrackValid, objectRiskClass,
            objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
-    CloseFile(fileHandle);
-  }
+  appendEvidenceRawLine(line);
 }
 
 void pushLockedScenarioInputs()
