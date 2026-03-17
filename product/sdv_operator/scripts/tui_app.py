@@ -46,7 +46,7 @@ from cliops.tui_text import (
     recommended_next,
     runtime_badge,
 )
-from textual import work
+from textual import events, work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.screen import ModalScreen
@@ -290,6 +290,20 @@ class SdvTuiApp(App[None]):
     #home-reference-actions {
         margin-top: 1;
         height: 4;
+    }
+
+    #home-reference-actions-compact {
+        margin-top: 1;
+        height: 7;
+    }
+
+    .home-reference-row {
+        height: 3;
+        margin-bottom: 1;
+    }
+
+    .home-reference-row:last-child {
+        margin-bottom: 0;
     }
 
     .home-ref-button {
@@ -775,6 +789,14 @@ class SdvTuiApp(App[None]):
                             yield Button("Test Asset\nMapping", id="home-open-test-asset", classes="home-ref-button")
                             yield Button("Execution\nGuide", id="home-open-execution-guide", classes="home-ref-button")
                             yield Button("Pack\nMatrix", id="home-open-pack-matrix", classes="home-ref-button")
+                        with Vertical(id="home-reference-actions-compact", classes="hidden"):
+                            with Horizontal(classes="home-reference-row"):
+                                yield Button("01~07 문서", id="home-open-docs-compact", classes="home-ref-button")
+                                yield Button("Contract Matrix", id="home-open-comm-matrix-compact", classes="home-ref-button")
+                                yield Button("Test Asset Mapping", id="home-open-test-asset-compact", classes="home-ref-button")
+                            with Horizontal(classes="home-reference-row"):
+                                yield Button("Execution Guide", id="home-open-execution-guide-compact", classes="home-ref-button")
+                                yield Button("Pack Matrix", id="home-open-pack-matrix-compact", classes="home-ref-button")
                         yield Static(id="home-summary")
                         with Horizontal(id="home-core-flow"):
                             with Vertical(classes="home-task-card"):
@@ -972,6 +994,7 @@ class SdvTuiApp(App[None]):
         self.active_group_index = self.group_names.index("Primary Workflow")
         self._refresh_commands(self.active_group_index)
         self._show_page("home")
+        self._refresh_home_reference_layout()
         if str(self.state.get("last_result", {}).get("status", "IDLE")) == "RUNNING":
             self._run_started_monotonic = time.monotonic()
         self._refresh_summary_cards()
@@ -979,6 +1002,9 @@ class SdvTuiApp(App[None]):
         self._refresh_log_summary()
         self.set_interval(0.5, self._refresh_global_bars)
         self._write_log("[bold cyan]TUI 준비 완료[/]  작업을 고르고 필요한 값을 입력한 뒤 [bold]Ctrl+R[/]로 실행하십시오.")
+
+    def on_resize(self, event: events.Resize) -> None:
+        self._refresh_home_reference_layout()
 
     def _show_page(self, page_name: str) -> None:
         self.current_page = page_name
@@ -1002,6 +1028,19 @@ class SdvTuiApp(App[None]):
             button.variant = "primary" if button_id == active_nav else "default"
         self._refresh_execute_group_buttons()
         self._refresh_artifact_cards()
+
+    def _refresh_home_reference_layout(self) -> None:
+        try:
+            wide = self.query_one("#home-reference-actions", Horizontal)
+            compact = self.query_one("#home-reference-actions-compact", Vertical)
+        except NoMatches:
+            return
+        if self.size.width <= 110:
+            wide.add_class("hidden")
+            compact.remove_class("hidden")
+        else:
+            compact.add_class("hidden")
+            wide.remove_class("hidden")
 
     def _set_command_group(self, group_name: str) -> None:
         if group_name not in self.group_names:
@@ -2938,15 +2977,15 @@ class SdvTuiApp(App[None]):
             self._open_core_task("operate.scenario_trigger", focus="form")
         elif event.button.id == "home-verify":
             self._open_core_task("verify.quick_verify", focus="form")
-        elif event.button.id == "home-open-docs":
+        elif event.button.id in {"home-open-docs", "home-open-docs-compact"}:
             self._show_home_reference_preview("docs")
-        elif event.button.id == "home-open-comm-matrix":
+        elif event.button.id in {"home-open-comm-matrix", "home-open-comm-matrix-compact"}:
             self._show_home_reference_preview("comm-matrix")
-        elif event.button.id == "home-open-test-asset":
+        elif event.button.id in {"home-open-test-asset", "home-open-test-asset-compact"}:
             self._show_home_reference_preview("test-asset")
-        elif event.button.id == "home-open-execution-guide":
+        elif event.button.id in {"home-open-execution-guide", "home-open-execution-guide-compact"}:
             self._show_home_reference_preview("execution-guide")
-        elif event.button.id == "home-open-pack-matrix":
+        elif event.button.id in {"home-open-pack-matrix", "home-open-pack-matrix-compact"}:
             self._show_home_reference_preview("pack-matrix")
         elif event.button.id == "group-primary":
             self._set_command_group("Primary Workflow")
