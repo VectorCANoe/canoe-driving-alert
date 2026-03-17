@@ -62,6 +62,8 @@ def _resolve_archive_dir(layout: dict, run_id: str, phase: str, latest: bool) ->
 
 def _staging_entries(layout: dict, run_id: str) -> list[Path]:
     staging_root = ROOT / layout["staging_root"]
+    evidence_root = ROOT / layout["evidence_root"]
+    incoming_root = ROOT / layout.get("incoming_root", "canoe/logging/evidence/incoming")
     entries = [
         staging_root,
         staging_root / "doctor_report.json",
@@ -76,10 +78,18 @@ def _staging_entries(layout: dict, run_id: str) -> list[Path]:
         staging_root / "doc_fill_template.md",
         staging_root / "surface_evidence_bundle.json",
         staging_root / "surface",
+        incoming_root,
     ]
+    for tier in ("UT", "IT", "ST", "FULL"):
+        entries.extend(
+            [
+                incoming_root / tier / "raw_write_window.txt",
+                incoming_root / tier / "trace",
+                incoming_root / tier / "logging",
+            ]
+        )
     if run_id:
-        evidence_root = ROOT / layout["evidence_root"]
-        for tier in ("UT", "IT", "ST"):
+        for tier in ("UT", "IT", "ST", "FULL"):
             entries.append(evidence_root / tier / run_id)
     return entries
 
@@ -95,7 +105,9 @@ def _source_entries(layout: dict) -> list[Path]:
         ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
         ROOT / "product" / "sdv_operator" / "config" / "verification_phase_policy.json",
         ROOT / "product" / "sdv_operator" / "docs-src" / "commands.md",
+        ROOT / "product" / "sdv_operator" / "docs-src" / "ci-bridge.md",
         ROOT / "product" / "sdv_operator" / "docs-src" / "results.md",
+        ROOT / "product" / "sdv_operator" / "docs-src" / "maintenance.md",
         ROOT / "product" / "sdv_operator" / "docs-src" / "packaging.md",
         ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
         ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
@@ -119,7 +131,7 @@ def _build_entries() -> list[Path]:
 
 def _archive_entries(layout: dict, run_id: str, phase: str, latest: bool) -> list[Path]:
     archive_dir = _resolve_archive_dir(layout, run_id, phase, latest)
-    return [
+    entries = [
         archive_dir,
         archive_dir / "reports",
         archive_dir / "surface",
@@ -128,6 +140,22 @@ def _archive_entries(layout: dict, run_id: str, phase: str, latest: bool) -> lis
         archive_dir / "manifests" / "artifact_manifest.json",
         archive_dir / "manifests" / "execution_manifest.json",
     ]
+    for tier in layout.get("archived_tiers", ["UT", "IT", "ST", "FULL"]):
+        entries.extend(
+            [
+                archive_dir / "evidence" / tier,
+                archive_dir / "evidence" / tier / "supplementary" / "trace",
+                archive_dir / "evidence" / tier / "supplementary" / "logging",
+            ]
+        )
+    return entries
+
+
+def _first_existing(paths: list[Path]) -> Path:
+    for path in paths:
+        if path.exists():
+            return path
+    return paths[0]
 
 
 def _print_entries(title: str, entries: list[Path], json_mode: bool) -> int:
@@ -164,8 +192,15 @@ def _open_path(path: Path) -> None:
 
 def _resolve_open_target(layout: dict, target: str, run_id: str, phase: str, latest: bool) -> Path:
     staging_root = ROOT / layout["staging_root"]
+    incoming_root = ROOT / layout.get("incoming_root", "canoe/logging/evidence/incoming")
     if target == "staging-root":
         return staging_root
+    if target == "incoming-root":
+        return incoming_root
+    if target == "incoming-trace-root":
+        return incoming_root / "UT" / "trace"
+    if target == "incoming-logging-root":
+        return incoming_root / "UT" / "logging"
     if target == "batch-report":
         return staging_root / "dev2_batch_report.md"
     if target == "run-insight":
@@ -214,6 +249,8 @@ def _resolve_open_target(layout: dict, target: str, run_id: str, phase: str, lat
         return ROOT / "product" / "sdv_operator" / "docs-src" / "commands.md"
     if target == "results-doc":
         return ROOT / "product" / "sdv_operator" / "docs-src" / "results.md"
+    if target == "maintenance-doc":
+        return ROOT / "product" / "sdv_operator" / "docs-src" / "maintenance.md"
     if target == "packaging-doc":
         return ROOT / "product" / "sdv_operator" / "docs-src" / "packaging.md"
     if target == "ci-bridge-doc":
@@ -232,12 +269,22 @@ def _resolve_open_target(layout: dict, target: str, run_id: str, phase: str, lat
         return archive_dir
     if target == "execution-manifest":
         return archive_dir / "manifests" / "execution_manifest.json"
+    if target == "evidence-dir":
+        return archive_dir / "evidence"
     if target == "native-reports":
         return archive_dir / "native_reports"
     if target == "surface-dir":
         return archive_dir / "surface"
     if target == "reports-dir":
         return archive_dir / "reports"
+    if target == "supplementary-trace":
+        return _first_existing(
+            [(archive_dir / "evidence" / tier / "supplementary" / "trace") for tier in layout.get("archived_tiers", ["UT", "IT", "ST", "FULL"])]
+        )
+    if target == "supplementary-logging":
+        return _first_existing(
+            [(archive_dir / "evidence" / tier / "supplementary" / "logging") for tier in layout.get("archived_tiers", ["UT", "IT", "ST", "FULL"])]
+        )
     raise SystemExit(f"[ARTIFACT] unsupported target: {target}")
 
 

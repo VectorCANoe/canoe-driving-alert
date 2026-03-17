@@ -72,9 +72,21 @@
       "WebFetch(domain:kb.vector.com)",
       "mcp__canoe-advanced__get_canoe_version_info",
       "mcp__canoe-advanced__get_connection_status",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(git log:*)",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Read(//c/Users/이준영/CANoe-IVI-OTA/canoe/tests/modules/test_units/**)",
+      "Bash(BASE=\"C:/Users/이준영/CANoe-IVI-OTA/canoe/tests/modules/test_units\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_028_VEHICLE_STEERING\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_029_NAV_CONTEXT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_030_EMERGENCY_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_031_EPB_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_032_EHB_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_033_VSM_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_034_ECS_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_035_CDC_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_036_DOOR_FL_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_037_DOOR_FR_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_038_DOOR_RL_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_039_DOOR_RR_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_040_TGM_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_041_ACU_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_042_ODS_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_043_AFLS_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_044_AHLS_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_045_DATC_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_046_SEAT_DRV_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_047_SEAT_PASS_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_048_SRF_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_049_HUD_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_050_AMP_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_051_TMU_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_052_SCC_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_053_PGS_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_054_PUS_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_055_AVM_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_056_FCAM_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_057_FRADAR_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_058_SRR_FL_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_059_SRR_FR_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_060_SRR_RL_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_061_SRR_RR_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_062_IBOX_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_065_ETHB_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_066_OBC_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_067_DCDC_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_068_MCU_INPUT\"\nmkdir -p \"$BASE/TC_CANOE_UT_INP_069_INVERTER_INPUT\"\necho \"Directories created\")",
+      "Bash(BASE=\"C:/Users/이준영/CANoe-IVI-OTA/canoe/tests/modules/test_units\"\necho \"=== TC folders \\(INP series\\) ===\"\nls \"$BASE\" | grep \"TC_CANOE_UT_INP\" | wc -l\n\necho \"=== Files per folder sample check ===\"\nfor d in TC_CANOE_UT_INP_028_VEHICLE_STEERING TC_CANOE_UT_INP_045_DATC_INPUT TC_CANOE_UT_INP_069_INVERTER_INPUT; do\n  echo \"$d: $\\(ls $BASE/$d | wc -l\\) files\"\ndone\n\necho \"=== Assign files ===\"\nls \"$BASE/assign/UT_ACTIVE_BASELINE\" | grep \"INP\" | wc -l)",
+      "Bash(tr -d '` ')"
     ]
   },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "canoe",
+    "canoe-advanced"
+  ],
   "hooks": {
     "PreToolUse": [
       {
@@ -87,10 +99,5 @@
         ]
       }
     ]
-  },
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "canoe",
-    "canoe-advanced"
-  ]
+  }
 }

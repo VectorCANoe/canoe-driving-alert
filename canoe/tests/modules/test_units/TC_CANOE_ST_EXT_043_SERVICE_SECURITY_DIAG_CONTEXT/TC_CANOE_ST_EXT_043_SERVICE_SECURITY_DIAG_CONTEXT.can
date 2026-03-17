@@ -1,0 +1,34 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_043_SERVICE_SECURITY_DIAG_CONTEXT()
+{
+  // Verify that ST_043 scenario verdict remains explainable by service, security, and diagnostic context.
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(202, 1500, 2100))
+  {
+    return;
+  }
+
+  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("service-state", 1, (long)@Diag::ServiceState, "ServiceState");
+  assertIntEq("security-state", 3, (long)@Diag::SecurityState, "SecurityState");
+  assertIntEq("route-owner", 1, (long)@Diag::RouteOwner, "RouteOwner");
+  assertIntEq("response-kind", 4, (long)@Diag::ResponseKind, "ResponseKind");
+  assertIntEq("reason-code", 2, (long)@Diag::ReasonCode, "ReasonCode");
+  if (!waitForObservedFailSafe(800)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntMin("fail-safe-mode", 2, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

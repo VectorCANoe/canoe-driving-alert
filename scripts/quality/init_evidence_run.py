@@ -274,6 +274,8 @@ def ensure_standard_roots(evidence_root: Path, write_window_root: Path) -> None:
     for tier in ("UT", "IT", "ST", "FULL"):
         (evidence_root / tier).mkdir(parents=True, exist_ok=True)
         (write_window_root / tier).mkdir(parents=True, exist_ok=True)
+        (write_window_root / tier / "trace").mkdir(parents=True, exist_ok=True)
+        (write_window_root / tier / "logging").mkdir(parents=True, exist_ok=True)
     (evidence_root / "templates").mkdir(parents=True, exist_ok=True)
 
 
@@ -340,6 +342,10 @@ def main() -> int:
     print("[EVIDENCE_INIT] standard write-window drop roots:")
     for tier in ("UT", "IT", "ST", "FULL"):
         print(f"- {_rel(write_window_root / tier / 'raw_write_window.txt')}")
+    print("[EVIDENCE_INIT] standard supplementary drop roots:")
+    for tier in ("UT", "IT", "ST", "FULL"):
+        print(f"- {_rel(write_window_root / tier / 'trace')}")
+        print(f"- {_rel(write_window_root / tier / 'logging')}")
     return 0
 
 

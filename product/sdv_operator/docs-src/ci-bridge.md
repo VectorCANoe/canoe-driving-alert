@@ -38,14 +38,21 @@ python scripts/run.py verify batch --run-id 20260309_0900 --campaign-id CMP_2026
 python scripts/run.py verify surface-bundle
 ```
 
-`verify batch`가 끝나면 staging 산출물(`canoe/tmp/reports/verification`)을 기반으로
-최종 reviewer/Jenkins 아카이브를 아래 경로에 재배치합니다.
+`verify batch`가 끝나면 staging 산출물(`canoe/tmp/reports/verification`)과 canonical incoming evidence drop root
+(`canoe/logging/evidence/incoming`)를 기준으로 최종 reviewer/Jenkins 아카이브를 아래 경로에 재배치합니다.
 
 - `artifacts/verification_runs/<run_id>/<phase>/reports`
 - `artifacts/verification_runs/<run_id>/<phase>/surface`
 - `artifacts/verification_runs/<run_id>/<phase>/native_reports`
 - `artifacts/verification_runs/<run_id>/<phase>/evidence`
 - `artifacts/verification_runs/<run_id>/<phase>/manifests`
+
+이때 `evidence/` 아래에는 tier별 verification log뿐 아니라 supplementary evidence도 함께 승격됩니다.
+
+- `artifacts/verification_runs/<run_id>/<phase>/evidence/<TIER>/verification_log.csv`
+- `artifacts/verification_runs/<run_id>/<phase>/evidence/<TIER>/verification_log_scored.csv`
+- `artifacts/verification_runs/<run_id>/<phase>/evidence/<TIER>/supplementary/trace/**/*`
+- `artifacts/verification_runs/<run_id>/<phase>/evidence/<TIER>/supplementary/logging/**/*`
 
 phase별 판정은 동일하지 않습니다.
 
@@ -71,6 +78,8 @@ Jenkins는 아래 세 종류를 각각 다르게 취급합니다.
   - `phase policy` 정보도 포함되어 실행의 판정 기준을 함께 남깁니다.
 - native `.vtestreport`, screenshot
   - 원본 증빙 archive
+- supplementary trace/logging
+  - transport/timing-visible supplementary evidence archive
 
 ## 현재 권장 산출물
 
@@ -85,9 +94,14 @@ Jenkins는 아래 세 종류를 각각 다르게 취급합니다.
 - `artifacts/verification_runs/<run_id>/<phase>/surface/<bundle_key>/*`
 - `artifacts/verification_runs/<run_id>/<phase>/manifests/artifact_manifest.json`
 - `artifacts/verification_runs/<run_id>/<phase>/manifests/execution_manifest.json`
+- `artifacts/verification_runs/<run_id>/<phase>/evidence/<TIER>/supplementary/trace/**/*`
+- `artifacts/verification_runs/<run_id>/<phase>/evidence/<TIER>/supplementary/logging/**/*`
 - `canoe/tmp/reports/verification/run_readiness.json`
 - `canoe/tmp/reports/verification/doctor_report.json`
 - native `.vtestreport` (Dev1 archive)
+- `canoe/logging/evidence/incoming/<TIER>/raw_write_window.txt`
+- `canoe/logging/evidence/incoming/<TIER>/trace/**/*`
+- `canoe/logging/evidence/incoming/<TIER>/logging/**/*`
 
 ## Jenkins 예시
 
@@ -123,6 +137,7 @@ pipeline {
 3. Jenkins는 JUnit XML을 바로 읽을 수 있다.
 4. reviewer-facing 묶음은 surface ECU 기준으로 다시 제공할 수 있다.
 5. native `.vtestreport`는 final archive 내부 `native_reports/`로 복사되어 함께 보관된다.
+6. supplementary trace/logging은 final archive 내부 `evidence/<TIER>/supplementary/`로 승격된다.
 
 즉, `vTESTstudio/CANoe native test`와 `Dev2 CI bridge`를 경쟁시키지 않고 직렬로 연결합니다.
 

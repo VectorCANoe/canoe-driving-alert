@@ -1,0 +1,39 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gDoorFlOpenState;
+  long gDoorFrOpenState;
+  long gDoorFlWindowPos;
+  long gDoorFrWindowPos;
+}
+
+on message frmDoorFlStateMsg
+{
+  gDoorFlOpenState = this.DoorFlOpenState;
+  gDoorFlWindowPos = this.DoorFlWindowPos;
+}
+
+on message frmDoorFrStateMsg
+{
+  gDoorFrOpenState = this.DoorFrOpenState;
+  gDoorFrWindowPos = this.DoorFrWindowPos;
+}
+
+export testcase TC_CANOE_IT_EXT_025_WINDOW_STATE()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(226, 900, 1300)) { return; }
+
+  assertIntEq("it-window-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("it-window-doorfl-open", 1, gDoorFlOpenState, "DoorFlOpenState");
+  assertIntEq("it-window-doorfl-pos", 20, gDoorFlWindowPos, "DoorFlWindowPos");
+  assertIntEq("it-window-doorfr-open", 0, gDoorFrOpenState, "DoorFrOpenState");
+  assertIntEq("it-window-doorfr-pos", 0, gDoorFrWindowPos, "DoorFrWindowPos");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -42,6 +42,8 @@ Related operating standard:
   - `captures/`
   - `native_reports/`
   - `native_report_manifest.json`
+  - `supplementary/trace/`
+  - `supplementary/logging/`
 
 ### Write Window Drop Root
 - 루트: `canoe/logging/evidence/incoming/`
@@ -52,6 +54,14 @@ Related operating standard:
   - `FULL/raw_write_window.txt`
 - GUI에서 Write Window export는 위 경로를 기본값으로 고정한다.
 - `post-run` 자동화는 위 표준 경로를 우선 수집하고, 기존 `canoe/tmp/write_window/`는 migration fallback으로만 사용한다.
+
+### Trace and Logging Drop Root
+- 루트: `canoe/logging/evidence/incoming/`
+- tier별 표준 supplementary 경로:
+  - `UT/trace/`, `IT/trace/`, `ST/trace/`, `FULL/trace/`
+  - `UT/logging/`, `IT/logging/`, `ST/logging/`, `FULL/logging/`
+- CAN/Ethernet trace export, logging block output, BLF/ASC/MF4/PCAP 계열 산출은 위 경로에 저장한다.
+- `post-run`은 위 경로를 자동 수집해 run-local `supplementary/trace`, `supplementary/logging`으로 복사한다.
 
 ### Write Window 키워드 규칙
 - 입력 이벤트: `[EVIDENCE_IN] scenario=<id> inputTsMs=<ms>`
@@ -144,6 +154,7 @@ python scripts/run.py verify fill-score --tier UT --run-id 20260306_1930 --owner
 - `computed_verdict` 기준으로 문서 상단 `Pass/Fail` 입력
 - `evidence_log_path`, `evidence_capture_path`를 테스트 ID와 1:1로 연결
 - 문서 값과 scored report 값이 다르면 문서를 FAIL로 처리한다.
+- trace/log-relevant 테스트는 `supplementary/trace` 또는 `supplementary/logging` 없이 closeout 완료로 보지 않는다.
 
 ## 11) 승인 규칙
 - 자동화는 candidate verdict까지만 생성한다.

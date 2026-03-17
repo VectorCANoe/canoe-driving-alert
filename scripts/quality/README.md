@@ -86,6 +86,8 @@ Note:
   - per-test `Report_*.vtestreport`
   - matching report settings files
   - optional `raw_write_window.txt` import from the canonical drop root `canoe/logging/evidence/incoming/`
+  - supplementary trace exports from `canoe/logging/evidence/incoming/<TIER>/trace/`
+  - supplementary logging exports from `canoe/logging/evidence/incoming/<TIER>/logging/`
   - legacy `canoe/tmp/write_window/` is fallback-only for migration
 - `check_run_readiness.py` outputs run readiness report:
   - template/raw/scored existence by UT/IT/ST
@@ -127,6 +129,9 @@ Recommended post-run flow:
 2. CANoe GUI에서 tier 실행
 3. CANoe Write Window export를 canonical drop path에 저장:
    - `canoe/logging/evidence/incoming/<TIER>/raw_write_window.txt`
+   CANoe native trace/logging exports도 canonical supplementary path에 저장:
+   - `canoe/logging/evidence/incoming/<TIER>/trace/`
+   - `canoe/logging/evidence/incoming/<TIER>/logging/`
 4. `python scripts/quality/run_verification_pipeline.py post-run --run-id <RUN_ID> --tier <UT|IT|ST> --owner <OWNER>`
 5. `python scripts/quality/run_verification_pipeline.py bind-doc --run-id <RUN_ID>`
 6. `python scripts/quality/run_verification_pipeline.py fill-template --run-id <RUN_ID>`
@@ -140,5 +145,6 @@ Post-run guarantees:
 
 - native reports are copied into `canoe/logging/evidence/<TIER>/<RUN_ID>/native_reports/`
 - `raw_write_window.txt` is imported when present
+- supplementary trace/logging exports are copied into `canoe/logging/evidence/<TIER>/<RUN_ID>/supplementary/`
 - `evidence_log_path` and `evidence_capture_path` are auto-filled for updated rows
 - scored outputs are generated immediately after collection

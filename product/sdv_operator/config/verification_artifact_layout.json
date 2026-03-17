@@ -1,17 +1,36 @@
 {
-  "schema": "sdv.verification.artifact.layout.v1",
+  "schema": "sdv.verification.artifact.layout.v2",
   "owner": "Dev2",
   "policy": "raw staging first, reviewer package second",
   "root": "artifacts/verification_runs",
   "staging_root": "canoe/tmp/reports/verification",
   "evidence_root": "canoe/logging/evidence",
+  "incoming_root": "canoe/logging/evidence/incoming",
+  "archived_tiers": [
+    "UT",
+    "IT",
+    "ST",
+    "FULL"
+  ],
+  "supplementary_kinds": [
+    "trace",
+    "logging"
+  ],
   "structure": {
     "run_root": "{run_id}/{phase}",
     "reports_dir": "{run_id}/{phase}/reports",
     "surface_dir": "{run_id}/{phase}/surface",
     "native_reports_dir": "{run_id}/{phase}/native_reports",
     "evidence_dir": "{run_id}/{phase}/evidence",
+    "evidence_tier_dir": "{run_id}/{phase}/evidence/{tier}",
+    "supplementary_trace_dir": "{run_id}/{phase}/evidence/{tier}/supplementary/trace",
+    "supplementary_logging_dir": "{run_id}/{phase}/evidence/{tier}/supplementary/logging",
     "manifests_dir": "{run_id}/{phase}/manifests"
+  },
+  "incoming_structure": {
+    "write_window_file": "incoming/{tier}/raw_write_window.txt",
+    "trace_dir": "incoming/{tier}/trace",
+    "logging_dir": "incoming/{tier}/logging"
   },
   "copied_reports": [
     "doctor_report.json",
@@ -34,5 +53,7 @@
   ],
   "native_report_glob": "canoe/**/*.vtestreport",
   "surface_bundle_glob": "canoe/tmp/reports/verification/surface/**/*",
-  "tier_evidence_glob": "canoe/logging/evidence/<UT|IT|ST>/<run_id>/**/*"
+  "tier_evidence_glob": "canoe/logging/evidence/<UT|IT|ST|FULL>/<run_id>/**/*",
+  "supplementary_trace_glob": "canoe/logging/evidence/<UT|IT|ST|FULL>/<run_id>/supplementary/trace/**/*",
+  "supplementary_logging_glob": "canoe/logging/evidence/<UT|IT|ST|FULL>/<run_id>/supplementary/logging/**/*"
 }

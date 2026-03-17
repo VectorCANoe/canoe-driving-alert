@@ -94,12 +94,13 @@ Rules:
 1. `prepare`
 2. CANoe GUI measurement start
 3. CANoe GUI test execution
-4. GUI Write Window export to canonical incoming path
-5. `post-run`
-6. `bind-doc`
-7. `fill-template`
-8. reviewer approval
-9. official document update
+4. CANoe native logging/trace export is written to the canonical incoming path
+5. GUI Write Window export to canonical incoming path
+6. `post-run`
+7. `bind-doc`
+8. `fill-template`
+9. reviewer approval
+10. official document update
 
 ### 6.2 GUI-first rule
 
@@ -126,11 +127,24 @@ Per run:
 
 ### 7.3 Canonical incoming drop root
 
+Canonical incoming root:
+- `canoe/logging/evidence/incoming/`
+
 Write Window export must be stored only at:
-- `canoe/logging/evidence/incoming/UT/raw_write_window.txt`
-- `canoe/logging/evidence/incoming/IT/raw_write_window.txt`
-- `canoe/logging/evidence/incoming/ST/raw_write_window.txt`
-- `canoe/logging/evidence/incoming/FULL/raw_write_window.txt`
+- `incoming/UT/raw_write_window.txt`
+- `incoming/IT/raw_write_window.txt`
+- `incoming/ST/raw_write_window.txt`
+- `incoming/FULL/raw_write_window.txt`
+
+Supplementary native exports must be stored only at:
+- `incoming/UT/trace/`
+- `incoming/IT/trace/`
+- `incoming/ST/trace/`
+- `incoming/FULL/trace/`
+- `incoming/UT/logging/`
+- `incoming/IT/logging/`
+- `incoming/ST/logging/`
+- `incoming/FULL/logging/`
 
 Legacy `canoe/tmp/write_window/` is migration fallback only.
 
@@ -143,9 +157,12 @@ Minimum required artifacts for `UT/IT/ST` closeout:
 - `native_reports/`
 - `native_report_manifest.json`
 
+Required supplementary artifacts for trace/log-relevant IDs:
+- `supplementary/trace/`
+- `supplementary/logging/`
+
 Recommended artifacts:
 - `captures/`
-- CAN/Ethernet trace exports
 - scored summary outputs
 - doc binding bundle
 - fill template bundle
@@ -161,6 +178,19 @@ Rules:
 - store them under the run-local `native_reports/` tree
 
 No custom external script may replace native report verdict generation.
+
+## 8A. Native Logging and Trace Rule
+
+For transport-visible and timing-visible tests, native CANoe logging/trace exports are first-class supplementary evidence.
+
+Rules:
+- transport evidence should prefer CANoe native trace/logging exports over Write Window text alone
+- logging block exports and trace exports must be collected into the run-local supplementary tree
+- `post-run` must collect:
+  - `incoming/<TIER>/trace/**/*`
+  - `incoming/<TIER>/logging/**/*`
+- Write Window remains required for the current score-gate because `[EVIDENCE_IN]` / `[EVIDENCE_OUT]` markers are parsed there
+- reviewer closeout should prefer `native report + supplementary trace/logging + verification_log.csv`, with Write Window as parser/evidence support
 
 ## 9. PASS/FAIL State Transition Rule
 
@@ -250,4 +280,3 @@ This repository uses the following project-specific constraints on top of Vector
 2. `UT/IT/ST` are the only official closeout tiers
 3. `FULL` is regression-only
 4. official document verdict changes remain reviewer-approved, not fully automatic
-

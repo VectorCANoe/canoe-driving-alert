@@ -27,6 +27,9 @@ python scripts/run.py artifact open --target doc-fill-template
 python scripts/run.py artifact open --target verification-pack-matrix
 python scripts/run.py artifact open --target role-boundary-doc
 python scripts/run.py artifact open --target capability-matrix-doc
+python scripts/run.py artifact open --target evidence-dir --latest
+python scripts/run.py artifact open --target supplementary-trace --latest
+python scripts/run.py artifact open --target supplementary-logging --latest
 python scripts/run.py artifact open --target surface-dir --latest
 ```
 
@@ -91,7 +94,7 @@ python scripts/run.py tui
 용도:
 - 운영 콘솔로 핵심 작업을 클릭/입력 기반으로 실행
 - 결과, 로그, COM 상태, 증빙 경로를 한 화면에서 검토
-- `Results`와 `Artifacts`에서 최근 증빙, native report, execution manifest, 원본 기준 파일을 바로 연다
+- `Results`와 `Artifacts`에서 최근 증빙, native report, execution manifest, supplementary trace/logging, 원본 기준 파일을 바로 연다
 
 ### Plain shell
 
@@ -281,6 +284,10 @@ python scripts/run.py artifact open --target surface-bundle
 python scripts/run.py artifact open --target surface-dir --latest
 python scripts/run.py artifact open --target execution-manifest --latest
 python scripts/run.py artifact open --target native-reports --latest
+python scripts/run.py artifact open --target evidence-dir --latest
+python scripts/run.py artifact open --target supplementary-trace --latest
+python scripts/run.py artifact open --target supplementary-logging --latest
+python scripts/run.py artifact open --target incoming-root
 python scripts/run.py artifact open --target surface-inventory
 python scripts/run.py artifact open --target unit-test-doc
 python scripts/run.py artifact open --target integration-test-doc
@@ -308,7 +315,7 @@ python scripts/run.py package bundle-portable --mode onefolder --clean --rebuild
 - `artifact list`
   - staging / archive / source 기준으로 현재 확인 가능한 산출물과 원본 계약 파일을 나열합니다.
 - `artifact open`
-  - 결과 문서, execution manifest, native reports, surface inventory, verification pack 원본 같은 원본/산출물 파일을 외부 편집기/탐색기로 바로 엽니다.
+  - 결과 문서, execution manifest, native reports, supplementary trace/logging, surface inventory, verification pack 원본 같은 원본/산출물 파일을 외부 편집기/탐색기로 바로 엽니다.
 - `artifact clean`
   - generated output만 정리합니다. 기본은 preview이고 실제 삭제는 `--yes`가 필요합니다.
 

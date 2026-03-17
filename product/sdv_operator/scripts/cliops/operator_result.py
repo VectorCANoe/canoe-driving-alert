@@ -106,12 +106,17 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
         )
         if run_id:
             paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase)
+            paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "evidence")
             paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "manifests" / "execution_manifest.json")
             paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "manifests" / "execution_manifest.md")
+            for tier in ("UT", "IT", "ST", "FULL"):
+                paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "evidence" / tier / "supplementary" / "trace")
+                paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "evidence" / tier / "supplementary" / "logging")
     elif command_id == "verify.surface_bundle":
         paths.extend([SURFACE_BUNDLE_JSON, SURFACE_BUNDLE_MD])
         if run_id:
             paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase)
+            paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "evidence")
             paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "manifests" / "execution_manifest.json")
             paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "manifests" / "execution_manifest.md")
     elif command_id in {"verify.quick_verify", "verify.run_readiness_status"}:
@@ -119,6 +124,8 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
         if run_id:
             for tier in ("UT", "IT", "ST"):
                 paths.append(ROOT / "canoe" / "logging" / "evidence" / tier / run_id / "verification_log.csv")
+                paths.append(ROOT / "canoe" / "logging" / "evidence" / tier / run_id / "supplementary" / "trace")
+                paths.append(ROOT / "canoe" / "logging" / "evidence" / tier / run_id / "supplementary" / "logging")
     elif command_id == "operate.scenario_trigger":
         paths.extend([SCENARIO_SUMMARY_JSON, SCENARIO_SUMMARY_MD])
     elif command_id == "package.portable_bundle":
@@ -156,6 +163,7 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             paths.append(ROOT / "artifacts" / "verification_runs")
         else:
             paths.append(VERIFICATION_ROOT)
+            paths.append(ROOT / "canoe" / "logging" / "evidence" / "incoming")
     elif command_id.startswith("artifact.open"):
         target = str(getattr(args, "target", "")).strip().lower()
         target_map = {
@@ -185,17 +193,22 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             "phase-policy": ROOT / "product" / "sdv_operator" / "config" / "verification_phase_policy.json",
             "manifest": ROOT / "product" / "sdv_operator" / "manifest.json",
             "commands-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "commands.md",
+            "ci-bridge-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "ci-bridge.md",
             "results-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "results.md",
+            "maintenance-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "maintenance.md",
             "packaging-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "packaging.md",
             "role-boundary-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
             "capability-matrix-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
+            "incoming-root": ROOT / "canoe" / "logging" / "evidence" / "incoming",
+            "incoming-trace-root": ROOT / "canoe" / "logging" / "evidence" / "incoming" / "UT" / "trace",
+            "incoming-logging-root": ROOT / "canoe" / "logging" / "evidence" / "incoming" / "UT" / "logging",
         }
         resolved = target_map.get(target)
         if resolved:
             paths.append(resolved)
         elif target == "build-root":
             paths.append(ROOT / "dist")
-        elif target in {"execution-manifest", "archive-run", "reports-dir", "surface-dir", "native-reports"}:
+        elif target in {"execution-manifest", "archive-run", "reports-dir", "surface-dir", "native-reports", "evidence-dir", "supplementary-trace", "supplementary-logging"}:
             paths.append(ROOT / "artifacts" / "verification_runs")
     return paths
 

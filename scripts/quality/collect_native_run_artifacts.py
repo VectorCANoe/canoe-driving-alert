@@ -57,6 +57,22 @@ def _copy_matching(src_root: Path, pattern: str, dst_root: Path) -> list[str]:
     return copied
 
 
+def _copy_tree(src_root: Path, dst_root: Path) -> list[str]:
+    src_root = _repo_path(src_root)
+    dst_root = _repo_path(dst_root)
+    copied: list[str] = []
+    if not src_root.exists():
+        return copied
+    for src in sorted(src_root.rglob("*")):
+        if not src.is_file():
+            continue
+        dst = dst_root / src.relative_to(src_root)
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
+        copied.append(_rel(dst))
+    return copied
+
+
 def default_raw_log_candidates(tier: str) -> list[Path]:
     canonical_base = REPO_ROOT / "canoe" / "logging" / "evidence" / "incoming"
     legacy_base = REPO_ROOT / "canoe" / "tmp" / "write_window"
@@ -70,6 +86,30 @@ def default_raw_log_candidates(tier: str) -> list[Path]:
         legacy_base / f"{tier}_raw_write_window.txt",
         legacy_base / "raw_write_window.txt",
     ]
+
+
+def default_trace_source_dirs(tier: str) -> list[Path]:
+    canonical_base = REPO_ROOT / "canoe" / "logging" / "evidence" / "incoming"
+    return [
+        canonical_base / tier / "trace",
+    ]
+
+
+def default_logging_source_dirs(tier: str) -> list[Path]:
+    canonical_base = REPO_ROOT / "canoe" / "logging" / "evidence" / "incoming"
+    return [
+        canonical_base / tier / "logging",
+    ]
+
+
+def resolve_source_dir(explicit: str, candidates: list[Path]) -> Path | None:
+    if explicit:
+        path = _repo_path(Path(explicit))
+        return path if path.exists() and path.is_dir() else None
+    for candidate in candidates:
+        if candidate.exists() and candidate.is_dir():
+            return candidate
+    return None
 
 
 def resolve_raw_log_source(tier: str, explicit: str) -> Path | None:
@@ -99,6 +139,16 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Do not fail when raw_write_window source is missing.",
     )
+    parser.add_argument(
+        "--trace-source-dir",
+        default="",
+        help="Optional canonical trace export directory. Defaults to canoe/logging/evidence/incoming/<TIER>/trace",
+    )
+    parser.add_argument(
+        "--logging-source-dir",
+        default="",
+        help="Optional canonical logging export directory. Defaults to canoe/logging/evidence/incoming/<TIER>/logging",
+    )
     return parser
 
 
@@ -113,10 +163,15 @@ def main() -> int:
     run_dir.mkdir(parents=True, exist_ok=True)
     native_dir = run_dir / "native_reports"
     native_dir.mkdir(parents=True, exist_ok=True)
+    supplementary_dir = run_dir / "supplementary"
+    supplementary_trace_dir = supplementary_dir / "trace"
+    supplementary_logging_dir = supplementary_dir / "logging"
 
     copied_summary: list[str] = []
     copied_assign_reports: list[str] = []
     copied_settings: list[str] = []
+    copied_trace_files: list[str] = []
+    copied_logging_files: list[str] = []
 
     summary_report = cfg_root / f"Report_{assign_name}.vtestreport"
     copied = _copy_if_exists(summary_report, native_dir / summary_report.name)
@@ -145,6 +200,13 @@ def main() -> int:
         )
         return 2
 
+    trace_source_dir = resolve_source_dir(args.trace_source_dir, default_trace_source_dirs(args.tier))
+    logging_source_dir = resolve_source_dir(args.logging_source_dir, default_logging_source_dirs(args.tier))
+    if trace_source_dir is not None:
+        copied_trace_files.extend(_copy_tree(trace_source_dir, supplementary_trace_dir))
+    if logging_source_dir is not None:
+        copied_logging_files.extend(_copy_tree(logging_source_dir, supplementary_logging_dir))
+
     manifest = {
         "generated_at": dt.datetime.now().isoformat(timespec="seconds"),
         "run_id": args.run_id,
@@ -155,6 +217,10 @@ def main() -> int:
         "settings_files": copied_settings,
         "raw_log_source": "" if raw_log_source is None else _rel(raw_log_source),
         "raw_log_copied": raw_log_copied or "",
+        "trace_source_dir": "" if trace_source_dir is None else _rel(trace_source_dir),
+        "trace_files": copied_trace_files,
+        "logging_source_dir": "" if logging_source_dir is None else _rel(logging_source_dir),
+        "logging_files": copied_logging_files,
     }
     manifest_path = run_dir / "native_report_manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -162,7 +228,8 @@ def main() -> int:
     print(
         f"[COLLECT] tier={args.tier} run_id={args.run_id} "
         f"summary={len(copied_summary)} assign_reports={len(copied_assign_reports)} "
-        f"settings={len(copied_settings)} raw_log={'Y' if raw_log_copied else 'N'}"
+        f"settings={len(copied_settings)} raw_log={'Y' if raw_log_copied else 'N'} "
+        f"trace_files={len(copied_trace_files)} logging_files={len(copied_logging_files)}"
     )
     print(f"[OUT] {_rel(manifest_path)}")
     return 0
