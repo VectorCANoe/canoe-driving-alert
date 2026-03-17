@@ -1,5 +1,8 @@
 # test_units
 
+Korean mirror:
+- [README.ko.md](./README.ko.md)
+
 Native CANoe Test Unit assets for the current SIL cycle.
 
 ## Current Structure
