@@ -155,6 +155,19 @@ def _clear_native_execution_context(bridge: CanoeComBridge) -> None:
         pass
 
 
+def _clear_native_scenario_state(bridge: CanoeComBridge) -> None:
+    reset_vars = (
+        ('Test', 'scenarioCommand', 0),
+        ('Test', 'scenarioCommandAck', 0),
+        ('Test', 'testScenario', 0),
+    )
+    for namespace, variable, value in reset_vars:
+        try:
+            bridge.set_sysvar(namespace, variable, value)
+        except Exception:
+            continue
+
+
 def execute_native_test_configuration(
     *,
     tier: str | None,
@@ -170,6 +183,9 @@ def execute_native_test_configuration(
     resolved_name, resolved_tier = _resolve_config_name(
         argparse.Namespace(config_name=config_name or '', tier=tier or '')
     )
+    if restart_if_running and bridge.measurement_running():
+        bridge.measurement_reset()
+    _clear_native_scenario_state(bridge)
     _seed_native_execution_context(
         bridge,
         resolved_tier,
