@@ -61,15 +61,48 @@ This is the implementation-side verification bridge between the official `05/06/
 | `UT_025` | `TC_CANOE_UT_EXT_013_WARNING_DELIVERY_BOUNDARY` | delivery-health and fail-safe state | native report + trace + write window + sysvar snapshot | `No` |
 | `UT_026` | `TC_CANOE_UT_EXT_014_DOMAIN_ROUTER_PROPULSION` | propulsion-context state | native report + trace + sysvar snapshot | `No` |
 | `UT_027` | `TC_CANOE_UT_EXT_015_DOMAIN_ROUTER_POWER_CHARGE` | power/charge context state | native report + trace + sysvar snapshot | `No` |
-| `UT_028`-`UT_030` | `TEST_SCN core input presets` | stimulus-ack and injected input state | write window + trace + preset log | `No` |
-| `UT_031`-`UT_035` | `TEST_SCN chassis/body-state presets` | input injection state | write window + trace + preset log | `No` |
-| `UT_036`-`UT_048` | `TEST_SCN body/comfort-state presets` | input injection state | write window + trace + preset log | `No` |
-| `UT_049`-`UT_051` | `TEST_SCN display/audio/service presets` | input injection state | write window + trace + preset log | `No` |
-| `UT_052`-`UT_061` | `TEST_SCN adas/parking/perception presets` | input injection state | write window + trace + preset log | `No` |
-| `UT_062` | `TEST_SCN IBOX service preset` | service-state injection | write window + trace + preset log | `No` |
+| `UT_028` | `TC_CANOE_UT_INP_028_VEHICLE_STEERING` | drive-state / speed / steering normalization | native report + trace + sysvar snapshot | `Yes` |
+| `UT_029` | `TC_CANOE_UT_INP_029_NAV_CONTEXT` | nav context alert-level trigger and stable path | native report + trace + sysvar snapshot | `Yes` |
+| `UT_030` | `TC_CANOE_UT_INP_030_EMERGENCY_INPUT` | emergency type / ETA observer pattern | native report + trace + sysvar snapshot | `Yes` |
+| `UT_031` | `TC_CANOE_UT_INP_031_EPB_INPUT` | park brake decel input normalization | native report + trace + sysvar snapshot | `Yes` |
+| `UT_032` | `TC_CANOE_UT_INP_032_EHB_INPUT` | hydraulic brake decel input normalization | native report + trace + sysvar snapshot | `Yes` |
+| `UT_033` | `TC_CANOE_UT_INP_033_VSM_INPUT` | VSM stable state — no spurious alert | native report + trace + sysvar snapshot | `Yes` |
+| `UT_034` | `TC_CANOE_UT_INP_034_ECS_INPUT` | air suspension ride-height mode | native report + trace + sysvar snapshot | `Yes` |
+| `UT_035` | `TC_CANOE_UT_INP_035_CDC_INPUT` | damper mode and valve current | native report + trace + sysvar snapshot | `Yes` |
+| `UT_036` | `TC_CANOE_UT_INP_036_DOOR_FL_INPUT` | front-left door auto unlock / approach score | native report + trace + sysvar snapshot | `Yes` |
+| `UT_037` | `TC_CANOE_UT_INP_037_DOOR_FR_INPUT` | front-right door auto unlock / approach score | native report + trace + sysvar snapshot | `Yes` |
+| `UT_038` | `TC_CANOE_UT_INP_038_DOOR_RL_INPUT` | rear-left door auto unlock / approach score | native report + trace + sysvar snapshot | `Yes` |
+| `UT_039` | `TC_CANOE_UT_INP_039_DOOR_RR_INPUT` | rear-right door auto unlock / approach score | native report + trace + sysvar snapshot | `Yes` |
+| `UT_040` | `TC_CANOE_UT_INP_040_TGM_INPUT` | tailgate assist mode and actuator command | native report + trace + sysvar snapshot | `Yes` |
+| `UT_041` | `TC_CANOE_UT_INP_041_ACU_INPUT` | airbag deployment armed + pretension request | native report + trace + sysvar snapshot | `Yes` |
+| `UT_042` | `TC_CANOE_UT_INP_042_ODS_INPUT` | occupant detection / weight class / child seat | native report + trace + sysvar snapshot | `Yes` |
+| `UT_043` | `TC_CANOE_UT_INP_043_AFLS_INPUT` | adaptive front-light mode + headlamp angle | native report + trace + sysvar snapshot | `Yes` |
+| `UT_044` | `TC_CANOE_UT_INP_044_AHLS_INPUT` | auto high-beam assist + active flag | native report + trace + sysvar snapshot | `Yes` |
+| `UT_045` | `TC_CANOE_UT_INP_045_DATC_INPUT` | cabin temp / blower / AC / vent mode | native report + trace + sysvar snapshot | `Yes` |
+| `UT_046` | `TC_CANOE_UT_INP_046_SEAT_DRV_INPUT` | driver seat position + heat level | native report + trace + sysvar snapshot | `Yes` |
+| `UT_047` | `TC_CANOE_UT_INP_047_SEAT_PASS_INPUT` | passenger seat position + heat level | native report + trace + sysvar snapshot | `Yes` |
+| `UT_048` | `TC_CANOE_UT_INP_048_SRF_INPUT` | sunroof position state | native report + trace + sysvar snapshot | `Yes` |
+| `UT_049` | `TC_CANOE_UT_INP_049_HUD_INPUT` | HUD mode + warning code | native report + trace + sysvar snapshot | `Yes` |
+| `UT_050` | `TC_CANOE_UT_INP_050_AMP_INPUT` | audio mute / ducking / volume level | native report + trace + sysvar snapshot | `Yes` |
+| `UT_051` | `TC_CANOE_UT_INP_051_TMU_INPUT` | telematics link state / service mode / remote climate | native report + trace + sysvar snapshot | `Yes` |
+| `UT_052` | `TC_CANOE_UT_INP_052_SCC_INPUT` | SCC proximity decel — decel-assist observer | native report + trace + sysvar snapshot | `Yes` |
+| `UT_053` | `TC_CANOE_UT_INP_053_PGS_INPUT` | parking guidance master active / maneuver ready | native report + trace + sysvar snapshot | `Yes` |
+| `UT_054` | `TC_CANOE_UT_INP_054_PUS_INPUT` | parking ultrasonic sensor proximity class | native report + trace + sysvar snapshot | `Yes` |
+| `UT_055` | `TC_CANOE_UT_INP_055_AVM_INPUT` | surround-view mode and active flag | native report + trace + sysvar snapshot | `Yes` |
+| `UT_056` | `TC_CANOE_UT_INP_056_FCAM_INPUT` | forward camera health and lane preview | native report + trace + sysvar snapshot | `Yes` |
+| `UT_057` | `TC_CANOE_UT_INP_057_FRADAR_INPUT` | forward radar object range and risk class | native report + trace + sysvar snapshot | `Yes` |
+| `UT_058` | `TC_CANOE_UT_INP_058_SRR_FL_INPUT` | left-front SRR — intersection conflict flag | native report + trace + sysvar snapshot | `Yes` |
+| `UT_059` | `TC_CANOE_UT_INP_059_SRR_FR_INPUT` | right-front SRR — merge cut-in flag | native report + trace + sysvar snapshot | `Yes` |
+| `UT_060` | `TC_CANOE_UT_INP_060_SRR_RL_INPUT` | rear-left SRR blind-spot state | native report + trace + sysvar snapshot | `Yes` |
+| `UT_061` | `TC_CANOE_UT_INP_061_SRR_RR_INPUT` | rear-right SRR blind-spot state | native report + trace + sysvar snapshot | `Yes` |
+| `UT_062` | `TC_CANOE_UT_INP_062_IBOX_INPUT` | digital key / vehicle service state | native report + trace + sysvar snapshot | `Yes` |
 | `UT_063` | `TC_CANOE_UT_EXT_016_SGW_SECURITY_STATE` | security-state injection | write window + trace + sysvar snapshot | `Yes` |
 | `UT_064` | `TC_CANOE_UT_EXT_017_DCM_DIAGNOSTIC_STATE` | diagnostic-state injection | write window + trace + sysvar snapshot | `Yes` |
-| `UT_065`-`UT_069` | `TEST_SCN backbone/powertrain presets` | input injection state | write window + trace + preset log | `No` |
+| `UT_065` | `TC_CANOE_UT_INP_065_ETHB_INPUT` | backbone failure — fail-safe observer | native report + trace + sysvar snapshot | `Yes` |
+| `UT_066` | `TC_CANOE_UT_INP_066_OBC_INPUT` | OBC charge power and AC plug state | native report + trace + sysvar snapshot | `Yes` |
+| `UT_067` | `TC_CANOE_UT_INP_067_DCDC_INPUT` | DCDC LV output voltage and current | native report + trace + sysvar snapshot | `Yes` |
+| `UT_068` | `TC_CANOE_UT_INP_068_MCU_INPUT` | motor torque command and speed rpm | native report + trace + sysvar snapshot | `Yes` |
+| `UT_069` | `TC_CANOE_UT_INP_069_INVERTER_INPUT` | inverter state and DC link voltage | native report + trace + sysvar snapshot | `Yes` |
 | `UT_070` | `TC_CANOE_UT_OUT_001_BCM_AMBIENT` | ambient output render state | panel capture + screenshot + native report | `No` |
 | `UT_071` | `TC_CANOE_UT_OUT_002_IVI_HMI` | HMI output state | panel capture + screenshot + native report | `No` |
 | `UT_072` | `TC_CANOE_UT_OUT_003_CLU_DISPLAY` | cluster display render state | cluster capture + screenshot + native report | `No` |
