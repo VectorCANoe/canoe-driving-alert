@@ -460,6 +460,7 @@ def add_artifact_open_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
 
 def add_verify_status_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
     p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument("--tiers", nargs="+", default=["UT", "IT", "ST"], choices=["UT", "IT", "ST"])
     p.add_argument(
         "--evidence-root",
         default="",
@@ -479,6 +480,7 @@ def add_verify_status_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
 
 
 def add_verify_surface_bundle_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--tiers", nargs="+", default=["UT", "IT", "ST"], choices=["UT", "IT", "ST"])
     p.add_argument(
         "--inventory-json",
         type=Path,

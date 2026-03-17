@@ -413,6 +413,8 @@ def cmd_status(args: argparse.Namespace) -> int:
         "--output-md",
         str(args.output_md),
     ]
+    if getattr(args, "tiers", None):
+        cmd.extend(["--tiers", *args.tiers])
     return run_cmd(cmd)
 
 
@@ -621,6 +623,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_status = sub.add_parser("status", help="Check run readiness for finalize workflow")
     p_status.add_argument("--run-id", required=True, help="Run ID, e.g. 20260307_1030")
+    p_status.add_argument("--tiers", nargs="+", default=["UT", "IT", "ST"], choices=["UT", "IT", "ST"])
     p_status.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
     p_status.add_argument(
         "--output-json",

@@ -287,6 +287,8 @@ def cmd_verify_status(args: argparse.Namespace) -> int:
     ]
     if args.evidence_root:
         cmd.extend(['--evidence-root', str(args.evidence_root)])
+    if getattr(args, 'tiers', None):
+        cmd.extend(['--tiers', *args.tiers])
     return run_cmd(cmd)
 
 
@@ -313,6 +315,8 @@ def cmd_verify_surface_bundle(args: argparse.Namespace) -> int:
         '--surface-dir',
         str(args.surface_dir),
     ]
+    if getattr(args, 'tiers', None):
+        cmd.extend(['--tiers', *args.tiers])
     return run_cmd(cmd)
 
 
@@ -442,6 +446,7 @@ def _write_batch_report(
     duration_minutes: int,
     interval_seconds: int,
     stop_on_fail: bool,
+    selected_tiers: list[str],
     policy: dict,
     steps: list[dict[str, object]],
     report_formats: list[str],
@@ -482,6 +487,7 @@ def _write_batch_report(
             'interval_seconds': interval_seconds,
             'stop_on_fail': bool(stop_on_fail),
         },
+        'selected_tiers': selected_tiers,
         'policy': policy,
         'status': status,
         'pass_count': pass_count,
@@ -509,6 +515,7 @@ def _write_batch_report(
             f'- surface_scope: `{surface_scope}`',
             f'- repeat/duration/interval: `{repeat_count}` / `{duration_minutes} min` / `{interval_seconds} sec`',
             f'- stop_on_fail: `{str(bool(stop_on_fail)).lower()}`',
+            f'- selected_tiers: `{",".join(selected_tiers) if selected_tiers else "-"}`',
             f'- status: `{status}`',
             f'- phase policy: `{policy.get("source", "-")}`',
             f'- pass/warn/fail: `{pass_count}/{warn_count}/{fail_count}`',
@@ -552,7 +559,7 @@ def _maybe_export_batch_junit(*, report_formats: list[str], output_json: Path, o
     return run_cmd(cmd)
 
 
-def _finalize_batch_reports(*, args: argparse.Namespace, policy: dict, report_formats: list[str], steps: list[dict[str, object]], exit_code: int) -> int:
+def _finalize_batch_reports(*, args: argparse.Namespace, policy: dict, report_formats: list[str], steps: list[dict[str, object]], selected_tiers: list[str], exit_code: int) -> int:
     _write_batch_report(
         run_id=args.run_id,
         campaign_id=args.campaign_id,
@@ -568,6 +575,7 @@ def _finalize_batch_reports(*, args: argparse.Namespace, policy: dict, report_fo
         duration_minutes=args.duration_minutes,
         interval_seconds=args.interval_seconds,
         stop_on_fail=args.stop_on_fail,
+        selected_tiers=selected_tiers,
         policy=policy,
         steps=steps,
         report_formats=report_formats,
@@ -593,6 +601,7 @@ def _finalize_batch_reports(*, args: argparse.Namespace, policy: dict, report_fo
             output_json=Path('canoe/tmp/reports/verification/surface_evidence_bundle.json'),
             output_md=Path('canoe/tmp/reports/verification/surface_evidence_bundle.md'),
             surface_dir=Path('canoe/tmp/reports/verification/surface'),
+            tiers=selected_tiers,
         )
     )
     if surface_rc != 0:
@@ -615,6 +624,7 @@ def _finalize_batch_reports(*, args: argparse.Namespace, policy: dict, report_fo
         duration_minutes=args.duration_minutes,
         interval_seconds=args.interval_seconds,
         stop_on_fail=args.stop_on_fail,
+        selected_tiers=selected_tiers,
         policy=policy,
         steps=steps,
         report_formats=report_formats,
@@ -681,7 +691,7 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                 rc = run_step(name, fn)
                 current = steps[-1]
                 if rc != 0 and args.stop_on_fail and current.get('status') == 'FAIL':
-                    return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+                    return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, selected_tiers=selected_tiers, exit_code=2)
 
         pre_steps = [
             (
@@ -700,9 +710,9 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
         for name, fn in pre_steps:
             rc = run_step(name, fn)
             if name == 'doctor' and rc != 0:
-                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, selected_tiers=selected_tiers, exit_code=2)
             if should_stop(rc):
-                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, selected_tiers=selected_tiers, exit_code=2)
         if getattr(args, 'execute_native_tier', ''):
             native_rc = run_step(
                 f'native execute {args.execute_native_tier}',
@@ -726,7 +736,7 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                 lambda: cmd_verify_report_tools(argparse.Namespace(json=False)),
             )
             if should_stop(report_tools_rc):
-                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, selected_tiers=selected_tiers, exit_code=2)
             report_bundle_rc = run_step(
                 f'official report bundle {args.execute_native_tier}',
                 lambda: cmd_verify_report_bundle(
@@ -741,7 +751,7 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
             if report_bundle_rc == 0:
                 bundled_tiers.add(args.execute_native_tier)
             if native_should_stop or should_stop(report_bundle_rc):
-                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, selected_tiers=selected_tiers, exit_code=2)
         status_rc = run_step(
             'verify status',
             lambda: cmd_verify_status(
@@ -750,11 +760,12 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                     evidence_root='',
                     output_json='canoe/tmp/reports/verification/run_readiness.json',
                     output_md='canoe/tmp/reports/verification/run_readiness.md',
+                    tiers=selected_tiers,
                 )
             ),
         )
         if should_stop(status_rc):
-            return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+            return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, selected_tiers=selected_tiers, exit_code=2)
 
     if args.phase in {'post', 'full'}:
         for tier in selected_tiers:
@@ -790,7 +801,7 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                     ),
                 )
             if should_stop(rc):
-                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, selected_tiers=selected_tiers, exit_code=2)
             if tier in bundled_tiers:
                 rc = run_step(
                     f'official report bundle {tier} (cached)',
@@ -811,7 +822,7 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                 if rc == 0:
                     bundled_tiers.add(tier)
             if should_stop(rc):
-                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, selected_tiers=selected_tiers, exit_code=2)
         finalize_ns = argparse.Namespace(
             run_id=args.run_id,
             tiers=selected_tiers,
@@ -834,9 +845,9 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
             fill_md='canoe/tmp/reports/verification/doc_fill_template.md',
         )
         if should_stop(run_step('verify finalize', lambda: cmd_verify_finalize(finalize_ns))):
-            return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
-        run_step('verify status', lambda: cmd_verify_status(argparse.Namespace(run_id=args.run_id, evidence_root='', output_json='canoe/tmp/reports/verification/run_readiness.json', output_md='canoe/tmp/reports/verification/run_readiness.md')))
+            return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, selected_tiers=selected_tiers, exit_code=2)
+        run_step('verify status', lambda: cmd_verify_status(argparse.Namespace(run_id=args.run_id, evidence_root='', output_json='canoe/tmp/reports/verification/run_readiness.json', output_md='canoe/tmp/reports/verification/run_readiness.md', tiers=selected_tiers)))
 
     failed = sum(1 for s in steps if s.get('status') == 'FAIL')
     exit_code = 0 if failed == 0 else 2
-    return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=exit_code)
+    return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, selected_tiers=selected_tiers, exit_code=exit_code)
