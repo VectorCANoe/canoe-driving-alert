@@ -803,6 +803,7 @@ class SdvTuiApp(App[None]):
                                 yield Static("1) Gate all", classes="home-task-title")
                                 yield Static(
                                     "시나리오 실행 전, 현재 작업본이 검증 가능한 상태인지 먼저 점검합니다.",
+                                    id="home-gate-copy",
                                     classes="home-task-copy",
                                 )
                                 yield Button("Gate all 열기", id="home-gate", classes="quick-button", variant="success")
@@ -810,6 +811,7 @@ class SdvTuiApp(App[None]):
                                 yield Static("2) Scenario run", classes="home-task-title")
                                 yield Static(
                                     "선택한 SIL 시나리오를 CANoe에 주입하고 ACK 응답을 확인합니다.",
+                                    id="home-scenario-copy",
                                     classes="home-task-copy",
                                 )
                                 yield Button("Scenario run 열기", id="home-scenario", classes="quick-button")
@@ -817,6 +819,7 @@ class SdvTuiApp(App[None]):
                                 yield Static("3) Verify quick", classes="home-task-title")
                                 yield Static(
                                     "최근 실행의 준비 상태와 증빙을 생성하고 PASS/WARN/FAIL 판정을 함께 확인합니다.",
+                                    id="home-verify-copy",
                                     classes="home-task-copy",
                                 )
                                 yield Button("Verify quick 열기", id="home-verify", classes="quick-button", variant="primary")
@@ -995,6 +998,7 @@ class SdvTuiApp(App[None]):
         self._refresh_commands(self.active_group_index)
         self._show_page("home")
         self._refresh_home_reference_layout()
+        self._refresh_home_compact_layout()
         if str(self.state.get("last_result", {}).get("status", "IDLE")) == "RUNNING":
             self._run_started_monotonic = time.monotonic()
         self._refresh_summary_cards()
@@ -1005,6 +1009,8 @@ class SdvTuiApp(App[None]):
 
     def on_resize(self, event: events.Resize) -> None:
         self._refresh_home_reference_layout()
+        self._refresh_home_compact_layout()
+        self._refresh_home_summary()
 
     def _show_page(self, page_name: str) -> None:
         self.current_page = page_name
@@ -1041,6 +1047,37 @@ class SdvTuiApp(App[None]):
         else:
             compact.add_class("hidden")
             wide.remove_class("hidden")
+
+    def _refresh_home_compact_layout(self) -> None:
+        compact = self.size.width <= 110
+        try:
+            home_body = self.query_one("#home-body", Static)
+            home_summary = self.query_one("#home-summary", Static)
+            home_recent = self.query_one("#home-recent", Static)
+            home_core_flow = self.query_one("#home-core-flow", Horizontal)
+            gate_copy = self.query_one("#home-gate-copy", Static)
+            scenario_copy = self.query_one("#home-scenario-copy", Static)
+            verify_copy = self.query_one("#home-verify-copy", Static)
+        except NoMatches:
+            return
+
+        home_body.update(
+            "CANoe Test Verification Console\n\n"
+            + (
+                "ASPICE SWE.4 / SWE.5 · ISO 26262 Traceability Matrix 기준 운영 콘솔입니다."
+                if compact
+                else "V-model 기준의 CANoe SIL 운영 콘솔입니다.\n"
+                "ASPICE SWE.4 / SWE.5와 ISO 26262 Traceability Matrix 기준으로 01~07 공식 문서, communication-matrix, test-asset-mapping, execution-guide를 함께 검토합니다."
+            )
+        )
+        gate_copy.update("계약·신호·변수 기준 점검" if compact else "시나리오 실행 전, 현재 작업본이 검증 가능한 상태인지 먼저 점검합니다.")
+        scenario_copy.update("시나리오 주입 및 ACK 확인" if compact else "선택한 SIL 시나리오를 CANoe에 주입하고 ACK 응답을 확인합니다.")
+        verify_copy.update("evidence·판정 빠른 확인" if compact else "최근 실행의 준비 상태와 증빙을 생성하고 PASS/WARN/FAIL 판정을 함께 확인합니다.")
+
+        home_body.styles.min_height = 4 if compact else 6
+        home_summary.styles.min_height = 5 if compact else 7
+        home_recent.styles.min_height = 6 if compact else 8
+        home_core_flow.styles.height = 10 if compact else 12
 
     def _set_command_group(self, group_name: str) -> None:
         if group_name not in self.group_names:
@@ -1172,6 +1209,7 @@ class SdvTuiApp(App[None]):
         return tokens
 
     def _refresh_home_summary(self) -> None:
+        compact = self.size.width <= 110
         last_result = self.state.get("last_result", {})
         insight = self.state.get("last_insight", {})
         timeline = self.state.get("timeline", {})
@@ -1185,22 +1223,25 @@ class SdvTuiApp(App[None]):
         scenario = str(timeline.get("scenario", "IDLE")) if isinstance(timeline, dict) else "IDLE"
         verify = str(timeline.get("verify", "IDLE")) if isinstance(timeline, dict) else "IDLE"
         recent = self._recent_rows()
-        self.query_one(
-            "#home-summary", Static
-        ).update(
-            f"단계: {stage}\n"
-            f"최근 결과: {status} | {title}\n"
-            f"실행 흐름: Gate={gate} / Scenario={scenario} / Verify={verify}\n"
-            f"주요 확인점: {bottleneck}\n"
-            f"다음 단계: {next_action}"
-        )
+        summary_lines = [
+            f"최근 결과: {status} | {title}",
+            f"실행 흐름: Gate={gate} / Scenario={scenario} / Verify={verify}",
+            f"다음 단계: {next_action}",
+        ]
+        if not compact:
+            summary_lines.insert(0, f"단계: {stage}")
+            summary_lines.insert(3, f"주요 확인점: {bottleneck}")
+        self.query_one("#home-summary", Static).update("\n".join(summary_lines))
         recent_lines = ["최근 실행 요약"]
         if recent:
-            for item in recent[:3]:
+            for item in recent[: (2 if compact else 3)]:
                 recent_lines.append(f"- {self._recent_entry_label(item)}")
         else:
             recent_lines.append("- 아직 실행 기록이 없습니다. Gate all부터 시작하십시오.")
-        recent_lines.extend(["", f"최근 상세: {detail}", "", "세부 판정은 Results, 산출물과 Source Contracts는 Artifacts, 반복 실행과 CI/CD 연동은 Automation에서 확인하십시오."])
+        if compact:
+            recent_lines.extend(["", f"최근 상세: {detail}"])
+        else:
+            recent_lines.extend(["", f"최근 상세: {detail}", "", "세부 판정은 Results, 산출물과 Source Contracts는 Artifacts, 반복 실행과 CI/CD 연동은 Automation에서 확인하십시오."])
         self.query_one("#home-recent", Static).update("\n".join(recent_lines))
 
     def _format_duration_clock(self, seconds: float) -> str:
