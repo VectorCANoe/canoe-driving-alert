@@ -264,19 +264,38 @@ void updateWarningFrame()
   int doorOpen;
   int policePos;
   int ambulancePos;
+  int selectedAlertLevel;
+  int selectedAlertType;
+  int nextFrame;
 
   if (gInitDone == 0)
-    return;  // ì´ˆê¸°???„ë£Œ ?????´ì „ ?¸ì…˜ ?”ë¥˜ê°’ìœ¼ë¡??”ë©´ ë³€ê²?ë°©ì?
+    return;  // ??? ?? ? ? ?? ?? ????? ?? ?? ??
 
   if (gAnimRunning == 1)
-    return;  // ?œë™ ? ë‹ˆë©”ì´???¬ìƒ ì¤‘ì´ë©?ê²½ê³  ë¬´ì‹œ (? ë‹ˆë©”ì´???°ì„ )
+    return;  // ?? ????? ?? ??? ?? ?? (????? ??)
 
-  beltWarn    = (int)@CoreState::seatBeltWarnLvl;
-  doorOpen    = (int)@Body::doorOpenCmd;
-  policePos   = (int)@V2X::policePos;
-  ambulancePos = (int)@V2X::ambulancePos;
+  beltWarn           = (int)@CoreState::seatBeltWarnLvl;
+  doorOpen           = (int)@Body::doorOpenCmd;
+  policePos          = (int)@V2X::policePos;
+  ambulancePos       = (int)@V2X::ambulancePos;
+  selectedAlertLevel = (int)@Core::selectedAlertLevel;
+  selectedAlertType  = (int)@Core::selectedAlertType;
+  nextFrame          = 0;
 
-  // ?˜ë™ ëª¨ë“œ(testScenario=0): ?œë™ ON???Œë§Œ ê²½ê³  ?œì‹œ
+  if (policePos >= 6 || (selectedAlertLevel >= 6 && selectedAlertType == 1))
+    nextFrame = 1;
+  else if (ambulancePos >= 6 || (selectedAlertLevel >= 7 && selectedAlertType == 2))
+    nextFrame = 2;
+  else if (selectedAlertType == 5)
+    nextFrame = 5;
+  else if (selectedAlertType == 6)
+    nextFrame = 6;
+  else if (doorOpen == 1)
+    nextFrame = 8;
+  else if (beltWarn >= 2)
+    nextFrame = 7;
+
+  // ?? ??(testScenario=0): ?? ON? ?? ?? ??
   if ((int)@Test::testScenario == 0)
   {
     if (gEngineState == 0)
@@ -284,29 +303,12 @@ void updateWarningFrame()
       @Display::animFrame = 0;
       return;
     }
-    // V2X ?? ???: 6~7=??? ??, 6~7(?14~15)=??? ??
-    if (policePos >= 6)
-      @Display::animFrame = 1;       // ??1 = ??? ?? ??
-    else if (ambulancePos >= 6)
-      @Display::animFrame = 2;       // ??2 = ??? ?? ??
-    else if (doorOpen == 1)
-      @Display::animFrame = 8;
-    else if (beltWarn >= 2)
-      @Display::animFrame = 7;
-    else
-      @Display::animFrame = 0;
+
+    @Display::animFrame = nextFrame;
     return;
   }
 
-  // ???? ??: ??/????/V2X ?? ?? ?? ???
-  if (policePos >= 6)
-    @Display::animFrame = 1;
-  else if (ambulancePos >= 6)
-    @Display::animFrame = 2;
-  else if (doorOpen == 1)
-    @Display::animFrame = 8;
-  else if (beltWarn >= 2)
-    @Display::animFrame = 7;
+  @Display::animFrame = nextFrame;
 }
 
 on sysvar Core::selectedAlertType   { updateWarningFrame(); }
@@ -415,11 +417,13 @@ on timer tEngineCycle
   int speed;
   int fanDuty;
 
+  gInitDone = 1;
   if ((int)@Test::testScenario == 0)
   {
     gIgnitionState = (int)@Chassis::ignitionCmd;
-    engineState = (gIgnitionState == 1) ? 3 : 0;
+    gEngineState = (gIgnitionState == 1) ? 3 : 0;
   }
+  engineState = gEngineState;
 
   if      (engineState == 0) { rpm = 0; }
   else if (engineState == 1) { rpm = 400; }
@@ -493,7 +497,7 @@ on timer tEngineCycle
   if (engineState != gLastEngineState)
   {
     write("[EMS] ignition=%d engine=%d rpm=%d",
-          gIgnitionState, gEngineState, rpm);
+          gIgnitionState, engineState, rpm);
     if (engineState > 0 && gLastEngineState == 0)
     {
       gAnimFrame    = 10;
