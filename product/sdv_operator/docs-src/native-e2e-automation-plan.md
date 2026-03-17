@@ -285,3 +285,18 @@ native `.vtestreport` 후처리는 Vector 공식 tooling을 우선 사용한다.
 2. 이어서 공식 Data API snapshot을 JSON으로 생성한다.
 3. 제품은 XML/XUnit/Data API 결과를 병합해 fail triage에 사용한다.
 4. staging 산출물은 archive materialize에 함께 포함한다.
+
+### 공식 도구 우선순위
+
+| 구분 | 컴포넌트 | 제품 사용 여부 | 역할 |
+|---|---|---|---|
+| Mandatory | `ReportViewerCli.exe` | 필수 | official `XML/XUnit/PDF` export |
+| Mandatory | `Vector.ReportViewer.DataApi` | 필수 | official native report parse |
+| Recommended | `CANoe Test Report Viewer` | 권장 | 사람이 `.vtestreport`를 직접 여는 fallback |
+| Optional | `ReportViewerSelector.exe` | 선택 | viewer launch helper |
+
+운영 규칙은 고정한다.
+
+1. 제품 자동화는 반드시 `CLI + Data API` 조합을 사용한다.
+2. GUI Viewer는 운영자 검토 fallback으로 유지한다.
+3. Selector는 설치돼 있으면 기록하되, primary pipeline 의존성으로 두지 않는다.

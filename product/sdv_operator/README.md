@@ -95,6 +95,8 @@ python scripts/run.py verify report-bundle --tier ST --json
 
 - CLI: `ReportViewerCli.exe`
 - .NET API: `Vector.ReportViewer.DataApi`, `Vector.ReportViewer.DataApi.DiVa`
+- GUI fallback: `CANoe Test Report Viewer`
+- Optional helper: `ReportViewerSelector.exe`
 - 출력: `canoe/tmp/reports/verification/official_reports/<TIER>/...`
 
 ## 패키징 계약

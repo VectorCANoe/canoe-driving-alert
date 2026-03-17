@@ -28,7 +28,10 @@ POWERSHELL_EXE = Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32" 
 
 @dataclass(frozen=True)
 class ReportViewerTooling:
+    viewer_install_dir: str
     cli_path: str
+    selector_install_dir: str
+    selector_exe: str
     help_usage: str
     help_data_api: str
     help_api_reference: str
@@ -68,9 +71,53 @@ def _discover_data_api_dir() -> Path | None:
     return _pick_latest(candidates)
 
 
+def _discover_selector_exe() -> Path | None:
+    candidates = list(Path(r"C:\Program Files").glob(r"Vector CANoe Test Report Viewer Selector\ReportViewerSelector.exe"))
+    return _pick_latest(candidates)
+
+
+def _tooling_payload(tooling: ReportViewerTooling) -> dict:
+    return {
+        "schema": "vector.reportviewer.tooling.snapshot.v2",
+        "generated_at": datetime.now().isoformat(),
+        "tooling": asdict(tooling),
+        "component_policy": [
+            {
+                "component": "CANoe Test Report Viewer",
+                "role": "native report GUI fallback",
+                "priority": "recommended",
+                "required_for_product": False,
+                "installed": bool(tooling.viewer_install_dir),
+            },
+            {
+                "component": "ReportViewerCli.exe",
+                "role": "official XML/XUnit/PDF export",
+                "priority": "mandatory",
+                "required_for_product": True,
+                "installed": bool(tooling.cli_path),
+            },
+            {
+                "component": "Vector.ReportViewer.DataApi",
+                "role": "official .vtestreport structural parse",
+                "priority": "mandatory",
+                "required_for_product": True,
+                "installed": bool(tooling.data_api_dll and tooling.data_api_diva_dll),
+            },
+            {
+                "component": "ReportViewerSelector.exe",
+                "role": "viewer launch helper",
+                "priority": "optional",
+                "required_for_product": False,
+                "installed": bool(tooling.selector_exe),
+            },
+        ],
+    }
+
+
 def discover_report_viewer_tooling() -> ReportViewerTooling:
     cli = _discover_report_viewer_cli()
     api_dir = _discover_data_api_dir()
+    selector = _discover_selector_exe()
     if cli is None:
         raise ReportViewerError("Vector ReportViewerCli.exe not found.")
     if api_dir is None:
@@ -89,7 +136,10 @@ def discover_report_viewer_tooling() -> ReportViewerTooling:
     if not DATA_API_DUMP_PS1.exists():
         raise ReportViewerError(f"Data API dump script missing: {DATA_API_DUMP_PS1}")
     return ReportViewerTooling(
+        viewer_install_dir=_display_path(install_dir),
         cli_path=_display_path(cli),
+        selector_install_dir=_display_path(selector.parent if selector else None),
+        selector_exe=_display_path(selector),
         help_usage=_display_path(usage_help),
         help_data_api=_display_path(data_api_help),
         help_api_reference=_display_path(api_reference),
@@ -104,11 +154,7 @@ def discover_report_viewer_tooling() -> ReportViewerTooling:
 
 def _write_tooling_snapshot(tooling: ReportViewerTooling) -> None:
     OFFICIAL_TOOLING_JSON.parent.mkdir(parents=True, exist_ok=True)
-    payload = {
-        "schema": "vector.reportviewer.tooling.snapshot.v1",
-        "generated_at": datetime.now().isoformat(),
-        "tooling": asdict(tooling),
-    }
+    payload = _tooling_payload(tooling)
     OFFICIAL_TOOLING_JSON.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
@@ -382,15 +428,14 @@ def cmd_verify_report_tools(args: argparse.Namespace) -> int:
     except ReportViewerError as ex:
         print(f"[REPORT_TOOLS] FAIL: {ex}")
         return 2
-    payload = {
-        "schema": "vector.reportviewer.tooling.snapshot.v1",
-        "tooling": asdict(tooling),
-        "snapshot_path": _display_path(OFFICIAL_TOOLING_JSON),
-    }
+    payload = _tooling_payload(tooling)
+    payload["snapshot_path"] = _display_path(OFFICIAL_TOOLING_JSON)
     if getattr(args, "json", False):
         print(json.dumps(payload, indent=2, ensure_ascii=False))
     else:
+        print(f"[REPORT_TOOLS] viewer={tooling.viewer_install_dir}")
         print(f"[REPORT_TOOLS] cli={tooling.cli_path}")
+        print(f"[REPORT_TOOLS] selector={tooling.selector_exe or '-'}")
         print(f"[REPORT_TOOLS] data_api={tooling.data_api_dll}")
         print(f"[REPORT_TOOLS] data_api_diva={tooling.data_api_diva_dll}")
         print(f"[REPORT_TOOLS] help_usage={tooling.help_usage}")

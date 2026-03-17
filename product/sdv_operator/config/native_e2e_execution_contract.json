@@ -21,6 +21,31 @@
     "verify_batch_calls_collect": true,
     "verify_batch_calls_post_run": true
   },
+  "official_tooling_policy": {
+    "mandatory": [
+      {
+        "component": "ReportViewerCli.exe",
+        "purpose": "official XML/XUnit/PDF export"
+      },
+      {
+        "component": "Vector.ReportViewer.DataApi",
+        "purpose": "official native .vtestreport structural parse"
+      }
+    ],
+    "recommended": [
+      {
+        "component": "CANoe Test Report Viewer",
+        "purpose": "human review and GUI fallback"
+      }
+    ],
+    "optional": [
+      {
+        "component": "ReportViewerSelector.exe",
+        "purpose": "viewer launch helper"
+      }
+    ],
+    "operating_rule": "Product automation must use CLI + Data API. Viewer GUI is reviewer-facing fallback. Selector is not part of the primary automation path."
+  },
   "tiers": [
     {
       "tier": "UT",
