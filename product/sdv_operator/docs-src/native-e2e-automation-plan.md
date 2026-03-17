@@ -255,3 +255,33 @@ CANoe는 최소 아래 실행 상태를 올려야 합니다.
 3. raw evidence와 native report와 supplementary trace/logging이 자동 수집된다.
 4. `verification_log_scored.csv`, `surface bundle`, `execution manifest`, `archive`가 자동 생성된다.
 5. 사용자는 CANoe GUI에서 수동 export를 하지 않는다.
+
+## 공식 Report Tooling 경로
+
+native `.vtestreport` 후처리는 Vector 공식 tooling을 우선 사용한다.
+
+- CLI
+  - `ReportViewerCli.exe`
+  - 용도: `XML`, `XUnit`, 선택적 `PDF` export
+- .NET API
+  - `Vector.ReportViewer.DataApi`
+  - `Vector.ReportViewer.DataApi.DiVa`
+  - 용도: immutable native report 구조 조회
+- 공식 help
+  - `ctrvusage.htm`
+  - `ctrvdataapi.htm`
+  - `VectorCANoeTestReportViewerDataAPI.htm`
+
+제품 staging 출력은 아래에 고정한다.
+
+- `canoe/tmp/reports/verification/official_report_tooling.json`
+- `canoe/tmp/reports/verification/official_report_manifest.json`
+- `canoe/tmp/reports/verification/official_report_manifest.md`
+- `canoe/tmp/reports/verification/official_reports/<TIER>/...`
+
+운영 원칙은 다음과 같다.
+
+1. native 실행 직후 제품이 공식 CLI export를 수행한다.
+2. 이어서 공식 Data API snapshot을 JSON으로 생성한다.
+3. 제품은 XML/XUnit/Data API 결과를 병합해 fail triage에 사용한다.
+4. staging 산출물은 archive materialize에 함께 포함한다.

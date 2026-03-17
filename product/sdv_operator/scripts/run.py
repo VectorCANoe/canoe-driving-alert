@@ -65,6 +65,7 @@ from cliops.package_ops import cmd_package_build_exe, cmd_package_bundle_portabl
 from cliops.operator_result import build_operator_result, clear_last_operator_result, write_last_operator_result
 from cliops.parser_factory import TOPLEVEL_COMMANDS, build_parser
 from cliops.platform_caps import canoe_runtime_check, platform_label
+from cliops.report_viewer_ops import cmd_verify_report_bundle, cmd_verify_report_tools
 from cliops.runtime_ops import (
     cmd_canoe_capl_call,
     cmd_canoe_measure_reset,
@@ -133,6 +134,8 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py canoe test-config-list",
     "python scripts/run.py canoe test-config-status --tier ST",
     "python scripts/run.py canoe test-config-run --tier ST --timeout-seconds 1800",
+    "python scripts/run.py verify report-tools --json",
+    "python scripts/run.py verify report-bundle --tier ST --json",
     "python scripts/run.py canoe capl-call --function-name <CAPL_FN> --args <A1> <A2>",
     "python scripts/run.py evidence status --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py release portable",
@@ -984,6 +987,8 @@ PARSER_HANDLERS = {
     "cmd_verify_batch": cmd_verify_batch,
     "cmd_verify_smoke": cmd_verify_smoke,
     "cmd_verify_collect": cmd_verify_collect,
+    "cmd_verify_report_tools": cmd_verify_report_tools,
+    "cmd_verify_report_bundle": cmd_verify_report_bundle,
     "cmd_verify_quick": cmd_verify_quick,
     "cmd_verify_fill_score": cmd_verify_fill_score,
     "cmd_verify_insight": cmd_verify_insight,

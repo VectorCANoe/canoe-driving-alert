@@ -16,6 +16,7 @@ from cliops.gate_ops import (
     cmd_gate_multibus_dbc,
 )
 from cliops.native_contract import NativeContractError, resolve_tier_contract
+from cliops.report_viewer_ops import cmd_verify_report_bundle, cmd_verify_report_tools
 from cliops.verification_policy import classify_step_status, load_phase_policy
 
 
@@ -318,6 +319,10 @@ def _batch_artifact_rows(run_id: str, phase: str) -> list[dict[str, object]]:
         'canoe/tmp/reports/verification/run_readiness.json',
         'canoe/tmp/reports/verification/run_readiness.md',
         'canoe/tmp/reports/verification/dev2_batch_report.junit.xml',
+        'canoe/tmp/reports/verification/official_reports',
+        'canoe/tmp/reports/verification/official_report_tooling.json',
+        'canoe/tmp/reports/verification/official_report_manifest.json',
+        'canoe/tmp/reports/verification/official_report_manifest.md',
         'canoe/tmp/reports/verification/surface_evidence_bundle.json',
         'canoe/tmp/reports/verification/surface_evidence_bundle.md',
         'canoe/tmp/reports/verification/run_insight_report.json',
@@ -348,6 +353,7 @@ def _batch_artifact_rows(run_id: str, phase: str) -> list[dict[str, object]]:
         f'artifacts/verification_runs/{run_id}/{phase}/evidence/ST/supplementary/logging',
         f'artifacts/verification_runs/{run_id}/{phase}/evidence/FULL/supplementary/trace',
         f'artifacts/verification_runs/{run_id}/{phase}/evidence/FULL/supplementary/logging',
+        f'artifacts/verification_runs/{run_id}/{phase}/reports/official_reports',
         f'artifacts/verification_runs/{run_id}/{phase}/manifests/artifact_manifest.json',
         f'artifacts/verification_runs/{run_id}/{phase}/manifests/artifact_manifest.md',
         f'artifacts/verification_runs/{run_id}/{phase}/manifests/execution_manifest.json',
@@ -612,6 +618,9 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
         steps.append({'name': name, 'rc': rc, 'status': step_status, 'severity': severity})
         return rc
 
+    def should_stop(rc: int) -> bool:
+        return rc != 0 and args.stop_on_fail and steps[-1].get('status') == 'FAIL'
+
     if args.phase in {'pre', 'full'}:
         if not args.skip_gates:
             gate_steps = [
@@ -640,33 +649,62 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
             ),
             ('verify prepare', lambda: cmd_verify_prepare(argparse.Namespace(run_id=args.run_id))),
             ('verify smoke', lambda: cmd_verify_smoke(argparse.Namespace(owner=args.owner, run_date=args.run_date))),
-            ('verify status', lambda: cmd_verify_status(argparse.Namespace(run_id=args.run_id, evidence_root='', output_json='canoe/tmp/reports/verification/run_readiness.json', output_md='canoe/tmp/reports/verification/run_readiness.md'))),
         ]
-        if getattr(args, 'execute_native_tier', ''):
-            pre_steps.insert(
-                3,
-                (
-                    f'native execute {args.execute_native_tier}',
-                    lambda: cmd_canoe_test_config_run(
-                        argparse.Namespace(
-                            tier=args.execute_native_tier,
-                            config_name='',
-                            timeout_seconds=args.native_timeout_seconds,
-                            poll_ms=args.native_poll_ms,
-                            no_ensure_running=False,
-                            restart_if_running=args.native_restart_if_running,
-                            fail_on_verdict=args.native_fail_on_verdict,
-                            json=False,
-                        )
-                    ),
-                ),
-            )
         for name, fn in pre_steps:
             rc = run_step(name, fn)
             if name == 'doctor' and rc != 0:
                 return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
-            if rc != 0 and args.stop_on_fail and steps[-1].get('status') == 'FAIL':
+            if should_stop(rc):
                 return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+        if getattr(args, 'execute_native_tier', ''):
+            native_rc = run_step(
+                f'native execute {args.execute_native_tier}',
+                lambda: cmd_canoe_test_config_run(
+                    argparse.Namespace(
+                        tier=args.execute_native_tier,
+                        config_name='',
+                        timeout_seconds=args.native_timeout_seconds,
+                        poll_ms=args.native_poll_ms,
+                        no_ensure_running=False,
+                        restart_if_running=args.native_restart_if_running,
+                        fail_on_verdict=args.native_fail_on_verdict,
+                        json=False,
+                    )
+                ),
+            )
+            native_should_stop = should_stop(native_rc)
+            report_tools_rc = run_step(
+                'official report tooling',
+                lambda: cmd_verify_report_tools(argparse.Namespace(json=False)),
+            )
+            if should_stop(report_tools_rc):
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+            report_bundle_rc = run_step(
+                f'official report bundle {args.execute_native_tier}',
+                lambda: cmd_verify_report_bundle(
+                    argparse.Namespace(
+                        tier=args.execute_native_tier,
+                        report='',
+                        include_pdf=False,
+                        json=False,
+                    )
+                ),
+            )
+            if native_should_stop or should_stop(report_bundle_rc):
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+        status_rc = run_step(
+            'verify status',
+            lambda: cmd_verify_status(
+                argparse.Namespace(
+                    run_id=args.run_id,
+                    evidence_root='',
+                    output_json='canoe/tmp/reports/verification/run_readiness.json',
+                    output_md='canoe/tmp/reports/verification/run_readiness.md',
+                )
+            ),
+        )
+        if should_stop(status_rc):
+            return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
 
     if args.phase in {'post', 'full'}:
         for tier in selected_tiers:
@@ -682,7 +720,20 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                     )
                 ),
             )
-            if rc != 0 and args.stop_on_fail and steps[-1].get('status') == 'FAIL':
+            if should_stop(rc):
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+            rc = run_step(
+                f'official report bundle {tier}',
+                lambda tier=tier: cmd_verify_report_bundle(
+                    argparse.Namespace(
+                        tier=tier,
+                        report='',
+                        include_pdf=False,
+                        json=False,
+                    )
+                ),
+            )
+            if should_stop(rc):
                 return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
         finalize_ns = argparse.Namespace(
             run_id=args.run_id,
@@ -704,7 +755,7 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
             fill_csv='canoe/tmp/reports/verification/doc_fill_template.csv',
             fill_md='canoe/tmp/reports/verification/doc_fill_template.md',
         )
-        if run_step('verify finalize', lambda: cmd_verify_finalize(finalize_ns)) != 0 and args.stop_on_fail and steps[-1].get('status') == 'FAIL':
+        if should_stop(run_step('verify finalize', lambda: cmd_verify_finalize(finalize_ns))):
             return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
         run_step('verify status', lambda: cmd_verify_status(argparse.Namespace(run_id=args.run_id, evidence_root='', output_json='canoe/tmp/reports/verification/run_readiness.json', output_md='canoe/tmp/reports/verification/run_readiness.md')))
 

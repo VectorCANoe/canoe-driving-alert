@@ -20,6 +20,7 @@
    - JUnit XML
    - Jenkins archive contract
    - sample pipeline: `product/sdv_operator/examples/Jenkinsfile.verify`
+   - official Vector report export: `verify report-tools`, `verify report-bundle`
 5. 역할 경계 / capability boundary / campaign profile / verification pack
    - CANoe TEST / Jenkins / Console 역할 분리
    - capability boundary source contract
@@ -62,3 +63,7 @@ python scripts/run.py verify batch --run-id 20260308_0900 --campaign-id CMP_2026
 
 - native end-to-end 자동화 확장 계획:
   - `native-e2e-automation-plan.md`
+- official `.vtestreport` parsing/export:
+  - `ReportViewerCli.exe`
+  - `Vector.ReportViewer.DataApi`
+  - 출력 경로: `canoe/tmp/reports/verification/official_reports/<TIER>/...`

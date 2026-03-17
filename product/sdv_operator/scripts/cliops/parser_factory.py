@@ -168,6 +168,19 @@ def add_verify_collect_args(p: argparse.ArgumentParser, handlers: HandlerMap) ->
     p.set_defaults(func=handlers["cmd_verify_collect"], operator_command_id="verify.collect_native")
 
 
+def add_verify_report_tools_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--json", action="store_true", help="Print tooling payload as JSON")
+    p.set_defaults(func=handlers["cmd_verify_report_tools"], operator_command_id="verify.report_tools")
+
+
+def add_verify_report_bundle_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--tier", default="", choices=["", "UT", "IT", "ST", "FULL"], help="Tier contract to resolve native summary report")
+    p.add_argument("--report", default="", help="Explicit .vtestreport path override")
+    p.add_argument("--include-pdf", action="store_true", help="Also export official PDF via ReportViewerCli")
+    p.add_argument("--json", action="store_true", help="Print merged bundle JSON")
+    p.set_defaults(func=handlers["cmd_verify_report_bundle"], operator_command_id="verify.report_bundle")
+
+
 def add_verify_quick_args(
     p: argparse.ArgumentParser,
     handlers: HandlerMap,
@@ -681,6 +694,8 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     add_verify_batch_args(verify_sub.add_parser("batch", help="Run Dev2 pre/post/full batch workflow"), handlers)
     add_verify_smoke_args(verify_sub.add_parser("smoke", help="Run CANoe COM smoke checks"), handlers)
     add_verify_collect_args(verify_sub.add_parser("collect", help="Collect native reports and raw evidence for one tier"), handlers)
+    add_verify_report_tools_args(verify_sub.add_parser("report-tools", help="Inspect official Vector report tooling install"), handlers)
+    add_verify_report_bundle_args(verify_sub.add_parser("report-bundle", help="Export and parse native report via official Vector tooling"), handlers)
     add_verify_quick_args(verify_sub.add_parser("quick", help="Run prepare + smoke + status in one flow"), handlers, default_run_id)
     add_verify_fill_args(verify_sub.add_parser("fill-score", help="Fill and score one tier"), handlers)
     add_verify_insight_args(verify_sub.add_parser("insight", help="Build run-level insight report"), handlers)
@@ -768,6 +783,8 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     add_verify_batch_args(_add_hidden_parser(sub, "verify-batch"), handlers)
     add_verify_smoke_args(_add_hidden_parser(sub, "verify-smoke"), handlers)
     add_verify_collect_args(_add_hidden_parser(sub, "verify-collect"), handlers)
+    add_verify_report_tools_args(_add_hidden_parser(sub, "verify-report-tools"), handlers)
+    add_verify_report_bundle_args(_add_hidden_parser(sub, "verify-report-bundle"), handlers)
     add_verify_fill_args(_add_hidden_parser(sub, "verify-fill-score"), handlers)
     add_verify_insight_args(_add_hidden_parser(sub, "verify-insight"), handlers)
     add_verify_bind_doc_args(_add_hidden_parser(sub, "verify-bind-doc"), handlers)

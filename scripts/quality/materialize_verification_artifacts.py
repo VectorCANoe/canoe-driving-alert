@@ -218,6 +218,8 @@ def main() -> int:
         copied = _copy_if_exists(staging_root / name, reports_dir / name)
         if copied:
             copied_reports.append(copied)
+    for name in layout.get("copied_report_trees", []):
+        copied_reports.extend(_copy_tree(staging_root / name, reports_dir / name))
 
     copied_surface = _copy_tree(surface_root, surface_dir)
     copied_native_reports = _copy_native_reports(layout.get("native_report_glob", "canoe/**/*.vtestreport"), native_reports_dir)
