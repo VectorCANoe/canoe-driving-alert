@@ -32,6 +32,9 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ingressHeartbeat" comment="Monotonic heartbeat for modeled external emergency ingress refresh" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="65535" maxValuePhys="65535"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="policeDispatch" comment="Panel button: 0=Clear 1=Police dispatch active" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambulanceDispatch" comment="Panel button: 0=Clear 1=Ambulance dispatch active" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="policePos" comment="Police car position slider 0=far 7=close(alarm at 6)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambulancePos" comment="Ambulance position slider 0=far 7=close(alarm at 6)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="v2xFrame" comment="V2X panel display frame: 0-7=police 8-15=ambulance" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="15" maxValuePhys="15"/>
   </namespace>
 
   <namespace name="Core" comment="" interface="">

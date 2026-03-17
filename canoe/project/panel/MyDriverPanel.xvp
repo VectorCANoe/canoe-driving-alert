@@ -378,15 +378,55 @@ OFF
         <Property Name="SwitchValuesRx">1;2;0;1</Property>
         <Property Name="Text">운전자 벨트 OFF</Property>
       </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xv2xPoliceLabel001" ControlName="경찰차위치 라벨">
+        <Property Name="Name">Xv2xPoliceLabel001</Property>
+        <Property Name="Size">90, 18</Property>
+        <Property Name="Location">5, 312</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">경찰차 위치</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xv2xPoliceSlider001" ControlName="경찰차위치 슬라이더">
+        <Property Name="Name">Xv2xPoliceSlider001</Property>
+        <Property Name="Size">200, 30</Property>
+        <Property Name="Location">100, 308</Property>
+        <Property Name="TabIndex">40</Property>
+        <Property Name="MaximumDouble">7</Property>
+        <Property Name="LargeChangeDouble">1</Property>
+        <Property Name="MaximumSize">100000, 30</Property>
+        <Property Name="Maximum">7</Property>
+        <Property Name="LargeChange">1</Property>
+        <Property Name="SymbolConfiguration">8;16;V2X;;;policePos;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xv2xAmbulanceLabel001" ControlName="구급차위치 라벨">
+        <Property Name="Name">Xv2xAmbulanceLabel001</Property>
+        <Property Name="Size">90, 18</Property>
+        <Property Name="Location">5, 352</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">구급차 위치</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xv2xAmbulanceSlider001" ControlName="구급차위치 슬라이더">
+        <Property Name="Name">Xv2xAmbulanceSlider001</Property>
+        <Property Name="Size">200, 30</Property>
+        <Property Name="Location">100, 348</Property>
+        <Property Name="TabIndex">41</Property>
+        <Property Name="MaximumDouble">7</Property>
+        <Property Name="LargeChangeDouble">1</Property>
+        <Property Name="MaximumSize">100000, 30</Property>
+        <Property Name="Maximum">7</Property>
+        <Property Name="LargeChange">1</Property>
+        <Property Name="SymbolConfiguration">8;16;V2X;;;ambulancePos;1;;;-1;;;Value;;;0</Property>
+      </Object>
       <Property Name="Name">X47c835c7e7625e4100e9a0fe2ae23ab5fa8a</Property>
-      <Property Name="Size">532, 300</Property>
+      <Property Name="Size">532, 390</Property>
       <Property Name="Location">5, 5</Property>
       <Property Name="Text">드라이버 컨트롤</Property>
       <Property Name="TabIndex">2</Property>
       <Property Name="UseWindowsStyle">False</Property>
     </Object>
     <Property Name="Name">Panel</Property>
-    <Property Name="Size">546, 316</Property>
+    <Property Name="Size">546, 406</Property>
     <Property Name="Location">0, 0</Property>
     <Property Name="BackColor">255, 127, 127, 127</Property>
   </Object>
