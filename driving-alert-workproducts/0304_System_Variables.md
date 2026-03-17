@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.29
-**Date**: 2026-03-09
+**Version**: 2.30
+**Date**: 2026-03-17
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -284,4 +284,19 @@
 | 317 | Diag | RouteOwner | uint32 | 0 | 3 | 0 | 진단 경로 소유 해석(0=None 1=SGW 2=DCM 3=RuntimeOwner) |
 | 318 | Diag | ResponseKind | uint32 | 0 | 4 | 0 | 진단 응답 분류(0=None 1=Positive 2=Negative 3=Timeout 4=Unavailable) |
 | 319 | Diag | ReasonCode | uint32 | 0 | 65535 | 0 | 진단 판정 근거 코드 |
+| 320 | Diag | LastRequestTarget | uint32 | 0 | 255 | 0 | 최근 진단 요청 대상 코드 |
+| 321 | Diag | LastRequestSid | uint32 | 0 | 255 | 0 | 최근 진단 요청 서비스 ID |
+| 322 | Diag | LastRequestDidHigh | uint32 | 0 | 255 | 0 | 최근 진단 요청 DID 상위 바이트 |
+| 323 | Diag | LastRequestDidLow | uint32 | 0 | 255 | 0 | 최근 진단 요청 DID 하위 바이트 |
+| 324 | Diag | LastRequestSourceBus | uint32 | 0 | 255 | 0 | 최근 진단 요청 입력 버스 코드 |
+| 325 | Diag | RequestCounter | uint32 | 0 | 2147483647 | 0 | 진단 요청 누적 카운터 |
+| 326 | Diag | LastRequestTimeMs | uint32 | 0 | 4294967295 | 0 | 최근 진단 요청 시각(ms) |
+| 327 | Diag | LastResponseTarget | uint32 | 0 | 255 | 0 | 최근 진단 응답 대상 코드 |
+| 328 | Diag | LastResponseCode | uint32 | 0 | 255 | 0 | 최근 진단 응답 코드 |
+| 329 | Diag | LastResponseData0 | uint32 | 0 | 255 | 0 | 최근 진단 응답 요약 데이터0 |
+| 330 | Diag | LastResponseData1 | uint32 | 0 | 255 | 0 | 최근 진단 응답 요약 데이터1 |
+| 331 | Diag | LastResponseOk | uint32 | 0 | 1 | 0 | 최근 진단 응답 양성 여부 |
+| 332 | Diag | LastResponseSourceBus | uint32 | 0 | 255 | 0 | 최근 진단 응답 출력 버스 코드 |
+| 333 | Diag | ResponseCounter | uint32 | 0 | 2147483647 | 0 | 진단 응답 누적 카운터 |
+| 334 | Diag | LastResponseTimeMs | uint32 | 0 | 4294967295 | 0 | 최근 진단 응답 시각(ms) |
 ---

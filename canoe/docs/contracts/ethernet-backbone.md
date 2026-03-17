@@ -5,8 +5,8 @@
 > Some runtime, diagnostic, and verification details are still under implementation and may change.
 
 **Document ID**: CANOE-ETH-IFC  
-**Version**: 1.5  
-**Date**: 2026-03-13  
+**Version**: 1.6  
+**Date**: 2026-03-17  
 **Status**: Active  
 **Scope**: CANoe SIL, UDP 기반 Ethernet 계약 정의
 
@@ -95,6 +95,22 @@ Validation harness result aggregation uses a sysvar-only summary seam.
 - `TEST_BAS` stays single-bus on `ETH_Backbone` because it aggregates only the summarized sysvar result chain.
 - `TEST_BAS` is intentionally not placed in `Chassis` and not merged into `CGW`.
 
+## 2.2 Diagnostic Observer Surface
+
+The current diagnostic baseline also uses a sysvar-only observation surface.
+
+| Artifact | Producer | Consumer | Topology Intent |
+|---|---|---|---|
+| `Diag::LastRequest*` | `DCM` synthetic request mirror in the current executable baseline | `EXT_DIAG`, verification, evidence tools | diagnostic request-side summary observation |
+| `Diag::LastResponse*` | `DCM` synthetic response mirror in the current executable baseline | `EXT_DIAG`, verification, evidence tools | diagnostic response-side summary observation |
+| `Diag::SecurityState`, `Diag::RouteOwner` | `SGW` | `EXT_DIAG`, verification, evidence tools | diagnostic security and ownership interpretation |
+| `Diag::ServiceState`, `Diag::ResponseKind`, `Diag::ReasonCode` | `DCM` | `EXT_DIAG`, verification, evidence tools | diagnostic service and verdict interpretation |
+
+- `EXT_DIAG` is a logical external diagnostic requester or observer placeholder.
+- No new Ethernet message ID is introduced for this surface in the current baseline.
+- No DBC update is required for `EXT_DIAG` in the current baseline.
+- If a later diagnostic toolchain introduces real payload frames, that transport contract must be added in a future revision.
+
 ---
 
 ## 3. 연계 규칙
@@ -110,6 +126,7 @@ Validation harness result aggregation uses a sysvar-only summary seam.
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.6 | 2026-03-17 | `EXT_DIAG` 기반 lightweight diagnostic observer surface 추가. `Diag::*` sysvar-only seam을 Ethernet backbone companion contract에 반영하고, no-new-message/no-DBC baseline을 명시. |
 | 1.5 | 2026-03-13 | Active cfg에서 backbone stub DBC 제거 완료. SIL stub ID 매핑 섹션 삭제, active backbone contract를 UDP multicast 단일 기준으로 정리. |
 | 1.4 | 2026-03-12 | Active UDP multicast backbone 기준으로 contract 정렬. `ETH_EmergencyMonitor`와 validation sysvar result seam(`Test::scenarioResult`, `Test::base*`) 반영, legacy stub 설명 정리. |
 | 1.3 | 2026-03-09 | Active runtime sender 기준으로 Ethernet contract 정렬: `VCU/MDPS/IVI/CGW/V2X` ownership 및 CAN-stub backbone seam 설명 최신화. |

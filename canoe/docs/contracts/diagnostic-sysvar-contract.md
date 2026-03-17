@@ -36,13 +36,13 @@ It contains request mirrors, response mirrors, counters, and timestamps.
 
 | SysVar | Meaning | Typical producer | Typical consumer |
 |---|---|---|---|
-| `Diag::LastRequestTarget` | target ECU or service code of the most recent diagnostic request | diagnostic tester / harness path | verification and evidence tools |
-| `Diag::LastRequestSid` | service identifier of the most recent request | diagnostic tester / harness path | verification and evidence tools |
-| `Diag::LastRequestDidHigh` | DID high byte for the most recent request | diagnostic tester / harness path | verification and evidence tools |
-| `Diag::LastRequestDidLow` | DID low byte for the most recent request | diagnostic tester / harness path | verification and evidence tools |
-| `Diag::LastRequestSourceBus` | source bus code used for the request | diagnostic tester / harness path | verification and evidence tools |
-| `Diag::RequestCounter` | monotonic request count | diagnostic tester / harness path | verification and evidence tools |
-| `Diag::LastRequestTimeMs` | most recent request timestamp in ms | diagnostic tester / harness path | verification and evidence tools |
+| `Diag::LastRequestTarget` | target ECU or service code of the most recent diagnostic request | current executable baseline: `DCM` synthetic request mirror; target architecture: `EXT_DIAG` or later diagnostic tester path | verification and evidence tools |
+| `Diag::LastRequestSid` | service identifier of the most recent request | current executable baseline: `DCM` synthetic request mirror; target architecture: `EXT_DIAG` or later diagnostic tester path | verification and evidence tools |
+| `Diag::LastRequestDidHigh` | DID high byte for the most recent request | current executable baseline: `DCM` synthetic request mirror; target architecture: `EXT_DIAG` or later diagnostic tester path | verification and evidence tools |
+| `Diag::LastRequestDidLow` | DID low byte for the most recent request | current executable baseline: `DCM` synthetic request mirror; target architecture: `EXT_DIAG` or later diagnostic tester path | verification and evidence tools |
+| `Diag::LastRequestSourceBus` | source bus code used for the request | current executable baseline: `DCM` synthetic request mirror; target architecture: `EXT_DIAG` or later diagnostic tester path | verification and evidence tools |
+| `Diag::RequestCounter` | monotonic request count | current executable baseline: `DCM` synthetic request mirror; target architecture: `EXT_DIAG` or later diagnostic tester path | verification and evidence tools |
+| `Diag::LastRequestTimeMs` | most recent request timestamp in ms | current executable baseline: `DCM` synthetic request mirror; target architecture: `EXT_DIAG` or later diagnostic tester path | verification and evidence tools |
 
 ## 5. Response-side contract
 
@@ -80,12 +80,17 @@ They are not a replacement for full transport trace or full tester payload revie
 It must not become the only place where diagnostic meaning lives.
 
 Product behavior should still be implemented through the actual diagnostic runtime path.
+In the current target architecture, request-side origin belongs to `EXT_DIAG`, not `TEST_SCN`.
 
 ### 7.2 Counters are cumulative
 
 `RequestCounter` and `ResponseCounter` are cumulative mirrors for the active session/runtime scope.
 
 Do not reuse them as boolean flags.
+
+In the current executable baseline, `RequestCounter` advances when the synthetic request identity changes or when the `DCM` semantic transaction tuple changes (`ServiceState`, `ResponseKind`, `ReasonCode`).
+
+This is an evidence-oriented mirror rule for the current SIL baseline, not a claim that a full external transport request was emitted.
 
 ### 7.3 Timestamps are in milliseconds
 
@@ -98,6 +103,11 @@ Keep this unit stable across tooling and evidence review.
 `LastRequestSourceBus` and `LastResponseSourceBus` are valid only if all producers and consumers use the same code mapping.
 
 If the bus-code enum changes, update this document and the matching runtime/test helpers together.
+
+Current executable baseline:
+
+- `1 = ETH_Backbone`
+- request/response target code `2 = DCM summary endpoint`
 
 ### 7.5 Response summary fields are for evidence, not full payload transport
 

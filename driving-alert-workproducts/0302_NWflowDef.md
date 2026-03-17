@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.30
-**Date**: 2026-03-09
+**Version**: 3.31
+**Date**: 2026-03-17
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -260,4 +260,6 @@
 |  |  |  | 0 | Energy Flow Check | 4~5 | EnergyFlowMode |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |
 | Powertrain CAN | 0x110 | frmPowertrainCtrlAuthMsg | 0 | Powertrain Control Auth | 0~1 | CtrlAuthLevel |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | Powertrain Control Auth | 8~11 | CtrlAuthSource |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |
+
+- 외부 진단 관측면(`EXT_DIAG`)은 `Diag::*` 시스템 변수 경로를 사용하며 본 표에 별도 CAN/Ethernet message row를 추가하지 않는다.
 ---

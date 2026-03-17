@@ -151,7 +151,7 @@ To avoid conflicting writes, keep one producer per reserved seam.
 | Producer | Owned reserved seam |
 |---|---|
 | `SGW.can` | `Diag::SecurityState`, `Diag::RouteOwner` |
-| `DCM.can` | `Diag::ServiceState`, `Diag::ResponseKind`, `Diag::ReasonCode`, `Diag::LastRequestSid`, `Diag::LastResponseCode`, `Diag::LastResponseOk` |
+| `DCM.can` | `Diag::ServiceState`, `Diag::ResponseKind`, `Diag::ReasonCode`, all current executable request/response identity mirrors (`LastRequestTarget`, `LastRequestSid`, `LastRequestDidHigh`, `LastRequestDidLow`, `LastRequestSourceBus`, `RequestCounter`, `LastRequestTimeMs`, `LastResponseTarget`, `LastResponseCode`, `LastResponseData0`, `LastResponseData1`, `LastResponseOk`, `LastResponseSourceBus`, `ResponseCounter`, `LastResponseTimeMs`) |
 
 ## 11. ST_043 scenario stimulus contract
 

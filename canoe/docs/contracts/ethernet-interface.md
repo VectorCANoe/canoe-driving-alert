@@ -66,6 +66,21 @@ These seams expose health, degradation, and observability state.
 | `ETH_EmergencyMonitor` | `V2X` | `TEST_SCN`, trace observers | emergency transport monitor |
 | `ethObjectSafetyStateMsg` | `CGW` | `ADAS`, `TEST_SCN`, selected observers | object-path health and event code |
 
+### 3.4 Diagnostic observation surface
+
+This surface exists for the current lightweight diagnostic baseline.
+
+| Surface | Logical owner | Primary consumers | Intent |
+|---|---|---|---|
+| `Diag::*` semantic observation seam | `SGW` + `DCM` | `EXT_DIAG`, verification, evidence tools | compact diagnostic request/response and verdict observation without adding a new Ethernet payload contract |
+
+Current interpretation:
+
+- `EXT_DIAG` is the logical external diagnostic requester or observer placeholder
+- it does not own a new UDP multicast message in the current baseline
+- it reads the existing `Diag::*` semantic seam rather than subscribing to every product node raw message
+- later DoIP, UDS, or CANoe Diagnostics Feature Set expansion may replace the requester implementation without changing this architecture role
+
 ## 4. Contract rules
 
 ### 4.1 Business meaning is separate from transport
@@ -113,6 +128,16 @@ Primary examples:
 - `CoreState::warningPathStatus`
 - `CoreState::e2eHealthState`
 - `ethFailSafeStateMsg`
+
+### 4.6 `EXT_DIAG` does not add a new backbone payload contract
+
+`EXT_DIAG` belongs to the backbone-side diagnostic surface, but the current executable baseline adds:
+
+- no new Ethernet message ID
+- no new CAN DBC row
+- no new direct backbone RX owner
+
+Its current role is observation and evidence alignment through `Diag::*`.
 
 ## 5. Update rules
 

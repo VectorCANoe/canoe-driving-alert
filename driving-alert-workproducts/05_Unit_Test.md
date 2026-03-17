@@ -3,8 +3,8 @@
 **Document ID**: PROJ-05-UT
 **ISO 26262 Reference**: Part 6, Cl.9 (Software Unit Verification)
 **ASPICE Reference**: SWE.4 (Software Unit Verification)
-**Version**: 2.25
-**Date**: 2026-03-09
+**Version**: 2.26
+**Date**: 2026-03-17
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -83,8 +83,8 @@
 |  |  | UT_060 - SRR_RL Input | 좌후 측후방 레이더 상태를 입력 | Ready |  |  |
 |  |  | UT_061 - SRR_RR Input | 우후 측후방 레이더 상태를 입력 | Ready |  |  |
 |  |  | UT_062 - IBOX Input | 차량 서비스 ECU 상태 정보를 입력 | Ready |  |  |
-|  |  | UT_063 - SGW Input | 보안 게이트웨이 상태를 입력 | Ready |  |  |
-|  |  | UT_064 - DCM Input | 진단 제어 상태를 입력 | Ready |  |  |
+|  |  | UT_063 - SGW Input | 보안 게이트웨이 상태를 입력하여 진단 보안 상태와 경로 소유 해석에 반영 | Ready |  |  |
+|  |  | UT_064 - DCM Input | 진단 제어 상태를 입력하여 진단 요청/응답 요약과 서비스 판단 상태에 반영 | Ready |  |  |
 |  |  | UT_065 - ETHB Input | 백본 서비스 상태를 입력 | Ready |  |  |
 |  |  | UT_066 - OBC Input | 충전 ECU 상태 정보를 입력 | Ready |  |  |
 |  |  | UT_067 - DCDC Input | 전력 변환 ECU 상태를 입력 | Ready |  |  |

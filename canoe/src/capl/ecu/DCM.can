@@ -22,6 +22,96 @@ variables
   int gLastTraceServiceState;
   int gLastTraceResponseKind;
   int gLastTraceReasonCode;
+  int gLastPublishedRequestServiceState;
+  int gLastPublishedRequestResponseKind;
+  int gLastPublishedRequestReasonCode;
+}
+
+int diagEthBackboneBusCode()
+{
+  return 1;
+}
+
+int diagDcmTargetCode()
+{
+  return 2;
+}
+
+void publishDiagRequestObservation(int requestSid, int serviceState, int responseKind, int reasonCode)
+{
+  int requestTarget;
+  int requestDidHigh;
+  int requestDidLow;
+  int requestSourceBus;
+  long requestCounter;
+  int requestSemanticChanged;
+
+  requestTarget = diagDcmTargetCode();
+  requestDidHigh = 0;
+  requestDidLow = 0;
+  requestSourceBus = diagEthBackboneBusCode();
+  requestCounter = (long)@Diag::RequestCounter;
+  requestSemanticChanged = 0;
+
+  if (gLastPublishedRequestServiceState != serviceState ||
+      gLastPublishedRequestResponseKind != responseKind ||
+      gLastPublishedRequestReasonCode != reasonCode)
+  {
+    requestSemanticChanged = 1;
+  }
+
+  if ((int)@Diag::LastRequestTarget != requestTarget ||
+      (int)@Diag::LastRequestSid != requestSid ||
+      (int)@Diag::LastRequestDidHigh != requestDidHigh ||
+      (int)@Diag::LastRequestDidLow != requestDidLow ||
+      (int)@Diag::LastRequestSourceBus != requestSourceBus ||
+      requestSemanticChanged == 1)
+  {
+    requestCounter = requestCounter + 1;
+    @Diag::LastRequestTarget = requestTarget;
+    @Diag::LastRequestSid = requestSid;
+    @Diag::LastRequestDidHigh = requestDidHigh;
+    @Diag::LastRequestDidLow = requestDidLow;
+    @Diag::LastRequestSourceBus = requestSourceBus;
+    @Diag::RequestCounter = requestCounter;
+    @Diag::LastRequestTimeMs = getSimulationTimeMs();
+    gLastPublishedRequestServiceState = serviceState;
+    gLastPublishedRequestResponseKind = responseKind;
+    gLastPublishedRequestReasonCode = reasonCode;
+  }
+}
+
+void publishDiagResponseObservation(int responseCode, int responseOk, int serviceState, int responseKind)
+{
+  int responseTarget;
+  int responseSourceBus;
+  int responseData0;
+  int responseData1;
+  long responseCounter;
+
+  responseTarget = diagDcmTargetCode();
+  responseSourceBus = diagEthBackboneBusCode();
+  responseData0 = clampRange(serviceState, 0, 255);
+  responseData1 = clampRange(responseKind, 0, 255);
+  responseCounter = (long)@Diag::ResponseCounter;
+
+  if ((int)@Diag::LastResponseTarget != responseTarget ||
+      (int)@Diag::LastResponseCode != responseCode ||
+      (int)@Diag::LastResponseData0 != responseData0 ||
+      (int)@Diag::LastResponseData1 != responseData1 ||
+      (int)@Diag::LastResponseOk != responseOk ||
+      (int)@Diag::LastResponseSourceBus != responseSourceBus)
+  {
+    responseCounter = responseCounter + 1;
+    @Diag::LastResponseTarget = responseTarget;
+    @Diag::LastResponseCode = responseCode;
+    @Diag::LastResponseData0 = responseData0;
+    @Diag::LastResponseData1 = responseData1;
+    @Diag::LastResponseOk = responseOk;
+    @Diag::LastResponseSourceBus = responseSourceBus;
+    @Diag::ResponseCounter = responseCounter;
+    @Diag::LastResponseTimeMs = getSimulationTimeMs();
+  }
 }
 
 void publishReservedDiagServiceSeam(int diagStage)
@@ -29,6 +119,8 @@ void publishReservedDiagServiceSeam(int diagStage)
   int serviceState;
   int responseKind;
   int reasonCode;
+  int responseCode;
+  int responseOk;
 
   serviceState = 0;
   responseKind = 0;
@@ -62,29 +154,37 @@ void publishReservedDiagServiceSeam(int diagStage)
   @Diag::ServiceState = serviceState;
   @Diag::ResponseKind = responseKind;
   @Diag::ReasonCode = reasonCode;
-  @Diag::LastRequestSid = 0x22;
-  @Diag::LastResponseOk = (responseKind == 1) ? 1 : 0;
+  responseOk = (responseKind == 1) ? 1 : 0;
 
   if (responseKind == 1)
   {
-    @Diag::LastResponseCode = 0x62;
+    responseCode = 0x62;
   }
   else if (responseKind == 2)
   {
-    @Diag::LastResponseCode = 0x7F;
+    responseCode = 0x7F;
   }
   else if (responseKind == 3)
   {
-    @Diag::LastResponseCode = 0x78;
+    responseCode = 0x78;
   }
   else if (responseKind == 4)
   {
-    @Diag::LastResponseCode = 0x7F;
+    responseCode = 0x7F;
   }
   else
   {
-    @Diag::LastResponseCode = 0x00;
+    responseCode = 0x00;
   }
+
+  publishDiagRequestObservation(0x22,
+                                serviceState,
+                                responseKind,
+                                reasonCode);
+  publishDiagResponseObservation(responseCode,
+                                 responseOk,
+                                 serviceState,
+                                 responseKind);
 }
 
 void publishDcmStateTrace()
@@ -140,12 +240,27 @@ on start
   gLastTraceServiceState = -1;
   gLastTraceResponseKind = -1;
   gLastTraceReasonCode = -1;
+  gLastPublishedRequestServiceState = -1;
+  gLastPublishedRequestResponseKind = -1;
+  gLastPublishedRequestReasonCode = -1;
   @Diag::ServiceState = 0;
   @Diag::ResponseKind = 0;
   @Diag::ReasonCode = 0;
+  @Diag::LastRequestTarget = 0;
   @Diag::LastRequestSid = 0;
+  @Diag::LastRequestDidHigh = 0;
+  @Diag::LastRequestDidLow = 0;
+  @Diag::LastRequestSourceBus = 0;
+  @Diag::RequestCounter = 0;
+  @Diag::LastRequestTimeMs = 0;
+  @Diag::LastResponseTarget = 0;
   @Diag::LastResponseCode = 0;
+  @Diag::LastResponseData0 = 0;
+  @Diag::LastResponseData1 = 0;
   @Diag::LastResponseOk = 0;
+  @Diag::LastResponseSourceBus = 0;
+  @Diag::ResponseCounter = 0;
+  @Diag::LastResponseTimeMs = 0;
   setTimer(tDcmCycle, 100);
   write("[DCM] start");
 }

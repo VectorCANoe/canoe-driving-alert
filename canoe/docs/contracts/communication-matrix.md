@@ -18,6 +18,9 @@
   - Treat `ethSelectedAlertMsg` as an output/evidence seam for the active SIL baseline, not as a required direct ingress path for those consumer nodes.
 - Backbone contract rows use `UDP multicast (239.0.2.1:5000)` in the source column.
 - Validation result aggregation uses `Test::scenarioResult` and `Test::base*` sysvars, so no active network message is listed for that seam.
+- `EXT_DIAG` is a logical external diagnostic requester or observer surface that currently consumes `Diag::*` only.
+  - no new Ethernet payload row or DBC row is listed for it in this matrix
+  - current executable request/response observation is mirrored by `DCM` and `SGW` through the semantic `Diag::*` seam
 
 | Message | ID (hex) | DLC | Sender | Contract Source | Signals |
 |---|---|---|---|---|---|

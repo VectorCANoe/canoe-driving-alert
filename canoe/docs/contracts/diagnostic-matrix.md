@@ -12,6 +12,9 @@ The matrix is intentionally small.
 
 It covers only the diagnostic-linked verification items that are currently required for a strong official verdict.
 
+The current logical request origin is `EXT_DIAG`.
+That requester role is fixed before any later CANoe Diagnostics Feature Set or ODX/CDD/PDX adoption.
+
 ## 2. Minimum matrix fields
 
 The current minimum matrix fields are:
@@ -51,6 +54,7 @@ These fields are enough to establish:
 2. `SID` and `DID/DTC` may stay `TBD` until the first concrete tester flow is approved.
 3. `PositiveResp`, `NegativeResp`, and `Timeout` show whether the verdict must distinguish that response class.
 4. `CoverageTier` expresses how deep the diagnostic explanation must go.
+5. until a fuller diagnostic toolchain is introduced, request ownership is modeled as `EXT_DIAG -> SGW/CGW -> DCM -> target`.
 
 Recommended tier meaning:
 
