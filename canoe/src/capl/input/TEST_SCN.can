@@ -1135,6 +1135,28 @@ void applyScenarioPreset(int scenarioId)
     gLockForceFailSafe = 0;
     gLockSuppressEmergencyFrame = 0;
   }
+  else if (scenarioId == 238)
+  {
+    /* ST_023: ambulance emergency must stay primary even with simultaneous TTC merge/cut-in risk */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 78;
+    gLockRoadZone = 2;
+    gLockSteeringInput = 1;
+    gLockSpeedLimit = 80;
+    gLockAlertState = 1;
+    gLockEmergencyType = 2;
+    gLockEta = 5;
+    gLockSourceId = 95;
+    gLockEmergencyDirection = 1;
+    gLockObjectTrackValid = 1;
+    gLockObjectRange = 28;
+    gLockObjectRelSpeed = -55;
+    gLockObjectConfidence = 90;
+    gLockIntersectionConflictFlag = 0;
+    gLockMergeCutInFlag = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
   else if (scenarioId == 214)
   {
     /* IT_013(partial): seat-belt warning context must escalate active school-zone warning */
@@ -1608,6 +1630,10 @@ void scheduleScenarioEvaluation(int scenarioId)
   {
     evalDelayMs = 800;
   }
+  else if (scenarioId == 238)
+  {
+    evalDelayMs = 800;
+  }
   else if (scenarioId == 214 || scenarioId == 215)
   {
     evalDelayMs = 900;
@@ -2010,6 +2036,15 @@ void evaluateScenarioResult()
   {
     result = ((int)@V2X::emergencyType == 2 &&
               (int)@Core::intersectionConflictFlag == 1 &&
+              (int)@Core::decelAssistReq == 1 &&
+              (int)@Core::selectedAlertLevel == 7 &&
+              (int)@Core::selectedAlertType == 2 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 238)
+  {
+    result = ((int)@V2X::emergencyType == 2 &&
+              (int)@Core::mergeCutInFlag == 1 &&
               (int)@Core::decelAssistReq == 1 &&
               (int)@Core::selectedAlertLevel == 7 &&
               (int)@Core::selectedAlertType == 2 &&
