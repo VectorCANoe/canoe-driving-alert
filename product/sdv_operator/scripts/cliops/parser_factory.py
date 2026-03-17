@@ -35,6 +35,7 @@ COMPAT_TOPLEVEL_COMMANDS = [
     "verify-prepare",
     "verify-batch",
     "verify-smoke",
+    "verify-post-run",
     "verify-fill-score",
     "verify-insight",
     "verify-bind-doc",
@@ -166,6 +167,24 @@ def add_verify_collect_args(p: argparse.ArgumentParser, handlers: HandlerMap) ->
     p.add_argument("--raw-log-source", default="", help="Optional raw log source override")
     p.add_argument("--allow-missing-raw-log", action="store_true")
     p.set_defaults(func=handlers["cmd_verify_collect"], operator_command_id="verify.collect_native")
+
+
+def add_verify_post_run_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument("--tier", required=True, choices=["UT", "IT", "ST"])
+    p.add_argument("--owner", default="TBD")
+    p.add_argument("--run-date", default=dt.date.today().isoformat())
+    p.add_argument(
+        "--evidence-root",
+        default="",
+        help="Optional evidence root path (default pipeline root is used when omitted)",
+    )
+    p.add_argument("--raw-log-source", default="", help="Optional raw log source override")
+    p.add_argument("--allow-missing-raw-log", action="store_true")
+    p.add_argument("--baseline-csv", default="", help="Optional baseline scored CSV for regression comparison")
+    p.add_argument("--no-strict-metadata", action="store_true")
+    p.add_argument("--no-strict-axis", action="store_true")
+    p.set_defaults(func=handlers["cmd_verify_post_run"], operator_command_id="verify.post_run")
 
 
 def add_verify_report_tools_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -694,6 +713,7 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     add_verify_batch_args(verify_sub.add_parser("batch", help="Run Dev2 pre/post/full batch workflow"), handlers)
     add_verify_smoke_args(verify_sub.add_parser("smoke", help="Run CANoe COM smoke checks"), handlers)
     add_verify_collect_args(verify_sub.add_parser("collect", help="Collect native reports and raw evidence for one tier"), handlers)
+    add_verify_post_run_args(verify_sub.add_parser("post-run", help="Collect + fill-score one tier in one step"), handlers)
     add_verify_report_tools_args(verify_sub.add_parser("report-tools", help="Inspect official Vector report tooling install"), handlers)
     add_verify_report_bundle_args(verify_sub.add_parser("report-bundle", help="Export and parse native report via official Vector tooling"), handlers)
     add_verify_quick_args(verify_sub.add_parser("quick", help="Run prepare + smoke + status in one flow"), handlers, default_run_id)
@@ -783,6 +803,7 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     add_verify_batch_args(_add_hidden_parser(sub, "verify-batch"), handlers)
     add_verify_smoke_args(_add_hidden_parser(sub, "verify-smoke"), handlers)
     add_verify_collect_args(_add_hidden_parser(sub, "verify-collect"), handlers)
+    add_verify_post_run_args(_add_hidden_parser(sub, "verify-post-run"), handlers)
     add_verify_report_tools_args(_add_hidden_parser(sub, "verify-report-tools"), handlers)
     add_verify_report_bundle_args(_add_hidden_parser(sub, "verify-report-bundle"), handlers)
     add_verify_fill_args(_add_hidden_parser(sub, "verify-fill-score"), handlers)

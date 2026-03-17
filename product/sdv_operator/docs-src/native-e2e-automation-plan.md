@@ -146,6 +146,12 @@ CANoe 변경:
 - 사용자가 `incoming` 폴더를 수동으로 만질 필요가 없음
 - `verify batch --phase post/full`이 수집 포함 경로로 닫힘
 
+현 시점 구현 상태:
+
+- 제품 `verify batch`는 `UT/IT/ST` post/full 단계에서 `verify post-run <TIER>`를 직접 호출한다.
+- `verify finalize`는 `--skip-fill-score`를 받아 이미 scoring된 tier를 다시 채우지 않는다.
+- 즉 제품 표면 기준 `post-run -> official report bundle -> finalize -> materialize` 순서가 고정됐다.
+
 ### Wave 4 - Multi-Tier Expansion
 
 목표:

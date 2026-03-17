@@ -305,30 +305,31 @@ def cmd_finalize(args: argparse.Namespace) -> int:
         print("[FINALIZE] run CANoe scenarios and export Write Window evidence lines before finalize.")
         return 2
 
-    for tier in tiers:
-        fill_cmd = [
-            sys.executable,
-            str(SCRIPT_DIR / "run_verification_pipeline.py"),
-            "fill-score",
-            "--run-id",
-            args.run_id,
-            "--tier",
-            tier,
-            "--owner",
-            args.owner,
-            "--run-date",
-            args.run_date,
-            "--evidence-root",
-            str(args.evidence_root),
-        ]
-        if args.no_strict_metadata:
-            fill_cmd.append("--no-strict-metadata")
-        if args.no_strict_axis:
-            fill_cmd.append("--no-strict-axis")
-        rc = run_cmd(fill_cmd)
-        if rc != 0:
-            print(f"[FINALIZE] fill-score failed for tier={tier}")
-            return rc
+    if not args.skip_fill_score:
+        for tier in tiers:
+            fill_cmd = [
+                sys.executable,
+                str(SCRIPT_DIR / "run_verification_pipeline.py"),
+                "fill-score",
+                "--run-id",
+                args.run_id,
+                "--tier",
+                tier,
+                "--owner",
+                args.owner,
+                "--run-date",
+                args.run_date,
+                "--evidence-root",
+                str(args.evidence_root),
+            ]
+            if args.no_strict_metadata:
+                fill_cmd.append("--no-strict-metadata")
+            if args.no_strict_axis:
+                fill_cmd.append("--no-strict-axis")
+            rc = run_cmd(fill_cmd)
+            if rc != 0:
+                print(f"[FINALIZE] fill-score failed for tier={tier}")
+                return rc
 
     insight_cmd = [
         sys.executable,
@@ -558,6 +559,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_finalize.add_argument("--baseline-run-id", default="", help="Optional baseline run ID for insight comparison")
     p_finalize.add_argument("--no-strict-metadata", action="store_true")
     p_finalize.add_argument("--no-strict-axis", action="store_true")
+    p_finalize.add_argument(
+        "--skip-fill-score",
+        action="store_true",
+        help="Assume per-tier post-run already produced scored outputs and skip re-running fill-score",
+    )
     p_finalize.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
     p_finalize.add_argument("--docs-root", type=Path, default=REPO_ROOT / "driving-alert-workproducts")
     p_finalize.add_argument(

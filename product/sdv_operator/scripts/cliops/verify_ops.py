@@ -61,6 +61,35 @@ def cmd_verify_collect(args: argparse.Namespace) -> int:
     return run_cmd(cmd)
 
 
+def cmd_verify_post_run(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPTS / 'quality' / 'run_verification_pipeline.py'),
+        'post-run',
+        '--run-id',
+        args.run_id,
+        '--tier',
+        args.tier,
+        '--owner',
+        args.owner,
+        '--run-date',
+        args.run_date,
+    ]
+    if args.evidence_root:
+        cmd.extend(['--evidence-root', str(args.evidence_root)])
+    if args.raw_log_source:
+        cmd.extend(['--raw-log-source', str(args.raw_log_source)])
+    if args.allow_missing_raw_log:
+        cmd.append('--allow-missing-raw-log')
+    if args.no_strict_metadata:
+        cmd.append('--no-strict-metadata')
+    if args.no_strict_axis:
+        cmd.append('--no-strict-axis')
+    if args.baseline_csv:
+        cmd.extend(['--baseline-csv', str(args.baseline_csv)])
+    return run_cmd(cmd)
+
+
 def cmd_verify_fill_score(args: argparse.Namespace) -> int:
     cmd = [
         sys.executable,
@@ -195,6 +224,8 @@ def cmd_verify_finalize(args: argparse.Namespace) -> int:
         cmd.append('--no-strict-metadata')
     if args.no_strict_axis:
         cmd.append('--no-strict-axis')
+    if getattr(args, 'skip_fill_score', False):
+        cmd.append('--skip-fill-score')
     return run_cmd(cmd)
 
 
@@ -708,18 +739,37 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
 
     if args.phase in {'post', 'full'}:
         for tier in selected_tiers:
-            rc = run_step(
-                f'verify collect {tier}',
-                lambda tier=tier: cmd_verify_collect(
-                    argparse.Namespace(
-                        run_id=args.run_id,
-                        tier=tier,
-                        evidence_root='',
-                        raw_log_source='',
-                        allow_missing_raw_log=False,
-                    )
-                ),
-            )
+            if tier in {'UT', 'IT', 'ST'}:
+                rc = run_step(
+                    f'verify post-run {tier}',
+                    lambda tier=tier: cmd_verify_post_run(
+                        argparse.Namespace(
+                            run_id=args.run_id,
+                            tier=tier,
+                            owner=args.owner,
+                            run_date=args.run_date,
+                            evidence_root='',
+                            raw_log_source='',
+                            allow_missing_raw_log=False,
+                            baseline_csv='',
+                            no_strict_metadata=False,
+                            no_strict_axis=False,
+                        )
+                    ),
+                )
+            else:
+                rc = run_step(
+                    f'verify collect {tier}',
+                    lambda tier=tier: cmd_verify_collect(
+                        argparse.Namespace(
+                            run_id=args.run_id,
+                            tier=tier,
+                            evidence_root='',
+                            raw_log_source='',
+                            allow_missing_raw_log=False,
+                        )
+                    ),
+                )
             if should_stop(rc):
                 return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
             rc = run_step(
@@ -745,6 +795,7 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
             baseline_run_id='',
             no_strict_metadata=False,
             no_strict_axis=False,
+            skip_fill_score=True,
             evidence_root='',
             docs_root='',
             insight_md='canoe/tmp/reports/verification/run_insight_report.md',
