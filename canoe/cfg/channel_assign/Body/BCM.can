@@ -1,4 +1,4 @@
-/*@!Encoding:949*/
+﻿/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -22,7 +22,8 @@ variables
   
   //Timer for GuideLED
   msTimer guideLedTimer;
-  int guideMode = 0;   // 0=off, 5=left, 6=right
+  int guideMode = 0;   // 0=off, 5=left, 6=right, 7=blink
+  int blinkState = 0;  // 0: led0, 1: led7
   int step = 0;
   int ms = 200;
   //for led name
@@ -368,6 +369,7 @@ on sysvar Body::ambientMode{
   switch(@Body::ambientMode){
     case 5: 
     case 6:
+    case 7:
       guideLedStart(@Body::ambientMode);
       break;
   }
@@ -393,6 +395,8 @@ void guideLedStart(int mode){
 void guideLedAllOff(){
   int i;
   char name[20];
+  
+  setControlVisibility(display, "led7", 0);
 
   for(i=1;i<=5;i++){
     snprintf(name, elcount(name), "led5_%d", i);
@@ -406,20 +410,35 @@ void guideLedAllOff(){
 on timer guideLedTimer{
   char name[20];
 
-  if(guideMode != 5 && guideMode != 6){
+  if(guideMode != 5 && guideMode != 6 && guideMode != 7){
     guideLedAllOff();
     return;
   }
-
-  step++;
-  if(step > 5) step = 1;
-
+  
   guideLedAllOff();
 
-  setControlVisibility(display, "led0", 1);
+  //Emergency
+  if(guideMode == 7){
+    setControlVisibility(display, "led0", 1);
 
-  snprintf(name, elcount(name), "led%d_%d", guideMode, step);
-  setControlVisibility(display, name, 1);
+    if(blinkState == 0){
+      setControlVisibility(display, "led7", 1);
+      blinkState = 1;
+    } else {
+      setControlVisibility(display, "led7", 0);
+      blinkState = 0;
+    }
+  }
+  //guideLED
+  else{
+    step++;
+    if(step > 5) step = 1;
+
+    setControlVisibility(display, "led0", 1);
+
+    snprintf(name, elcount(name), "led%d_%d", guideMode, step);
+    setControlVisibility(display, name, 1);
+  }
 
   setTimer(guideLedTimer, ms);
 }
