@@ -1,0 +1,36 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gAflsMode;
+  int gHeadlampAngle;
+}
+
+on message frmAflsStateMsg
+{
+  gAflsMode = this.AflsMode;
+  gHeadlampAngle = this.HeadlampAngle;
+}
+
+export testcase TC_CANOE_UT_INP_043_AFLS_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(230, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s230_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s230_aflsMode", 1, gAflsMode, "aflsMode");
+  assertIntMin("s230_headlampAngle", 1, gHeadlampAngle, "headlampAngle");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -1,0 +1,36 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gPassSeatPos;
+  int gPassSeatHeat;
+}
+
+on message frmSeatStateMsg
+{
+  gPassSeatPos = this.PassengerSeatPos;
+  gPassSeatHeat = this.PassengerSeatHeat;
+}
+
+export testcase TC_CANOE_UT_INP_047_SEAT_PASS_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(230, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s230_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntMin("s230_passSeatPos", 1, gPassSeatPos, "passSeatPos");
+  assertIntMin("s230_passSeatHeat", 1, gPassSeatHeat, "passSeatHeat");
+
+  resetValidationHarnessIfNeeded();
+}

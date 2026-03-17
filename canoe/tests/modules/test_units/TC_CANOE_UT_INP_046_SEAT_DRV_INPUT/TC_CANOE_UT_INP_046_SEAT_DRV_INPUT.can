@@ -1,0 +1,36 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gDrvSeatPos;
+  int gDrvSeatHeat;
+}
+
+on message frmSeatStateMsg
+{
+  gDrvSeatPos = this.DriverSeatPos;
+  gDrvSeatHeat = this.DriverSeatHeat;
+}
+
+export testcase TC_CANOE_UT_INP_046_SEAT_DRV_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(230, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s230_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntMin("s230_drvSeatPos", 1, gDrvSeatPos, "drvSeatPos");
+  assertIntMin("s230_drvSeatHeat", 1, gDrvSeatHeat, "drvSeatHeat");
+
+  resetValidationHarnessIfNeeded();
+}

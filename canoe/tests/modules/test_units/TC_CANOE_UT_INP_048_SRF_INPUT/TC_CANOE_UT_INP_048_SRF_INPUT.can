@@ -1,0 +1,35 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gSunroofPos;
+  int gTiltMode;
+}
+
+on message frmSunroofStateMsg
+{
+  gSunroofPos = this.SunroofPos;
+  gTiltMode = this.TiltMode;
+}
+
+export testcase TC_CANOE_UT_INP_048_SRF_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(230, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s230_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s230_sunroofPos", 0, gSunroofPos, "sunroofPos");
+
+  resetValidationHarnessIfNeeded();
+}

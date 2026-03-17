@@ -1,0 +1,39 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_INP_030_EMERGENCY_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(4, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("s4_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s4_alertState", 1, (long)@V2X::alertState, "alertState");
+  assertIntEq("s4_emergencyType", 1, (long)@V2X::emergencyType, "emergencyType");
+
+  resetValidationHarnessIfNeeded();
+
+  if (!launchScenarioAndWait(5, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("s5_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s5_alertState", 1, (long)@V2X::alertState, "alertState");
+  assertIntEq("s5_emergencyType", 2, (long)@V2X::emergencyType, "emergencyType");
+
+  resetValidationHarnessIfNeeded();
+}

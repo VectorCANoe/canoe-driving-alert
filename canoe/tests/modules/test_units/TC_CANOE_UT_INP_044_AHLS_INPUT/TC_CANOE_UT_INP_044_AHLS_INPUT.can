@@ -1,0 +1,36 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gAhlsAssist;
+  int gHighBeamActive;
+}
+
+on message frmAhlsStateMsg
+{
+  gAhlsAssist = this.AhlsAssist;
+  gHighBeamActive = this.HighBeamActive;
+}
+
+export testcase TC_CANOE_UT_INP_044_AHLS_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(230, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s230_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s230_ahlsAssist", 1, gAhlsAssist, "ahlsAssist");
+  assertIntEq("s230_highBeamActive", 1, gHighBeamActive, "highBeamActive");
+
+  resetValidationHarnessIfNeeded();
+}

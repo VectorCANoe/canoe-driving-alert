@@ -1,0 +1,39 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gTmuLinkState;
+  int gTmuServiceMode;
+  int gRemoteClimateReq;
+}
+
+on message frmTmuServiceStateMsg
+{
+  gTmuLinkState = this.TmuLinkState;
+  gTmuServiceMode = this.ServiceMode;
+  gRemoteClimateReq = this.RemoteClimateReq;
+}
+
+export testcase TC_CANOE_UT_INP_062_IBOX_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(229, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s229_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s229_tmuLinkState", 2, gTmuLinkState, "tmuLinkState");
+  assertIntEq("s229_tmuServiceMode", 1, gTmuServiceMode, "tmuServiceMode");
+  assertIntEq("s229_remoteClimateReq", 1, gRemoteClimateReq, "remoteClimateReq");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -1,0 +1,36 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gPreviewHealth;
+  int gSpeedLimit;
+}
+
+on message frmRoadPreviewCameraStateMsg
+{
+  gPreviewHealth = this.PreviewHealth;
+  gSpeedLimit = this.SpeedLimit;
+}
+
+export testcase TC_CANOE_UT_INP_057_FRADAR_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(233, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s233_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s233_previewHealth", 2, gPreviewHealth, "previewHealth");
+  assertIntEq("s233_speedLimit", 100, gSpeedLimit, "speedLimit");
+
+  resetValidationHarnessIfNeeded();
+}

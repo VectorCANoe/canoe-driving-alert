@@ -1,0 +1,47 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gRideHeightMode;
+  int gFrontHeight;
+  int gRearHeight;
+  int gCdcMode;
+  int gValveCurrent;
+}
+
+on message frmAirSuspensionStateMsg
+{
+  gRideHeightMode = this.RideHeightMode;
+  gFrontHeight = this.FrontSuspHeight;
+  gRearHeight = this.RearSuspHeight;
+}
+
+on message frmCdcStateMsg
+{
+  gCdcMode = this.CdcMode;
+  gValveCurrent = this.ValveCurrent;
+}
+
+export testcase TC_CANOE_UT_INP_034_ECS_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(225, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s225_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s225_rideHeightMode", 3, gRideHeightMode, "rideHeightMode");
+  assertIntEq("s225_frontHeight", 122, gFrontHeight, "frontHeight");
+  assertIntEq("s225_rearHeight", 122, gRearHeight, "rearHeight");
+
+  resetValidationHarnessIfNeeded();
+}

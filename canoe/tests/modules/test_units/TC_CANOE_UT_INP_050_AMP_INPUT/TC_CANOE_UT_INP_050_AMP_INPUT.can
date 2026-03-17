@@ -1,0 +1,39 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gAmpMute;
+  int gDuckingLvl;
+  int gVolumeLevel;
+}
+
+on message frmAmpStateMsg
+{
+  gAmpMute = this.AmpMute;
+  gDuckingLvl = this.DuckingLvl;
+  gVolumeLevel = this.VolumeLevel;
+}
+
+export testcase TC_CANOE_UT_INP_050_AMP_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(215, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s215_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s215_ampMute", 0, gAmpMute, "ampMute");
+  assertIntEq("s215_duckingLvl", 4, gDuckingLvl, "duckingLvl");
+  assertIntEq("s215_volumeLevel", 80, gVolumeLevel, "volumeLevel");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -1,0 +1,40 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gSrrFrState;
+  int gSrrFrObjectRange;
+}
+
+on message frmSrrFrStateMsg
+{
+  gSrrFrState = this.SrrState;
+  gSrrFrObjectRange = this.ObjectRange;
+}
+
+export testcase TC_CANOE_UT_INP_059_SRR_FR_INPUT()
+{
+  /* Scenario 22: right-side cut-in / merge conflict scenario.
+     Right front SRR detects vehicle merging from adjacent lane.
+     ADAS_WARN_CTRL must raise merge cut-in flag via object risk path. */
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(22, 1000, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("s22_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s22_srrFrState", 1, gSrrFrState, "srrFrState");
+  assertIntEq("s22_obsObjectScenario", 1, waitForObservedObjectScenario(800), "obsObjectScenario");
+  assertIntEq("s22_mergeCutIn", 1, (long)@Test::obsMergeCutInFlag, "mergeCutInFlag");
+
+  resetValidationHarnessIfNeeded();
+}

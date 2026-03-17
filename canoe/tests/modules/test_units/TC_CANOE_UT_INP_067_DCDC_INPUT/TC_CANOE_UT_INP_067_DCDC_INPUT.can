@@ -1,0 +1,39 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gDcdcMode;
+  int gLvOutputVolt;
+  int gLvOutputCurr;
+}
+
+on message frmDcdcStateMsg
+{
+  gDcdcMode = this.DcdcMode;
+  gLvOutputVolt = this.LvOutputVolt;
+  gLvOutputCurr = this.LvOutputCurr;
+}
+
+export testcase TC_CANOE_UT_INP_067_DCDC_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(231, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s231_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s231_dcdcMode", 2, gDcdcMode, "dcdcMode");
+  assertIntEq("s231_lvOutputVolt", 140, gLvOutputVolt, "lvOutputVolt");
+  assertIntEq("s231_lvOutputCurr", 35, gLvOutputCurr, "lvOutputCurr");
+
+  resetValidationHarnessIfNeeded();
+}

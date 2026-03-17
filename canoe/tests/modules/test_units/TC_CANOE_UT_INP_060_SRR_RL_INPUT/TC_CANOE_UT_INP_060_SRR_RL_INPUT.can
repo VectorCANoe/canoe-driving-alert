@@ -1,0 +1,36 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gBrakeHoldReq;
+  int gAssistStage;
+}
+
+on message frmSurroundParkMasterStateMsg
+{
+  gBrakeHoldReq = this.BrakeHoldReq;
+  gAssistStage = this.AssistStage;
+}
+
+export testcase TC_CANOE_UT_INP_060_SRR_RL_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(234, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("s234_scenarioResult", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("s234_brakeHoldReq", 1, gBrakeHoldReq, "brakeHoldReq");
+  assertIntEq("s234_assistStage", 2, gAssistStage, "assistStage");
+
+  resetValidationHarnessIfNeeded();
+}
