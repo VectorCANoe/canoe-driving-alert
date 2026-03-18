@@ -27,7 +27,7 @@ export testcase TC_CANOE_IT_CORE_001_BASE_ACTIVATION()
     return;
   }
 
-  assertIntEq("idle-alert-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("idle-alert-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
   assertIntEq("idle-warning-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
 
   if (!resetValidationHarnessIfNeeded())
@@ -47,8 +47,8 @@ export testcase TC_CANOE_IT_CORE_001_BASE_ACTIVATION()
     return;
   }
 
-  assertIntEq("activation-alert-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("activation-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("activation-alert-level", 3, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("activation-alert-type", 3, getCanonicalSelectedAlertType(), "selectedAlertType");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -66,8 +66,8 @@ export testcase TC_CANOE_IT_CORE_001_BASE_ACTIVATION()
     return;
   }
 
-  assertIntEq("guard-alert-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("guard-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("guard-alert-level", 3, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("guard-alert-type", 3, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntMin("duplicate-popup-guard", 1, (long)@CoreState::duplicatePopupGuard, "duplicatePopupGuard");
 
   resetValidationHarnessIfNeeded();

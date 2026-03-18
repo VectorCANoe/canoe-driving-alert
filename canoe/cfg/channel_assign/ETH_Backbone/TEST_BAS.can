@@ -61,7 +61,6 @@ int hasActiveScenarioLifecycle()
 int observerLifecycleIsActive()
 {
   return ((int)@Test::scenarioCommand != 0 ||
-          (int)@Test::testScenario != 0 ||
           clampRange((int)@Test::scenarioCommandAck, 0, 255) != 0 ||
           gScenarioAckActive == 1 ||
           hasActiveScenarioLifecycle() == 1);
@@ -108,8 +107,7 @@ void stageBaseScenarioLifecycle(int scenarioId)
 
 void maybeClearBaseStateOnHarnessIdle()
 {
-  if ((int)@Test::testScenario == 0 &&
-      (int)@Test::scenarioCommand == 0 &&
+  if ((int)@Test::scenarioCommand == 0 &&
       (int)@Test::scenarioCommandAck == 0 &&
       (int)@Test::scenarioActiveId == 0 &&
       (int)@Test::scenarioSettledId == 0 &&
@@ -536,24 +534,8 @@ on sysvar Test::scenarioResult
 
 on sysvar Test::testScenario
 {
-  if ((int)@Test::testScenario == 0 &&
-      (int)@Test::scenarioCommand == 0 &&
-      (int)@Test::scenarioCommandAck == 0 &&
-      (int)@Test::scenarioActiveId == 0 &&
-      (int)@Test::scenarioSettledId == 0 &&
-      (int)@Test::scenarioEvaluatedId == 0 &&
-      (int)@Test::scenarioResult == 0)
-  {
-    clearBaseResultState();
-    return;
-  }
-
-  if ((int)@Test::testScenario != 0)
-  {
-    gActiveBaseScenarioId = clampRange((int)@Test::testScenario, 0, 255);
-    ensureObserverArmed();
-    publishPendingBaseScenarioContext();
-  }
+  /* `testScenario` is a mirror-only seam.
+     TEST_BAS should not treat it as a lifecycle trigger. */
 }
 
 on sysvar Test::scenarioCommand

@@ -26,8 +26,8 @@ export testcase TC_CANOE_UT_EXT_007_CLU_CONTEXT_ADJUST()
     return;
   }
 
-  assertIntEq("clu-seatbelt-level", 5, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("clu-seatbelt-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("clu-seatbelt-level", 5, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("clu-seatbelt-type", 3, getCanonicalSelectedAlertType(), "selectedAlertType");
 
   if (!resetValidationHarnessIfNeeded())
   {

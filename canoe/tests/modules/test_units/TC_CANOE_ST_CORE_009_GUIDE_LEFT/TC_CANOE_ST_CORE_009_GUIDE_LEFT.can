@@ -28,8 +28,8 @@ export testcase TC_CANOE_ST_CORE_009_GUIDE_LEFT()
     return;
   }
 
-  assertIntEq("st009-level", 2, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("st009-type", 5, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("st009-level", 2, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("st009-type", 5, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("st009-code", 31, (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("st009-ambient-pattern", 2, (long)@Body::ambientPattern, "ambientPattern");
 

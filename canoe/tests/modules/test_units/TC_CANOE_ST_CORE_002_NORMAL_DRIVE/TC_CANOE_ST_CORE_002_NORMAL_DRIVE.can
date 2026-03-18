@@ -29,7 +29,7 @@ export testcase TC_CANOE_ST_CORE_002_NORMAL_DRIVE()
   assertIntEq("st002-drive-state", 3, (long)@Core::driveStateNorm, "driveStateNorm");
   assertIntEq("st002-boundary", 1, (long)@CoreState::domainBoundaryStatus, "domainBoundaryStatus");
   assertIntEq("st002-routing", 1, (long)@CoreState::routingPolicy, "routingPolicy");
-  assertIntEq("st002-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("st002-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
 
   resetValidationHarnessIfNeeded();
 }

@@ -75,6 +75,7 @@ active baseline은 아래 여섯 계층으로 나눕니다.
 - validation aggregation은 operational owner가 먼저 publish한 뒤에만 허용합니다.
 - active validation lifecycle 밖에서는 observer seam이 reset-safe idle 상태를 유지해야 합니다.
 - idle transport traffic이 validation observer reset 값을 덮어쓰면 안 됩니다.
+- observer freshness나 receive timestamp는 실제 관측 transport 또는 owner-published seam 기준이어야 하며, 하네스가 synthetic하게 추정해서는 안 됩니다.
 
 ### 5. diagnostic semantic과 request/response route는 분리합니다
 
@@ -85,6 +86,10 @@ active baseline은 아래 여섯 계층으로 나눕니다.
 
 - `TEST_SCN`은 SIL에서 validation-only transport stimulus를 넣을 수 있습니다.
 - 이 예외는 product owner를 테스트하기 위한 것이며, ownership 재할당을 의미하지 않습니다.
+- `TEST_SCN`은 시험 verdict 상태를 계산할 수 있지만, 그 verdict는 owner가 publish한 seam과 시험 출력 기준으로만 도출해야 합니다.
+- product owner가 값을 publish하지 못할 때 `TEST_SCN`이 fallback semantic owner가 되어서는 안 됩니다.
+- `TEST_BAS`는 observer 결과를 집계할 수 있지만, 관측 seam의 alternate product meaning을 합성해서는 안 됩니다.
+- 하네스는 scenario timing을 오케스트레이션할 수 있지만, product owner가 이미 clear한 semantic state를 하네스가 계속 살려 두어서는 안 됩니다.
 
 ## 현재 프로젝트 적용
 

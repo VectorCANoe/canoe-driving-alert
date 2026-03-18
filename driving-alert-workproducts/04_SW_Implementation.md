@@ -31,7 +31,7 @@
 | Body Layer | `BCM`, `DATC`, `SMK`, `AFLS`와 바디 ECU가 차체/실내 상태와 앰비언트 출력을 담당한다. | 차체/편의 계층 |
 | IVI / HMI Layer | `IVI`, `CLU`, `TMU`가 경고 문구, 기본 표시, 안내 정보를 운전자 인터페이스에 반영한다. | 표시/안내 계층 |
 | ADAS / V2X Layer | `ADAS`, `SCC`, `V2X`와 센서 계열 ECU가 위험 판단 입력을 생성한다. | 위험 판단 계층 |
-| Validation Harness | `TEST_SCN`, `TEST_BAS`가 검증 시나리오 실행과 결과 집계를 담당한다. | 검증 전용 계층 |
+| Validation Harness | `TEST_SCN`은 검증 시나리오 실행과 입력 자극을 담당하고 `TEST_BAS`는 관측 결과와 baseline 판정을 집계한다. 실제 경고 의미, freshness 유지, 최종 출력 판단은 기능 ECU가 소유하며 하네스는 이를 대신 생성하지 않는다. | 검증 전용 계층 |
 
 ## 3. 설계 규칙
 

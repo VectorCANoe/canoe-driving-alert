@@ -37,7 +37,7 @@ if (!waitForV2xIngressState(1, 1, 12, 11, 1500) ||
   assertIntEq("ems-police-type", 1, (long)@V2X::emergencyType, "emergencyType");
   assertIntEq("ems-police-eta", 12, (long)@V2X::eta, "eta");
   assertIntEq("ems-police-source", 11, (long)@V2X::sourceId, "sourceId");
-  assertIntEq("ems-police-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("ems-police-level", 6, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -60,7 +60,7 @@ if (!waitForV2xIngressState(1, 2, 8, 22, 1500) ||
   assertIntEq("ems-ambulance-type", 2, (long)@V2X::emergencyType, "emergencyType");
   assertIntEq("ems-ambulance-eta", 8, (long)@V2X::eta, "eta");
   assertIntEq("ems-ambulance-source", 22, (long)@V2X::sourceId, "sourceId");
-  assertIntEq("ems-ambulance-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("ems-ambulance-level", 7, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -80,7 +80,7 @@ if (!waitForV2xIngressState(0, 0, 0, 0, 1500) ||
   }
 
   assertIntEq("ems-timeout-clear", 1, (long)@Core::timeoutClear, "timeoutClear");
-  assertIntEq("ems-timeout-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("ems-timeout-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
   assertIntEq("ems-timeout-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
 
   resetValidationHarnessIfNeeded();

@@ -25,8 +25,8 @@ export testcase TC_CANOE_IT_BASE_026_BASIC_DISPLAY_UI()
     resetValidationHarnessIfNeeded();
     return;
   }
-  assertIntEq("display-ui-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("display-ui-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("display-ui-level", 3, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("display-ui-type", 3, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("display-ui-theme", 2, (long)@CoreState::themeMode, "themeMode");
   assertIntEq("display-ui-popup-active", 1, (long)@CoreState::popupActive, "popupActive");
   assertIntEq("display-ui-popup-prio", 1, (long)@CoreState::popupPriority, "popupPriority");

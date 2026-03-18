@@ -27,8 +27,8 @@ export testcase TC_CANOE_IT_CORE_003_HIGHWAY_NOSTEER_PATH()
     return;
   }
 
-  assertIntEq("selected-alert-level", 2, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("selected-alert-type", 4, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("selected-alert-level", 2, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("selected-alert-type", 4, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("ambient-color", 4, (long)@Body::ambientColor, "ambientColor");
   assertIntEq("ambient-pattern", 4, (long)@Body::ambientPattern, "ambientPattern");
 

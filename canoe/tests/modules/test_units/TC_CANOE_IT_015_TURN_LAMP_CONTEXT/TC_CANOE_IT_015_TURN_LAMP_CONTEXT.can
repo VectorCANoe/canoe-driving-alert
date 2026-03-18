@@ -27,8 +27,8 @@ export testcase TC_CANOE_IT_015_TURN_LAMP_CONTEXT()
     return;
   }
 
-  assertIntEq("turn-lamp-context-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("turn-lamp-context-type", 6, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("turn-lamp-context-level", 3, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("turn-lamp-context-type", 6, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("turn-lamp-context-state", 2, (long)@CoreState::turnLampState, "turnLampState");
 
   resetValidationHarnessIfNeeded();

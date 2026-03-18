@@ -488,7 +488,6 @@ void runArbiter()
   int decelRiskOnThreshold;
   int decelRiskOffThreshold;
   int turnLampState;
-  int turnLampOverride;
   int driveMode;
   int ecoMode;
   int sportMode;
@@ -586,11 +585,6 @@ void runArbiter()
   else
   {
     turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
-  }
-  turnLampOverride = clampRange((int)@Test::turnLampOverride, 0, 2);
-  if (turnLampOverride > 0)
-  {
-    turnLampState = turnLampOverride;
   }
   if (ethIsRecentTick(gVehicleModeRxMs, 300) == 1)
   {

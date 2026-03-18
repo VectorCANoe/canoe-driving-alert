@@ -26,7 +26,7 @@ export testcase TC_CANOE_ST_EXT_045_TRIP_SEQUENCE()
     return;
   }
 
-  assertIntEq("selected-alert-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("selected-alert-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
   assertIntEq("warning-text-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
 
   resetValidationHarnessIfNeeded();

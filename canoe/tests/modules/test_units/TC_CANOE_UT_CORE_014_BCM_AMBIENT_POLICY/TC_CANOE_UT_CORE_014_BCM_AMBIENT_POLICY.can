@@ -28,8 +28,8 @@ export testcase TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY()
     return;
   }
 
-  assertIntMin("selected-alert-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("selected-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntMin("selected-alert-level", 3, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("selected-alert-type", 3, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("ambient-color", 3, (long)@Body::ambientColor, "ambientColor");
   assertIntEq("ambient-pattern", 5, (long)@Body::ambientPattern, "ambientPattern");
   assertIntEq("fail-safe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");

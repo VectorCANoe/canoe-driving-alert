@@ -28,7 +28,7 @@ export testcase TC_CANOE_IT_BASE_024_BODY_STATE()
   }
 
   assertIntEq("body-hazard-turnlamp", 3, (long)@CoreState::turnLampState, "turnLampState");
-  assertIntEq("body-hazard-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("body-hazard-level", 6, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
 
   resetValidationHarnessIfNeeded();
 }

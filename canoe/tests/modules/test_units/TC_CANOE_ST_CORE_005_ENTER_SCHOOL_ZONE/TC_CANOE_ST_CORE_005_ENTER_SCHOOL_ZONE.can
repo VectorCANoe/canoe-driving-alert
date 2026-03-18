@@ -26,7 +26,7 @@ export testcase TC_CANOE_ST_CORE_005_ENTER_SCHOOL_ZONE()
     return;
   }
 
-  assertIntEq("st005-baseline-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("st005-baseline-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
 
   if (!launchScenarioAndWait(2, 700, 1200))
   {
@@ -41,8 +41,8 @@ export testcase TC_CANOE_ST_CORE_005_ENTER_SCHOOL_ZONE()
   }
 
   assertIntEq("st005-zone", 1, (long)@Core::baseZoneContext, "baseZoneContext");
-  assertIntMin("st005-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("st005-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntMin("st005-level", 3, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("st005-type", 3, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("st005-ambient-color", 3, (long)@Body::ambientColor, "ambientColor");
   assertIntEq("st005-ambient-pattern", 5, (long)@Body::ambientPattern, "ambientPattern");
 

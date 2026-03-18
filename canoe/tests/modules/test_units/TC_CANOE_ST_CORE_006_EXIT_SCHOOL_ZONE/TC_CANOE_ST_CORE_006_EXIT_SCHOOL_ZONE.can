@@ -27,7 +27,7 @@ export testcase TC_CANOE_ST_CORE_006_EXIT_SCHOOL_ZONE()
     return;
   }
 
-  assertIntEq("st006-school-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("st006-school-level", 3, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
 
   if (!launchScenarioAndWait(1, 700, 1000))
   {
@@ -41,8 +41,8 @@ export testcase TC_CANOE_ST_CORE_006_EXIT_SCHOOL_ZONE()
     return;
   }
 
-  assertIntEq("st006-clear-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("st006-clear-type", 0, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("st006-clear-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("st006-clear-type", 0, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("st006-clear-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
 
   resetValidationHarnessIfNeeded();

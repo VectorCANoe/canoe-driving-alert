@@ -26,7 +26,7 @@ export testcase TC_CANOE_ST_CORE_004_BASIC_WARNING_CLEAR()
     return;
   }
 
-  assertIntEq("st004-active-level", 1, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("st004-active-level", 1, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
 
   if (!launchScenarioAndWait(1, 700, 1000))
   {
@@ -41,8 +41,8 @@ export testcase TC_CANOE_ST_CORE_004_BASIC_WARNING_CLEAR()
     return;
   }
 
-  assertIntEq("st004-clear-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("st004-clear-type", 0, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("st004-clear-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("st004-clear-type", 0, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("st004-clear-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("st004-clear-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
 

@@ -236,56 +236,22 @@ int getObservedScenarioVehicleSpeed()
 
 int getObservedEmergencyType()
 {
-  int emergencyType;
-
-  emergencyType = clampRange((int)@Core::emergencyContext, 0, 2);
-  if (emergencyType == 0 && clampRange((int)@V2X::alertState, 0, 1) == 1)
-  {
-    emergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
-  }
-  return emergencyType;
+  return clampRange((int)@Core::emergencyContext, 0, 2);
 }
 
 int getObservedEmergencyDirection()
 {
-  int direction;
-
-  direction = clampRange((int)@CoreState::emergencyIngressDirection, 0, 3);
-  if (getObservedEmergencyType() > 0 &&
-      direction == 0 &&
-      clampRange((int)@V2X::alertState, 0, 1) == 1)
-  {
-    direction = clampRange((int)@V2X::emergencyDirection, 0, 3);
-  }
-  return direction;
+  return clampRange((int)@CoreState::emergencyIngressDirection, 0, 3);
 }
 
 int getObservedEmergencyEtaSec()
 {
-  int etaSec;
-
-  etaSec = clampRange((int)@CoreState::emergencyIngressEtaSec, 0, 255);
-  if (getObservedEmergencyType() > 0 &&
-      etaSec == 255 &&
-      clampRange((int)@V2X::alertState, 0, 1) == 1)
-  {
-    etaSec = clampRange((int)@V2X::eta, 0, 255);
-  }
-  return etaSec;
+  return clampRange((int)@CoreState::emergencyIngressEtaSec, 0, 255);
 }
 
 int getObservedEmergencySourceId()
 {
-  int sourceId;
-
-  sourceId = clampRange((int)@CoreState::emergencyIngressSourceId, 0, 255);
-  if (getObservedEmergencyType() > 0 &&
-      sourceId == 255 &&
-      clampRange((int)@V2X::alertState, 0, 1) == 1)
-  {
-    sourceId = clampRange((int)@V2X::sourceId, 0, 255);
-  }
-  return sourceId;
+  return clampRange((int)@CoreState::emergencyIngressSourceId, 0, 255);
 }
 
 int getObservedSelectedAlertLevel()
@@ -296,10 +262,6 @@ int getObservedSelectedAlertLevel()
   if (alertLevel == 0)
   {
     alertLevel = clampRange((int)@CoreState::selectedAlertDecisionLevel, 0, 7);
-  }
-  if (alertLevel == 0)
-  {
-    alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   }
   return alertLevel;
 }
@@ -312,10 +274,6 @@ int getObservedSelectedAlertType()
   if (alertType == 0)
   {
     alertType = clampRange((int)@CoreState::selectedAlertDecisionType, 0, 15);
-  }
-  if (alertType == 0)
-  {
-    alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
   }
   return alertType;
 }
@@ -676,7 +634,7 @@ void trackWave2NominalContexts()
   {
     if ((int)@CoreState::domainBoundaryStatus == 1 &&
         (int)@CoreState::routingPolicy == 1 &&
-        (int)@Core::selectedAlertLevel == 0 &&
+        getObservedSelectedAlertLevel() == 0 &&
         (int)@Core::failSafeMode == 0)
     {
       gCgwBoundaryNominalSeen = 1;
@@ -684,8 +642,8 @@ void trackWave2NominalContexts()
   }
   else if (gCurrentScenarioId == 207)
   {
-    if ((int)@Core::selectedAlertLevel == 3 &&
-        (int)@Core::selectedAlertType == 3 &&
+    if (getObservedSelectedAlertLevel() == 3 &&
+        getObservedSelectedAlertType() == 3 &&
         (int)@CoreState::warningPathStatus == 0 &&
         (int)@Core::failSafeMode == 0)
     {
@@ -694,8 +652,8 @@ void trackWave2NominalContexts()
   }
   else if (gCurrentScenarioId == 208)
   {
-    if ((int)@Core::selectedAlertLevel == 3 &&
-        (int)@Core::selectedAlertType == 3 &&
+    if (getObservedSelectedAlertLevel() == 3 &&
+        getObservedSelectedAlertType() == 3 &&
         (int)@Body::ambientColor == 3 &&
         (int)@Body::ambientPattern == 5 &&
         (int)@Core::failSafeMode == 0)
@@ -705,8 +663,8 @@ void trackWave2NominalContexts()
   }
   else if (gCurrentScenarioId == 209)
   {
-    if ((int)@Core::selectedAlertLevel == 6 &&
-        (int)@Core::selectedAlertType == 1 &&
+    if (getObservedSelectedAlertLevel() == 6 &&
+        getObservedSelectedAlertType() == 1 &&
         (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
         (int)@Core::failSafeMode == 0)
     {
@@ -2168,7 +2126,7 @@ void evaluateScenarioResult()
   else if (gCurrentScenarioId == 23)
   {
     /* Req_137: object high-risk must trigger decel assist without emergency input */
-    result = ((int)@Core::emergencyContext == 0 && objectRiskClass >= 4 &&
+    result = (emergencyType == 0 && objectRiskClass >= 4 &&
               proximityRiskLevel >= 75 && decelAssistReq == 1 && failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 24)
@@ -2241,8 +2199,7 @@ void evaluateScenarioResult()
   {
     /* ST_021: 긴급 해제 후 스쿨존 경고 복귀 확인
        emergencyContext가 0이고 스쿨존 경고 레벨(3)이 복원되어야 함 */
-    result = (level == 3 && type == 3 &&
-              (int)@Core::emergencyContext == 0) ? 1 : 0;
+    result = (level == 3 && type == 3 && emergencyType == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 200)
   {
@@ -2302,22 +2259,22 @@ void evaluateScenarioResult()
     result = (gCgwBoundaryNominalSeen == 1 &&
               (int)@CoreState::domainBoundaryStatus == 1 &&
               (int)@CoreState::routingPolicy == 1 &&
-              (int)@Core::selectedAlertLevel == 0 &&
+              level == 0 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 207)
   {
     result = (gAdasWarningNominalSeen == 1 &&
-              (int)@Core::selectedAlertLevel == 3 &&
-              (int)@Core::selectedAlertType == 3 &&
+              level == 3 &&
+              type == 3 &&
               (int)@CoreState::warningPathStatus == 0 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 208)
   {
     result = (gBcmAmbientNominalSeen == 1 &&
-              (int)@Core::selectedAlertLevel == 3 &&
-              (int)@Core::selectedAlertType == 3 &&
+              level == 3 &&
+              type == 3 &&
               (int)@Body::ambientColor == 3 &&
               (int)@Body::ambientPattern == 5 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
@@ -2325,8 +2282,8 @@ void evaluateScenarioResult()
   else if (gCurrentScenarioId == 209)
   {
     result = (gIviTextNominalSeen == 1 &&
-              (int)@Core::selectedAlertLevel == 6 &&
-              (int)@Core::selectedAlertType == 1 &&
+              level == 6 &&
+              type == 1 &&
               (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
@@ -2388,14 +2345,14 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 214)
   {
-    result = ((int)@Core::selectedAlertLevel == 5 &&
-              (int)@Core::selectedAlertType == 3 &&
+    result = (level == 5 &&
+              type == 3 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 215)
   {
-    result = ((int)@Core::selectedAlertLevel == 6 &&
-              (int)@Core::selectedAlertType == 1 &&
+    result = (level == 6 &&
+              type == 1 &&
               (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@UiRender::renderDirection == 2 &&
               (int)@CoreState::popupActive == 0 &&
@@ -2408,14 +2365,14 @@ void evaluateScenarioResult()
   {
     result = (gObsDriveState == 0 &&
               gObsVehicleSpeed == 0 &&
-              (int)@Core::selectedAlertLevel == 0 &&
+              level == 0 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 217)
   {
     result = (gObsDriveState == 3 &&
               gObsVehicleSpeed == 55 &&
-              (int)@Core::selectedAlertLevel == 0 &&
+              level == 0 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 218)
@@ -2435,8 +2392,8 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 220)
   {
-    result = ((int)@Core::selectedAlertLevel == 3 &&
-              (int)@Core::selectedAlertType == 3 &&
+    result = (level == 3 &&
+              type == 3 &&
               (int)@CoreState::themeMode == 2 &&
               (int)@CoreState::popupActive == 1 &&
               (int)@CoreState::popupPriority == 1 &&
@@ -2446,8 +2403,8 @@ void evaluateScenarioResult()
   else if (gCurrentScenarioId == 222)
   {
     result = ((int)@CoreState::emergencyDistanceM == 180 &&
-              (int)@Core::selectedAlertLevel == 6 &&
-              (int)@Core::selectedAlertType == 1 &&
+              level == 6 &&
+              type == 1 &&
               (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
@@ -2505,8 +2462,8 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 236)
   {
-    result = ((int)@Core::selectedAlertLevel == 4 &&
-              (int)@Core::selectedAlertType == 3 &&
+    result = (level == 4 &&
+              type == 3 &&
               gObsDriveMode == 2 &&
               gObsSportMode == 1 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
@@ -2521,16 +2478,16 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 239)
   {
-    result = ((int)@Core::selectedAlertLevel == 3 &&
-              (int)@Core::selectedAlertType == 6 &&
+    result = (level == 3 &&
+              type == 6 &&
               (int)@CoreState::turnLampState == 2 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 244)
   {
     result = (gObsBaseZoneContext == 2 &&
-              (int)@Core::selectedAlertLevel == 0 &&
-              (int)@Core::selectedAlertType == 0 &&
+              level == 0 &&
+              type == 0 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else
@@ -3309,7 +3266,9 @@ on message frmPowerTailgateCtrlStateMsg
 on sysvar Test::scenarioCommand
 {
   int scenarioId;
+  int acceptedScenarioId;
   scenarioId = (int)@Test::scenarioCommand;
+  acceptedScenarioId = 0;
 
   if (gScenarioCmdInternalClear == 1)
   {
@@ -3317,33 +3276,34 @@ on sysvar Test::scenarioCommand
     return;
   }
 
-  if (scenarioId == 100)
-  {
-    beginAutoDemoExecution();
-    write("[TEST_SCN] command: auto demo start");
-  }
-  else if (scenarioId == 0)
+  if (scenarioId == 0)
   {
     stopScenarioExecution();
     setScenarioMirror(0);
-    write("[TEST_SCN] command: auto demo stop");
+    write("[TEST_SCN] command stop");
   }
   else if (scenarioId >= 1 && scenarioId <= 35)
   {
     beginScenarioExecution(scenarioId);
+    acceptedScenarioId = clampRange(scenarioId, 0, 255);
     write("[TEST_SCN] command apply scenario=%d", scenarioId);
   }
   else if (scenarioId >= 200 && scenarioId <= 255)
   {
     beginScenarioExecution(scenarioId);
+    acceptedScenarioId = clampRange(scenarioId, 0, 255);
     write("[TEST_SCN] command execute scenario=%d", scenarioId);
+  }
+  else if (scenarioId == 100)
+  {
+    write("[TEST_SCN] command reject demo trigger=%d official-plane-only", scenarioId);
   }
   else
   {
     write("[TEST_SCN] command ignore invalid scenario=%d", scenarioId);
   }
 
-  @Test::scenarioCommandAck = clampRange(scenarioId, 0, 255);
+  @Test::scenarioCommandAck = acceptedScenarioId;
   gScenarioCmdInternalClear = 1;
   @Test::scenarioCommand = 0;
 }
@@ -3351,6 +3311,7 @@ on sysvar Test::scenarioCommand
 on sysvar Test::testScenario
 {
   int scenarioId;
+  int mirrorScenarioId;
 
   if (gScenarioMirrorInternalWrite == 1)
   {
@@ -3358,45 +3319,16 @@ on sysvar Test::testScenario
     return;
   }
 
-  scenarioId = (int)@Test::testScenario;
+  scenarioId = clampRange((int)@Test::testScenario, 0, 255);
+  mirrorScenarioId = clampRange(gCurrentScenarioId, 0, 255);
 
-  if (gScenarioInputLock == 1 &&
-      scenarioId != 0 &&
-      scenarioId != 100 &&
-      scenarioId != gCurrentScenarioId)
+  if (scenarioId != mirrorScenarioId)
   {
-    /* Ignore panel re-write while a locked scenario is running.
-       Switch scenario only via explicit reset (scenario 0) first. */
-    setScenarioMirror(gCurrentScenarioId);
-    write("[TEST_SCN] ignore scenario change while locked: req=%d keep=%d",
-          scenarioId, gCurrentScenarioId);
-    return;
-  }
-
-  if (scenarioId == 100)
-  {
-    beginAutoDemoExecution();
-    write("[TEST_SCN] auto demo start");
-  }
-  else if (scenarioId == 0)
-  {
-    stopScenarioExecution();
-    setScenarioMirror(0);
-    write("[TEST_SCN] auto demo stop");
-  }
-  else if (scenarioId >= 1 && scenarioId <= 35)
-  {
-    beginScenarioExecution(scenarioId);
-    write("[TEST_SCN] apply scenario=%d", scenarioId);
-  }
-  else if (scenarioId >= 200 && scenarioId <= 255)
-  {
-    beginScenarioExecution(scenarioId);
-    write("[TEST_SCN] execute scenario=%d", scenarioId);
-  }
-  else
-  {
-    write("[TEST_SCN] ignore invalid scenario=%d", scenarioId);
+    /* `testScenario` is now a status mirror only.
+       Official execution must enter through `scenarioCommand`. */
+    setScenarioMirror(mirrorScenarioId);
+    write("[TEST_SCN] ignore direct testScenario write: req=%d keep=%d",
+          scenarioId, mirrorScenarioId);
   }
 }
 
@@ -3426,13 +3358,13 @@ on timer tScenarioEval
   int clusterCode;
 
   evaluateScenarioResult();
-  coreLevel = (int)@Core::selectedAlertLevel;
-  coreType = (int)@Core::selectedAlertType;
+  coreLevel = getObservedSelectedAlertLevel();
+  coreType = getObservedSelectedAlertType();
   timeoutClear = (int)@Core::timeoutClear;
   proximityRiskLevel = (int)@Core::proximityRiskLevel;
   decelAssistReq = (int)@Core::decelAssistReq;
   failSafeMode = (int)@Core::failSafeMode;
-  driverReleaseReason = clampRange((int)@Test::obsDecelReleaseReason, 0, 3);
+  driverReleaseReason = clampRange((int)@CoreState::driverReleaseReason, 0, 3);
   objectTrackValid = (int)@Core::objectTrackValid;
   objectRiskClass = (int)@Core::objectRiskClass;
   objectTtcMin = (int)@Core::objectTtcMin;

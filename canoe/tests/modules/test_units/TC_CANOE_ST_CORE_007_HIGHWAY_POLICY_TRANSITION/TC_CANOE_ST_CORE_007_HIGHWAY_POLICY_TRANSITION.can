@@ -43,8 +43,8 @@ export testcase TC_CANOE_ST_CORE_007_HIGHWAY_POLICY_TRANSITION()
   }
 
   assertIntEq("st007-highway-zone", 2, (long)@Core::baseZoneContext, "baseZoneContext");
-  assertIntEq("st007-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("st007-type", 0, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("st007-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("st007-type", 0, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("st007-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
 
   resetValidationHarnessIfNeeded();

@@ -27,7 +27,7 @@ export testcase TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS()
 
   assertIntEq("boundary-status", 1, (long)@CoreState::domainBoundaryStatus, "domainBoundaryStatus");
   assertIntEq("routing-policy", 1, (long)@CoreState::routingPolicy, "routingPolicy");
-  assertIntEq("selected-alert-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("selected-alert-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
   assertIntEq("fail-safe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");
 
   resetValidationHarnessIfNeeded();

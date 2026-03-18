@@ -25,8 +25,8 @@ export testcase TC_CANOE_UT_OUT_070_BCM_AMBIENT()
     return;
   }
 
-  assertIntMin("ambient-schoolzone-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("ambient-schoolzone-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntMin("ambient-schoolzone-level", 3, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("ambient-schoolzone-type", 3, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("ambient-schoolzone-color", 3, (long)@Body::ambientColor, "ambientColor");
   assertIntEq("ambient-schoolzone-pattern", 5, (long)@Body::ambientPattern, "ambientPattern");
 
@@ -45,8 +45,8 @@ export testcase TC_CANOE_UT_OUT_070_BCM_AMBIENT()
     return;
   }
 
-  assertIntEq("ambient-emergency-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("ambient-emergency-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("ambient-emergency-level", 6, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("ambient-emergency-type", 1, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("ambient-emergency-color", 6, (long)@Body::ambientColor, "ambientColor");
   assertIntEq("ambient-emergency-pattern", 6, (long)@Body::ambientPattern, "ambientPattern");
 

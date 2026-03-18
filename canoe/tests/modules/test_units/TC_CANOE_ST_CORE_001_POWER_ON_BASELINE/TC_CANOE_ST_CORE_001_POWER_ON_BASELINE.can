@@ -27,8 +27,8 @@ export testcase TC_CANOE_ST_CORE_001_POWER_ON_BASELINE()
     return;
   }
 
-  assertIntEq("st001-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("st001-type", 0, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("st001-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("st001-type", 0, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("st001-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("st001-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
 

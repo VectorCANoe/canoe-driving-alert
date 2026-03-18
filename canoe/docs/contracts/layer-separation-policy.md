@@ -76,6 +76,7 @@ The active baseline uses six runtime layers.
 - validation aggregation is allowed only after the operational owner has already published a seam
 - outside an active validation lifecycle, observer seams must stay in a reset-safe idle state
 - idle transport traffic must not overwrite validation observer reset values
+- observer freshness or receive timestamps must come from actual observed transport or owner-published seams, not from synthetic harness-side inference
 
 ### 5. Diagnostic semantic and network request/response stay separate
 
@@ -88,6 +89,10 @@ The active baseline uses six runtime layers.
 - `TEST_SCN` may inject validation-only transport stimuli in SIL
 - that exception exists to drive product owners under test
 - validation stimulus does not reassign product ownership of the target seam
+- `TEST_SCN` may compute test verdict state, but that verdict must be derived from owner-published seams and test outputs
+- `TEST_SCN` must not become a fallback semantic owner when product owners fail to publish
+- `TEST_BAS` may aggregate observer results, but it must not synthesize alternate product meaning for the observed seam
+- test harness state may orchestrate scenario timing, but it must not keep product semantic state alive after the product owner has already cleared it
 
 ## Current Project Application
 

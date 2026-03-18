@@ -27,8 +27,8 @@ export testcase TC_CANOE_ST_030_SEATBELT_CONTEXT_ADJUST()
     return;
   }
 
-  assertIntEq("context-adjust-alert-level", 5, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("context-adjust-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("context-adjust-alert-level", 5, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("context-adjust-alert-type", 3, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("context-adjust-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
 
   resetValidationHarnessIfNeeded();

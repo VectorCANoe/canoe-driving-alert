@@ -105,16 +105,6 @@ dword getV2xLocalIp()
   return IpGetAddressAsNumber("192.168.1.9");
 }
 
-int validationLifecycleIsActive()
-{
-  return (((int)@Test::scenarioCommand != 0) ||
-          ((int)@Test::testScenario != 0) ||
-          ((int)@Test::scenarioCommandAck != 0) ||
-          ((int)@Test::scenarioActiveId != 0) ||
-          ((int)@Test::scenarioSettledId != 0) ||
-          ((int)@Test::scenarioEvaluatedId != 0));
-}
-
 int isHigherPriority(int newType, int newEta, int newSourceId,
                      int activeType, int activeEta, int activeSourceId)
 {
@@ -315,13 +305,6 @@ void syncLegacyDispatchInputs()
   direction = clampRange((int)@V2X::emergencyDirection, 0, 3);
   eta = clampRange((int)@V2X::eta, 0, 255);
   sourceId = clampRange((int)@V2X::sourceId, 0, 255);
-
-  if (validationLifecycleIsActive() == 1)
-  {
-    gPrevPoliceDispatch = 0;
-    gPrevAmbDispatch = 0;
-    return;
-  }
 
   if (ambulanceDispatch == 1)
   {

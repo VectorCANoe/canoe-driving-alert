@@ -41,7 +41,7 @@ export testcase TC_CANOE_UT_INP_033_VSM_INPUT()
   assertIntEq("s225_vsmCtrlState", 1, gVsmCtrlState, "vsmCtrlState");
   assertIntEq("s225_vsmIntervention", 0, gVsmIntervention, "vsmIntervention");
   assertIntEq("s225_driveStateNorm", 3, (long)@Core::driveStateNorm, "driveStateNorm");
-  assertIntEq("s225_selectedAlertLevel", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("s225_selectedAlertLevel", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
   assertIntEq("s225_failSafeMode", 0, (long)@Core::failSafeMode, "failSafeMode");
 
   resetValidationHarnessIfNeeded();
