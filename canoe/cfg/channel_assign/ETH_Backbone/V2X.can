@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -225,14 +226,23 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
   ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
+//modified
 void publishActiveEmergencyToV2X()
 {
-  @V2X::emergencyType = gActiveEmergencyType;
-  @V2X::emergencyDirection = gActiveEmergencyDirection;
-  @V2X::eta = gActiveEta;
-  @V2X::sourceId = gActiveSourceId;
-  @V2X::alertState = (gActiveEmergencyType > 0) ? 1 : 0;
+  if ((int)@sysvar::Test::manualAlertOverride == 0)
+  {
+    @V2X::emergencyType = gActiveEmergencyType;
+    @V2X::emergencyDirection = gActiveEmergencyDirection;
+    @V2X::eta = gActiveEta;
+    @V2X::sourceId = gActiveSourceId;
+    @V2X::alertState = (gActiveEmergencyType > 0) ? 1 : 0;
+  }
+  else
+  {
+    write("[V2X] manual override active - keep panel values");
+  }
 }
+//
 
 void syncLegacyDispatchInputs()
 {
