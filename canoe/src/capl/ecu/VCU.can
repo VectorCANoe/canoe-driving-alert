@@ -54,7 +54,7 @@ int deriveDriveMode(int driveState, int speed, int accelPedal, int brakePedal)
   {
     return 3;
   }
-  if (accelPedal >= 70)
+  if (accelPedal >= 60)
   {
     return 2;
   }
@@ -63,6 +63,18 @@ int deriveDriveMode(int driveState, int speed, int accelPedal, int brakePedal)
     return 1;
   }
   return 0;
+}
+
+int deriveTorqueRequest(int driveMode, int accelPedal, int speedLimit)
+{
+  int torqueRequest;
+
+  torqueRequest = clampRange(accelPedal * 2, 0, 255);
+  if (driveMode == 2 && speedLimit >= 100 && torqueRequest < 120)
+  {
+    torqueRequest = 120;
+  }
+  return torqueRequest;
 }
 
 int deriveEnergyFlowMode(int driveState, int accelPedal, int brakePedal)
@@ -410,7 +422,16 @@ on timer tVcuCycle
   @Chassis::driveState = driveState;
   publishBackboneVehicleState(gSpeed, driveState);
 
-  torqueRequest = clampRange(accelPedal * 2, 0, 255);
+  if (driveMode == 0 &&
+      driveState > 0 &&
+      accelPedal >= 50 &&
+      gSpeedLimitNorm >= 100)
+  {
+    driveMode = 2;
+    gDriveMode = 2;
+  }
+
+  torqueRequest = deriveTorqueRequest(gDriveMode, accelPedal, gSpeedLimitNorm);
   mAccel.AccelRequest = accelPedal;
   mAccel.TorqueRequest = torqueRequest;
   output(mAccel);
@@ -446,7 +467,15 @@ on timer tVcuCycle
   gPtAliveCnt = (gPtAliveCnt + 1) & 0xFF;
 
   energyFlowMode = deriveEnergyFlowMode(driveState, accelPedal, brakePedal);
+  if (gDriveMode == 2 && energyFlowMode == 0)
+  {
+    energyFlowMode = 1;
+  }
   regenLevel = deriveRegenLevel(gDriveMode, brakePedal);
+  if (gDriveMode == 2 && brakePedal < 10 && regenLevel < 4)
+  {
+    regenLevel = 4;
+  }
   powerBalance = derivePowerBalance(gDriveMode, accelPedal, brakePedal);
   mEnergy.EnergyFlowMode = energyFlowMode;
   mEnergy.RegenLevel = regenLevel;

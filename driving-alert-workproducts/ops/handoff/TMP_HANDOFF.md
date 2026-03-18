@@ -203,6 +203,11 @@
   - 예: `search`, `git status/log`, `gate`, `read-only diff`
 - 긴 중첩 PowerShell 래핑보다 `apply_patch` 또는 단일 직접 명령을 우선한다.
 - 문서/코드 반영 후에는 실제 파일 기준으로 `git diff` 또는 핵심 문자열 검증을 반드시 남긴다.
+- native test 디버깅에서 `*.vtestreport` 분석이 필요하면 raw binary를 직접 읽지 말고, 공식 Vector CLI로 먼저 XML export 한다.
+  - CLI: `C:\Program Files\Vector CANoe Test Report Viewer 19 SP3\ReportViewerCli.exe`
+  - source: `canoe/cfg/Report_<TIER>_ACTIVE_BASELINE.vtestreport`
+  - export target: `canoe/tmp/report_exports/<TIER>_ACTIVE_BASELINE.xml`
+  - verdict, fail cause, per-TC 확인은 exported XML을 기준으로 수행한다.
 
 ### 10.6 CAPL / CANoe Refactor Pitfalls (Do Not Repeat)
 - CAPL include(`*.cin`)를 `includes {}`로 불러오는 구조에서는 top-level `const`나 무리한 `#define`로 transport 상수를 넣지 않는다.

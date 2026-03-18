@@ -89,7 +89,7 @@ export testcase TC_CANOE_IT_V2_006_ARBITRATION()
   }
   assertIntEq("ambulance-priority-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
   assertIntEq("ambulance-priority-alert-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
-  assertIntEq("ambulance-priority-code", 202, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("ambulance-priority-code", deriveExpectedEmergencyWarningCode(2, 2, 8, 20), (long)@Cluster::warningTextCode, "warningTextCode");
 
   resetValidationHarnessIfNeeded();
 }

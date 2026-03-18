@@ -128,27 +128,21 @@ void publishReservedDiagServiceSeam(int diagStage)
 
   if (diagStage >= 3)
   {
-    serviceState = 1;
+    serviceState = 2;
     responseKind = 4;
     reasonCode = 2;
   }
   else if (diagStage == 2)
   {
-    serviceState = 1;
+    serviceState = 3;
     responseKind = 2;
     reasonCode = 3;
   }
   else if (diagStage == 1)
   {
-    serviceState = 2;
+    serviceState = 1;
     responseKind = 1;
     reasonCode = 0;
-  }
-  else if (gSecuritySession > 0 || gAuthState > 0)
-  {
-    serviceState = 3;
-    responseKind = 4;
-    reasonCode = 4;
   }
 
   @Diag::ServiceState = serviceState;

@@ -38,6 +38,7 @@ variables
   int gLastTransportType;
   int gLastTransportSourceId;
   int gLastTransportDirection;
+  int gLastIngressHeartbeatSeen;
 }
 
 
@@ -381,6 +382,7 @@ on start
   gLastTransportType = 0;
   gLastTransportSourceId = 0;
   gLastTransportDirection = 0;
+  gLastIngressHeartbeatSeen = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
     write("[V2X] tx socket unavailable");
@@ -399,42 +401,23 @@ on start
   write("[V2X] start");
 }
 
-/* v1 fallback: sysvar polling (panel/legacy compat, kept for backward compat) */
+/* Legacy panel compat: dispatch-level sysvar inputs only.
+   Native verification and runtime ingress use transport frames. */
 on timer tRxCycle
 {
+  dword nowMs;
+  int accepted;
+  int hasIngressEvent;
   int emergencyType;
   int emergencyDirection;
   int eta;
   int sourceId;
   int alertState;
-  dword nowMs;
-  int accepted;
-  int hasIngressEvent;
-  int mirroredAlertState;
 
   syncLegacyDispatchInputs();
   nowMs              = getCurrentTick32();
   accepted           = 0;
   hasIngressEvent    = 0;
-
-  if (gIngressPending == 0)
-  {
-    mirroredAlertState = (gActiveEmergencyType > 0) ? 1 : 0;
-    emergencyType      = clampRange((int)@V2X::emergencyType, 0, 2);
-    emergencyDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
-    eta                = clampRange((int)@V2X::eta, 0, 255);
-    sourceId           = clampRange((int)@V2X::sourceId, 0, 255);
-    alertState         = (((int)@V2X::alertState) == 1) ? 1 : 0;
-
-    if (emergencyType != gActiveEmergencyType ||
-        emergencyDirection != gActiveEmergencyDirection ||
-        eta != gActiveEta ||
-        sourceId != gActiveSourceId ||
-        alertState != mirroredAlertState)
-    {
-      stageEmergencyIngress(emergencyType, alertState, sourceId, eta, emergencyDirection);
-    }
-  }
 
   emergencyType = 0;
   emergencyDirection = 0;

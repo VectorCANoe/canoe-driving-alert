@@ -2,8 +2,10 @@ long observerStateIsReset()
 {
   return ((long)@Test::obsFailSafeMode == -1 &&
           (long)@Test::obsEmergencyContext == -1 &&
+          (long)@Test::obsDecelDecisionReq == -1 &&
           (long)@Test::obsDecelAssistReq == -1 &&
           (long)@Test::obsDecelRisk == -1 &&
+          (long)@Test::obsDecelGateReason == -1 &&
           (long)@Test::obsSelectedAlertLevel == -1 &&
           (long)@Test::obsSelectedAlertType == -1 &&
           (long)@Test::obsObjectRiskClass == -1 &&
@@ -27,10 +29,12 @@ long waitForObserverReset(dword timeoutMs)
 
   if (!observerStateIsReset())
   {
-    testStepFail("observer-reset", "Shared observer reset timeout waited=%d failSafe=%d decel=%d level=%d type=%d",
+    testStepFail("observer-reset", "Shared observer reset timeout waited=%d failSafe=%d decision=%d decel=%d gate=%d level=%d type=%d",
                  waitedMs,
                  (long)@Test::obsFailSafeMode,
+                 (long)@Test::obsDecelDecisionReq,
                  (long)@Test::obsDecelAssistReq,
+                 (long)@Test::obsDecelGateReason,
                  (long)@Test::obsSelectedAlertLevel,
                  (long)@Test::obsSelectedAlertType);
     return 0;
@@ -115,10 +119,12 @@ long waitForObservedDecelAssist(dword timeoutMs)
 
   if ((long)@Test::obsDecelAssistReq < 0)
   {
-    testStepFail("observer-decel", "Decel observer timeout waited=%d req=%d risk=%d",
+    testStepFail("observer-decel", "Decel observer timeout waited=%d decision=%d req=%d risk=%d gate=%d",
                  waitedMs,
+                 (long)@Test::obsDecelDecisionReq,
                  (long)@Test::obsDecelAssistReq,
-                 (long)@Test::obsDecelRisk);
+                 (long)@Test::obsDecelRisk,
+                 (long)@Test::obsDecelGateReason);
     return 0;
   }
 
@@ -213,7 +219,11 @@ long resetValidationHarnessIfNeeded()
 {
   dword waitedMs;
 
-  if ((int)@Test::scenarioCommandAck == 0 &&
+  if ((int)@Test::scenarioCommand == 0 &&
+      (int)@Test::scenarioCommandAck == 0 &&
+      (int)@Test::scenarioActiveId == 0 &&
+      (int)@Test::scenarioSettledId == 0 &&
+      (int)@Test::scenarioEvaluatedId == 0 &&
       (int)@Test::scenarioResult == 0)
   {
     if (!waitForObserverReset(500))
@@ -226,16 +236,30 @@ long resetValidationHarnessIfNeeded()
 
   @Test::scenarioCommand = 0;
   waitedMs = 0;
-  while ((int)@Test::scenarioCommandAck != 0 && waitedMs < 1000)
+  while (((int)@Test::scenarioCommandAck != 0 ||
+          (int)@Test::scenarioActiveId != 0 ||
+          (int)@Test::scenarioSettledId != 0 ||
+          (int)@Test::scenarioEvaluatedId != 0 ||
+          (int)@Test::scenarioResult != 0) &&
+         waitedMs < 1200)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if ((int)@Test::scenarioCommandAck != 0)
+  if ((int)@Test::scenarioCommandAck != 0 ||
+      (int)@Test::scenarioActiveId != 0 ||
+      (int)@Test::scenarioSettledId != 0 ||
+      (int)@Test::scenarioEvaluatedId != 0 ||
+      (int)@Test::scenarioResult != 0)
   {
-    testStepFail("scenario-reset", "Harness reset timeout waited=%d ack=%d",
-                 waitedMs, (int)@Test::scenarioCommandAck);
+    testStepFail("scenario-reset", "Harness reset timeout waited=%d ack=%d active=%d settled=%d evaluated=%d result=%d",
+                 waitedMs,
+                 (int)@Test::scenarioCommandAck,
+                 (int)@Test::scenarioActiveId,
+                 (int)@Test::scenarioSettledId,
+                 (int)@Test::scenarioEvaluatedId,
+                 (int)@Test::scenarioResult);
     return 0;
   }
 
@@ -271,6 +295,39 @@ long waitForScenarioAck(int scenarioId, dword timeoutMs)
   return 1;
 }
 
+long waitForScenarioSettled(int scenarioId, dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((int)@Test::scenarioSettledId != scenarioId &&
+         (int)@Test::scenarioEvaluatedId != scenarioId &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((int)@Test::scenarioSettledId != scenarioId &&
+      (int)@Test::scenarioEvaluatedId != scenarioId)
+  {
+    testStepFail("scenario-settled", "Scenario settle timeout expected=%d active=%d settled=%d evaluated=%d waited=%d",
+                 scenarioId,
+                 (int)@Test::scenarioActiveId,
+                 (int)@Test::scenarioSettledId,
+                 (int)@Test::scenarioEvaluatedId,
+                 waitedMs);
+    return 0;
+  }
+
+  testStepPass("scenario-settled", "Scenario %d settled active=%d settled=%d evaluated=%d",
+               scenarioId,
+               (int)@Test::scenarioActiveId,
+               (int)@Test::scenarioSettledId,
+               (int)@Test::scenarioEvaluatedId);
+  return 1;
+}
+
 long launchScenarioAndWait(int scenarioId, dword ackTimeoutMs, dword settleMs)
 {
   @Test::scenarioCommand = scenarioId;
@@ -279,8 +336,7 @@ long launchScenarioAndWait(int scenarioId, dword ackTimeoutMs, dword settleMs)
     return 0;
   }
 
-  TestWaitForTimeout(settleMs);
-  return 1;
+  return waitForScenarioSettled(scenarioId, settleMs);
 }
 
 long waitForBaseResult(int scenarioId, dword timeoutMs)
@@ -303,6 +359,90 @@ long waitForBaseResult(int scenarioId, dword timeoutMs)
 
   testStepPass("base-result-wait", "Base result ready for scenario %d", scenarioId);
   return 1;
+}
+
+long calcEmergencyDistanceM(long etaSec, long speedKph)
+{
+  long distanceM;
+
+  if (etaSec <= 0 || speedKph <= 0)
+  {
+    return 0;
+  }
+
+  distanceM = (etaSec * speedKph * 10) / 36;
+  if (distanceM < 0)
+  {
+    distanceM = 0;
+  }
+  if (distanceM > 10000)
+  {
+    distanceM = 10000;
+  }
+  return distanceM;
+}
+
+long calcEmergencyDistanceBand(long distanceM)
+{
+  if (distanceM <= 0)
+  {
+    return 0;
+  }
+  if (distanceM <= 80)
+  {
+    return 1;
+  }
+  if (distanceM <= 180)
+  {
+    return 2;
+  }
+  return 3;
+}
+
+long deriveExpectedEmergencyWarningCode(long emergencyType,
+                                        long emergencyDirection,
+                                        long etaSec,
+                                        long speedKph)
+{
+  long baseCode;
+  long band;
+
+  if (emergencyType < 0)
+  {
+    emergencyType = 0;
+  }
+  if (emergencyType > 2)
+  {
+    emergencyType = 2;
+  }
+  if (emergencyDirection < 0)
+  {
+    emergencyDirection = 0;
+  }
+  if (emergencyDirection > 3)
+  {
+    emergencyDirection = 3;
+  }
+
+  if (emergencyType == 2)
+  {
+    baseCode = 200;
+  }
+  else if (emergencyType == 1)
+  {
+    baseCode = 100;
+  }
+  else
+  {
+    return 0;
+  }
+
+  band = calcEmergencyDistanceBand(calcEmergencyDistanceM(etaSec, speedKph));
+  if (band > 0)
+  {
+    return baseCode + (band * 10) + emergencyDirection;
+  }
+  return baseCode + emergencyDirection;
 }
 
 void assertIntEq(char stepId[], long expected, long actual, char label[])

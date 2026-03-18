@@ -22,7 +22,7 @@ export testcase TC_CANOE_IT_BASE_030_BODY_SECURITY_CONTEXT()
 
   assertIntEq("body-security-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntMin("body-security-diag-state", 1, (long)@Diag::SecurityState, "SecurityState");
-  assertIntEq("body-security-route-owner", 3, (long)@Diag::RouteOwner, "RouteOwner");
+  assertIntEq("body-security-route-owner", 1, (long)@Diag::RouteOwner, "RouteOwner");
 
   resetValidationHarnessIfNeeded();
 }

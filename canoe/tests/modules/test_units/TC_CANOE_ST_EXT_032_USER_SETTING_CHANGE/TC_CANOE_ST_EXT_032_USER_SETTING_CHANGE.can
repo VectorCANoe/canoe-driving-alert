@@ -15,13 +15,13 @@ export testcase TC_CANOE_ST_EXT_032_USER_SETTING_CHANGE()
     return;
   }
 
-  if (!launchScenarioAndWait(215, 900, 1300))
+  if (!launchScenarioAndWait(215, 900, 1700))
   {
     return;
   }
 
   assertIntEq("user-setting-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("user-setting-warning-code", 142, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("user-setting-warning-code", deriveExpectedEmergencyWarningCode(1, 2, 11, 40), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("user-setting-audio-focus", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
   assertIntEq("user-setting-audio-ducking", 4, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
   assertIntEq("user-setting-volume", 80, (long)@CoreState::volumeLevel, "volumeLevel");

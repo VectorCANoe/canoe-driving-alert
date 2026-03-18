@@ -58,6 +58,13 @@ Use those references to align:
 - All `Ready`/`Planned` items are expected to be implemented, and once corresponding TEST assets are available they must be diagnosed with evidence and replaced by `PASS`/`FAIL`.
 - Keep all text files in UTF-8 (do not re-save with legacy code pages).
 - Verification scope is fixed to CANoe SIL, CAN + Ethernet only.
+- When native CANoe test verdict analysis is needed, do not inspect raw `*.vtestreport` directly first.
+  - Export XML first with the official Vector CLI:
+    - `C:\Program Files\Vector CANoe Test Report Viewer 19 SP3\ReportViewerCli.exe`
+  - Standard working path:
+    - source: `canoe/cfg/Report_<TIER>_ACTIVE_BASELINE.vtestreport`
+    - export: `canoe/tmp/report_exports/<TIER>_ACTIVE_BASELINE.xml`
+  - Use the exported XML as the primary local debugging input for `PASS/FAIL`, `cause`, and per-TC verdict review.
 - Before `pull/rebase`, inspect remote changed paths first (`fetch -> log/diff`).
 - If remote changes mix `canoe/` and `driving-alert-workproducts/`, do not blindly full-pull on behalf of the docs instance.
 - In mixed-change recovery, sync `canoe/` selectively first and preserve `driving-alert-workproducts/` until docs ownership changes are reviewed or explicitly approved.

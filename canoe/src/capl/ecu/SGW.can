@@ -32,13 +32,17 @@ void publishReservedDiagSecuritySeam(int diagStage, int securitySession, int aut
   int routeOwner;
 
   securityState = 0;
-  if (diagStage >= 2)
+  if (diagStage >= 3)
   {
     securityState = 3;
   }
-  else if (diagStage == 1)
+  else if (diagStage == 2)
   {
     securityState = 2;
+  }
+  else if (diagStage == 1)
+  {
+    securityState = 1;
   }
   else if (securitySession > 0 || authState > 0)
   {
@@ -46,13 +50,13 @@ void publishReservedDiagSecuritySeam(int diagStage, int securitySession, int aut
   }
 
   routeOwner = 0;
-  if (diagStage == 1)
-  {
-    routeOwner = 3;
-  }
-  else if (diagStage >= 2)
+  if (diagStage >= 2)
   {
     routeOwner = 1;
+  }
+  else if (diagStage == 1)
+  {
+    routeOwner = 3;
   }
   else if (securitySession > 0 || authState > 0)
   {

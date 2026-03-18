@@ -64,21 +64,11 @@ void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
 
 int applyDisplayPolicy(int code)
 {
-  int coded;
-
   if (code <= 0)
   {
     return 0;
   }
-
-  coded = code;
-
-  if (gPopupActive == 0 && gAudioFocusOwner > 0)
-  {
-    coded = clampRange(code + 40, 0, 255);
-  }
-
-  return coded;
+  return clampRange(code, 0, 255);
 }
 
 int applyRobustPolicy(int code)
@@ -90,19 +80,6 @@ int applyRobustPolicy(int code)
   int useBackbone;
 
   coded = code;
-  if (coded > 0 && gAudioFocusOwner != 0 &&
-      (gAudioDuckingLvl >= 4 || gTtsState >= 1))
-  {
-    coded = clampRange(coded + 6, 0, 255);
-  }
-
-  if (coded > 0 &&
-      gPopupActive == 1 && gPopupPriority >= 5 &&
-      coded < 100 && (coded % 10) < 5)
-  {
-    coded = 0;
-  }
-
   useBackbone = useBackboneAlertState();
   if (useBackbone == 1)
   {

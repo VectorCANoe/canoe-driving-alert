@@ -507,7 +507,6 @@ on timer tBodyBase100
   mDoorState.DoorOpenWarn = doorOpenWarn;
   output(mDoorState);
 
-  mLamp.HeadLampState = (hazardActive == 1) ? 2 : 1;
   mLamp.TailLampState = 1;
   if (hazardActive == 1)
   {
@@ -521,6 +520,8 @@ on timer tBodyBase100
   {
     turnLampState = 0;
   }
+  mLamp.HeadLampState = ((hazardActive == 1) ||
+                         (driveState > 0 && turnLampState > 0)) ? 2 : 1;
   mLamp.TurnLampState = clampRange(turnLampState, 0, 3);
   mLamp.HazardLampReq = hazardActive;
   output(mLamp);

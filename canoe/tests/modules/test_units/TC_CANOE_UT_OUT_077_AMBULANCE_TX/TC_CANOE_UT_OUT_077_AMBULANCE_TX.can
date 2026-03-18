@@ -36,7 +36,7 @@ export testcase TC_CANOE_UT_OUT_077_AMBULANCE_TX()
     return;
   }
   assertIntEq("ambulance-tx-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
-  assertIntEq("ambulance-tx-code", 202, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("ambulance-tx-code", deriveExpectedEmergencyWarningCode(2, 2, 8, 20), (long)@Cluster::warningTextCode, "warningTextCode");
 
   resetValidationHarnessIfNeeded();
 }

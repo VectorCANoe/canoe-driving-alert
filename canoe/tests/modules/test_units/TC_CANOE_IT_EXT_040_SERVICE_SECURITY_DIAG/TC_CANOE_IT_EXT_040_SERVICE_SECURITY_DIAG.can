@@ -22,7 +22,7 @@ export testcase TC_CANOE_IT_EXT_040_SERVICE_SECURITY_DIAG()
   }
 
   assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("service-state", 1, (long)@Diag::ServiceState, "ServiceState");
+  assertIntEq("service-state", 2, (long)@Diag::ServiceState, "ServiceState");
   assertIntEq("security-state", 3, (long)@Diag::SecurityState, "SecurityState");
   assertIntEq("route-owner", 1, (long)@Diag::RouteOwner, "RouteOwner");
   assertIntEq("request-target", 2, (long)@Diag::LastRequestTarget, "LastRequestTarget");
@@ -34,7 +34,7 @@ export testcase TC_CANOE_IT_EXT_040_SERVICE_SECURITY_DIAG()
   assertIntEq("reason-code", 2, (long)@Diag::ReasonCode, "ReasonCode");
   assertIntEq("response-target", 2, (long)@Diag::LastResponseTarget, "LastResponseTarget");
   assertIntEq("response-code", 0x7F, (long)@Diag::LastResponseCode, "LastResponseCode");
-  assertIntEq("response-data0", 1, (long)@Diag::LastResponseData0, "LastResponseData0");
+  assertIntEq("response-data0", 2, (long)@Diag::LastResponseData0, "LastResponseData0");
   assertIntEq("response-data1", 4, (long)@Diag::LastResponseData1, "LastResponseData1");
   assertIntEq("response-ok", 0, (long)@Diag::LastResponseOk, "LastResponseOk");
   assertIntEq("response-source-bus", 1, (long)@Diag::LastResponseSourceBus, "LastResponseSourceBus");

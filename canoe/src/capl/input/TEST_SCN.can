@@ -31,6 +31,8 @@ variables
   int gLockEmergencyDirection;
   int gLockEta;
   int gLockSourceId;
+  int gLockAccelPedalOverride;
+  int gLockBrakePedalOverride;
   int gLockPoliceDispatch;
   int gLockAmbulanceDispatch;
   int gLockForceFailSafe;
@@ -42,6 +44,7 @@ variables
   int gLockMergeCutInFlag;
   int gLockObjectAlertHoldMs;
   int gLockSuppressEmergencyFrame;
+  int gEmergencyIngressHeartbeat;
   int gScenarioCmdInternalClear;
   int gScenarioMirrorInternalWrite;
   int gPrevAccelPedal;
@@ -153,6 +156,92 @@ int getEvidenceTierCode()
   return clampRange((int)@Test::nativeExecTierCode, 0, 4);
 }
 
+int calcScenarioEmergencyDistanceM(int etaSec, int speedKph)
+{
+  long distanceM;
+
+  if (etaSec <= 0 || speedKph <= 0)
+  {
+    return 0;
+  }
+
+  distanceM = ((long)etaSec * (long)speedKph * 10) / 36;
+  if (distanceM < 0)
+  {
+    distanceM = 0;
+  }
+  if (distanceM > 10000)
+  {
+    distanceM = 10000;
+  }
+  return (int)distanceM;
+}
+
+int calcScenarioEmergencyDistanceBand(int distanceM)
+{
+  distanceM = clampRange(distanceM, 0, 10000);
+
+  if (distanceM <= 0)
+  {
+    return 0;
+  }
+  if (distanceM <= 80)
+  {
+    return 1;
+  }
+  if (distanceM <= 180)
+  {
+    return 2;
+  }
+  return 3;
+}
+
+int calcScenarioEmergencyWarningCode(int emergencyType, int emergencyDirection, int etaSec, int speedKph)
+{
+  int distanceBand;
+  int baseCode;
+
+  emergencyType = clampRange(emergencyType, 0, 2);
+  emergencyDirection = clampRange(emergencyDirection, 0, 3);
+  distanceBand = calcScenarioEmergencyDistanceBand(calcScenarioEmergencyDistanceM(etaSec, speedKph));
+
+  if (emergencyType == 2)
+  {
+    baseCode = 200;
+  }
+  else if (emergencyType == 1)
+  {
+    baseCode = 100;
+  }
+  else
+  {
+    return 0;
+  }
+
+  if (distanceBand > 0)
+  {
+    return baseCode + (distanceBand * 10) + emergencyDirection;
+  }
+  return baseCode + emergencyDirection;
+}
+
+int getObservedScenarioVehicleSpeed()
+{
+  if (gObsVehicleSpeed >= 0)
+  {
+    return clampRange(gObsVehicleSpeed, 0, 255);
+  }
+  return clampRange(gLockVehicleSpeed, 0, 255);
+}
+
+int getExpectedRuntimeEmergencyWarningCode()
+{
+  return calcScenarioEmergencyWarningCode((int)@V2X::emergencyType,
+                                          (int)@V2X::emergencyDirection,
+                                          (int)@V2X::eta,
+                                          getObservedScenarioVehicleSpeed());
+}
+
 int evidenceAutoWriteEnabled()
 {
   return (((int)@Test::evidenceAutoWrite == 1) &&
@@ -256,8 +345,6 @@ void pushLockedScenarioInputs()
   @Infotainment::navDirection = clampRange(gLockNavDirection, 0, 3);
   @Infotainment::zoneDistance = clampRange(gLockZoneDistance, 0, 255);
   @Infotainment::speedLimit = clampRange(gLockSpeedLimit, 0, 255);
-  @V2X::policeDispatch = clampRange(gLockPoliceDispatch, 0, 1);
-  @V2X::ambulanceDispatch = clampRange(gLockAmbulanceDispatch, 0, 1);
   /* A/B 그룹 플래그: CGW 정규화 경로를 거치지 않고 Core에 직접 주입 */
   @Core::accelGroupFlag = clampRange(gLockAccelGroupFlag, 0, 1);
   @Core::steerGroupFlag = clampRange(gLockSteerGroupFlag, 0, 1);
@@ -343,12 +430,23 @@ void stopScenarioExecution()
   cancelTimer(tDemoStep);
   cancelScenarioTransientTimers();
   EmitBackboneValidationOverrideTest(0);
-  @V2X::policeDispatch = 0;
-  @V2X::ambulanceDispatch = 0;
+  EmitBackboneEmergencyTest(clampRange(gLockEmergencyType, 0, 2),
+                            0,
+                            clampRange(gLockSourceId, 0, 255),
+                            clampRange(gLockEmergencyDirection, 0, 3),
+                            0);
+  EmitBackboneObjectRiskTest(0, 0, 0, 0, 0, 0, 300);
+  @Test::forceFailSafe = 0;
+  @Test::displayModeSetting = 0;
+  @Test::alertVolumeSetting = 0;
+  @Test::seatBeltOverride = 0;
+  @Test::turnLampOverride = 0;
+  clearScenarioLifecycleState();
   @Test::scenarioResult = 0;
   gLockAccelGroupFlag = 0;
   gLockSteerGroupFlag = 0;
   gLockSuppressEmergencyFrame = 0;
+  gEmergencyIngressHeartbeat = 0;
   gDiagCtxNominalSeen = 0;
   gDiagCtxDegradedSeen = 0;
   gDiagCtxBlockedSeen = 0;
@@ -414,16 +512,17 @@ void trackSt038DiagnosticContext()
   reasonCode = clampRange((int)@Diag::ReasonCode, 0, 255);
   failSafeMode = clampRange((int)@Core::failSafeMode, 0, 7);
 
-  if (serviceState == 2 && securityState == 2 && routeOwner == 3 && reasonCode == 0)
+  if (serviceState == 1 && securityState == 1 && routeOwner == 3 &&
+      reasonCode == 0 && failSafeMode == 0)
   {
     gDiagCtxNominalSeen = 1;
   }
-  else if (serviceState == 1 && securityState == 3 && routeOwner == 1 &&
+  else if (serviceState == 3 && securityState == 2 && routeOwner == 1 &&
            reasonCode == 3 && failSafeMode == 1)
   {
     gDiagCtxDegradedSeen = 1;
   }
-  else if (serviceState == 1 && securityState == 3 && routeOwner == 1 &&
+  else if (serviceState == 2 && securityState == 3 && routeOwner == 1 &&
            reasonCode == 2 && failSafeMode >= 2)
   {
     gDiagCtxBlockedSeen = 1;
@@ -447,15 +546,15 @@ void trackDcmDiagnosticContext()
   reasonCode = clampRange((int)@Diag::ReasonCode, 0, 255);
   lastSid = clampRange((int)@Diag::LastRequestSid, 0, 255);
 
-  if (serviceState == 2 && responseKind == 1 && reasonCode == 0 && lastSid == 0x22)
+  if (serviceState == 1 && responseKind == 1 && reasonCode == 0 && lastSid == 0x22)
   {
     gDcmCtxPositiveSeen = 1;
   }
-  else if (serviceState == 1 && responseKind == 2 && reasonCode == 3 && lastSid == 0x22)
+  else if (serviceState == 3 && responseKind == 2 && reasonCode == 3 && lastSid == 0x22)
   {
     gDcmCtxNegativeSeen = 1;
   }
-  else if (serviceState == 1 && responseKind == 4 && reasonCode == 2 && lastSid == 0x22)
+  else if (serviceState == 2 && responseKind == 4 && reasonCode == 2 && lastSid == 0x22)
   {
     gDcmCtxBlockedSeen = 1;
   }
@@ -498,7 +597,7 @@ void trackWave2NominalContexts()
   {
     if ((int)@Core::selectedAlertLevel == 6 &&
         (int)@Core::selectedAlertType == 1 &&
-        (int)@Cluster::warningTextCode == 101 &&
+        (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
         (int)@Core::failSafeMode == 0)
     {
       gIviTextNominalSeen = 1;
@@ -519,8 +618,8 @@ void trackWave2NominalContexts()
   {
     if ((int)@Core::selectedAlertLevel == 6 &&
         (int)@Core::selectedAlertType == 1 &&
-        (int)@Cluster::warningTextCode == 102 &&
-        (int)@UiRender::renderDirection == 2 &&
+        (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
+        (int)@UiRender::renderDirection == (int)@V2X::emergencyDirection &&
         (int)@Core::failSafeMode == 0)
     {
       gCluDisplayNominalSeen = 1;
@@ -534,6 +633,13 @@ void setScenarioMirror(int scenarioId)
   @Test::testScenario = clampRange(scenarioId, 0, 255);
 }
 
+void clearScenarioLifecycleState()
+{
+  @Test::scenarioActiveId = 0;
+  @Test::scenarioSettledId = 0;
+  @Test::scenarioEvaluatedId = 0;
+}
+
 void publishScenarioResultFrame()
 {
   write("[TEST_SCN] scenario result=%d",
@@ -545,10 +651,12 @@ void beginScenarioExecution(int scenarioId)
   gDemoRunning = 0;
   cancelTimer(tDemoStep);
   cancelScenarioTransientTimers();
+  clearScenarioLifecycleState();
   @Test::scenarioResult = 0;
   applyScenarioPreset(scenarioId);
   gCurrentScenarioId = scenarioId;
   setScenarioMirror(scenarioId);
+  @Test::scenarioActiveId = clampRange(scenarioId, 0, 255);
   scheduleScenarioEvaluation(scenarioId);
 }
 
@@ -557,6 +665,7 @@ void beginAutoDemoExecution()
   cancelScenarioTransientTimers();
   gDemoRunning = 1;
   gDemoStepIndex = 0;
+  clearScenarioLifecycleState();
   setScenarioMirror(100);
   runDemoStep();
 }
@@ -576,6 +685,8 @@ void applyScenarioPreset(int scenarioId)
   gLockEmergencyDirection = 1;
   gLockEta = 10;
   gLockSourceId = 1;
+  gLockAccelPedalOverride = -1;
+  gLockBrakePedalOverride = -1;
   gLockPoliceDispatch = 0;
   gLockAmbulanceDispatch = 0;
   gLockForceFailSafe = 0;
@@ -589,6 +700,7 @@ void applyScenarioPreset(int scenarioId)
   gLockAccelGroupFlag = 0;
   gLockSteerGroupFlag = 0;
   gLockSuppressEmergencyFrame = 0;
+  gEmergencyIngressHeartbeat = 0;
   gDiagCtxNominalSeen = 0;
   gDiagCtxDegradedSeen = 0;
   gDiagCtxBlockedSeen = 0;
@@ -626,6 +738,8 @@ void applyScenarioPreset(int scenarioId)
   @Test::displayModeSetting = 0;
   @Test::alertVolumeSetting = 0;
   @Test::seatBeltOverride = 0;
+  @Test::turnLampOverride = 0;
+  @Test::forceFailSafe = 0;
   @Test::historyQueryOffset = 0;
 
   if (scenarioId == 1)
@@ -1218,7 +1332,7 @@ void applyScenarioPreset(int scenarioId)
     gLockDriveState = 3;
     gLockVehicleSpeed = 78;
     gLockRoadZone = 2;
-    gLockSteeringInput = 1;
+    gLockSteeringInput = 0;
     gLockSpeedLimit = 80;
     gLockAlertState = 1;
     gLockEmergencyType = 2;
@@ -1240,7 +1354,7 @@ void applyScenarioPreset(int scenarioId)
     gLockDriveState = 3;
     gLockVehicleSpeed = 78;
     gLockRoadZone = 2;
-    gLockSteeringInput = 1;
+    gLockSteeringInput = 0;
     gLockSpeedLimit = 80;
     gLockAlertState = 1;
     gLockEmergencyType = 2;
@@ -1566,15 +1680,17 @@ void applyScenarioPreset(int scenarioId)
   {
     /* UT_026: propulsion path baseline */
     gLockDriveState = 3;
-    gLockVehicleSpeed = 65;
+    gLockVehicleSpeed = 120;
     gLockRoadZone = 2;
-    gLockSpeedLimit = 100;
+    gLockSpeedLimit = 120;
     gLockAlertState = 0;
     gLockEmergencyType = 0;
     gLockEta = 0;
     gLockSourceId = 0;
     gLockEmergencyDirection = 0;
     gLockSteeringInput = 0;
+    gLockAccelPedalOverride = 60;
+    gLockBrakePedalOverride = 5;
     gLockForceFailSafe = 0;
     gLockSuppressEmergencyFrame = 0;
   }
@@ -1598,8 +1714,8 @@ void applyScenarioPreset(int scenarioId)
   else if (scenarioId == 234)
   {
     /* UT_024: parking/perception baseline */
-    gLockDriveState = 0;
-    gLockVehicleSpeed = 5;
+    gLockDriveState = 2;
+    gLockVehicleSpeed = 2;
     gLockRoadZone = 0;
     gLockSpeedLimit = 30;
     gLockAlertState = 0;
@@ -1607,7 +1723,7 @@ void applyScenarioPreset(int scenarioId)
     gLockEta = 0;
     gLockSourceId = 0;
     gLockEmergencyDirection = 0;
-    gLockSteeringInput = 1;
+    gLockSteeringInput = 0;
     gLockForceFailSafe = 0;
     gLockSuppressEmergencyFrame = 0;
   }
@@ -1824,15 +1940,21 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 4)
   {
-    /* Req_017 + Req_035 (Legacy Req_036): police emergency, distinct red-blue color+pattern */
-    result = (level == 6 && type == 1 && code == 101 && duplicatePopupGuard > 0 &&
-              ambientColor == 6 && ambientPattern == 6) ? 1 : 0;
+    /* Req_017 + Req_035 (Legacy Req_036): police emergency render contract */
+    result = (level == 6 && type == 1 &&
+              code == getExpectedRuntimeEmergencyWarningCode() &&
+              duplicatePopupGuard > 0 &&
+              ambientColor == 6 && ambientPattern == 6 &&
+              failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 5)
   {
-    /* Req_017 + Req_035 (Legacy Req_018/036): ambulance emergency, distinct red-white color+pattern */
-    result = (level == 7 && type == 2 && code == 202 && duplicatePopupGuard > 0 &&
-              ambientColor == 7 && ambientPattern == 7) ? 1 : 0;
+    /* Req_017 + Req_035 (Legacy Req_018/036): ambulance emergency render contract */
+    result = (level == 7 && type == 2 &&
+              code == getExpectedRuntimeEmergencyWarningCode() &&
+              duplicatePopupGuard > 0 &&
+              ambientColor == 7 && ambientPattern == 7 &&
+              failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 6)
   {
@@ -1968,38 +2090,38 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 29)
   {
-    /* ST_013: Police Front — code=100, renderDirection=0 */
-    result = (level == 6 && type == 1 && code == 100 &&
+    result = (level == 6 && type == 1 &&
+              code == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@UiRender::renderDirection == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 30)
   {
-    /* ST_013: Police Right — code=102, renderDirection=2 */
-    result = (level == 6 && type == 1 && code == 102 &&
+    result = (level == 6 && type == 1 &&
+              code == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@UiRender::renderDirection == 2) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 31)
   {
-    /* ST_013: Police Rear — code=103, renderDirection=3 */
-    result = (level == 6 && type == 1 && code == 103 &&
+    result = (level == 6 && type == 1 &&
+              code == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@UiRender::renderDirection == 3) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 32)
   {
-    /* ST_014: Ambulance Front — code=200, renderDirection=0 */
-    result = (level == 7 && type == 2 && code == 200 &&
+    result = (level == 7 && type == 2 &&
+              code == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@UiRender::renderDirection == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 33)
   {
-    /* ST_014: Ambulance Left — code=201, renderDirection=1 */
-    result = (level == 7 && type == 2 && code == 201 &&
+    result = (level == 7 && type == 2 &&
+              code == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@UiRender::renderDirection == 1) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 34)
   {
-    /* ST_014: Ambulance Rear — code=203, renderDirection=3 */
-    result = (level == 7 && type == 2 && code == 203 &&
+    result = (level == 7 && type == 2 &&
+              code == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@UiRender::renderDirection == 3) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 35)
@@ -2024,7 +2146,7 @@ void evaluateScenarioResult()
     result = (gDiagCtxNominalSeen == 1 &&
               gDiagCtxDegradedSeen == 1 &&
               gDiagCtxBlockedSeen == 1 &&
-              (int)@Diag::ServiceState == 1 &&
+              (int)@Diag::ServiceState == 2 &&
               (int)@Diag::SecurityState == 3 &&
               (int)@Diag::RouteOwner == 1 &&
               (int)@Diag::ResponseKind == 4 &&
@@ -2048,6 +2170,7 @@ void evaluateScenarioResult()
               (int)@Diag::ResponseKind == 4 &&
               (int)@Diag::ReasonCode == 2 &&
               (int)@Diag::LastResponseCode == 0x7F &&
+              (int)@Diag::ServiceState == 2 &&
               (int)@Diag::LastResponseOk == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 205)
@@ -2055,7 +2178,7 @@ void evaluateScenarioResult()
     result = (gDiagCtxNominalSeen == 1 &&
               gDiagCtxDegradedSeen == 1 &&
               gDiagCtxBlockedSeen == 1 &&
-              (int)@Diag::ServiceState == 1 &&
+              (int)@Diag::ServiceState == 2 &&
               (int)@Diag::SecurityState == 3 &&
               (int)@Diag::RouteOwner == 1 &&
               (int)@Diag::ResponseKind == 4 &&
@@ -2091,7 +2214,7 @@ void evaluateScenarioResult()
     result = (gIviTextNominalSeen == 1 &&
               (int)@Core::selectedAlertLevel == 6 &&
               (int)@Core::selectedAlertType == 1 &&
-              (int)@Cluster::warningTextCode == 101 &&
+              (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 210)
@@ -2108,8 +2231,8 @@ void evaluateScenarioResult()
     result = (gCluDisplayNominalSeen == 1 &&
               (int)@Core::selectedAlertLevel == 6 &&
               (int)@Core::selectedAlertType == 1 &&
-              (int)@Cluster::warningTextCode == 102 &&
-              (int)@UiRender::renderDirection == 2 &&
+              (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
+              (int)@UiRender::renderDirection == (int)@V2X::emergencyDirection &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 212)
@@ -2117,7 +2240,7 @@ void evaluateScenarioResult()
     result = ((int)@V2X::emergencyType == 2 &&
               (int)@Core::selectedAlertLevel == 7 &&
               (int)@Core::selectedAlertType == 2 &&
-              (int)@Cluster::warningTextCode == 202 &&
+              (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 223)
@@ -2158,8 +2281,12 @@ void evaluateScenarioResult()
   {
     result = ((int)@Core::selectedAlertLevel == 6 &&
               (int)@Core::selectedAlertType == 1 &&
-              (int)@Cluster::warningTextCode == 142 &&
+              (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@UiRender::renderDirection == 2 &&
+              (int)@CoreState::popupActive == 0 &&
+              (int)@CoreState::audioFocusOwner == 1 &&
+              (int)@CoreState::audioDuckingLvl == 4 &&
+              (int)@CoreState::volumeLevel == 80 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 216)
@@ -2206,7 +2333,7 @@ void evaluateScenarioResult()
     result = ((int)@CoreState::emergencyDistanceM == 180 &&
               (int)@Core::selectedAlertLevel == 6 &&
               (int)@Core::selectedAlertType == 1 &&
-              (int)@Cluster::warningTextCode == 102 &&
+              (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 225)
@@ -2296,6 +2423,10 @@ void evaluateScenarioResult()
     result = ((int)@Test::scenarioResult == 1) ? 1 : 0;
   }
 
+  if (gCurrentScenarioId != 0 && gDemoRunning == 0)
+  {
+    @Test::scenarioEvaluatedId = clampRange(gCurrentScenarioId, 0, 255);
+  }
   @Test::scenarioResult = result;
 }
 
@@ -2560,6 +2691,8 @@ on start
   gLockEmergencyDirection = 1;
   gLockEta = 10;
   gLockSourceId = 1;
+  gLockAccelPedalOverride = -1;
+  gLockBrakePedalOverride = -1;
   gLockForceFailSafe = 0;
   gLockObjectTrackValid = 0;
   gLockObjectRange = 0;
@@ -2580,21 +2713,15 @@ on start
   @Test::scenarioCommandAck = 0;
   @Test::testScenario = 0;
   @Test::scenarioResult = 0;
+  clearScenarioLifecycleState();
   @Test::displayModeSetting = 0;
   @Test::alertVolumeSetting = 0;
   @Test::seatBeltOverride = 0;
   @Test::historyQueryOffset = 0;
   @Test::historyQueryCode = 0;
-  @Core::objectTrackValid = 0;
-  @Core::objectRange = 0;
-  @Core::objectRelSpeed = 0;
-  @Core::objectConfidence = 0;
-  @Core::objectRiskClass = 0;
-  @Core::objectTtcMin = 10000;
-  @Core::intersectionConflictFlag = 0;
-  @Core::mergeCutInFlag = 0;
-  @Core::objectAlertHoldMs = 300;
-  @Core::objectEventCode = 0;
+  gEmergencyIngressHeartbeat = 0;
+  @Test::forceFailSafe = 0;
+  @Test::turnLampOverride = 0;
   @Core::accelGroupFlag = 0;
   @Core::steerGroupFlag = 0;
   gObsVehicleSpeed = -1;
@@ -2619,6 +2746,10 @@ on timer tInput100
   message frmDoorFlStateMsg mDoorFl;
   message frmDoorFrStateMsg mDoorFr;
   message frmTailgateStateMsg mTailgate;
+  message frmDoorControlMsg mDoorCtrl;
+  message frmDigitalKeyStateMsg mDkey;
+  message frmImmobilizerStateMsg mImmo;
+  message frmPowerTailgateCtrlStateMsg mTailgateCtrl;
   message frmSeatBeltStateMsg mSeatBelt;
   message frmSeatStateMsg mSeatState;
   message frmSuspensionStateMsg mSuspension;
@@ -2708,13 +2839,34 @@ on timer tInput100
   gearState = calcBaselineGearState(driveState);
   accelPedal = clampRange(speed / 2, 0, 100);
   brakePedal = (driveState == 0) ? 30 : 0;
-  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
-  objectRange = clampRange((int)@Core::objectRange, 0, 500);
-  objectRelSpeed = clampRange((int)@Core::objectRelSpeed, -200, 200);
-  objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
-  intersectionConflictFlag = clampRange((int)@Core::intersectionConflictFlag, 0, 1);
-  mergeCutInFlag = clampRange((int)@Core::mergeCutInFlag, 0, 1);
-  objectAlertHoldMs = clampRange((int)@Core::objectAlertHoldMs, 0, 5000);
+  if (gLockAccelPedalOverride >= 0)
+  {
+    accelPedal = clampRange(gLockAccelPedalOverride, 0, 100);
+  }
+  if (gLockBrakePedalOverride >= 0)
+  {
+    brakePedal = clampRange(gLockBrakePedalOverride, 0, 100);
+  }
+  if (gScenarioInputLock == 1)
+  {
+    objectTrackValid = clampRange(gLockObjectTrackValid, 0, 1);
+    objectRange = clampRange(gLockObjectRange, 0, 500);
+    objectRelSpeed = clampRange(gLockObjectRelSpeed, -200, 200);
+    objectConfidence = clampRange(gLockObjectConfidence, 0, 100);
+    intersectionConflictFlag = clampRange(gLockIntersectionConflictFlag, 0, 1);
+    mergeCutInFlag = clampRange(gLockMergeCutInFlag, 0, 1);
+    objectAlertHoldMs = clampRange(gLockObjectAlertHoldMs, 0, 5000);
+  }
+  else
+  {
+    objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
+    objectRange = clampRange((int)@Core::objectRange, 0, 500);
+    objectRelSpeed = clampRange((int)@Core::objectRelSpeed, -200, 200);
+    objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
+    intersectionConflictFlag = clampRange((int)@Core::intersectionConflictFlag, 0, 1);
+    mergeCutInFlag = clampRange((int)@Core::mergeCutInFlag, 0, 1);
+    objectAlertHoldMs = clampRange((int)@Core::objectAlertHoldMs, 0, 5000);
+  }
   objectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
 
   /* A-group 자동 감지: 페달 변화율 기반 급가속/급제동 판정
@@ -2821,30 +2973,32 @@ on timer tInput100
 
   if (gCurrentScenarioId == 225)
   {
-    mSuspension.SuspensionMode = 3;
-    mSuspension.SuspensionLevel = 12;
-    mSuspension.DampingLevel = 40;
-    output(mSuspension);
+    /* Chassis comfort path is owned by ESC/ASM/CDC. Scenario 225 only
+       supplies upstream driving context so those owners emit the state. */
   }
   else if (gCurrentScenarioId == 226)
   {
-    mDoorFl.DoorFlLockState = 0;
-    mDoorFl.DoorFlOpenState = 1;
-    mDoorFl.DoorFlWindowPos = 20;
-    output(mDoorFl);
+    mDkey.VehicleAccessState = 1;
+    mDkey.KeyPresence = 1;
+    output(mDkey);
 
-    mDoorFr.DoorFrLockState = 1;
-    mDoorFr.DoorFrOpenState = 0;
-    mDoorFr.DoorFrWindowPos = 0;
-    output(mDoorFr);
+    mImmo.ImmobilizerState = 1;
+    mImmo.KeyAuthState = 1;
+    output(mImmo);
+
+    mDoorCtrl.DoorControlCmd = 1;
+    output(mDoorCtrl);
   }
   else if (gCurrentScenarioId == 227)
   {
-    mTailgate.TailgateLockState = 0;
-    mTailgate.TailgateOpenState = 1;
-    mTailgate.TailgatePowerState = 1;
-    mTailgate.TailgatePosition = 60;
-    output(mTailgate);
+    mDkey.VehicleAccessState = 1;
+    mDkey.KeyPresence = 1;
+    output(mDkey);
+
+    mTailgateCtrl.TailgateAssistMode = 2;
+    mTailgateCtrl.OpenRequestState = 1;
+    mTailgateCtrl.TailgateActuatorCmd = 0;
+    output(mTailgateCtrl);
   }
   else if (gCurrentScenarioId == 228)
   {
@@ -2872,11 +3026,8 @@ on timer tInput100
   }
   else if (gCurrentScenarioId == 230)
   {
-    mSteerAngle.SteeringAngleRaw = 1400;
-    output(mSteerAngle);
-
-    mLampControl.HeadLampState = 2;
-    output(mLampControl);
+    mTurnLampInput.TurnLampState = 2;
+    output(mTurnLampInput);
   }
   else if (gCurrentScenarioId == 239)
   {
@@ -2894,17 +3045,6 @@ on timer tInput100
     mEngineTemp.EngineRpm = 2400;
     mEngineTemp.OilTemp = 90;
     output(mEngineTemp);
-
-    mVehicleMode.DriveMode = 2;
-    output(mVehicleMode);
-
-    mPowerLimit.TorqueLimit = 120;
-    mPowerLimit.SpeedLimit = 120;
-    output(mPowerLimit);
-
-    mEnergyFlow.EnergyFlowMode = 2;
-    mEnergyFlow.RegenLevel = 4;
-    output(mEnergyFlow);
   }
   else if (gCurrentScenarioId == 233)
   {
@@ -2926,10 +3066,6 @@ on timer tInput100
     mSpas.SpasStage = 2;
     mSpas.SteeringAssistReq = 1;
     output(mSpas);
-
-    mRspa.RspaReady = 1;
-    mRspa.BrakeHoldReq = 1;
-    output(mRspa);
   }
 
   /* Product-side generated frames stay on ECU owners:
@@ -2957,6 +3093,13 @@ on timer tInput100
     ethSetU16Le(objectFrame, 6, objectAlertHoldMs);
     ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectRiskInput(), objectFrame, 8);
     EmitBackboneValidationOverrideTest(gLockForceFailSafe);
+
+    if (gDemoRunning == 0 &&
+        gCurrentScenarioId != 0 &&
+        (int)@Test::scenarioSettledId != clampRange(gCurrentScenarioId, 0, 255))
+    {
+      @Test::scenarioSettledId = clampRange(gCurrentScenarioId, 0, 255);
+    }
   }
 
   trackSt038DiagnosticContext();
@@ -3181,10 +3324,13 @@ on timer tScenarioEval
   renderTextCode = (int)@UiRender::renderTextCode;
   clusterCode = (int)@Cluster::warningTextCode;
 
-  writeEvidenceOutLine(gCurrentScenarioId, getSimulationTimeMs(), (int)@Test::scenarioResult,
+  writeEvidenceOutLine(gCurrentScenarioId,
+                       getSimulationTimeMs(),
+                       (int)@Test::scenarioResult,
                        coreLevel, coreType, clusterCode, timeoutClear, proximityRiskLevel,
-                       decelAssistReq, failSafeMode, driverReleaseReason, objectTrackValid, objectRiskClass,
-                       objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
+                       decelAssistReq, failSafeMode, driverReleaseReason, objectTrackValid,
+                       objectRiskClass, objectTtcMin, objectEventCode, renderAlertType,
+                       renderTextCode);
 
 }
 

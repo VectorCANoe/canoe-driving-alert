@@ -26,9 +26,13 @@ variables
 
 int fcamPathReady()
 {
+  if (gFailSafeRxMs == 0)
+  {
+    return 1;
+  }
   if (ethIsRecentTick(gFailSafeRxMs, 300) == 0)
   {
-    return 0;
+    return (gWarningPathStatus < 2 && gE2eHealthState > 0 && gFailSafeMode < 2) ? 1 : 0;
   }
   if (gWarningPathStatus >= 2 || gE2eHealthState == 0 || gFailSafeMode >= 2)
   {
@@ -161,7 +165,7 @@ on start
   gNavRxMs = 0;
   gWarningPathStatus = 1;
   gE2eHealthState = 1;
-  gFailSafeMode = 1;
+  gFailSafeMode = 0;
   gFailSafeRxMs = 0;
   gLastObjectInputStale = 0;
   gLastNavInputStale = 0;

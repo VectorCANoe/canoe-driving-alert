@@ -23,7 +23,7 @@ export testcase TC_CANOE_ST_CORE_014_AMBULANCE_DIRECTION_LEFT()
   assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("selected-alert-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("selected-alert-type", 2, (long)@Core::selectedAlertType, "selectedAlertType");
-  assertIntEq("warning-text-code", 201, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("warning-text-code", deriveExpectedEmergencyWarningCode(2, 1, 8, 20), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("render-direction", 1, (long)@UiRender::renderDirection, "renderDirection");
 
   resetValidationHarnessIfNeeded();

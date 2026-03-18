@@ -9,7 +9,7 @@ variables
 }
 
 /*
-  IT_031
+  IT_044
   Integration-level external TX path for police emergency propagation.
   Periodicity closure remains Ethernet-trace gated.
 */
@@ -25,15 +25,18 @@ export testcase TC_CANOE_IT_ETH_044_POLICE_TX()
     return;
   }
 
-  assertIntEq("it-police-tx-type", 1, (long)@V2X::emergencyType, "emergencyType");
-  if (!waitForObservedEmergencyContext(800) ||
-      !waitForObservedSelectedAlert(800) ||
+  if (!waitForObservedSelectedAlert(800) ||
       !waitForObservedFailSafe(800))
   {
     resetValidationHarnessIfNeeded();
     return;
   }
-  assertIntEq("it-police-tx-context", 1, (long)@Test::obsEmergencyContext, "ethEmergencyContext");
+  assertIntEq("it-police-tx-context", 1, (long)@Core::emergencyContext, "emergencyContext");
+  assertIntEq("it-police-tx-observed-context", 1, (long)@Test::obsEmergencyContext, "ethEmergencyContext");
+  assertIntEq("it-police-tx-alert-state", 1, (long)@V2X::alertState, "alertState");
+  assertIntEq("it-police-tx-emergency-type", 1, (long)@V2X::emergencyType, "emergencyType");
+  assertIntEq("it-police-tx-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("it-police-tx-type", 1, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
   assertIntEq("it-police-tx-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
   resetValidationHarnessIfNeeded();

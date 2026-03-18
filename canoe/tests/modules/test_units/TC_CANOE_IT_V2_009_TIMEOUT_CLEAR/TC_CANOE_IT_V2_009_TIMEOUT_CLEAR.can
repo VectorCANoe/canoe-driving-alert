@@ -21,17 +21,17 @@ export testcase TC_CANOE_IT_V2_009_TIMEOUT_CLEAR()
   }
 
   assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedEmergencyContext(800) ||
-      !waitForObservedSelectedAlert(800) ||
-      !waitForObservedFailSafe(800))
+  if (!waitForObservedSelectedAlert(800))
   {
     resetValidationHarnessIfNeeded();
     return;
   }
   assertIntEq("selected-alert-level", 3, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
   assertIntEq("selected-alert-type", 3, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
-  assertIntEq("emergency-context-cleared", 0, (long)@Test::obsEmergencyContext, "ethEmergencyContext");
-  assertIntEq("fail-safe-clear", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+  assertIntEq("emergency-context-observed-cleared", 0, (long)@Test::obsEmergencyContext, "ethEmergencyContext");
+  assertIntEq("fail-safe-observed-clear", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+  assertIntEq("emergency-context-cleared", 0, (long)@Core::emergencyContext, "emergencyContext");
+  assertIntEq("fail-safe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");
 
   resetValidationHarnessIfNeeded();
 }

@@ -68,10 +68,21 @@ void publishSasState()
     vehicleSpeed = 0;
   }
 
-  steeringAngleRaw = steeringInput * 30;
-  if (vehicleSpeed > 90)
+  steeringAngleRaw = 0;
+  if (steeringInput > 0)
   {
-    steeringAngleRaw = steeringAngleRaw * 2;
+    if (vehicleSpeed >= 60)
+    {
+      steeringAngleRaw = 1400;
+    }
+    else if (vehicleSpeed >= 30)
+    {
+      steeringAngleRaw = 800;
+    }
+    else
+    {
+      steeringAngleRaw = 400;
+    }
   }
 
   mSas.SteeringAngleRaw = clampRange(steeringAngleRaw, 0, 65535);

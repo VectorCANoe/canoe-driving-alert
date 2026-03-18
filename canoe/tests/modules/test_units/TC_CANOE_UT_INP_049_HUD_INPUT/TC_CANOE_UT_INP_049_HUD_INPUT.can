@@ -29,7 +29,10 @@ export testcase TC_CANOE_UT_INP_049_HUD_INPUT()
   }
 
   assertIntEq("s30_hudMode", 1, gHudMode, "hudMode");
-  assertIntEq("s30_hudWarningCode", 102, gHudWarningCode, "hudWarningCode");
+  assertIntEq("s30_hudWarningCode",
+              deriveExpectedEmergencyWarningCode(1, 2, 12, 20),
+              gHudWarningCode,
+              "hudWarningCode");
 
   resetValidationHarnessIfNeeded();
 }

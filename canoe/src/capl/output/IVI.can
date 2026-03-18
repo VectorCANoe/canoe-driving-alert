@@ -436,12 +436,9 @@ on timer tIviCycle
   warningTextCode = deriveWarningTextCode(alertLevel, alertType, timeoutClear,
                                           emergencyType, emergencyDirection, emergencyDistanceBand);
 
-  if (warningTextCode != gLastWarningTextCode)
-  {
-    mCluster.WarningTextCode = warningTextCode;
-    output(mCluster);
-    gLastWarningTextCode = warningTextCode;
-  }
+  mCluster.WarningTextCode = warningTextCode;
+  output(mCluster);
+  gLastWarningTextCode = warningTextCode;
   setTimer(tIviCycle, 10);
 }
 
@@ -473,6 +470,8 @@ on timer tIviBase50
   int vehicleMotionStep;
   int presentationMode;
   int effectiveVolume;
+  int displayModeOverride;
+  int volumeOverride;
   int useBackbone;
 
   if (ethIsRecentTick(gVehicleStateRxMs, 300) == 1)
@@ -510,6 +509,17 @@ on timer tIviBase50
   renderTextCode = clampRange((int)@Cluster::warningTextCode, 0, 65535);
   presentationMode = derivePresentationMode(alertLevel, alertType, baseZoneContext);
   effectiveVolume = deriveAlertVolume(alertLevel, presentationMode);
+  displayModeOverride = clampRange((int)@Test::displayModeSetting, 0, 3);
+  if (alertLevel > 0 && displayModeOverride > 0)
+  {
+    presentationMode = displayModeOverride;
+    effectiveVolume = deriveAlertVolume(alertLevel, presentationMode);
+  }
+  volumeOverride = clampRange((int)@Test::alertVolumeSetting, 0, 100);
+  if (alertLevel > 0 && volumeOverride > 0)
+  {
+    effectiveVolume = volumeOverride;
+  }
 
   /* CLU owns the mirrored display state after consuming these frames. */
 
