@@ -102,6 +102,19 @@ void markNavInputDirty()
   gNavInputTouchMs = getSimulationTimeMs();
 }
 
+//add
+void syncNavInputFromSysvar()
+{
+  gRoadZone     = clampRange((int)@sysvar::Infotainment::roadZone, 0, 3);
+  gNavDirection = clampRange((int)@sysvar::Infotainment::navDirection, 0, 3);
+  gZoneDistance = clampRange((int)@sysvar::Infotainment::zoneDistance, 0, 255);
+  gSpeedLimit   = clampRange((int)@sysvar::Infotainment::speedLimit, 0, 255);
+
+  markNavInputDirty();
+}
+//
+
+
 void traceNavInputHealth(int navInputStale)
 {
   if (navInputStale != gLastNavInputStale)
@@ -235,12 +248,14 @@ on start
   //
   
   markNavInputDirty();
+  syncNavInputFromSysvar();//add
   setTimer(tNavModuleCycle, 100);
   write("[NAV] start");
 }
 
 on timer tNavModuleCycle
 {
+  syncNavInputFromSysvar();//add
   publishNavState();
   setTimer(tNavModuleCycle, 100);
 }
@@ -253,7 +268,6 @@ on timer tNavLaneAnim
 
   speed = (int)@sysvar::Chassis::vehicleSpeed;
 
-  /* �ӵ� 0�̸� ���� */
   if (speed <= 0)
   {
     gNavAnimFrame = 1;
@@ -295,6 +309,29 @@ on message frmNavContextCanMsg
   gSpeedLimit = clampRange((int)this.gSpeedLimit, 0, 255);
   markNavInputDirty();
 }
+
+//add
+on sysvar_update Infotainment::roadZone
+{
+  syncNavInputFromSysvar();
+}
+
+on sysvar_update Infotainment::navDirection
+{
+  syncNavInputFromSysvar();
+}
+
+on sysvar_update Infotainment::zoneDistance
+{
+  syncNavInputFromSysvar();
+}
+
+on sysvar_update Infotainment::speedLimit
+{
+  syncNavInputFromSysvar();
+}
+//
+
 
 on stopMeasurement
 {

@@ -23,13 +23,14 @@
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xc7ea4fdfe3504e441deb422ee0494d34fdca" ControlName="Static Text 5">
       <Property Name="Name">Xc7ea4fdfe3504e441deb422ee0494d34fdca</Property>
-      <Property Name="Size">148, 65</Property>
-      <Property Name="Location">10, 378</Property>
+      <Property Name="Size">256, 77</Property>
+      <Property Name="Location">12, 370</Property>
       <Property Name="Text">WarningBeepAlert
-1. Ambulance  (fast)
-2. Polioce
-3. vehicleSpeed&gt; limitSpeed
-4. IC left/Right  (slow)</Property>
+1. Ambulance : 경고음 볼륨=경고 볼륨 셋팅값 + 20
+2. Polioce  경고음 볼륨=경고 볼륨 셋팅값 + 15
+3. OverSpeed:  경고음 볼륨=경고 볼륨 셋팅값 + 5
+4. IC : 경고음 볼륨=경고 볼륨 셋팅값
+(경고음 울릴 때 Now Volume 확인하면 됨)</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X02c3f76ae8e53e4d61eb472eb9fefda3f790" ControlName="Static Text 4">
       <Property Name="Name">X02c3f76ae8e53e4d61eb472eb9fefda3f790</Property>
@@ -73,17 +74,10 @@
       <Property Name="DescriptionSize">102, 21</Property>
       <Property Name="SymbolConfiguration">8;16;Core;;;vehicleSpeedNorm;1;;;-1;;;Value;;;0</Property>
     </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X990676cae7fdee4a5ee9aa3eb17df3313119" ControlName="Static Text 3">
-      <Property Name="Name">X990676cae7fdee4a5ee9aa3eb17df3313119</Property>
-      <Property Name="Size">58, 27</Property>
-      <Property Name="Location">316, 20</Property>
-      <Property Name="Text">Selected
-AlertLevel</Property>
-    </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X9c30d5a5edae0e4121eaca4e51448d2a4711" ControlName="Input/Output Box 7">
       <Property Name="Name">X9c30d5a5edae0e4121eaca4e51448d2a4711</Property>
       <Property Name="Size">188, 21</Property>
-      <Property Name="Location">274, 264</Property>
+      <Property Name="Location">280, 298</Property>
       <Property Name="AlarmGeneralSettings">1;2;0;100</Property>
       <Property Name="AlarmLowerBkgColor">Salmon</Property>
       <Property Name="AlarmLowerTextColor">Black</Property>
@@ -104,7 +98,7 @@ AlertLevel</Property>
     <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6ccb2ed4ef2dfe47afe8426e0a350bf86200" ControlName="Input/Output Box 4">
       <Property Name="Name">X6ccb2ed4ef2dfe47afe8426e0a350bf86200</Property>
       <Property Name="Size">194, 21</Property>
-      <Property Name="Location">274, 291</Property>
+      <Property Name="Location">274, 271</Property>
       <Property Name="AlarmGeneralSettings">1;2;0;100</Property>
       <Property Name="AlarmLowerBkgColor">Salmon</Property>
       <Property Name="AlarmLowerTextColor">Black</Property>
@@ -125,7 +119,7 @@ AlertLevel</Property>
     <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xc01fcba1eafdae4fbae8789ef38a8e33e43d" ControlName="Input/Output Box 3">
       <Property Name="Name">Xc01fcba1eafdae4fbae8789ef38a8e33e43d</Property>
       <Property Name="Size">196, 21</Property>
-      <Property Name="Location">282, 131</Property>
+      <Property Name="Location">284, 47</Property>
       <Property Name="AlarmGeneralSettings">1;2;0;100</Property>
       <Property Name="AlarmLowerBkgColor">Salmon</Property>
       <Property Name="AlarmLowerTextColor">Black</Property>
@@ -145,8 +139,8 @@ AlertLevel</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2c6dc1c6e40d5e4246ea9b0e5fe8d9e82073" ControlName="Input/Output Box 2">
       <Property Name="Name">X2c6dc1c6e40d5e4246ea9b0e5fe8d9e82073</Property>
-      <Property Name="Size">96, 21</Property>
-      <Property Name="Location">380, 20</Property>
+      <Property Name="Size">201, 21</Property>
+      <Property Name="Location">278, 20</Property>
       <Property Name="AlarmGeneralSettings">1;2;0;100</Property>
       <Property Name="AlarmLowerBkgColor">Salmon</Property>
       <Property Name="AlarmLowerTextColor">Black</Property>
@@ -157,11 +151,11 @@ AlertLevel</Property>
       <Property Name="ReadOnlyControl">True</Property>
       <Property Name="TabIndex">15</Property>
       <Property Name="TabStopActive">False</Property>
-      <Property Name="DescriptionText"></Property>
+      <Property Name="DescriptionText">selectedAlertLevel: </Property>
       <Property Name="ValueDecimalPlaces">0</Property>
       <Property Name="ValueDisplay">Decimal</Property>
       <Property Name="UsedValueTable">PhysicalValue</Property>
-      <Property Name="DescriptionSize">5, 21</Property>
+      <Property Name="DescriptionSize">102, 21</Property>
       <Property Name="SymbolConfiguration">8;16;Core;;;selectedAlertLevel;1;;;-1;;;Value;;;0</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb30731cfe0497e4dc3e8ee3ea1e8af16bd23" ControlName="Group Box 1">
