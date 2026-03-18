@@ -8,7 +8,7 @@ variables
 {
   msTimer tWiperCycle;
   int gFrontWiperState;
-  int gFrontWiperImageIndex;  // ?¤ì œ ?„ë ˆ???¸ë±??0~21
+  // int gFrontWiperImageIndex;  // ?¤ì œ ?„ë ˆ???¸ë±??0~21
   int gRearWiperState;
   int gWiperInterval;
   int gRainSenseLevel;
@@ -89,7 +89,7 @@ void publishWiperState()
   mWiper.RearWiperState = clampRange(rearWiperState, 0, 3);
   mWiper.WiperInterval = clampRange(wiperInterval, 0, 15);
 
-  gFrontWiperImageIndex = clampRange(gFrontWiperImageIndex, 0, 21);
+  // gFrontWiperImageIndex = clampRange(gFrontWiperImageIndex, 0, 21);
   output(mWiper);
 
   if (mWiper.FrontWiperState != gLastFrontWiperState ||
@@ -119,6 +119,8 @@ on start
   gLastWiperInterval = -1;
   gWiperPos = 0;
   gWiperDir = 1;
+  @Body::wiperPos = 0;
+  @Body::frontWiperAnimFrame = 0;
   setTimer(tWiperCycle, 100);
   write("[WIP] start");
 }
@@ -137,25 +139,25 @@ on timer tWiperCycle
 
   if ((int)@Test::testScenario == 0)
   {
-    // ?˜ë™ ëª¨ë“œ: MyDriverPanel ?€?´í¼ ?¬ë¼?´ë” sysvar ì§ì ‘ ?½ê¸°
+    // ?˜ë™ ëª¨ë“œ: MyDriverPanel ?€?´í¼ ?¬ë¼?´ë” sysvar ì§ì ‘ ?½ê¸°
     cmd = clampRange((int)@Body::wiperCmd, 0, 2);
-    gFrontWiperImageIndex = cmd;
+    // gFrontWiperImageIndex = cmd;
     gWiperInterval   = 0;
   }
   else if ((int)@Core::timeoutClear == 1)
   {
     cmd = 1;  // ?ŒìŠ¤???œë‚˜ë¦¬ì˜¤: LOW ê³ ì •
-    gFrontWiperImageIndex = 1;
+    // gFrontWiperImageIndex = 1;
     gWiperInterval   = 4;
   }
   else
   {
     cmd = 0;
-    gFrontWiperImageIndex = 0;
+    // gFrontWiperImageIndex = 0;
     gWiperInterval   = 0;
   }
 
-  // ?€?´í¼ ?•ë³µ ? ë‹ˆë©”ì´??(?„ë ˆ??0~21, 22??
+  // ?€?´í¼ ?•ë³µ ? ë‹ˆë©”ì´??(?„ë ˆ??0~21, 22??
   // LOW(1) : 100msë§ˆë‹¤ 1?„ë ˆ??????ë²??•ë³µ ??4.4ì´?  // HIGH(2): 100msë§ˆë‹¤ 2?„ë ˆ??????ë²??•ë³µ ??2.2ì´?  if (cmd == 1)
   if (cmd == 1)
     step = 1;
@@ -184,8 +186,9 @@ on timer tWiperCycle
     gWiperDir = 1;
   }
 
-  gFrontWiperImageIndex = gWiperPos;   // ?„ë ˆ???¸ë±?¤ë? CAN ? í˜¸ë¡??„ì†¡
-  @Body::wiperPos  = gWiperPos;
+  // gFrontWiperImageIndex = gWiperPos;   // ?„ë ˆ???¸ë±?¤ë? CAN ? í˜¸ë¡??„ì†¡
+  @Body::wiperPos = gWiperPos;
+  @Body::frontWiperAnimFrame = gWiperPos;
 
   publishWiperState();
   setTimer(tWiperCycle, 100);
