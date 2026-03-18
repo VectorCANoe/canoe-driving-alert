@@ -26,6 +26,46 @@ variables
   int gLastHudBrightness;
 }
 
+int hudWarningLeaseWindowMs()
+{
+  return 300;
+}
+
+int hudWarningHoldWindowMs()
+{
+  return 1000;
+}
+
+int hudPopupLeaseWindowMs()
+{
+  return 300;
+}
+
+int hudPopupHoldWindowMs()
+{
+  return 1000;
+}
+
+int hudGuideLeaseWindowMs()
+{
+  return 300;
+}
+
+int hudGuideHoldWindowMs()
+{
+  return 1500;
+}
+
+int hudThemeLeaseWindowMs()
+{
+  return 300;
+}
+
+int hudThemeHoldWindowMs()
+{
+  return 1500;
+}
+
 void traceHudInputHealth(int warningInputStale, int popupInputStale,
                          int guideInputStale, int themeInputStale)
 {
@@ -89,6 +129,10 @@ void publishHudState()
   int popupInputStale;
   int guideInputStale;
   int themeInputStale;
+  int warningInputExpired;
+  int popupInputExpired;
+  int guideInputExpired;
+  int themeInputExpired;
   int warningCode;
   int popupPriority;
   int popupActive;
@@ -97,10 +141,14 @@ void publishHudState()
   int hudMode;
   int hudBrightness;
 
-  warningInputStale = (ethIsRecentTick(gWarningRxMs, 300) == 1) ? 0 : 1;
-  popupInputStale = (ethIsRecentTick(gPopupRxMs, 300) == 1) ? 0 : 1;
-  guideInputStale = (ethIsRecentTick(gGuideRxMs, 300) == 1) ? 0 : 1;
-  themeInputStale = (ethIsRecentTick(gThemeRxMs, 300) == 1) ? 0 : 1;
+  warningInputStale = (ethIsRecentTick(gWarningRxMs, hudWarningLeaseWindowMs()) == 1) ? 0 : 1;
+  popupInputStale = (ethIsRecentTick(gPopupRxMs, hudPopupLeaseWindowMs()) == 1) ? 0 : 1;
+  guideInputStale = (ethIsRecentTick(gGuideRxMs, hudGuideLeaseWindowMs()) == 1) ? 0 : 1;
+  themeInputStale = (ethIsRecentTick(gThemeRxMs, hudThemeLeaseWindowMs()) == 1) ? 0 : 1;
+  warningInputExpired = (ethIsRecentTick(gWarningRxMs, hudWarningHoldWindowMs()) == 1) ? 0 : 1;
+  popupInputExpired = (ethIsRecentTick(gPopupRxMs, hudPopupHoldWindowMs()) == 1) ? 0 : 1;
+  guideInputExpired = (ethIsRecentTick(gGuideRxMs, hudGuideHoldWindowMs()) == 1) ? 0 : 1;
+  themeInputExpired = (ethIsRecentTick(gThemeRxMs, hudThemeHoldWindowMs()) == 1) ? 0 : 1;
   traceHudInputHealth(warningInputStale, popupInputStale, guideInputStale, themeInputStale);
 
   warningCode = gWarningCode;
@@ -109,20 +157,20 @@ void publishHudState()
   guideType = gGuideType;
   themeMode = gThemeMode;
   hudBrightness = gBrightness;
-  if (warningInputStale == 1)
+  if (warningInputExpired == 1)
   {
     warningCode = 0;
   }
-  if (popupInputStale == 1)
+  if (popupInputExpired == 1)
   {
     popupPriority = 0;
     popupActive = 0;
   }
-  if (guideInputStale == 1)
+  if (guideInputExpired == 1)
   {
     guideType = 0;
   }
-  if (themeInputStale == 1)
+  if (themeInputExpired == 1)
   {
     themeMode = 0;
     hudBrightness = 18;
