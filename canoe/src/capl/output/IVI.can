@@ -291,6 +291,40 @@ int deriveAlertVolume(int alertLevel, int presentationMode)
   return 30;
 }
 
+int deriveVehicleMotionStep(int roadZoneColorCode, int emergencyType, int emergencyEta, int speed)
+{
+  int step;
+
+  step = 2;
+  if (roadZoneColorCode == 1)
+  {
+    step = 1;
+  }
+  else if (roadZoneColorCode == 2)
+  {
+    step = 4;
+  }
+  else if (roadZoneColorCode == 3)
+  {
+    step = 6;
+  }
+
+  if (emergencyType > 0)
+  {
+    step = 2 + clampRange(speed / 30, 0, 3);
+    if (emergencyEta > 0 && emergencyEta <= 8)
+    {
+      step = step + 2;
+    }
+    else if (emergencyEta > 0 && emergencyEta <= 15)
+    {
+      step = step + 1;
+    }
+  }
+
+  return clampRange(step, 1, 10);
+}
+
 on start
 {
   gEthTxSocket = ethOpenNodeSocketAt(getIviLocalIp(), getIviTxPort());
@@ -459,6 +493,9 @@ on timer tIviBase50
   int driveState;
   int alertLevel;
   int alertType;
+  int emergencyDirection;
+  int emergencyEta;
+  int emergencyType;
   int baseZoneContext;
   int roadZoneColorCode;
   int roadFlowDirection;
@@ -495,6 +532,9 @@ on timer tIviBase50
     alertLevel = 0;
     alertType = 0;
   }
+  emergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
+  emergencyDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
+  emergencyEta = clampRange((int)@V2X::eta, 0, 255);
   if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
   {
     baseZoneContext = deriveBaseZoneContextFromNavState(gCanNavRouteClass, gCanNavGuideType);
@@ -615,7 +655,22 @@ on timer tIviBase50
     roadZoneColorCode = 0;
   }
 
-  if (baseZoneContext == 3)
+  if (alertLevel >= 6 && emergencyType > 0)
+  {
+    if (emergencyDirection == 1)
+    {
+      roadFlowDirection = 1;
+    }
+    else if (emergencyDirection == 2)
+    {
+      roadFlowDirection = 2;
+    }
+    else
+    {
+      roadFlowDirection = 0;
+    }
+  }
+  else if (baseZoneContext == 3)
   {
     roadFlowDirection = 1;
   }
@@ -628,19 +683,10 @@ on timer tIviBase50
     roadFlowDirection = 0;
   }
 
-  vehicleMotionStep = 2;
-  if (roadZoneColorCode == 1)
-  {
-    vehicleMotionStep = 1;
-  }
-  else if (roadZoneColorCode == 2)
-  {
-    vehicleMotionStep = 4;
-  }
-  else if (roadZoneColorCode == 3)
-  {
-    vehicleMotionStep = 6;
-  }
+  vehicleMotionStep = deriveVehicleMotionStep(roadZoneColorCode,
+                                              emergencyType,
+                                              emergencyEta,
+                                              speed);
 
   if (roadFlowDirection == 2)
   {
@@ -668,7 +714,7 @@ on timer tIviBase50
     gEmsBlinkPhase = 0;
   }
 
-  if (alertType == 4)
+  if (alertType == 4 || (alertLevel >= 6 && emergencyType > 0))
   {
     gAmbientPulsePhase = (gAmbientPulsePhase + 1) & 3;
   }
