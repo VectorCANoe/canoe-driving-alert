@@ -43,8 +43,8 @@ int isOverspeedActive()
   int speedNow;
   int speedLimit;
 
-  speedNow = (int)@sysvar::Core::vehicleSpeedNorm;
-  speedLimit = (int)@sysvar::Core::speedLimitNorm;
+  speedNow = (int)@sysvar::Chassis::vehicleSpeed; //Core::vehicleSpeedNorm
+  speedLimit = (int)@sysvar::Infotainment::speedLimit;//Core::speedLimitNorm
 
   if (speedLimit <= 0)
   {
@@ -436,7 +436,7 @@ if (gWarnBeepOn == 1)
   output(mAmp);
 
 //add
-  @sysvar::UiRender::renderVolumLevel = mAmp.AmpVolumeLevel;
+  @sysvar::UiRender::renderVolumeLevel = mAmp.AmpVolumeLevel;
   
 //debug
   write("[AMP_VOL] warnOn=%d beepType=%d baseVol=%d finalVol=%d duck=%d",
