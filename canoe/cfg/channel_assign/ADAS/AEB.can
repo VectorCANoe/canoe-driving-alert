@@ -218,11 +218,6 @@ on message frmAdasDomainStateMsg
   gFailSafeRxTsMs = getSimulationTimeMs();
 }
 
-on message ethFailSafeStateMsg
-{
-  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
-}
-
 on stopMeasurement
 {
   cancelTimer(tAebDomainCycle);
