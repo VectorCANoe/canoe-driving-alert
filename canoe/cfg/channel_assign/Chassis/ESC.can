@@ -205,6 +205,29 @@ on timer tEscCycle
   }
   decelAssistReq = ((aebStopReq == 1 || aebDecelProfile > 0) && aebDomainHealth > 0) ? 1 : 0;
   // merge: Chassis::BrakePressure값을 바꾸는 로직은 병합하지 않았음
+    if ((int)@Test::testScenario == 0)
+  {
+    // 버튼 눌리면 +10씩 증가(1초에 100%), 떼면 -20씩 감소(0.5초에 0%)
+    if ((int)@Chassis::brakePedalBtn == 1)
+    {
+      @Chassis::brakePressure = clampRange((int)@Chassis::brakePressure + 10, 0, 100);
+    }
+    else
+    {
+      @Chassis::brakePressure = clampRange((int)@Chassis::brakePressure - 20, 0, 100);
+    }
+    appliedBrakePedal = (int)@Chassis::brakePressure;
+  }
+  else
+  {
+    appliedBrakePedal = gBrakePedal;
+    // 시나리오 모드에서도 프로그레스바 표시 동기화
+    @Chassis::brakePressure = clampRange(appliedBrakePedal, 0, 100);
+  }
+  if (decelAssistReq == 1 && appliedBrakePedal < 25)
+  {
+    appliedBrakePedal = 25;
+  }
   assistPressureFloor = deriveEscAssistPressureFloor(aebStopReq, aebDecelProfile, aebDomainHealth);
   speedNorm = gSpeedNorm;
   driveState = gDriveState;

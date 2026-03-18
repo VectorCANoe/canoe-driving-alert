@@ -413,6 +413,32 @@ on timer tEngineCycle
   if (torque > 300) torque = 300;
   fanDuty = (engineState == 3) ? clampRange(engineLoad / 10, 0, 10) : 0;
 
+  // ?? ??? ?? ??? ?? (+1°C/100ms ??, -2°C/100ms ??) ??
+  if (gEngineState > 0)
+  {
+    if (gCoolantTemp < 90) gCoolantTemp = gCoolantTemp + 1;
+  }
+  else
+  {
+    if (gCoolantTemp > 20) gCoolantTemp = gCoolantTemp - 2;
+    if (gCoolantTemp < 20) gCoolantTemp = 20;
+  }
+
+  // ?? ?? ??? ??? ?? (+2%/100ms ??, -3%/100ms ??) ??
+  if (gEngineState > 0)
+  {
+    if (gFuelDisplay < gFuelLevel) gFuelDisplay = gFuelDisplay + 2;
+    if (gFuelDisplay > gFuelLevel) gFuelDisplay = gFuelLevel;
+  }
+  else
+  {
+    if (gFuelDisplay > 0) gFuelDisplay = gFuelDisplay - 3;
+    if (gFuelDisplay < 0) gFuelDisplay = 0;
+  }
+
+  @Powertrain::coolantTemp = gCoolantTemp;
+  @Powertrain::fuelLevel   = gFuelDisplay;
+
   mSpeedTemp.EngineRpm   = rpm & 0xFFFF;
   mSpeedTemp.CoolantTemp = (engineState > 0) ? 85 : 20;
   mSpeedTemp.OilTemp     = (engineState > 0) ? 90 : 20;
