@@ -89,7 +89,7 @@ void publishRspaState()
   {
     direction = turnLampState;
   }
-  if (vehicleSpeed <= 3 && ready == 1)
+  if (vehicleSpeed <= 2 && ready == 1)
   {
     brakeHoldReq = 1;
   }

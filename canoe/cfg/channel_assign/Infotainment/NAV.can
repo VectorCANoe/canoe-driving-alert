@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -16,7 +17,44 @@ variables
   int gLastRouteClass;
   int gLastGuideType;
   int gLastEtaMinutes;
+  
+  //navAnimation
+  msTimer tNavLaneAnim;
+  int gNavAnimFrame;
 }
+
+//navAnimation
+int GetNavAnimPeriod(int speedKph)
+{
+  if (speedKph <= 0)   return 500;
+  if (speedKph <= 20)  return 350;
+  if (speedKph <= 40)  return 250;
+  if (speedKph <= 70)  return 180;
+  if (speedKph <= 100) return 120;
+  return 80;
+}
+
+void UpdateNavLaneAnimation()
+{
+  int speed;
+  int period;
+
+  speed = (int)@sysvar::Core::vehicleSpeedNorm; 
+
+  if (gNavAnimFrame < 1 || gNavAnimFrame > 5)
+  {
+    gNavAnimFrame = 1;
+  }
+
+  @sysvar::UiRender::navLaneFrame = gNavAnimFrame;
+
+  period = GetNavAnimPeriod(speed);
+  write("[NAV_ANIM] Update: speed=%d period=%d frame=%d", speed, period, gNavAnimFrame);
+  setTimer(tNavLaneAnim, period);
+} 
+//
+
+
 
 int calcBaseZoneContext(int roadZone, int navDirection)
 {
@@ -59,11 +97,6 @@ int navLeaseWindowMs()
   return 2000;
 }
 
-int navHoldWindowMs()
-{
-  return 4500;
-}
-
 void markNavInputDirty()
 {
   gNavInputTouchMs = getSimulationTimeMs();
@@ -94,15 +127,11 @@ void publishNavState()
   message frmTrafficEventMsg mTraffic;
   message frmNavModuleStateMsg mNavState;
   int navInputStale;
-  int navInputExpired;
   int navState;
   int etaMinutes;
   int trafficSeverity;
   int routeVisualActive;
   int speedLimit;
-  int roadZone;
-  int navDirection;
-  int zoneDistance;
 
   navInputStale = 0;
   if (hasNavContext(gRoadZone, gNavDirection, gZoneDistance, gSpeedLimit) == 1 &&
@@ -112,68 +141,56 @@ void publishNavState()
   }
   traceNavInputHealth(navInputStale);
 
-  navInputExpired = 0;
-  if (hasNavContext(gRoadZone, gNavDirection, gZoneDistance, gSpeedLimit) == 1 &&
-      ethIsRecentTick(gNavInputTouchMs, navHoldWindowMs()) == 0)
+  if (navInputStale == 1)
   {
-    navInputExpired = 1;
+    return;
   }
 
-  roadZone = gRoadZone;
-  navDirection = gNavDirection;
-  zoneDistance = gZoneDistance;
   speedLimit = calcEffectiveSpeedLimit(gSpeedLimit);
-  if (navInputExpired == 1)
-  {
-    roadZone = 0;
-    navDirection = 0;
-    zoneDistance = 0;
-    speedLimit = 30;
-  }
 
-  navState = (roadZone > 0) ? 1 : 0;
-  if (roadZone == 3)
+  navState = (gRoadZone > 0) ? 1 : 0;
+  if (gRoadZone == 3)
   {
     navState = 2;
   }
-  if (zoneDistance <= 15 && navState > 0)
+  if (gZoneDistance <= 15 && navState > 0)
   {
     navState = 3;
   }
 
-  etaMinutes = clampRange(zoneDistance / 10, 0, 255);
-  trafficSeverity = (roadZone == 1) ? 3 : ((roadZone > 0) ? 2 : 0);
-  routeVisualActive = (roadZone > 0 || navDirection > 0 || zoneDistance > 0) ? 1 : 0;
+  etaMinutes = clampRange(gZoneDistance / 10, 0, 255);
+  trafficSeverity = (gRoadZone == 1) ? 3 : ((gRoadZone > 0) ? 2 : 0);
+  routeVisualActive = (gRoadZone > 0 || gNavDirection > 0 || gZoneDistance > 0) ? 1 : 0;
 
   mMap.MapRenderState = routeVisualActive;
-  mMap.ZoomLevel = (roadZone == 2) ? 12 : 16;
+  mMap.ZoomLevel = (gRoadZone == 2) ? 12 : 16;
   mMap.TileLoadPercent = (routeVisualActive == 1) ? 95 : 70;
   output(mMap);
 
-  mGuide.GuideLaneState = (roadZone == 3) ? navDirection : 0;
-  mGuide.GuideConfidence = (roadZone == 3) ? 50 : ((routeVisualActive == 1) ? 20 : 0);
+  mGuide.GuideLaneState = (gRoadZone == 3) ? gNavDirection : 0;
+  mGuide.GuideConfidence = (gRoadZone == 3) ? 50 : ((routeVisualActive == 1) ? 20 : 0);
   output(mGuide);
 
-  mRouteBase.RouteClass = roadZone;
-  mRouteBase.GuideType = navDirection;
-  mRouteBase.RouteProgress = (routeVisualActive == 1) ? ((zoneDistance > 100) ? 20 : 80) : 0;
+  mRouteBase.RouteClass = gRoadZone;
+  mRouteBase.GuideType = gNavDirection;
+  mRouteBase.RouteProgress = (routeVisualActive == 1) ? ((gZoneDistance > 100) ? 20 : 80) : 0;
   mRouteBase.EtaMinutes = etaMinutes;
   output(mRouteBase);
 
-  mRoute.RouteAlertType = roadZone;
-  mRoute.RouteAlertPrio = (roadZone == 1) ? 5 : ((roadZone > 0) ? 2 : 0);
-  mRoute.RouteAlertActive = (roadZone > 0) ? 1 : 0;
-  mRoute.RouteAlertEta = zoneDistance;
+  mRoute.RouteAlertType = gRoadZone;
+  mRoute.RouteAlertPrio = (gRoadZone == 1) ? 5 : ((gRoadZone > 0) ? 2 : 0);
+  mRoute.RouteAlertActive = (gRoadZone > 0) ? 1 : 0;
+  mRoute.RouteAlertEta = gZoneDistance;
   output(mRoute);
 
-  mTraffic.TrafficEventType = roadZone;
+  mTraffic.TrafficEventType = gRoadZone;
   mTraffic.TrafficSeverity = trafficSeverity;
-  mTraffic.TrafficDistance = zoneDistance;
+  mTraffic.TrafficDistance = gZoneDistance;
   output(mTraffic);
 
   mNavState.NavSessionState = clampRange(navState, 0, 3);
-  mNavState.NavRouteClass = clampRange(roadZone, 0, 3);
-  mNavState.NavGuideType = clampRange(navDirection, 0, 3);
+  mNavState.NavRouteClass = clampRange(gRoadZone, 0, 3);
+  mNavState.NavGuideType = clampRange(gNavDirection, 0, 3);
   mNavState.NavTrafficSeverity = clampRange(trafficSeverity, 0, 3);
   mNavState.NavEtaMinutes = etaMinutes;
   mNavState.NavSpeedLimit = clampRange(speedLimit, 0, 255);
@@ -189,7 +206,7 @@ void publishNavState()
           mNavState.NavRouteClass,
           mNavState.NavGuideType,
           mNavState.NavEtaMinutes,
-          zoneDistance,
+          gZoneDistance,
           speedLimit);
     gLastNavState = mNavState.NavSessionState;
     gLastRouteClass = mNavState.NavRouteClass;
@@ -210,6 +227,13 @@ on start
   gLastRouteClass = -1;
   gLastGuideType = -1;
   gLastEtaMinutes = -1;
+  
+  //navAnimation
+  gNavAnimFrame = 1;
+  @sysvar::UiRender::navLaneFrame = 1;
+  setTimer(tNavLaneAnim, 300);
+  //
+  
   markNavInputDirty();
   setTimer(tNavModuleCycle, 100);
   write("[NAV] start");
@@ -220,6 +244,48 @@ on timer tNavModuleCycle
   publishNavState();
   setTimer(tNavModuleCycle, 100);
 }
+
+//navAnimation
+on timer tNavLaneAnim
+{
+  int speed;
+  int period;
+
+  speed = (int)@sysvar::Chassis::vehicleSpeed;
+
+  /* �ӵ� 0�̸� ���� */
+  if (speed <= 0)
+  {
+    gNavAnimFrame = 1;
+    @sysvar::UiRender::navLaneFrame = 1;
+
+    write("[NAV_ANIM] stop: speed=%d frame=%d", speed, gNavAnimFrame);
+
+    setTimer(tNavLaneAnim, 300);
+    return;
+  }
+
+  gNavAnimFrame++;
+  if (gNavAnimFrame > 5)
+  {
+    gNavAnimFrame = 1;
+  }
+
+  @sysvar::UiRender::navLaneFrame = gNavAnimFrame;
+
+  period = GetNavAnimPeriod(speed);
+
+  write("[NAV_ANIM] Timer: speed=%d period=%d frame=%d",
+        speed, period, gNavAnimFrame);
+
+  setTimer(tNavLaneAnim, period);
+}
+
+on sysvar_update Core::vehicleSpeedNorm
+{
+  
+}
+//
 
 on message frmNavContextCanMsg
 {
@@ -233,4 +299,5 @@ on message frmNavContextCanMsg
 on stopMeasurement
 {
   cancelTimer(tNavModuleCycle);
+  cancelTimer(tNavLaneAnim); //navAnimation
 }

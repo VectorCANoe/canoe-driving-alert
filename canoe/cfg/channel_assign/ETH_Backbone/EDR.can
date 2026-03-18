@@ -6,12 +6,17 @@ includes
 variables
 {
   msTimer tEdrCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
   int gAlertLevel;
   int gFailSafeMode;
   int gWarningPathStatus;
   int gE2eHealthState;
   int gObjectTrackValid;
   int gObjectEventCode;
+  dword gSelectedAlertRxTsMs;
+  dword gFailSafeRxTsMs;
+  dword gObjectSafetyRxTsMs;
   int gLastRecordState;
   int gLastEventSeverity;
   int gLastRecordReason;
@@ -40,12 +45,22 @@ void publishEdrState()
   objectTrackValid = 0;
   objectEventCode = 0;
 
-  alertLevel = clampRange(gAlertLevel, 0, 7);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
-  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
-  objectEventCode = clampRange((int)@Core::objectEventCode, 0, 65535);
+  if (ethIsRecentTick(gSelectedAlertRxTsMs, 300) == 1)
+  {
+    alertLevel = gAlertLevel;
+  }
+
+  if (ethIsRecentTick(gFailSafeRxTsMs, 300) == 1)
+  {
+    warningPathStatus = gWarningPathStatus;
+    failSafeMode = gFailSafeMode;
+    e2eHealthState = gE2eHealthState;
+  }
+  if (ethIsRecentTick(gObjectSafetyRxTsMs, 300) == 1)
+  {
+    objectTrackValid = gObjectTrackValid;
+    objectEventCode = gObjectEventCode;
+  }
 
   if (alertLevel >= 5)
   {
@@ -119,19 +134,66 @@ void publishEdrState()
   }
 }
 
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+  int payload0;
+  int payload3;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gAlertLevel = clampRange(payload0 & 0x7, 0, 7);
+      gSelectedAlertRxTsMs = getSimulationTimeMs();
+    }
+    else if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
+      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+      gFailSafeRxTsMs = getSimulationTimeMs();
+    }
+    else if (msgId == ethMsgObjectSafety() && ethFramePayloadLen(count) >= 4)
+    {
+      payload3 = ethGetU8(buffer, 3);
+      gObjectTrackValid = clampRange((payload3 >> 2) & 0x1, 0, 1);
+      gObjectEventCode = clampRange(ethGetU16Le(buffer, 1), 0, 65535);
+      gObjectSafetyRxTsMs = getSimulationTimeMs();
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+}
+
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
   gAlertLevel = 0;
   gFailSafeMode = 0;
   gWarningPathStatus = 0;
   gE2eHealthState = 2;
   gObjectTrackValid = 0;
   gObjectEventCode = 0;
+  gSelectedAlertRxTsMs = 0;
+  gFailSafeRxTsMs = 0;
+  gObjectSafetyRxTsMs = 0;
   gLastRecordState = -1;
   gLastEventSeverity = -1;
   gLastRecordReason = -1;
   gLastStorageLevel = -1;
   gLastEventCode = -1;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tEdrCycle, 100);
   write("[EDR] start");
 }
@@ -145,9 +207,6 @@ on timer tEdrCycle
 on stopMeasurement
 {
   cancelTimer(tEdrCycle);
-}
-
-on message frmAdasDomainStateMsg
-{
-  gAlertLevel = clampRange((int)this.SelectedAlertLevel, 0, 7);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

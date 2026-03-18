@@ -15,7 +15,6 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - `V2X.can`
 - `TEST_SCN.can`
 - `TEST_BAS.can`
-- `EXT_DIAG.can`
 - `ETHB.can`
 - `DCM.can`
 - `IBOX.can`

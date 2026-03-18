@@ -76,12 +76,8 @@ void publishAflsState()
 
   aflsMode = (headLampState >= 2) ? 1 : 0;
   beamPattern = (headLampState >= 2) ? 2 : 0;
-  cornerLampState = ((aflsMode == 1) && (abs(steeringAngle) >= 80)) ? 1 : 0;
+  cornerLampState = (abs(steeringAngle) >= 120) ? 1 : 0;
   levelStep = clampRange(abs(steeringAngle) / 20, 0, 255);
-  if (aflsMode == 1 && levelStep == 0)
-  {
-    levelStep = 1;
-  }
 
   mAfls.AflsMode = clampRange(aflsMode, 0, 7);
   mAfls.BeamPattern = clampRange(beamPattern, 0, 7);

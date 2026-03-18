@@ -6,6 +6,8 @@ includes
 variables
 {
   msTimer tSgwCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
   int gIboxLinkMode;
   int gIboxRouteState;
   int gIboxServiceFlags;
@@ -20,6 +22,7 @@ variables
   dword gNavRxMs;
   dword gVehicleRxMs;
   dword gNotifRxMs;
+  dword gFailSafeRxMs;
   int gLastSecuritySession;
   int gLastAuthState;
   int gLastSecurityFault;
@@ -32,17 +35,13 @@ void publishReservedDiagSecuritySeam(int diagStage, int securitySession, int aut
   int routeOwner;
 
   securityState = 0;
-  if (diagStage >= 3)
+  if (diagStage >= 2)
   {
     securityState = 3;
   }
-  else if (diagStage == 2)
-  {
-    securityState = 2;
-  }
   else if (diagStage == 1)
   {
-    securityState = 1;
+    securityState = 2;
   }
   else if (securitySession > 0 || authState > 0)
   {
@@ -50,13 +49,13 @@ void publishReservedDiagSecuritySeam(int diagStage, int securitySession, int aut
   }
 
   routeOwner = 0;
-  if (diagStage >= 2)
-  {
-    routeOwner = 1;
-  }
-  else if (diagStage == 1)
+  if (diagStage == 1)
   {
     routeOwner = 3;
+  }
+  else if (diagStage >= 2)
+  {
+    routeOwner = 1;
   }
   else if (securitySession > 0 || authState > 0)
   {
@@ -92,9 +91,7 @@ void publishSecurityState()
   speedLimit = (ethIsRecentTick(gNavRxMs, 300) == 1) ? gNavSpeedLimit : 0;
   vehicleSpeed = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? gVehicleSpeed : 0;
   alertLevel = (ethIsRecentTick(gNotifRxMs, 300) == 1) ? gAlertLevel : 0;
-  gBoundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
-  gWarningPathStatus = gBoundaryAlive == 1 ? clampRange((int)@CoreState::warningPathStatus, 0, 2) : 2;
-  gFailSafeMode = gBoundaryAlive == 1 ? clampRange((int)@Core::failSafeMode, 0, 2) : 2;
+  gBoundaryAlive = (ethIsRecentTick(gFailSafeRxMs, 300) == 1) ? 1 : 0;
   if (gBoundaryAlive == 0)
   {
     gWarningPathStatus = 2;
@@ -197,6 +194,7 @@ void publishSecurityState()
 
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
   gIboxLinkMode = 0;
   gIboxRouteState = 0;
   gIboxServiceFlags = 0;
@@ -211,12 +209,17 @@ on start
   gNavRxMs = 0;
   gVehicleRxMs = 0;
   gNotifRxMs = 0;
+  gFailSafeRxMs = 0;
   gLastSecuritySession = -1;
   gLastAuthState = -1;
   gLastSecurityFault = -1;
   gLastSecurityPolicy = -1;
   @Diag::SecurityState = 0;
   @Diag::RouteOwner = 0;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tSgwCycle, 100);
   write("[SGW] start");
 }
@@ -230,6 +233,8 @@ on timer tSgwCycle
 on stopMeasurement
 {
   cancelTimer(tSgwCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }
 
 on message frmNavModuleStateMsg
@@ -250,4 +255,25 @@ on message frmClusterNotifMsg
 {
   gAlertLevel = clampRange((int)this.ClusterNotifArg, 0, 7);
   gNotifRxMs = getSimulationTimeMs();
+}
+
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0 &&
+      ethFrameMsgId(buffer, count) == ethMsgFailSafe() &&
+      ethFramePayloadLen(count) >= 1)
+  {
+    payload0 = ethGetU8(buffer, 0);
+    gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
+    gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+    gFailSafeRxMs = getSimulationTimeMs();
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }

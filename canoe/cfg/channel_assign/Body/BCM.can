@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -7,6 +8,9 @@ variables
 {
   msTimer tBodyCycle;
   msTimer tBodyBase100;
+  long gEthSocket;
+  dword gEthTargetIp;
+  char gEthRxBuffer[64];
   int gLastAmbientMode;
   int gLastAmbientColor;
   int gLastAmbientPattern;
@@ -61,6 +65,21 @@ variables
   int gLastComfortProfile;
   int gLastComfortStatus;
   int gLastComfortError;
+  int gGatewayRoutingPolicy;
+  int gGatewayWarningPathStatus;
+  int gGatewayBoundaryAlive;
+  dword gGatewayStateRxMs;
+
+  //Timer for GuideLED
+  msTimer guideLedTimer;
+  int guideMode = 0;   // 0=off, 5=left, 6=right, 7=blink
+  int blinkState = 0;  // 0: led0, 1: led7
+  int step = 0;
+  int ms = 200;
+  //for led name
+  char prev[10]="";
+  //for display name
+  char display[22]="SDV_Ambient_Top_View";
 }
 
 int useBackboneAlertState()
@@ -116,6 +135,35 @@ void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
   gBackboneAlertType = clampRange(alertType, 0, 7);
   gBackboneTimeoutClear = (timeoutClear == 1) ? 1 : 0;
   gBackboneAlertTsMs = getSimulationTimeMs();
+}
+
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 2)
+    {
+      updateBackboneAlertState(ethGetU8(buffer, 0) & 0x7,
+                               (ethGetU8(buffer, 0) >> 3) & 0x7,
+                               ethGetU8(buffer, 1) & 0x1);
+    }
+    else if (msgId == ethMsgGatewayState() && ethFramePayloadLen(count) >= 1)
+    {
+      gGatewayRoutingPolicy = clampRange(ethGetU8(buffer, 0) & 0x3, 0, 2);
+      gGatewayBoundaryAlive = clampRange((ethGetU8(buffer, 0) >> 2) & 0x1, 0, 1);
+      gGatewayWarningPathStatus = clampRange((ethGetU8(buffer, 0) >> 3) & 0x3, 0, 2);
+      gGatewayStateRxMs = getSimulationTimeMs();
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 void traceBcmLeafHealth(int doorDetailInputStale, int seatDetailInputStale)
@@ -209,6 +257,8 @@ void traceBcmCommandHealth(int paakInputStale,
 
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
+  gEthTargetIp = ethGetDefaultIpAddress();
   gLastAmbientMode = -1;
   gLastAmbientColor = -1;
   gLastAmbientPattern = -1;
@@ -263,7 +313,15 @@ on start
   gLastComfortProfile = -1;
   gLastComfortStatus = -1;
   gLastComfortError = -1;
+  gGatewayRoutingPolicy = 0;
+  gGatewayWarningPathStatus = 1;
+  gGatewayBoundaryAlive = 0;
+  gGatewayStateRxMs = 0;
   @CoreState::bodyHealthTick = 0;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tBodyCycle, 10);
   setTimer(tBodyBase100, 100);
   write("[BCM] start");
@@ -435,9 +493,18 @@ on timer tBodyBase100
   }
   turnLampInputStale = (ethIsRecentTick(gTurnLampInputRxMs, 300) == 1) ? 0 : 1;
   ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
-  routingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);
-  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+  if (ethIsRecentTick(gGatewayStateRxMs, 500) == 1)
+  {
+    routingPolicy = clampRange(gGatewayRoutingPolicy, 0, 2);
+    warningPathStatus = clampRange(gGatewayWarningPathStatus, 0, 2);
+    boundaryAlive = clampRange(gGatewayBoundaryAlive, 0, 1);
+  }
+  else
+  {
+    routingPolicy = 0;
+    warningPathStatus = 1;
+    boundaryAlive = 0;
+  }
   bodyGwRouteState = routingPolicy;
   bodyGwHealth = warningPathStatus;
   if (boundaryAlive == 0 && bodyGwHealth == 0)
@@ -507,6 +574,7 @@ on timer tBodyBase100
   mDoorState.DoorOpenWarn = doorOpenWarn;
   output(mDoorState);
 
+  mLamp.HeadLampState = (hazardActive == 1) ? 2 : 1;
   mLamp.TailLampState = 1;
   if (hazardActive == 1)
   {
@@ -520,8 +588,6 @@ on timer tBodyBase100
   {
     turnLampState = 0;
   }
-  mLamp.HeadLampState = ((hazardActive == 1) ||
-                         (driveState > 0 && turnLampState > 0)) ? 2 : 1;
   mLamp.TurnLampState = clampRange(turnLampState, 0, 3);
   mLamp.HazardLampReq = hazardActive;
   output(mLamp);
@@ -816,13 +882,6 @@ on message frmVehicleStateCanMsg
   gVehicleRxMs = getSimulationTimeMs();
 }
 
-on message frmAdasDomainStateMsg
-{
-  updateBackboneAlertState((int)this.SelectedAlertLevel,
-                           (int)this.SelectedAlertType,
-                           (int)this.TimeoutClear);
-}
-
 on message frmTurnLampInputMsg
 {
   gTurnLampInputState = clampRange((int)this.TurnLampState, 0, 3);
@@ -833,4 +892,113 @@ on stopMeasurement
 {
   cancelTimer(tBodyCycle);
   cancelTimer(tBodyBase100);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
+}
+
+on sysvar Body::ambientMode{
+  char curr[10];
+  char num[5];
+  
+  //for guideLED Animation
+  cancelTimer(guideLedTimer);
+  guideMode = 0;
+  guideLedAllOff();
+  switch(@Body::ambientMode){
+    case 3:
+    case 5: 
+    case 6:
+    case 7:
+      guideLedStart(@Body::ambientMode);
+      break;
+  }
+  
+  //soundControl
+  if(@Body::ambientMode==7){
+    @sysvar::Infotainment::emergencySound = 1;
+  }
+  else{
+    @sysvar::Infotainment::emergencySound = 0;
+  }
+  
+  //set LED Image
+  //prev off
+  if(strlen(prev) > 0)
+  {
+    setControlVisibility(display, prev, 0);
+  }
+  snprintf(curr, elcount(curr), "led%d", @Body::ambientMode); //set curr led name
+  setControlVisibility(display, curr, 1);  //curr on
+  snprintf(prev, elcount(prev), "%s", curr);  //set prev
+  
+}
+
+void guideLedStart(int mode){
+  guideMode = mode;
+  step = 0;
+  setTimer(guideLedTimer, ms);
+}
+
+void guideLedAllOff(){
+  int i;
+  char name[20];
+  
+  setControlVisibility(display, "led3", 0);
+  setControlVisibility(display, "led7", 0);
+
+  for(i=1;i<=5;i++){
+    snprintf(name, elcount(name), "led5_%d", i);
+    setControlVisibility(display, name, 0);
+
+    snprintf(name, elcount(name), "led6_%d", i);
+    setControlVisibility(display, name, 0);
+  }
+}
+
+on timer guideLedTimer{
+  char name[20];
+
+  if(guideMode != 3 && guideMode != 5 && guideMode != 6 && guideMode != 7){
+    guideLedAllOff();
+    return;
+  }
+  
+  guideLedAllOff();
+
+  //SchoolZone
+  if(guideMode==3){
+    setControlVisibility(display, "led0", 1);
+    
+    if(blinkState == 0){
+      setControlVisibility(display, "led3", 1);
+      blinkState = 1;
+    } else {
+      setControlVisibility(display, "led3", 0);
+      blinkState = 0;
+    }
+  }
+  //Emergency
+  else if(guideMode == 7){
+    setControlVisibility(display, "led0", 1);
+
+    if(blinkState == 0){
+      setControlVisibility(display, "led7", 1);
+      blinkState = 1;
+    } else {
+      setControlVisibility(display, "led7", 0);
+      blinkState = 0;
+    }
+  }
+  //guideLED
+  else{
+    step++;
+    if(step > 5) step = 1;
+
+    setControlVisibility(display, "led0", 1);
+
+    snprintf(name, elcount(name), "led%d_%d", guideMode, step);
+    setControlVisibility(display, name, 1);
+  }
+
+  setTimer(guideLedTimer, ms);
 }

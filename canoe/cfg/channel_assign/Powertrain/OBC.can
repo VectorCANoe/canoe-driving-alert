@@ -77,9 +77,9 @@ on timer tObcCycle
   }
   if (vehicleInputStale == 1)
   {
-    driveState = ((chargingState == 1 || chargingState == 3) ? 0 : 3);
+    driveState = 3;
   }
-  vehicleParked = ((driveState == 0) || (chargingState > 0)) ? 1 : 0;
+  vehicleParked = (vehicleInputStale == 0 && driveState == 0) ? 1 : 0;
 
   if (inputStale != gLastInputStale)
   {

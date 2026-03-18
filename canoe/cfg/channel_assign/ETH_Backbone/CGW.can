@@ -49,11 +49,6 @@ int getCgwTxPort()
   return ethBackbonePort() + 6;
 }
 
-dword getCgwLocalIp()
-{
-  return IpGetAddressAsNumber("192.168.1.1");
-}
-
 int calcAgeMs(dword lastTsMs, dword nowMs)
 {
   if (lastTsMs == 0)
@@ -79,7 +74,7 @@ void publishFailSafeState(int warningPathStatus,
   txSocket = gEthTxSocket;
   if (txSocket == ethInvalidSocket())
   {
-    return;
+    txSocket = gEthSocket;
   }
 
   ethInitFrame(frame, ethMsgFailSafe(), 1);
@@ -101,7 +96,7 @@ void publishGatewayState(int routingPolicy,
   txSocket = gEthTxSocket;
   if (txSocket == ethInvalidSocket())
   {
-    return;
+    txSocket = gEthSocket;
   }
 
   ethInitFrame(frame, ethMsgGatewayState(), 1);
@@ -132,7 +127,7 @@ void publishObjectSafetyState(int failSafeMode)
   txSocket = gEthTxSocket;
   if (txSocket == ethInvalidSocket())
   {
-    return;
+    txSocket = gEthSocket;
   }
 
   ethInitFrame(frame, ethMsgObjectSafety(), 4);
@@ -220,7 +215,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
 on start
 {
   gEthSocket = ethOpenDefaultSocket();
-  gEthTxSocket = ethOpenNodeSocketAt(getCgwLocalIp(), getCgwTxPort());
+  gEthTxSocket = ethOpenNodeSocket(getCgwTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gChassisAlive = 0;
   gBodyAlive = 0;
@@ -259,9 +254,10 @@ on start
   @CoreState::e2eHealthState = 1;
   @CoreState::routingPolicy = 0;
   @Core::failSafeMode = 1;
+  @Core::decelAssistReq = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
-    write("[CGW] tx socket unavailable");
+    write("[CGW] tx socket fallback to shared backbone port");
   }
   if (gEthSocket != ethInvalidSocket())
   {
@@ -382,12 +378,8 @@ on timer tBoundaryCheck
     boundaryAlive = 1;
   }
 
-  forceFailSafe = 0;
-  if (ethIsRecentTick(gForceFailSafeRxMs, 300) == 1 &&
-      gForceFailSafeOverride == 1)
-  {
-    forceFailSafe = 1;
-  }
+  forceFailSafe = (ethIsRecentTick(gForceFailSafeRxMs, 300) == 1 &&
+                   gForceFailSafeOverride == 1) ? 1 : 0;
   startupSettling = (ethIsRecentTick(gStartTsMs, 500) == 1) ? 1 : 0;
   if (forceFailSafe == 1)
   {
@@ -456,6 +448,10 @@ on timer tBoundaryCheck
   @CoreState::e2eHealthState = e2eHealthState;
   @CoreState::routingPolicy = routingPolicy;
   @Core::failSafeMode = failSafeMode;
+  if (failSafeMode > 0)
+  {
+    @Core::decelAssistReq = 0;
+  }
 
   publishFailSafeState(warningPathStatus, e2eHealthState, failSafeMode, boundaryAlive);
   publishGatewayState(routingPolicy, warningPathStatus, e2eHealthState, boundaryAlive);

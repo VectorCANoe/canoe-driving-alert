@@ -6,6 +6,7 @@ includes
 variables
 {
   msTimer tMdpsCycle;
+  long gEthSocket;
   long gEthTxSocket;
   dword gEthTargetIp;
   int gSteeringInput;
@@ -22,25 +23,22 @@ int getMdpsTxPort()
   return ethBackbonePort() + 3;
 }
 
-dword getMdpsLocalIp()
-{
-  return IpGetAddressAsNumber("192.168.1.17");
-}
-
 void publishBackboneSteeringState(int steeringAngleRaw, int steeringQuality)
 {
   char frame[3];
   int steeringInput;
+  long txSocket;
 
   steeringInput = clampRange(gSteeringInput, 0, 1);
-  if (gEthTxSocket == ethInvalidSocket())
+  txSocket = gEthTxSocket;
+  if (txSocket == ethInvalidSocket())
   {
-    return;
+    txSocket = gEthSocket;
   }
 
   ethInitFrame(frame, ethMsgSteering(), 1);
   ethSetU8(frame, 0, steeringInput);
-  ethSendFrame(gEthTxSocket, gEthTargetIp, ethMsgSteering(), frame, 1);
+  ethSendFrame(txSocket, gEthTargetIp, ethMsgSteering(), frame, 1);
 }
 
 void traceMdpsInputHealth(int steeringInputStale, int vehicleInputStale)
@@ -74,7 +72,8 @@ void traceMdpsInputHealth(int steeringInputStale, int vehicleInputStale)
 
 on start
 {
-  gEthTxSocket = ethOpenNodeSocketAt(getMdpsLocalIp(), getMdpsTxPort());
+  gEthSocket = ethOpenDefaultSocket();
+  gEthTxSocket = ethOpenNodeSocket(getMdpsTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gSteeringInput = 0;
   gSpeedNorm = 0;
@@ -85,7 +84,7 @@ on start
   gPrevSteering = -1;
   if (gEthTxSocket == ethInvalidSocket())
   {
-    write("[MDPS] tx socket unavailable");
+    write("[MDPS] tx socket fallback to shared backbone port");
   }
   setTimer(tMdpsCycle, 50);
   write("[MDPS] start");
@@ -165,4 +164,6 @@ on stopMeasurement
   cancelTimer(tMdpsCycle);
   ethCloseSocket(gEthTxSocket);
   gEthTxSocket = ethInvalidSocket();
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

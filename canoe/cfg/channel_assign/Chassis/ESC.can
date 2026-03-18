@@ -266,18 +266,9 @@ on timer tEscCycle
   mBrakeWear.BrakePadWearLvl = 10;
   output(mBrakeWear);
 
-  if (driveState == 3 && speedNorm >= 60 && steeringInput == 0)
-  {
-    mSuspension.SuspensionMode = 3;
-    mSuspension.SuspensionLevel = 12;
-    mSuspension.DampingLevel = 40;
-  }
-  else
-  {
-    mSuspension.SuspensionMode = (driveState == 3) ? 1 : 0;
-    mSuspension.SuspensionLevel = 8;
-    mSuspension.DampingLevel = 12;
-  }
+  mSuspension.SuspensionMode = (driveState == 3) ? 1 : 0;
+  mSuspension.SuspensionLevel = 8;
+  mSuspension.DampingLevel = 12;
   output(mSuspension);
 
 

@@ -37,13 +37,9 @@ variables
 
 int ldwsPathReady()
 {
-  if (gFailSafeRxMs == 0)
-  {
-    return 1;
-  }
   if (ethIsRecentTick(gFailSafeRxMs, 300) == 0)
   {
-    return (gWarningPathStatus < 2 && gE2eHealthState > 0 && gFailSafeMode < 2) ? 1 : 0;
+    return 0;
   }
   if (gWarningPathStatus >= 2 || gE2eHealthState == 0 || gFailSafeMode >= 2)
   {
@@ -272,7 +268,7 @@ on start
   gSteeringRxMs = 0;
   gWarningPathStatus = 1;
   gE2eHealthState = 1;
-  gFailSafeMode = 0;
+  gFailSafeMode = 1;
   gFailSafeRxMs = 0;
   gLastFcamInputStale = 0;
   gLastNavInputStale = 0;

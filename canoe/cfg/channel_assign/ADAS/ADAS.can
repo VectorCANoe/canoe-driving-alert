@@ -67,11 +67,6 @@ int getAdasTxPort()
   return ethBackbonePort() + 5;
 }
 
-dword getAdasLocalIp()
-{
-  return IpGetAddressAsNumber("192.168.1.15");
-}
-
 int deriveBaseZoneContextFromNavState(int routeClass, int guideType)
 {
   routeClass = clampRange(routeClass, 0, 3);
@@ -113,7 +108,7 @@ void publishBackboneDecisionFrames()
   txSocket = gEthTxSocket;
   if (txSocket == ethInvalidSocket())
   {
-    return;
+    txSocket = gEthSocket;
   }
 
   ethInitFrame(riskFrame, ethMsgEmergencyRisk(), 4);
@@ -124,15 +119,13 @@ void publishBackboneDecisionFrames()
                        (clampRange(emergencyContext, 0, 3) << 2));
   ethSendFrame(txSocket, gEthTargetIp, ethMsgEmergencyRisk(), riskFrame, 4);
 
-  ethInitFrame(decelFrame, ethMsgDecelAssist(), 3);
+  ethInitFrame(decelFrame, ethMsgDecelAssist(), 2);
   ethSetU8(decelFrame, 0, ((((int)@Core::decelAssistReq) == 1) ? 1 : 0) |
                           (clampRange((int)@Core::failSafeMode, 0, 2) << 1) |
-                          (clampRange((int)@CoreState::decelGateReason, 0, 3) << 3) |
+                          (clampRange(gLastDriverReleaseReason, 0, 3) << 3) |
                           (clampRange(emergencyContext, 0, 3) << 5));
   ethSetU8(decelFrame, 1, clampRange((int)@Core::proximityRiskLevel, 0, 100));
-  ethSetU8(decelFrame, 2, ((((int)@Core::decelAssistDecisionReq) == 1) ? 1 : 0) |
-                          (clampRange((int)@CoreState::decelGateReason, 0, 3) << 1));
-  ethSendFrame(txSocket, gEthTargetIp, ethMsgDecelAssist(), decelFrame, 3);
+  ethSendFrame(txSocket, gEthTargetIp, ethMsgDecelAssist(), decelFrame, 2);
 
   ethInitFrame(alertFrame, ethMsgSelectedAlert(), 2);
   ethSetU8(alertFrame, 0, clampRange((int)@Core::selectedAlertLevel, 0, 7) |
@@ -472,14 +465,12 @@ void runArbiter()
   int decelRiskOnThreshold;
   int decelRiskOffThreshold;
   int turnLampState;
-  int turnLampOverride;
   int driveMode;
   int ecoMode;
   int sportMode;
   int driverSeatBelt;
   int passengerSeatBelt;
   int seatBeltWarnLvl;
-  int seatBeltOverride;
   int timeoutClear;
   int boundaryStatus;
   int staleInput;
@@ -489,10 +480,8 @@ void runArbiter()
   dword lastEmergencyRxMs;
   int preAdjustAlertLevel;
   int preAdjustAlertType;
-  int prevDecelDecisionReq;
-  int decelDecisionReq;
+  int prevDecelAssistReq;
   int decelAssistReq;
-  int decelGateReason;
   int driverReleaseReason;
   int baseAlertLevel;
   int baseAlertType;
@@ -517,7 +506,7 @@ void runArbiter()
   }
   else
   {
-    driveState = clampRange((int)@Chassis::driveState, 0, 3);
+    driveState = 0;
   }
   if (ethIsRecentTick(gSteeringStateRxMs, 300) == 1)
   {
@@ -561,11 +550,6 @@ void runArbiter()
   {
     turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
   }
-  turnLampOverride = clampRange((int)@Test::turnLampOverride, 0, 2);
-  if (turnLampOverride > 0)
-  {
-    turnLampState = turnLampOverride;
-  }
   if (ethIsRecentTick(gVehicleModeRxMs, 300) == 1)
   {
     driveMode = clampRange(gCanDriveMode, 0, 7);
@@ -590,78 +574,60 @@ void runArbiter()
     passengerSeatBelt = clampRange((int)@CoreState::passengerSeatBelt, 0, 1);
     seatBeltWarnLvl = clampRange((int)@CoreState::seatBeltWarnLvl, 0, 3);
   }
-  seatBeltOverride = clampRange((int)@Test::seatBeltOverride, 0, 3);
-  if (seatBeltOverride == 1 || seatBeltOverride == 3)
-  {
-    driverSeatBelt = 0;
-  }
-  if (seatBeltOverride == 2 || seatBeltOverride == 3)
-  {
-    passengerSeatBelt = 0;
-  }
-  if (seatBeltOverride > 0 && seatBeltWarnLvl < 2)
-  {
-    seatBeltWarnLvl = 2;
-  }
 
-  prevDecelDecisionReq = (((int)@Core::decelAssistDecisionReq) == 1) ? 1 : 0;
+  prevDecelAssistReq = (((int)@Core::decelAssistReq) == 1) ? 1 : 0;
   baseAlertLevel = 0;
   baseAlertType = 0;
   selectedAlertLevel = 0;
   selectedAlertType = 0;
-  decelDecisionReq = prevDecelDecisionReq;
-  decelAssistReq = prevDecelDecisionReq;
-  decelGateReason = 0;
+  decelAssistReq = prevDecelAssistReq;
   driverReleaseReason = 0;
 
   decelRiskOnThreshold = getDecelRiskOnThreshold(emergencyContext, objectWarningActive);
   decelRiskOffThreshold = getDecelRiskOffThreshold(emergencyContext, objectWarningActive);
 
-  if (driveState == 3 && (emergencyContext > 0 || objectWarningActive == 1))
+  if (failSafeMode == 0 && driveState == 3 && (emergencyContext > 0 || objectWarningActive == 1))
   {
-    if (decelDecisionReq == 0 && proximityRiskLevel >= decelRiskOnThreshold)
+    if (decelAssistReq == 0 && proximityRiskLevel >= decelRiskOnThreshold)
     {
-      decelDecisionReq = 1;
+      decelAssistReq = 1;
     }
-    else if (decelDecisionReq == 1 && proximityRiskLevel <= decelRiskOffThreshold)
+    else if (decelAssistReq == 1 && proximityRiskLevel <= decelRiskOffThreshold)
     {
-      decelDecisionReq = 0;
+      decelAssistReq = 0;
     }
   }
   else
   {
-    decelDecisionReq = 0;
+    decelAssistReq = 0;
   }
 
-  if (decelDecisionReq == 1)
+  if (decelAssistReq == 1)
   {
     if (brakePedal >= 15)
     {
-      decelDecisionReq = 0;
+      decelAssistReq = 0;
       driverReleaseReason = 2;
     }
     else if (steeringInput == 1)
     {
-      decelDecisionReq = 0;
+      decelAssistReq = 0;
       driverReleaseReason = 1;
     }
   }
 
-  decelAssistReq = decelDecisionReq;
-  decelGateReason = driverReleaseReason;
-  if (failSafeMode != 0 && decelAssistReq == 1)
+  if (failSafeMode != 0 && prevDecelAssistReq == 1 && decelAssistReq == 0 && driverReleaseReason == 0)
   {
-    decelAssistReq = 0;
-    decelGateReason = 3;
+    driverReleaseReason = 3;
   }
 
   if (decelAssistReq == 1)
   {
     gLastDriverReleaseReason = 0;
   }
-  else if (decelGateReason != 0)
+  else if (driverReleaseReason != 0)
   {
-    gLastDriverReleaseReason = decelGateReason;
+    gLastDriverReleaseReason = driverReleaseReason;
   }
 
   baseAlertLevel = getBaseAlertLevel(baseZoneContext, warningState);
@@ -838,9 +804,7 @@ void runArbiter()
     gLastFallbackState = fallbackApplied;
   }
 
-  @Core::decelAssistDecisionReq = decelDecisionReq;
   @Core::decelAssistReq = decelAssistReq;
-  @CoreState::decelGateReason = decelGateReason;
   @Core::selectedAlertLevel = selectedAlertLevel;
   @Core::selectedAlertType = selectedAlertType;
   if (gLastAlertLevel != selectedAlertLevel || gLastAlertType != selectedAlertType)
@@ -852,8 +816,8 @@ void runArbiter()
   if (gLastDecelAssistReq != decelAssistReq ||
       gLastReportedDriverReleaseReason != gLastDriverReleaseReason)
   {
-    write("[ADAS] decel decision=%d effective=%d risk=%d failSafe=%d steer=%d brake=%d gate=%d objClass=%d objTtc=%d objConf=%d",
-          decelDecisionReq, decelAssistReq, proximityRiskLevel, failSafeMode,
+    write("[ADAS] decelAssistReq=%d risk=%d failSafe=%d steer=%d brake=%d reason=%d objClass=%d objTtc=%d objConf=%d",
+          decelAssistReq, proximityRiskLevel, failSafeMode,
           steeringInput, brakePedal, gLastDriverReleaseReason,
           objectRiskClass, objectTtcMin, objectConfidence);
     gLastDecelAssistReq = decelAssistReq;
@@ -861,10 +825,6 @@ void runArbiter()
   }
 
   gPrevEmergencyContext = emergencyContext;
-
-  @Core::brakePedalNorm    = brakePedal;
-  @CoreState::driveMode    = driveMode;
-  @CoreState::sportMode    = sportMode;
 }
 
 void updateWarningState()
@@ -904,8 +864,8 @@ void updateWarningState()
   }
   else
   {
-    speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
-    driveState = clampRange((int)@Chassis::driveState, 0, 3);
+    speed = 0;
+    driveState = 0;
   }
   if (ethIsRecentTick(gSteeringStateRxMs, 300) == 1)
   {
@@ -1187,12 +1147,6 @@ void updateWarningState()
           objectConfidence, objectHoldActive);
     gLastObjectEventCode = (int)@Core::objectEventCode;
   }
-
-  @Core::vehicleSpeedNorm  = speed;
-  @Core::driveStateNorm    = driveState;
-  @Core::steeringInputNorm = steeringInput;
-  @Core::speedLimitNorm    = speedLimit;
-  @Core::baseZoneContext   = baseZoneContext;
 }
 
 void applyObjectRiskInput(int trackValid,
@@ -1300,7 +1254,7 @@ on message frmSeatBeltStateMsg
 on start
 {
   gEthSocket = ethOpenDefaultSocket();
-  gEthTxSocket = ethOpenNodeSocketAt(getAdasLocalIp(), getAdasTxPort());
+  gEthTxSocket = ethOpenNodeSocket(getAdasTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gLastWarningState = -1;
   gHighwayNoSteerStartMs = 0;
@@ -1364,12 +1318,10 @@ on start
   @Core::mergeCutInFlag = 0;
   @Core::objectAlertHoldMs = 300;
   @Core::objectEventCode = 0;
-  @Core::decelAssistDecisionReq = 0;
   @Core::decelAssistReq = 0;
-  @CoreState::decelGateReason = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
-    write("[ADAS] tx socket unavailable");
+    write("[ADAS] tx socket fallback to shared backbone port");
   }
   if (gEthSocket != ethInvalidSocket())
   {

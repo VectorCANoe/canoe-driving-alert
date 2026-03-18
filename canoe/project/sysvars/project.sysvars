@@ -55,8 +55,8 @@
   </namespace>
 
   <namespace name="Body" comment="" interface="">
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientMode" comment="Ambient mode output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientColor" comment="Ambient color output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientMode" comment="Ambient mode output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/><valueTable><value value="0" text="Off"/><value value="1" text="Normal"/><value value="2" text="Caution"/><value value="3" text="SchoolZone"/><value value="4" text="Reservation"/><value value="5" text="GuideLeft"/><value value="6" text="GuideRight"/><value value="7" text="Emergency"/></valueTable></variable>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientColor" comment="Ambient color output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7">
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientPattern" comment="Ambient pattern output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
   </namespace>
 

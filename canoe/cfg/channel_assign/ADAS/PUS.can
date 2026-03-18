@@ -105,18 +105,7 @@ void publishParkUltrasonicState()
 
   if (active == 1)
   {
-    if (vehicleSpeed <= 3)
-    {
-      minDistance = 28;
-    }
-    else if (vehicleSpeed <= 5)
-    {
-      minDistance = 35;
-    }
-    else
-    {
-      minDistance = 80;
-    }
+    minDistance = (vehicleSpeed <= 5) ? 35 : 80;
     if (brakePedal == 1)
     {
       zoneMask = zoneMask | 0x01;

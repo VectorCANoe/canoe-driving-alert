@@ -81,83 +81,22 @@ int deriveThrottlePos(int engineState, int accelPedal, int brakePedal)
   return clampRange(throttlePos, 0, 100);
 }
 
-int deriveEngineRpm(int engineState, int accelPedal, int brakePedal, int speed)
+int deriveEngineLoad(int engineState, int throttlePos, int speed)
 {
-  int rpm;
-
-  if (engineState == 0)
-  {
-    return 0;
-  }
-  if (engineState == 1)
-  {
-    return 500;
-  }
-  if (engineState == 2)
-  {
-    return 850;
-  }
-
-  rpm = 850 + (speed * 12);
-  rpm = rpm + (accelPedal * 18);
-  if (speed < 10 && accelPedal >= 40)
-  {
-    rpm = rpm + 250;
-  }
-  if (brakePedal >= 20)
-  {
-    rpm = rpm - (brakePedal * 4);
-  }
-
-  return clampRange(rpm, 700, 6500);
-}
-
-int deriveEngineLoad(int engineState, int throttlePos, int brakePedal, int speed)
-{
-  int engineLoad;
-
   if (engineState != 3)
   {
     return 0;
   }
-
-  engineLoad = (throttlePos * 3 / 4) + (speed / 10);
-  if (speed < 15 && throttlePos >= 30)
-  {
-    engineLoad = engineLoad + 10;
-  }
-  if (brakePedal >= 20)
-  {
-    engineLoad = engineLoad - 5;
-  }
-
-  return clampRange(engineLoad, 0, 100);
+  return clampRange((throttlePos * 7 / 10) + (speed / 8), 0, 100);
 }
 
 int deriveEngineTorque(int engineState, int engineLoad, int rpm)
 {
-  int torque;
-
   if (engineState != 3)
   {
     return 0;
   }
-
-  torque = engineLoad * 2;
-  if (rpm < 2000)
-  {
-    torque = torque + (rpm / 40);
-  }
-  else if (rpm < 3500)
-  {
-    torque = torque + 50 + ((3500 - rpm) / 30);
-  }
-  else
-  {
-    torque = torque + 20 + ((5000 - rpm) / 60);
-  }
-
-  return clampRange(torque, 0, 300);
+  return clampRange((engineLoad * 2) + (rpm / 80), 0, 300);
 }
 
 on start
@@ -249,9 +188,17 @@ on timer tEngineCycle
     speed = 0;
   }
 
-  rpm = deriveEngineRpm(engineState, accelPedal, brakePedal, speed);
+  if      (engineState == 0) { rpm = 0; }
+  else if (engineState == 1) { rpm = 400; }
+  else if (engineState == 2) { rpm = 800; }
+  else
+  {
+    rpm   = 800 + (accelPedal * 25) + (speed * 10);
+    if (rpm > 6500) rpm = 6500;
+  }
+
   throttlePos = deriveThrottlePos(engineState, accelPedal, brakePedal);
-  engineLoad = deriveEngineLoad(engineState, throttlePos, brakePedal, speed);
+  engineLoad = deriveEngineLoad(engineState, throttlePos, speed);
   torque = deriveEngineTorque(engineState, engineLoad, rpm);
   coolantTemp = (engineState > 0) ? clampRange(75 + (engineLoad / 5), 20, 120) : 20;
   oilTemp = (engineState > 0) ? clampRange(80 + (engineLoad / 4), 20, 140) : 20;

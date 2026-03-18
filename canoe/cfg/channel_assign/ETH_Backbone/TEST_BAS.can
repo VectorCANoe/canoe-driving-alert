@@ -5,12 +5,8 @@ includes
 
 variables
 {
-  msTimer tObserverPoll50;
   long gEthSocket;
   char gEthRxBuffer[64];
-  int gObserverArmed;
-  int gScenarioAckActive;
-  int gActiveBaseScenarioId;
   int gLastBaseScenarioId;
   int gBaseScenarioResult;
   int gFlowCoverage;
@@ -20,10 +16,8 @@ variables
   int gE2eHealthState;
   int gFailSafeMode;
   int gEmergencyContext;
-  int gDecelDecisionReq;
   int gDecelAssistReq;
   int gDecelRisk;
-  int gDecelGateReason;
   int gDecelReleaseReason;
   int gLastSelectedAlertLevel;
   int gLastSelectedAlertType;
@@ -35,45 +29,20 @@ int resolveBaseScenarioId()
 {
   int scenarioId;
 
-  scenarioId = clampRange((int)@Test::scenarioEvaluatedId, 0, 255);
-  if (scenarioId == 0)
-  {
-    scenarioId = clampRange((int)@Test::scenarioSettledId, 0, 255);
-  }
-  if (scenarioId == 0)
-  {
-    scenarioId = clampRange((int)@Test::scenarioActiveId, 0, 255);
-  }
-  if (scenarioId == 0)
-  {
-    scenarioId = clampRange(gActiveBaseScenarioId, 0, 255);
-  }
+  scenarioId = clampRange((int)@Test::testScenario, 0, 255);
   if (scenarioId == 0)
   {
     scenarioId = clampRange((int)@Test::scenarioCommandAck, 0, 255);
   }
-  return scenarioId;
-}
-
-int hasActiveScenarioLifecycle()
-{
-  return (clampRange((int)@Test::scenarioActiveId, 0, 255) != 0 ||
-          clampRange((int)@Test::scenarioSettledId, 0, 255) != 0 ||
-          clampRange((int)@Test::scenarioEvaluatedId, 0, 255) != 0);
-}
-
-void stageBaseScenarioLifecycle(int scenarioId)
-{
-  scenarioId = clampRange(scenarioId, 0, 255);
   if (scenarioId == 0)
   {
-    return;
+    scenarioId = gLastBaseScenarioId + 1;
+    if (scenarioId > 255)
+    {
+      scenarioId = 1;
+    }
   }
-
-  gActiveBaseScenarioId = scenarioId;
-  ensureObserverArmed();
-  publishPendingBaseScenarioContext();
-  gScenarioAckActive = 1;
+  return scenarioId;
 }
 
 int resolveTestHealth()
@@ -135,12 +104,6 @@ int resolveFlowCoverageMask(int pass)
 
 void clearBaseResultState()
 {
-  ethCloseSocket(gEthSocket);
-  gEthSocket     = ethInvalidSocket();
-  gObserverArmed = 0;
-  gScenarioAckActive = 0;
-  gActiveBaseScenarioId = 0;
-
   gLastBaseScenarioId  = 0;
   gBaseScenarioResult  = 0;
   gFlowCoverage        = 0;
@@ -150,10 +113,8 @@ void clearBaseResultState()
   gE2eHealthState      = 0;
   gFailSafeMode        = 2;
   gEmergencyContext    = 0;
-  gDecelDecisionReq    = 0;
   gDecelAssistReq      = 0;
   gDecelRisk           = 0;
-  gDecelGateReason     = 0;
   gDecelReleaseReason  = 0;
   gLastSelectedAlertLevel = 0;
   gLastSelectedAlertType = 0;
@@ -167,10 +128,8 @@ void clearBaseResultState()
   @Test::baseTestHealth       = 0;
   @Test::obsFailSafeMode      = -1;
   @Test::obsEmergencyContext  = -1;
-  @Test::obsDecelDecisionReq   = -1;
   @Test::obsDecelAssistReq    = -1;
   @Test::obsDecelRisk         = -1;
-  @Test::obsDecelGateReason   = -1;
   @Test::obsDecelReleaseReason = -1;
   @Test::obsSelectedAlertLevel = -1;
   @Test::obsSelectedAlertType  = -1;
@@ -199,115 +158,14 @@ void publishBaseResultState(int pass)
         gLastBaseScenarioId, gBaseScenarioResult, gTestHealth);
 }
 
-void publishPendingBaseScenarioContext()
+on start
 {
-  gLastBaseScenarioId = resolveBaseScenarioId();
-  @Test::baseScenarioId = gLastBaseScenarioId & 0xFF;
-}
-
-void mirrorObserverFromCore()
-{
-  int selectedAlertLevel;
-  int selectedAlertType;
-  int failSafeMode;
-  int emergencyContext;
-  int decelDecisionReq;
-  int decelAssistReq;
-  int decelRisk;
-  int decelGateReason;
-  int decelReleaseReason;
-  int objectRiskClass;
-  int objectRiskLevel;
-  int objectTrackValid;
-  int objectConfidence;
-  int intersectionConflictFlag;
-  int mergeCutInFlag;
-  dword nowMs;
-
-  if (hasActiveScenarioLifecycle() == 0)
-  {
-    return;
-  }
-
-  selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-  selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 31);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 3);
-  emergencyContext = clampRange((int)@Core::emergencyContext, 0, 3);
-  decelDecisionReq = clampRange((int)@Core::decelAssistDecisionReq, 0, 1);
-  decelAssistReq = clampRange((int)@Core::decelAssistReq, 0, 1);
-  decelRisk = clampRange((int)@Core::proximityRiskLevel, 0, 100);
-  decelGateReason = clampRange((int)@CoreState::decelGateReason, 0, 3);
-  decelReleaseReason = clampRange(gDecelReleaseReason, 0, 3);
-  objectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
-  objectRiskLevel = clampRange((int)@Core::proximityRiskLevel, 0, 100);
-  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
-  objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
-  intersectionConflictFlag = clampRange((int)@Core::intersectionConflictFlag, 0, 1);
-  mergeCutInFlag = clampRange((int)@Core::mergeCutInFlag, 0, 1);
-  nowMs = getSimulationTimeMs();
-
-  if (selectedAlertLevel != gLastSelectedAlertLevel ||
-      selectedAlertType != gLastSelectedAlertType)
-  {
-    gTraceSnapshotId = (gTraceSnapshotId + 1) & 0xFFFF;
-    @Test::baseTraceSnapshotId = gTraceSnapshotId & 0xFFFF;
-  }
-
-  gLastSelectedAlertLevel = selectedAlertLevel;
-  gLastSelectedAlertType = selectedAlertType;
-  gFailSafeMode = failSafeMode;
-  gEmergencyContext = emergencyContext;
-  gDecelDecisionReq = decelDecisionReq;
-  gDecelAssistReq = decelAssistReq;
-  gDecelRisk = decelRisk;
-  gDecelGateReason = decelGateReason;
-  gDecelReleaseReason = decelReleaseReason;
-
-  if (resolveBaseScenarioId() != 0)
-  {
-    gFailSafeRxMs = nowMs;
-    gEmergencyMonRxMs = nowMs;
-  }
-
-  @Test::obsSelectedAlertLevel = selectedAlertLevel;
-  @Test::obsSelectedAlertType = selectedAlertType;
-  @Test::obsFailSafeMode = failSafeMode;
-  @Test::obsEmergencyContext = emergencyContext;
-  @Test::obsDecelDecisionReq = decelDecisionReq;
-  @Test::obsDecelAssistReq = decelAssistReq;
-  @Test::obsDecelRisk = decelRisk;
-  @Test::obsDecelGateReason = decelGateReason;
-  @Test::obsDecelReleaseReason = decelReleaseReason;
-  @Test::obsObjectRiskClass = objectRiskClass;
-  @Test::obsObjectRiskLevel = objectRiskLevel;
-  @Test::obsObjectTrackValid = objectTrackValid;
-  @Test::obsObjectConfidence = objectConfidence;
-  @Test::obsIntersectionConflictFlag = intersectionConflictFlag;
-  @Test::obsMergeCutInFlag = mergeCutInFlag;
-}
-
-void ensureObserverArmed()
-{
-  if (gObserverArmed == 1)
-  {
-    return;
-  }
-
   gEthSocket = ethOpenDefaultSocket();
+  clearBaseResultState();
   if (gEthSocket != ethInvalidSocket())
   {
     ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-    gObserverArmed = 1;
-    write("[TEST_BAS] observer armed");
   }
-}
-
-on start
-{
-  gEthSocket = ethInvalidSocket();
-  gObserverArmed = 0;
-  clearBaseResultState();
-  setTimer(tObserverPoll50, 50);
   write("[TEST_BAS] start");
 }
 
@@ -336,23 +194,11 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
     else if (msgId == ethMsgDecelAssist() && ethFramePayloadLen(count) >= 2)
     {
       payload0 = ethGetU8(buffer, 0);
-      gDecelDecisionReq = gDecelAssistReq;
       gDecelAssistReq = payload0 & 0x1;
       gDecelRisk = ethGetU8(buffer, 1);
-      if (ethFramePayloadLen(count) >= 3)
-      {
-        gDecelDecisionReq = ethGetU8(buffer, 2) & 0x1;
-        gDecelGateReason = clampRange((ethGetU8(buffer, 2) >> 1) & 0x3, 0, 3);
-      }
-      else
-      {
-        gDecelGateReason = clampRange((payload0 >> 3) & 0x3, 0, 3);
-      }
       gDecelReleaseReason = clampRange((payload0 >> 3) & 0x3, 0, 3);
-      @Test::obsDecelDecisionReq = gDecelDecisionReq;
       @Test::obsDecelAssistReq = gDecelAssistReq;
       @Test::obsDecelRisk = gDecelRisk;
-      @Test::obsDecelGateReason = gDecelGateReason;
       @Test::obsDecelReleaseReason = gDecelReleaseReason;
     }
     else if (msgId == ethMsgEmergencyMonitor() && ethFramePayloadLen(count) >= 1)
@@ -393,142 +239,21 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
   ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
-on message frmAdasDomainStateMsg
-{
-  if (hasActiveScenarioLifecycle() == 0)
-  {
-    return;
-  }
-
-  if ((int)this.SelectedAlertLevel != gLastSelectedAlertLevel ||
-      (int)this.SelectedAlertType != gLastSelectedAlertType)
-  {
-    gTraceSnapshotId = (gTraceSnapshotId + 1) & 0xFFFF;
-    @Test::baseTraceSnapshotId = gTraceSnapshotId & 0xFFFF;
-  }
-
-  gLastSelectedAlertLevel = clampRange((int)this.SelectedAlertLevel, 0, 7);
-  gLastSelectedAlertType = clampRange((int)this.SelectedAlertType, 0, 31);
-  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 3);
-  gEmergencyContext = clampRange((int)this.EmergencyContext, 0, 3);
-  gDecelDecisionReq = clampRange((int)@Core::decelAssistDecisionReq, 0, 1);
-  gDecelAssistReq = clampRange((int)this.DecelAssistReq, 0, 1);
-  gDecelRisk = clampRange((int)this.RiskLevel, 0, 100);
-  gDecelGateReason = clampRange((int)@CoreState::decelGateReason, 0, 3);
-  gFailSafeRxMs = getSimulationTimeMs();
-  gEmergencyMonRxMs = gFailSafeRxMs;
-
-  @Test::obsSelectedAlertLevel = gLastSelectedAlertLevel;
-  @Test::obsSelectedAlertType = gLastSelectedAlertType;
-  @Test::obsFailSafeMode = gFailSafeMode;
-  @Test::obsEmergencyContext = gEmergencyContext;
-  @Test::obsDecelDecisionReq = gDecelDecisionReq;
-  @Test::obsDecelAssistReq = gDecelAssistReq;
-  @Test::obsDecelRisk = gDecelRisk;
-  @Test::obsDecelGateReason = gDecelGateReason;
-  @Test::obsObjectRiskClass = clampRange((int)this.ObjectRiskClass, 0, 7);
-}
-
 on sysvar Test::scenarioResult
 {
-  if (hasActiveScenarioLifecycle() == 0)
-  {
-    return;
-  }
-
-  ensureObserverArmed();
   publishBaseResultState((int)@Test::scenarioResult);
-}
-
-on sysvar Test::testScenario
-{
-  if ((int)@Test::testScenario == 0 &&
-      (int)@Test::scenarioCommand == 0 &&
-      (int)@Test::scenarioCommandAck == 0 &&
-      (int)@Test::scenarioActiveId == 0 &&
-      (int)@Test::scenarioSettledId == 0 &&
-      (int)@Test::scenarioEvaluatedId == 0 &&
-      (int)@Test::scenarioResult == 0)
-  {
-    clearBaseResultState();
-    return;
-  }
-
-  if ((int)@Test::testScenario != 0)
-  {
-    gActiveBaseScenarioId = clampRange((int)@Test::testScenario, 0, 255);
-    ensureObserverArmed();
-    publishPendingBaseScenarioContext();
-  }
-}
-
-on sysvar Test::scenarioCommand
-{
-  if ((int)@Test::scenarioCommand == 0)
-  {
-    if ((int)@Test::scenarioCommandAck == 0 &&
-        hasActiveScenarioLifecycle() == 0 &&
-        (int)@Test::scenarioResult == 0)
-    {
-      clearBaseResultState();
-    }
-    return;
-  }
-
-  if ((int)@Test::scenarioCommand != 0)
-  {
-    gActiveBaseScenarioId = clampRange((int)@Test::scenarioCommand, 0, 255);
-    ensureObserverArmed();
-    publishPendingBaseScenarioContext();
-  }
 }
 
 on sysvar Test::scenarioCommandAck
 {
-  if ((int)@Test::scenarioCommandAck != 0)
+  if ((int)@Test::scenarioCommandAck == 0)
   {
-    stageBaseScenarioLifecycle((int)@Test::scenarioCommandAck);
+    clearBaseResultState();
   }
-  else if (gScenarioAckActive == 1 && hasActiveScenarioLifecycle() == 0)
-  {
-    gScenarioAckActive = 0;
-  }
-}
-
-on sysvar Test::scenarioActiveId
-{
-  if ((int)@Test::scenarioActiveId != 0)
-  {
-    stageBaseScenarioLifecycle((int)@Test::scenarioActiveId);
-  }
-}
-
-on sysvar Test::scenarioSettledId
-{
-  if ((int)@Test::scenarioSettledId != 0)
-  {
-    stageBaseScenarioLifecycle((int)@Test::scenarioSettledId);
-  }
-}
-
-on sysvar Test::scenarioEvaluatedId
-{
-  if ((int)@Test::scenarioEvaluatedId != 0)
-  {
-    stageBaseScenarioLifecycle((int)@Test::scenarioEvaluatedId);
-  }
-}
-
-on timer tObserverPoll50
-{
-  mirrorObserverFromCore();
-  setTimer(tObserverPoll50, 50);
 }
 
 on stopMeasurement
 {
-  cancelTimer(tObserverPoll50);
   ethCloseSocket(gEthSocket);
   gEthSocket = ethInvalidSocket();
-  gObserverArmed = 0;
 }
