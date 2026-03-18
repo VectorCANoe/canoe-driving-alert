@@ -34,6 +34,11 @@ export testcase TC_CANOE_UT_EXT_007_CLU_CONTEXT_ADJUST()
     return;
   }
 
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 2, 11, 40), 2, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("clu-policy-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("clu-policy-code", deriveExpectedEmergencyWarningCode(1, 2, 11, 40), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("clu-policy-direction", 2, (long)@UiRender::renderDirection, "renderDirection");
@@ -48,6 +53,11 @@ export testcase TC_CANOE_UT_EXT_007_CLU_CONTEXT_ADJUST()
     return;
   }
 
+  if (!waitForStableDistanceHistory(180, deriveExpectedEmergencyWarningCode(1, 2, 9, 72), 1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("clu-distance-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("clu-distance-code", deriveExpectedEmergencyWarningCode(1, 2, 9, 72), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("clu-distance-m", 180, (long)@CoreState::emergencyDistanceM, "emergencyDistanceM");

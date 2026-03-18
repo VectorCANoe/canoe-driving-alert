@@ -20,14 +20,23 @@ export testcase TC_CANOE_ST_EXT_033_HISTORY_QUERY()
     return;
   }
 
+  if (!waitForStableDistanceHistory(180, deriveExpectedEmergencyWarningCode(1, 2, 9, 72), 1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("history-query-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("history-query-distance", 180, (long)@CoreState::emergencyDistanceM, "emergencyDistanceM");
   assertIntEq("history-query-warning-code", deriveExpectedEmergencyWarningCode(1, 2, 9, 72), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntMin("history-query-count", 1, (long)@CoreState::alertHistoryCount, "alertHistoryCount");
 
   @Test::historyQueryOffset = 0;
-  TestWaitForTimeout(300);
-  assertIntEq("history-query-latest-code", (long)@Cluster::warningTextCode, (long)@Test::historyQueryCode, "historyQueryCode");
+  if (!waitForHistoryQueryCode(deriveExpectedEmergencyWarningCode(1, 2, 9, 72), 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("history-query-latest-code", deriveExpectedEmergencyWarningCode(1, 2, 9, 72), (long)@Test::historyQueryCode, "historyQueryCode");
 
   resetValidationHarnessIfNeeded();
 }

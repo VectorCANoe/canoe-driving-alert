@@ -50,19 +50,7 @@ int resolveBaseScenarioId()
   }
   if (scenarioId == 0)
   {
-    scenarioId = clampRange((int)@Test::testScenario, 0, 255);
-  }
-  if (scenarioId == 0)
-  {
     scenarioId = clampRange((int)@Test::scenarioCommandAck, 0, 255);
-  }
-  if (scenarioId == 0)
-  {
-    scenarioId = clampRange((int)@Test::scenarioCommand, 0, 255);
-  }
-  if (scenarioId == 0)
-  {
-    scenarioId = clampRange(gLastBaseScenarioId, 0, 255);
   }
   return scenarioId;
 }
@@ -236,8 +224,7 @@ void mirrorObserverFromCore()
   int mergeCutInFlag;
   dword nowMs;
 
-  if (hasActiveScenarioLifecycle() == 0 &&
-      gScenarioAckActive == 0)
+  if (hasActiveScenarioLifecycle() == 0)
   {
     return;
   }
@@ -408,8 +395,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
 
 on message frmAdasDomainStateMsg
 {
-  if (hasActiveScenarioLifecycle() == 0 &&
-      gScenarioAckActive == 0)
+  if (hasActiveScenarioLifecycle() == 0)
   {
     return;
   }
@@ -445,8 +431,7 @@ on message frmAdasDomainStateMsg
 
 on sysvar Test::scenarioResult
 {
-  if (hasActiveScenarioLifecycle() == 0 &&
-      gScenarioAckActive == 0)
+  if (hasActiveScenarioLifecycle() == 0)
   {
     return;
   }

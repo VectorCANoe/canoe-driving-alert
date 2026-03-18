@@ -20,11 +20,19 @@ export testcase TC_CANOE_IT_V2_011_FAILSAFE_MIN_WARNING()
     return;
   }
 
-  TestWaitForTimeout(200);
+  if (!waitForObservedDecelState(1, 0, 3, 800) ||
+      !waitForObservedFailSafe(800) ||
+      !waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
   assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("base-scenario-id", 18, (long)@Test::baseScenarioId, "baseScenarioId");
   assertIntEq("base-result", 1, (long)@Test::baseScenarioResult, "baseScenarioResult");
+  assertIntEq("decel-decision-held", 1, (long)@Test::obsDecelDecisionReq, "ethDecelDecisionReq");
+  assertIntEq("decel-gate-reason", 3, (long)@Test::obsDecelGateReason, "ethDecelGateReason");
   assertIntMin("fail-safe-mode", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
   assertIntEq("decel-assist", 0, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
   assertIntMin("alert-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");

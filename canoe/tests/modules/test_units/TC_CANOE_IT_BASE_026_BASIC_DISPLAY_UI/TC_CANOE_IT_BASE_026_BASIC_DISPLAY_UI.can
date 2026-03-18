@@ -20,6 +20,11 @@ export testcase TC_CANOE_IT_BASE_026_BASIC_DISPLAY_UI()
     return;
   }
 
+  if (!waitForStableDisplayPolicy(2, 1, 1, 1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("display-ui-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("display-ui-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("display-ui-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");

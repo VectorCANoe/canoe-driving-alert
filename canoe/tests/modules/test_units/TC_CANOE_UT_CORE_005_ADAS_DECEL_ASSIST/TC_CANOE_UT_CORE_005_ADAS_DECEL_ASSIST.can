@@ -21,14 +21,16 @@ export testcase TC_CANOE_UT_CORE_005_ADAS_DECEL_ASSIST()
   }
 
   assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedDecelAssist(800) ||
+  if (!waitForObservedDecelState(1, 1, 0, 800) ||
       !waitForObservedSelectedAlert(800) ||
       !waitForObservedFailSafe(800))
   {
     resetValidationHarnessIfNeeded();
     return;
   }
+  assertIntEq("decel-decision-req", 1, (long)@Test::obsDecelDecisionReq, "ethDecelDecisionReq");
   assertIntEq("decel-assist-req", 1, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
+  assertIntEq("decel-gate-clear", 0, (long)@Test::obsDecelGateReason, "ethDecelGateReason");
   assertLongGe("proximity-risk-level", (long)@Test::obsDecelRisk, 70, "ethDecelRisk");
   assertIntEq("fail-safe-clear", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
   assertIntEq("selected-alert-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");

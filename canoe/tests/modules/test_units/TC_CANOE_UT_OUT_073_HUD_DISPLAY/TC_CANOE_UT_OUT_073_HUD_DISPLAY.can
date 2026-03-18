@@ -26,6 +26,11 @@ export testcase TC_CANOE_UT_OUT_073_HUD_DISPLAY()
     return;
   }
 
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 2, 12, 20), 2, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("hud-direction-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("hud-direction-code", deriveExpectedEmergencyWarningCode(1, 2, 12, 20), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("hud-direction-render", 2, (long)@UiRender::renderDirection, "renderDirection");
@@ -40,6 +45,11 @@ export testcase TC_CANOE_UT_OUT_073_HUD_DISPLAY()
     return;
   }
 
+  if (!waitForStableDisplayPolicy(2, 1, 1, -1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("hud-popup-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("hud-theme", 2, (long)@CoreState::themeMode, "themeMode");
   assertIntEq("hud-popup-active", 1, (long)@CoreState::popupActive, "popupActive");

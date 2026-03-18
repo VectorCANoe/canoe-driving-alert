@@ -31,6 +31,7 @@ export testcase TC_CANOE_ST_EXT_041_DISPLAY_SERVICE_CONTEXT()
   assertIntEq("st-display-service-bars", 4, gSignalBars, "SignalBars");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(220, 900, 1300)) { return; }
+  if (!waitForStableDisplayPolicy(2, 1, 1, 1, 1200)) { resetValidationHarnessIfNeeded(); return; }
   assertIntEq("st-display-policy-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("st-display-policy-theme", 2, (long)@CoreState::themeMode, "themeMode");
   assertIntEq("st-display-policy-popup", 1, (long)@CoreState::popupActive, "popupActive");
@@ -38,6 +39,7 @@ export testcase TC_CANOE_ST_EXT_041_DISPLAY_SERVICE_CONTEXT()
   assertIntEq("st-display-policy-cluster-sync", 1, (long)@CoreState::clusterSyncState, "clusterSyncState");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(215, 900, 1300)) { return; }
+  if (!waitForStableAudioPolicy(1, 4, 80, 0, 1200)) { resetValidationHarnessIfNeeded(); return; }
   assertIntEq("st-audio-policy-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("st-audio-policy-focus", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
   assertIntEq("st-audio-policy-ducking", 4, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");

@@ -19,6 +19,11 @@ export testcase TC_CANOE_UT_CORE_013_IVI_GW_ROUTE()
   {
     return;
   }
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 1, 12, 40), -1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("ivi-gw-text-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("ivi-gw-text-route", 2, (long)@CoreState::routingPolicy, "routingPolicy");
   assertIntEq("ivi-gw-text-code", deriveExpectedEmergencyWarningCode(1, 1, 12, 40), (long)@Cluster::warningTextCode, "warningTextCode");
@@ -31,6 +36,11 @@ export testcase TC_CANOE_UT_CORE_013_IVI_GW_ROUTE()
   {
     return;
   }
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 2, 12, 20), 2, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("ivi-gw-police-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("ivi-gw-police-code", deriveExpectedEmergencyWarningCode(1, 2, 12, 20), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("ivi-gw-police-dir", 2, (long)@UiRender::renderDirection, "renderDirection");
@@ -41,6 +51,11 @@ export testcase TC_CANOE_UT_CORE_013_IVI_GW_ROUTE()
   }
   if (!launchScenarioAndWait(33, 800, 1300))
   {
+    return;
+  }
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(2, 1, 8, 20), 1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
   assertIntEq("ivi-gw-ambulance-pass", 1, (long)@Test::scenarioResult, "scenarioResult");

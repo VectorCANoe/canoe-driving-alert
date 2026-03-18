@@ -20,6 +20,12 @@ export testcase TC_CANOE_UT_OUT_071_IVI_HMI()
     return;
   }
 
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 2, 11, 40), 2, 1200) ||
+      !waitForStableAudioPolicy(1, 4, 80, -1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("ivi-hmi-display-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("ivi-hmi-code", deriveExpectedEmergencyWarningCode(1, 2, 11, 40), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("ivi-hmi-direction", 2, (long)@UiRender::renderDirection, "renderDirection");
@@ -36,6 +42,11 @@ export testcase TC_CANOE_UT_OUT_071_IVI_HMI()
     return;
   }
 
+  if (!waitForStableDisplayPolicy(2, 1, 1, -1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("ivi-hmi-popup-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("ivi-hmi-theme", 2, (long)@CoreState::themeMode, "themeMode");
   assertIntEq("ivi-hmi-popup-active", 1, (long)@CoreState::popupActive, "popupActive");
@@ -51,6 +62,11 @@ export testcase TC_CANOE_UT_OUT_071_IVI_HMI()
     return;
   }
 
+  if (!waitForStableDistanceHistory(180, deriveExpectedEmergencyWarningCode(1, 2, 9, 72), 1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("ivi-hmi-distance-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("ivi-hmi-distance", 180, (long)@CoreState::emergencyDistanceM, "emergencyDistanceM");
   assertIntEq("ivi-hmi-distance-code", deriveExpectedEmergencyWarningCode(1, 2, 9, 72), (long)@Cluster::warningTextCode, "warningTextCode");

@@ -215,12 +215,242 @@ long waitForObservedObjectScenario(dword timeoutMs)
   return 1;
 }
 
+long waitForObservedDecelState(long expectedDecision,
+                               long expectedEffective,
+                               long expectedGateReason,
+                               dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((((expectedDecision >= 0) &&
+           ((long)@Test::obsDecelDecisionReq != expectedDecision)) ||
+          (((expectedEffective >= 0) &&
+            ((long)@Test::obsDecelAssistReq != expectedEffective))) ||
+          (((expectedGateReason >= 0) &&
+            ((long)@Test::obsDecelGateReason != expectedGateReason)))) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (((expectedDecision >= 0) &&
+       ((long)@Test::obsDecelDecisionReq != expectedDecision)) ||
+      ((expectedEffective >= 0) &&
+       ((long)@Test::obsDecelAssistReq != expectedEffective)) ||
+      ((expectedGateReason >= 0) &&
+       ((long)@Test::obsDecelGateReason != expectedGateReason)))
+  {
+    testStepFail("observer-decel-state", "Decel state timeout waited=%d decision=%d effective=%d gate=%d expectedDecision=%d expectedEffective=%d expectedGate=%d",
+                 waitedMs,
+                 (long)@Test::obsDecelDecisionReq,
+                 (long)@Test::obsDecelAssistReq,
+                 (long)@Test::obsDecelGateReason,
+                 expectedDecision,
+                 expectedEffective,
+                 expectedGateReason);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForStableWarningRender(long expectedCode,
+                                long expectedDirection,
+                                dword timeoutMs)
+{
+  dword waitedMs;
+  dword stableMs;
+
+  waitedMs = 0;
+  stableMs = 0;
+  while (waitedMs < timeoutMs)
+  {
+    if ((long)@Cluster::warningTextCode == expectedCode &&
+        (expectedDirection < 0 ||
+         (long)@UiRender::renderDirection == expectedDirection))
+    {
+      stableMs += 50;
+      if (stableMs >= 150)
+      {
+        return 1;
+      }
+    }
+    else
+    {
+      stableMs = 0;
+    }
+
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  testStepFail("stable-warning-render", "Warning render stability timeout waited=%d code=%d direction=%d expectedCode=%d expectedDirection=%d",
+               waitedMs,
+               (long)@Cluster::warningTextCode,
+               (long)@UiRender::renderDirection,
+               expectedCode,
+               expectedDirection);
+  return 0;
+}
+
+long waitForStableAudioPolicy(long expectedFocusOwner,
+                              long expectedDuckingLvl,
+                              long expectedVolumeLevel,
+                              long expectedPopupActive,
+                              dword timeoutMs)
+{
+  dword waitedMs;
+  dword stableMs;
+
+  waitedMs = 0;
+  stableMs = 0;
+  while (waitedMs < timeoutMs)
+  {
+    if ((long)@CoreState::audioFocusOwner == expectedFocusOwner &&
+        (long)@CoreState::audioDuckingLvl == expectedDuckingLvl &&
+        (long)@CoreState::volumeLevel == expectedVolumeLevel &&
+        (expectedPopupActive < 0 ||
+         (long)@CoreState::popupActive == expectedPopupActive))
+    {
+      stableMs += 50;
+      if (stableMs >= 150)
+      {
+        return 1;
+      }
+    }
+    else
+    {
+      stableMs = 0;
+    }
+
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  testStepFail("stable-audio-policy", "Audio policy stability timeout waited=%d focus=%d ducking=%d volume=%d popup=%d",
+               waitedMs,
+               (long)@CoreState::audioFocusOwner,
+               (long)@CoreState::audioDuckingLvl,
+               (long)@CoreState::volumeLevel,
+               (long)@CoreState::popupActive);
+  return 0;
+}
+
+long waitForStableDisplayPolicy(long expectedTheme,
+                                long expectedPopupActive,
+                                long expectedPopupPriority,
+                                long expectedClusterSync,
+                                dword timeoutMs)
+{
+  dword waitedMs;
+  dword stableMs;
+
+  waitedMs = 0;
+  stableMs = 0;
+  while (waitedMs < timeoutMs)
+  {
+    if ((long)@CoreState::themeMode == expectedTheme &&
+        (long)@CoreState::popupActive == expectedPopupActive &&
+        (long)@CoreState::popupPriority == expectedPopupPriority &&
+        (expectedClusterSync < 0 ||
+         (long)@CoreState::clusterSyncState == expectedClusterSync))
+    {
+      stableMs += 50;
+      if (stableMs >= 150)
+      {
+        return 1;
+      }
+    }
+    else
+    {
+      stableMs = 0;
+    }
+
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  testStepFail("stable-display-policy", "Display policy stability timeout waited=%d theme=%d popup=%d priority=%d sync=%d",
+               waitedMs,
+               (long)@CoreState::themeMode,
+               (long)@CoreState::popupActive,
+               (long)@CoreState::popupPriority,
+               (long)@CoreState::clusterSyncState);
+  return 0;
+}
+
+long waitForStableDistanceHistory(long expectedDistanceM,
+                                  long expectedWarningCode,
+                                  long minHistoryCount,
+                                  dword timeoutMs)
+{
+  dword waitedMs;
+  dword stableMs;
+
+  waitedMs = 0;
+  stableMs = 0;
+  while (waitedMs < timeoutMs)
+  {
+    if ((long)@CoreState::emergencyDistanceM == expectedDistanceM &&
+        (long)@Cluster::warningTextCode == expectedWarningCode &&
+        (long)@CoreState::alertHistoryCount >= minHistoryCount)
+    {
+      stableMs += 50;
+      if (stableMs >= 150)
+      {
+        return 1;
+      }
+    }
+    else
+    {
+      stableMs = 0;
+    }
+
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  testStepFail("stable-distance-history", "Distance/history stability timeout waited=%d distance=%d code=%d count=%d",
+               waitedMs,
+               (long)@CoreState::emergencyDistanceM,
+               (long)@Cluster::warningTextCode,
+               (long)@CoreState::alertHistoryCount);
+  return 0;
+}
+
+long waitForHistoryQueryCode(long expectedCode, dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((long)@Test::historyQueryCode != expectedCode &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::historyQueryCode != expectedCode)
+  {
+    testStepFail("history-query-code", "History query timeout waited=%d expected=%d actual=%d",
+                 waitedMs,
+                 expectedCode,
+                 (long)@Test::historyQueryCode);
+    return 0;
+  }
+
+  return 1;
+}
+
 long resetValidationHarnessIfNeeded()
 {
   dword waitedMs;
 
   if ((int)@Test::scenarioCommand == 0 &&
       (int)@Test::scenarioCommandAck == 0 &&
+      (int)@Test::testScenario == 0 &&
       (int)@Test::scenarioActiveId == 0 &&
       (int)@Test::scenarioSettledId == 0 &&
       (int)@Test::scenarioEvaluatedId == 0 &&
@@ -235,8 +465,10 @@ long resetValidationHarnessIfNeeded()
   }
 
   @Test::scenarioCommand = 0;
+  @Test::testScenario = 0;
   waitedMs = 0;
-  while (((int)@Test::scenarioCommandAck != 0 ||
+  while (((int)@Test::testScenario != 0 ||
+          (int)@Test::scenarioCommandAck != 0 ||
           (int)@Test::scenarioActiveId != 0 ||
           (int)@Test::scenarioSettledId != 0 ||
           (int)@Test::scenarioEvaluatedId != 0 ||
@@ -247,14 +479,16 @@ long resetValidationHarnessIfNeeded()
     waitedMs += 50;
   }
 
-  if ((int)@Test::scenarioCommandAck != 0 ||
+  if ((int)@Test::testScenario != 0 ||
+      (int)@Test::scenarioCommandAck != 0 ||
       (int)@Test::scenarioActiveId != 0 ||
       (int)@Test::scenarioSettledId != 0 ||
       (int)@Test::scenarioEvaluatedId != 0 ||
       (int)@Test::scenarioResult != 0)
   {
-    testStepFail("scenario-reset", "Harness reset timeout waited=%d ack=%d active=%d settled=%d evaluated=%d result=%d",
+    testStepFail("scenario-reset", "Harness reset timeout waited=%d mirror=%d ack=%d active=%d settled=%d evaluated=%d result=%d",
                  waitedMs,
+                 (int)@Test::testScenario,
                  (int)@Test::scenarioCommandAck,
                  (int)@Test::scenarioActiveId,
                  (int)@Test::scenarioSettledId,
@@ -328,15 +562,58 @@ long waitForScenarioSettled(int scenarioId, dword timeoutMs)
   return 1;
 }
 
+long waitForScenarioEvaluated(int scenarioId, dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((int)@Test::scenarioEvaluatedId != scenarioId &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((int)@Test::scenarioEvaluatedId != scenarioId)
+  {
+    testStepFail("scenario-evaluated", "Scenario evaluate timeout expected=%d active=%d settled=%d evaluated=%d result=%d waited=%d",
+                 scenarioId,
+                 (int)@Test::scenarioActiveId,
+                 (int)@Test::scenarioSettledId,
+                 (int)@Test::scenarioEvaluatedId,
+                 (int)@Test::scenarioResult,
+                 waitedMs);
+    return 0;
+  }
+
+  testStepPass("scenario-evaluated", "Scenario %d evaluated result=%d",
+               scenarioId,
+               (int)@Test::scenarioResult);
+  return 1;
+}
+
 long launchScenarioAndWait(int scenarioId, dword ackTimeoutMs, dword settleMs)
 {
+  dword evalTimeoutMs;
+
   @Test::scenarioCommand = scenarioId;
   if (!waitForScenarioAck(scenarioId, ackTimeoutMs))
   {
     return 0;
   }
 
-  return waitForScenarioSettled(scenarioId, settleMs);
+  if (!waitForScenarioSettled(scenarioId, settleMs))
+  {
+    return 0;
+  }
+
+  evalTimeoutMs = settleMs + 2000;
+  if (evalTimeoutMs < 2500)
+  {
+    evalTimeoutMs = 2500;
+  }
+
+  return waitForScenarioEvaluated(scenarioId, evalTimeoutMs);
 }
 
 long waitForBaseResult(int scenarioId, dword timeoutMs)

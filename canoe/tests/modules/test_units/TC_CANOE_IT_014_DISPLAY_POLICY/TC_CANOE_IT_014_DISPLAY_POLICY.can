@@ -20,6 +20,11 @@ export testcase TC_CANOE_IT_014_DISPLAY_POLICY()
     return;
   }
 
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 2, 11, 40), 2, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("display-policy-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("display-policy-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("display-policy-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");

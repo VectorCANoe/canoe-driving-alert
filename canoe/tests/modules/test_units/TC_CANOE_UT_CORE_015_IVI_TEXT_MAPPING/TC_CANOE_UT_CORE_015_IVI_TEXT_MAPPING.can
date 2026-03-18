@@ -20,6 +20,11 @@ export testcase TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING()
     return;
   }
 
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 1, 12, 40), -1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("selected-alert-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("selected-alert-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");

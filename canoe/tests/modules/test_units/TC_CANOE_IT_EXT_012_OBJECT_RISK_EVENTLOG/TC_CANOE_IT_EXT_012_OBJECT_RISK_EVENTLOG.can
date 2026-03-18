@@ -86,7 +86,7 @@ export testcase TC_CANOE_IT_EXT_012_OBJECT_RISK_EVENTLOG()
   assertIntEq("confidence-degrade-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   if (!waitForObservedObjectRisk(800) ||
       !waitForObservedFailSafe(800) ||
-      !waitForObservedDecelAssist(800))
+      !waitForObservedDecelState(-1, 0, -1, 800))
   {
     resetValidationHarnessIfNeeded();
     return;

@@ -20,6 +20,11 @@ export testcase TC_CANOE_UT_OUT_072_CLU_DISPLAY()
     return;
   }
 
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 2, 12, 20), 2, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("clu-police-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("clu-police-code", deriveExpectedEmergencyWarningCode(1, 2, 12, 20), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("clu-police-direction", 2, (long)@UiRender::renderDirection, "renderDirection");
@@ -34,6 +39,11 @@ export testcase TC_CANOE_UT_OUT_072_CLU_DISPLAY()
     return;
   }
 
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(2, 1, 8, 20), 1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("clu-ambulance-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("clu-ambulance-code", deriveExpectedEmergencyWarningCode(2, 1, 8, 20), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("clu-ambulance-direction", 1, (long)@UiRender::renderDirection, "renderDirection");
@@ -48,6 +58,11 @@ export testcase TC_CANOE_UT_OUT_072_CLU_DISPLAY()
     return;
   }
 
+  if (!waitForStableDisplayPolicy(2, 1, 1, 1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("clu-popup-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("clu-theme", 2, (long)@CoreState::themeMode, "themeMode");
   assertIntEq("clu-popup-active", 1, (long)@CoreState::popupActive, "popupActive");

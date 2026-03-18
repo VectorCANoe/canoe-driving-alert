@@ -17,8 +17,16 @@ export testcase TC_CANOE_UT_OUT_075_DECEL_ASSIST_REQ()
   }
 
   assertIntEq("decel-assist-active-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForObservedDecelState(1, 1, 0, 800) ||
+      !waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertLongGe("decel-assist-risk", (long)@Test::obsDecelRisk, 70, "ethDecelRisk");
+  assertIntEq("decel-assist-decision", 1, (long)@Test::obsDecelDecisionReq, "ethDecelDecisionReq");
   assertIntEq("decel-assist-active", 1, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
+  assertIntEq("decel-assist-gate-clear", 0, (long)@Test::obsDecelGateReason, "ethDecelGateReason");
   assertIntEq("decel-assist-active-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
 
   if (!resetValidationHarnessIfNeeded())
@@ -35,9 +43,16 @@ export testcase TC_CANOE_UT_OUT_075_DECEL_ASSIST_REQ()
     return;
   }
 
-  TestWaitForTimeout(200);
+  if (!waitForObservedDecelState(1, 0, 3, 800) ||
+      !waitForObservedFailSafe(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("decel-assist-failsafe-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("decel-assist-decision-held", 1, (long)@Test::obsDecelDecisionReq, "ethDecelDecisionReq");
   assertIntEq("decel-assist-blocked", 0, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
+  assertIntEq("decel-assist-gated", 3, (long)@Test::obsDecelGateReason, "ethDecelGateReason");
   assertIntMin("decel-assist-failsafe", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
   resetValidationHarnessIfNeeded();

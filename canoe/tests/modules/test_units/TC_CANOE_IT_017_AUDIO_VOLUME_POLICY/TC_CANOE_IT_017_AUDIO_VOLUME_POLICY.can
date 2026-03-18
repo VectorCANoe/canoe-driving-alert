@@ -20,6 +20,11 @@ export testcase TC_CANOE_IT_017_AUDIO_VOLUME_POLICY()
     return;
   }
 
+  if (!waitForStableAudioPolicy(1, 4, 80, -1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("audio-volume-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("audio-volume-focus-owner", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
   assertIntEq("audio-volume-ducking", 4, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");

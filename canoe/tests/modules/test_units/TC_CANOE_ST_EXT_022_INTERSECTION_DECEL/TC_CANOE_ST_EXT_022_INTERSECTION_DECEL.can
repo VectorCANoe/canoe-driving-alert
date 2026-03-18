@@ -13,11 +13,13 @@ export testcase TC_CANOE_ST_EXT_022_INTERSECTION_DECEL()
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(213, 800, 1300)) { return; }
   assertIntEq("st-intersection-decel-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedDecelAssist(800) ||
+  if (!waitForObservedDecelState(1, 1, 0, 800) ||
       !waitForObservedObjectScenario(800) ||
       !waitForObservedSelectedAlert(800)) { resetValidationHarnessIfNeeded(); return; }
   assertIntEq("st-intersection-flag", 1, (long)@Test::obsIntersectionConflictFlag, "ethIntersectionConflictFlag");
+  assertIntEq("st-intersection-decision", 1, (long)@Test::obsDecelDecisionReq, "ethDecelDecisionReq");
   assertIntEq("st-intersection-decel-req", 1, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
+  assertIntEq("st-intersection-gate-clear", 0, (long)@Test::obsDecelGateReason, "ethDecelGateReason");
   assertIntEq("st-intersection-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
   assertIntEq("st-intersection-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
   resetValidationHarnessIfNeeded();
