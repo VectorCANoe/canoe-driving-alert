@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -77,6 +78,7 @@ int applyRobustPolicy(int code)
   int timeoutClear;
   int coded;
   int syncMismatch;
+  int useBackbone;
 
   coded = code;
   useBackbone = useBackboneAlertState();

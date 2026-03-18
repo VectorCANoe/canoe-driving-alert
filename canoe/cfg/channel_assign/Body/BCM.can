@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -62,6 +63,8 @@ variables
   int gLastComfortProfile;
   int gLastComfortStatus;
   int gLastComfortError;
+  int gBlinkState;
+  int useBackbone;
 }
 
 int useBackboneAlertState()
@@ -204,7 +207,6 @@ void traceBcmCommandHealth(int paakInputStale,
     }
     gLastVehicleCtxInputStale = vehicleCtxInputStale;
   }
-  int gBlinkState;
 }
 
 
@@ -603,7 +605,7 @@ on timer tBodyBase100
   {
     mSeatBelt.PassengerSeatBelt = 0;
   }
-  // 패널 버튼 독립 제어: 운전자/동승자 벨트 개별 토글
+  // ?�널 버튼 ?�립 ?�어: ?�전???�승??벨트 개별 ?��?
   if (driverBeltOff == 1)
   {
     mSeatBelt.DriverSeatBelt = 0;

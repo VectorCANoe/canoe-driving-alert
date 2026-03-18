@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -145,7 +146,7 @@ on timer tDoorFlCycle
   int lockState;
   int openState;
   int windowPos;
-
+  int cmd;
   doorCtrlInputStale = (ethIsRecentTick(gDoorCtrlRxMs, 300) == 1) ? 0 : 1;
   vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
   dkeyInputStale = (ethIsRecentTick(gDkeyRxMs, 300) == 1) ? 0 : 1;
