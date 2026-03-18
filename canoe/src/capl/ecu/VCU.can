@@ -77,6 +77,114 @@ int deriveTorqueRequest(int driveMode, int accelPedal, int speedLimit)
   return torqueRequest;
 }
 
+int deriveTargetSpeed(int currentSpeed,
+                      int gearState,
+                      int accelPedal,
+                      int brakePedal,
+                      int driveMode,
+                      int speedLimit)
+{
+  int targetSpeed;
+
+  targetSpeed = currentSpeed;
+  if (gearState == 0 || gearState == 2)
+  {
+    return 0;
+  }
+
+  if (gearState == 1)
+  {
+    targetSpeed = 4 + (accelPedal / 6);
+    if (brakePedal >= 20)
+    {
+      targetSpeed = 0;
+    }
+    return clampRange(targetSpeed, 0, 18);
+  }
+
+  if (accelPedal > 0)
+  {
+    targetSpeed = accelPedal * 2;
+    if (currentSpeed < 15 && accelPedal >= 30)
+    {
+      targetSpeed = targetSpeed + 6;
+    }
+    if (driveMode == 2)
+    {
+      targetSpeed = targetSpeed + 10 + (accelPedal / 10);
+    }
+    else if (driveMode == 1)
+    {
+      targetSpeed = targetSpeed - 4;
+    }
+    if (speedLimit > 0 && speedLimit < 255 && targetSpeed > speedLimit + 25)
+    {
+      targetSpeed = speedLimit + 25;
+    }
+  }
+  else if (brakePedal > 20)
+  {
+    targetSpeed = 0;
+  }
+  else if (brakePedal > 0)
+  {
+    targetSpeed = currentSpeed - (brakePedal / 2);
+  }
+  else if (currentSpeed > 0)
+  {
+    targetSpeed = currentSpeed - ((driveMode == 1) ? 1 : 2);
+  }
+
+  return clampRange(targetSpeed, 0, 255);
+}
+
+int deriveAccelStep(int gearState, int driveMode, int accelPedal, int currentSpeed)
+{
+  int step;
+
+  step = 2;
+  if (accelPedal > 0)
+  {
+    step = 1 + (accelPedal / 25);
+  }
+  if (currentSpeed < 12 && accelPedal >= 30)
+  {
+    step = step + 2;
+  }
+  if (driveMode == 2 && accelPedal >= 40)
+  {
+    step = step + 1;
+  }
+  if (gearState == 1 && step > 3)
+  {
+    step = 3;
+  }
+
+  return clampRange(step, 1, 12);
+}
+
+int deriveDecelStep(int gearState, int brakePedal, int currentSpeed)
+{
+  int step;
+
+  if (currentSpeed <= 0)
+  {
+    return 0;
+  }
+
+  step = 2 + (brakePedal / 8);
+  if (gearState == 0 || gearState == 2)
+  {
+    step = step + 2;
+  }
+  if (brakePedal >= 40)
+  {
+    step = step + 4;
+  }
+
+  return clampRange(step, 2, 18);
+}
+
 int deriveEnergyFlowMode(int driveState, int accelPedal, int brakePedal)
 {
   if (driveState == 0)
@@ -306,8 +414,10 @@ on timer tVcuCycle
   int pedalInputStale;
   int ignitionInputStale;
   int gearInputStale;
+  int accelStep;
   int accelPedal;
   int brakePedal;
+  int decelStep;
   int engineState;
   int gearState;
 
@@ -357,24 +467,24 @@ on timer tVcuCycle
   }
   else
   {
-    targetSpeed = gSpeed;
-    if (accelPedal > 0)
-    {
-      targetSpeed = accelPedal * 2;
-      if (targetSpeed > 200) targetSpeed = 200;
-    }
-    else if (brakePedal > 20 || gearState == 0)
-    {
-      targetSpeed = 0;
-    }
-    else if (targetSpeed > 0)
-    {
-      targetSpeed = targetSpeed - 2;
-    }
+    targetSpeed = deriveTargetSpeed(gSpeed,
+                                    gearState,
+                                    accelPedal,
+                                    brakePedal,
+                                    gDriveMode,
+                                    gSpeedLimitNorm);
 
     delta = targetSpeed - gSpeed;
-    if (delta > 5) delta = 5;
-    if (delta < -15) delta = -15;
+    if (delta > 0)
+    {
+      accelStep = deriveAccelStep(gearState, gDriveMode, accelPedal, gSpeed);
+      if (delta > accelStep) delta = accelStep;
+    }
+    else if (delta < 0)
+    {
+      decelStep = deriveDecelStep(gearState, brakePedal, gSpeed);
+      if (-delta > decelStep) delta = -decelStep;
+    }
     gSpeed = gSpeed + delta;
     if (gSpeed < 0) gSpeed = 0;
     if (gSpeed > 255) gSpeed = 255;
