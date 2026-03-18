@@ -20,6 +20,22 @@ variables
   int gLastWiperInterval;
 }
 
+void traceWipInputHealth(int rainInputStale)
+{
+  if (rainInputStale != gLastRainInputStale)
+  {
+    if (rainInputStale == 1)
+    {
+      write("[WIP] rain/light input stale");
+    }
+    else
+    {
+      write("[WIP] rain/light input restored");
+    }
+    gLastRainInputStale = rainInputStale;
+  }
+}
+
 void publishWiperState()
 {
   message frmWiperStateMsg mWiper;
