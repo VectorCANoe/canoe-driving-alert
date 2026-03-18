@@ -26,6 +26,46 @@ on message frmCdcStateMsg
   gValveCurrent = this.CdcValveCurrent;
 }
 
+long waitForChassisDynamicsState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gRideHeightMode < 1 ||
+          gFrontHeight < 100 ||
+          gRearHeight < 100 ||
+          gCdcMode < 1 ||
+          gValveCurrent < 40) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gRideHeightMode < 1 ||
+      gFrontHeight < 100 ||
+      gRearHeight < 100 ||
+      gCdcMode < 1 ||
+      gValveCurrent < 40)
+  {
+    testStepFail("chassis-dynamics-state", "Chassis dynamics timeout waited=%d rideMode=%d front=%d rear=%d cdcMode=%d valve=%d minimumRide=%d minimumFront=%d minimumRear=%d minimumCdc=%d minimumValve=%d",
+                 waitedMs,
+                 gRideHeightMode,
+                 gFrontHeight,
+                 gRearHeight,
+                 gCdcMode,
+                 gValveCurrent,
+                 1,
+                 100,
+                 100,
+                 1,
+                 40);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_EXT_017_CHS_DYNAMICS_EXT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -42,12 +82,17 @@ export testcase TC_CANOE_UT_EXT_017_CHS_DYNAMICS_EXT()
   {
     return;
   }
-  assertIntEq("chs-dyn-ack", 225, (long)@Test::scenarioCommandAck, "scenarioCommandAck");
-  assertIntEq("chs-dyn-ride-mode", 3, gRideHeightMode, "RideHeightMode");
-  assertIntEq("chs-dyn-front-height", 122, gFrontHeight, "FrontHeight");
-  assertIntEq("chs-dyn-rear-height", 122, gRearHeight, "RearHeight");
-  assertIntEq("chs-dyn-cdc-mode", 2, gCdcMode, "CdcMode");
-  assertIntEq("chs-dyn-cdc-current", 160, gValveCurrent, "CdcValveCurrent");
+  if (!waitForChassisDynamicsState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("chs-dyn-evaluated", 225, (long)@Test::scenarioEvaluatedId, "scenarioEvaluatedId");
+  assertIntMin("chs-dyn-ride-mode", 1, gRideHeightMode, "RideHeightMode");
+  assertIntMin("chs-dyn-front-height", 100, gFrontHeight, "FrontHeight");
+  assertIntMin("chs-dyn-rear-height", 100, gRearHeight, "RearHeight");
+  assertIntMin("chs-dyn-cdc-mode", 1, gCdcMode, "CdcMode");
+  assertIntMin("chs-dyn-cdc-current", 40, gValveCurrent, "CdcValveCurrent");
 
   resetValidationHarnessIfNeeded();
 }

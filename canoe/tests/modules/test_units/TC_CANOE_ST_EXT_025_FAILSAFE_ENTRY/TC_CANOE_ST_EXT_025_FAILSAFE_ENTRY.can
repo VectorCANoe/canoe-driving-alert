@@ -12,10 +12,9 @@ export testcase TC_CANOE_ST_EXT_025_FAILSAFE_ENTRY()
 {
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(18, 900, 1400)) { return; }
-  assertIntEq("st-failsafe-entry-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedFailSafe(800) ||
+  if (!waitForObservedFailSafe(1200) ||
       !waitForObservedDecelState(1, 0, 3, 800) ||
-      !waitForObservedSelectedAlert(800)) { resetValidationHarnessIfNeeded(); return; }
+      !waitForObservedSelectedAlertMinState(6, 1, 800)) { resetValidationHarnessIfNeeded(); return; }
   assertIntEq("st-failsafe-entry-decision", 1, (long)@Test::obsDecelDecisionReq, "ethDecelDecisionReq");
   assertIntMin("st-failsafe-entry-mode", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
   assertIntEq("st-failsafe-entry-decel-off", 0, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");

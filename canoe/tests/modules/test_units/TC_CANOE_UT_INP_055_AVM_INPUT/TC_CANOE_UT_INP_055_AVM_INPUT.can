@@ -16,6 +16,30 @@ on message frmSurroundParkMasterStateMsg
   gSurroundActive = this.SurroundActive;
 }
 
+long waitForAvmInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gViewMode != 3 ||
+          gSurroundActive != 1) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gViewMode != 3 ||
+      gSurroundActive != 1)
+  {
+    testStepFail("avm-input-state", "AVM input timeout waited=%d view=%d active=%d",
+                 waitedMs, gViewMode, gSurroundActive);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_055_AVM_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -25,6 +49,11 @@ export testcase TC_CANOE_UT_INP_055_AVM_INPUT()
 
   if (!launchScenarioAndWait(234, 800, 1300))
   {
+    return;
+  }
+  if (!waitForAvmInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

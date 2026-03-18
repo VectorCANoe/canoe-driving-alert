@@ -20,8 +20,7 @@ export testcase TC_CANOE_UT_EXT_006_OBJECT_RISK()
     return;
   }
 
-  assertIntEq("object-forward-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedObjectRisk(800))
+  if (!waitForObservedObjectRiskMin(3, 60, 1200))
   {
     resetValidationHarnessIfNeeded();
     return;
@@ -39,10 +38,9 @@ export testcase TC_CANOE_UT_EXT_006_OBJECT_RISK()
     return;
   }
 
-  assertIntEq("object-intersection-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedObjectRisk(800) ||
-      !waitForObservedObjectScenario(800) ||
-      !waitForObservedSelectedAlert(800))
+  if (!waitForObservedObjectRiskMin(2, 40, 1200) ||
+      !waitForObservedIntersectionConflict(1200) ||
+      !waitForObservedSelectedAlertType(5, 1200))
   {
     resetValidationHarnessIfNeeded();
     return;
@@ -60,10 +58,9 @@ export testcase TC_CANOE_UT_EXT_006_OBJECT_RISK()
     return;
   }
 
-  assertIntEq("object-merge-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedObjectRisk(800) ||
-      !waitForObservedObjectScenario(800) ||
-      !waitForObservedSelectedAlert(800))
+  if (!waitForObservedObjectRiskMin(2, 40, 1200) ||
+      !waitForObservedMergeCutIn(1200) ||
+      !waitForObservedSelectedAlertType(6, 1200))
   {
     resetValidationHarnessIfNeeded();
     return;
@@ -81,10 +78,9 @@ export testcase TC_CANOE_UT_EXT_006_OBJECT_RISK()
     return;
   }
 
-  assertIntEq("object-degrade-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedObjectRisk(800) ||
-      !waitForObservedFailSafe(800) ||
-      !waitForObservedDecelState(-1, 0, -1, 800))
+  if (!waitForObservedObjectRisk(1200) ||
+      !waitForObservedFailSafeMin(1, 1500) ||
+      !waitForObservedDecelState(-1, 0, -1, 1200))
   {
     resetValidationHarnessIfNeeded();
     return;

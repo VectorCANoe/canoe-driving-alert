@@ -19,8 +19,13 @@ export testcase TC_CANOE_ST_EXT_045_TRIP_SEQUENCE()
   {
     return;
   }
+  if (!waitForCoreSelectedAlertState(0, 0, 1200) ||
+      !waitForStableWarningRender(0, 0, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
-  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("selected-alert-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("warning-text-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
 

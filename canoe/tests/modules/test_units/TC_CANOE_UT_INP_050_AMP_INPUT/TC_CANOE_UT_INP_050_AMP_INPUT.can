@@ -18,6 +18,32 @@ on message frmAmpStateMsg
   gAmpVolumeLevel = this.AmpVolumeLevel;
 }
 
+long waitForAmpInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gAmpMute != 0 ||
+          gAmpDuckingLvl < 2 ||
+          gAmpVolumeLevel < 20) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gAmpMute != 0 ||
+      gAmpDuckingLvl < 2 ||
+      gAmpVolumeLevel < 20)
+  {
+    testStepFail("amp-input-state", "AMP input timeout waited=%d mute=%d ducking=%d volume=%d",
+                 waitedMs, gAmpMute, gAmpDuckingLvl, gAmpVolumeLevel);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_050_AMP_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -30,6 +56,11 @@ export testcase TC_CANOE_UT_INP_050_AMP_INPUT()
   gAmpVolumeLevel = -1;
   if (!launchScenarioAndWait(215, 900, 1300))
   {
+    return;
+  }
+  if (!waitForAmpInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

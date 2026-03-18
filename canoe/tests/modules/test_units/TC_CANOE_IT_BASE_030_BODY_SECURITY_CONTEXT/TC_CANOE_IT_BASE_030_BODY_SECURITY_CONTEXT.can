@@ -20,7 +20,12 @@ export testcase TC_CANOE_IT_BASE_030_BODY_SECURITY_CONTEXT()
     return;
   }
 
-  assertIntEq("body-security-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForDiagSemanticState(-1, 1, 1, -1, -1, 1500))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntMin("body-security-diag-state", 1, (long)@Diag::SecurityState, "SecurityState");
   assertIntEq("body-security-route-owner", 1, (long)@Diag::RouteOwner, "RouteOwner");
 

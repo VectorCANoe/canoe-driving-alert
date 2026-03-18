@@ -27,6 +27,46 @@ variables
   int gLastAmpVolume;
 }
 
+int ampMediaLeaseWindowMs()
+{
+  return 300;
+}
+
+int ampMediaHoldWindowMs()
+{
+  return 1500;
+}
+
+int ampAudioFocusLeaseWindowMs()
+{
+  return 300;
+}
+
+int ampAudioFocusHoldWindowMs()
+{
+  return 1500;
+}
+
+int ampVoiceLeaseWindowMs()
+{
+  return 300;
+}
+
+int ampVoiceHoldWindowMs()
+{
+  return 1500;
+}
+
+int ampTtsLeaseWindowMs()
+{
+  return 300;
+}
+
+int ampTtsHoldWindowMs()
+{
+  return 1500;
+}
+
 void traceAmpInputHealth(int mediaInputStale, int audioFocusInputStale,
                          int voiceInputStale, int ttsInputStale)
 {
@@ -90,6 +130,10 @@ void publishAmpState()
   int audioFocusInputStale;
   int voiceInputStale;
   int ttsInputStale;
+  int mediaInputExpired;
+  int audioFocusInputExpired;
+  int voiceInputExpired;
+  int ttsInputExpired;
   int mediaState;
   int muteState;
   int volumeLevel;
@@ -100,10 +144,14 @@ void publishAmpState()
   int ampMode;
   int ampDucking;
 
-  mediaInputStale = (ethIsRecentTick(gMediaRxMs, 300) == 1) ? 0 : 1;
-  audioFocusInputStale = (ethIsRecentTick(gAudioFocusRxMs, 300) == 1) ? 0 : 1;
-  voiceInputStale = (ethIsRecentTick(gVoiceAssistRxMs, 300) == 1) ? 0 : 1;
-  ttsInputStale = (ethIsRecentTick(gTtsRxMs, 300) == 1) ? 0 : 1;
+  mediaInputStale = (ethIsRecentTick(gMediaRxMs, ampMediaLeaseWindowMs()) == 1) ? 0 : 1;
+  audioFocusInputStale = (ethIsRecentTick(gAudioFocusRxMs, ampAudioFocusLeaseWindowMs()) == 1) ? 0 : 1;
+  voiceInputStale = (ethIsRecentTick(gVoiceAssistRxMs, ampVoiceLeaseWindowMs()) == 1) ? 0 : 1;
+  ttsInputStale = (ethIsRecentTick(gTtsRxMs, ampTtsLeaseWindowMs()) == 1) ? 0 : 1;
+  mediaInputExpired = (ethIsRecentTick(gMediaRxMs, ampMediaHoldWindowMs()) == 1) ? 0 : 1;
+  audioFocusInputExpired = (ethIsRecentTick(gAudioFocusRxMs, ampAudioFocusHoldWindowMs()) == 1) ? 0 : 1;
+  voiceInputExpired = (ethIsRecentTick(gVoiceAssistRxMs, ampVoiceHoldWindowMs()) == 1) ? 0 : 1;
+  ttsInputExpired = (ethIsRecentTick(gTtsRxMs, ampTtsHoldWindowMs()) == 1) ? 0 : 1;
   traceAmpInputHealth(mediaInputStale, audioFocusInputStale, voiceInputStale, ttsInputStale);
 
   mediaState = gMediaState;
@@ -113,22 +161,22 @@ void publishAmpState()
   audioDuckingLvl = gAudioDuckingLvl;
   voiceAssistState = gVoiceAssistState;
   ttsState = gTtsState;
-  if (mediaInputStale == 1)
+  if (mediaInputExpired == 1)
   {
     mediaState = 0;
     muteState = 0;
     volumeLevel = 20;
   }
-  if (audioFocusInputStale == 1)
+  if (audioFocusInputExpired == 1)
   {
     audioFocusOwner = 0;
     audioDuckingLvl = 0;
   }
-  if (voiceInputStale == 1)
+  if (voiceInputExpired == 1)
   {
     voiceAssistState = 0;
   }
-  if (ttsInputStale == 1)
+  if (ttsInputExpired == 1)
   {
     ttsState = 0;
   }

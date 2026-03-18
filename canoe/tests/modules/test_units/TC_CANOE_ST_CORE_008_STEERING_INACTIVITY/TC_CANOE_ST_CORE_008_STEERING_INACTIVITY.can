@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -19,8 +19,13 @@ export testcase TC_CANOE_ST_CORE_008_STEERING_INACTIVITY()
   {
     return;
   }
+  if (!waitForNavContextState(2, -1, 800) ||
+      !waitForCoreSelectedAlertState(0, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
-  assertIntEq("st008-highway-baseline-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("st008-highway-zone", 2, (long)@Core::baseZoneContext, "baseZoneContext");
   assertIntEq("st008-highway-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
 
@@ -28,8 +33,12 @@ export testcase TC_CANOE_ST_CORE_008_STEERING_INACTIVITY()
   {
     return;
   }
+  if (!waitForCoreSelectedAlertState(2, 4, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
-  assertIntEq("st008-trigger-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("st008-trigger-level", 2, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("st008-trigger-type", 4, (long)@Core::selectedAlertType, "selectedAlertType");
 
@@ -37,8 +46,12 @@ export testcase TC_CANOE_ST_CORE_008_STEERING_INACTIVITY()
   {
     return;
   }
+  if (!waitForCoreSelectedAlertState(0, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
-  assertIntEq("st008-clear-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("st008-clear-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("st008-clear-type", 0, (long)@Core::selectedAlertType, "selectedAlertType");
 

@@ -38,6 +38,7 @@ Current active runtime direct-ingress rule:
 
 - keep direct Ethernet RX ownership only for `CGW`, `ADAS`, `V2X`, and `TEST_BAS`
 - treat other Ethernet-capable nodes as tx-only or internal-contract consumers unless this document explicitly says otherwise
+- treat owner, observer, and validation exceptions according to `contracts/layer-separation-policy.md`
 
 ## 2. Why Multibus Exists In This Project
 

@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -19,8 +19,14 @@ export testcase TC_CANOE_ST_CORE_001_POWER_ON_BASELINE()
   {
     return;
   }
+  if (!waitForCoreSelectedAlertState(0, 0, 800) ||
+      !waitForCoreDriveState(-1, -1, 0, 800) ||
+      !waitForStableWarningRender(0, -1, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
-  assertIntEq("st001-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("st001-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("st001-type", 0, (long)@Core::selectedAlertType, "selectedAlertType");
   assertIntEq("st001-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");

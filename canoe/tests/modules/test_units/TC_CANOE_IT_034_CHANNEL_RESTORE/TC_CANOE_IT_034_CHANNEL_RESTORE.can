@@ -20,8 +20,7 @@ export testcase TC_CANOE_IT_034_CHANNEL_RESTORE()
     return;
   }
 
-  assertIntEq("channel-restore-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedFailSafe(800))
+  if (!waitForObservedFailSafe(1200))
   {
     resetValidationHarnessIfNeeded();
     return;

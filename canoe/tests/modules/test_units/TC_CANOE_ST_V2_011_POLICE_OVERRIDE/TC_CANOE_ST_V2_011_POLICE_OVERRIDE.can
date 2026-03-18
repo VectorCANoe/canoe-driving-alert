@@ -20,9 +20,8 @@ export testcase TC_CANOE_ST_V2_011_POLICE_OVERRIDE()
     return;
   }
 
-  assertIntEq("police-override-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedSelectedAlert(800) ||
-      !waitForObservedFailSafe(800))
+  if (!waitForObservedSelectedAlertState(6, 1, 800) ||
+      !waitForObservedFailSafe(1200))
   {
     resetValidationHarnessIfNeeded();
     return;

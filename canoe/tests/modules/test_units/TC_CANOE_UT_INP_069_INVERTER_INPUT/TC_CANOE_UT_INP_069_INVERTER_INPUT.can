@@ -18,6 +18,35 @@ on message frmInverterStateMsg
   gDcLinkVolt = this.DcLinkVolt;
 }
 
+long waitForInverterInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gInverterState != 2 ||
+          gInvTemp != 71 ||
+          gDcLinkVolt != 134) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gInverterState != 2 ||
+      gInvTemp != 71 ||
+      gDcLinkVolt != 134)
+  {
+    testStepFail("inverter-input-state", "Inverter input timeout waited=%d state=%d temp=%d dcLink=%d",
+                 waitedMs,
+                 gInverterState,
+                 gInvTemp,
+                 gDcLinkVolt);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_069_INVERTER_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -27,6 +56,12 @@ export testcase TC_CANOE_UT_INP_069_INVERTER_INPUT()
 
   if (!launchScenarioAndWait(232, 800, 1300))
   {
+    return;
+  }
+
+  if (!waitForInverterInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

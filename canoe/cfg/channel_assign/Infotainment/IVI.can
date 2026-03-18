@@ -141,6 +141,11 @@ int deriveWarningTextCode(int alertLevel, int alertType, int timeoutClear,
   return clampRange((alertType * 10) + alertLevel, 0, 255);
 }
 
+int iviBackboneAlertHoldWindowMs()
+{
+  return 1500;
+}
+
 int deriveRenderDirection(int renderTextCode, int alertType)
 {
   if (renderTextCode >= 100 && renderTextCode <= 203)
@@ -230,7 +235,7 @@ void publishBackboneNavContext()
 void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
 {
   gBackboneAlertLevel = clampRange(alertLevel, 0, 7);
-  gBackboneAlertType = clampRange(alertType, 0, 7);
+  gBackboneAlertType = clampRange(alertType, 0, 15);
   gBackboneTimeoutClear = (timeoutClear == 1) ? 1 : 0;
   gBackboneAlertTsMs = getSimulationTimeMs();
 }
@@ -245,12 +250,57 @@ int useBackboneAlertState()
   }
 
   nowMs = getSimulationTimeMs();
-  if ((nowMs - gBackboneAlertTsMs) > 500)
+  if ((nowMs - gBackboneAlertTsMs) > (dword)iviBackboneAlertHoldWindowMs())
   {
     return 0;
   }
 
   return 1;
+}
+
+int useEffectiveAlertState()
+{
+  int effectiveAlertLevel;
+  int effectiveAlertType;
+  int selectedAlertGateReason;
+  int timeoutClear;
+
+  effectiveAlertLevel = clampRange((int)@CoreState::selectedAlertEffectiveLevel, 0, 7);
+  effectiveAlertType = clampRange((int)@CoreState::selectedAlertEffectiveType, 0, 15);
+  selectedAlertGateReason = clampRange((int)@CoreState::selectedAlertGateReason, 0, 7);
+  timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+
+  if (effectiveAlertLevel > 0 ||
+      effectiveAlertType > 0 ||
+      selectedAlertGateReason > 0 ||
+      timeoutClear == 1)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
+int useDecisionAlertState()
+{
+  int decisionAlertLevel;
+  int decisionAlertType;
+  int selectedAlertGateReason;
+  int timeoutClear;
+
+  decisionAlertLevel = clampRange((int)@CoreState::selectedAlertDecisionLevel, 0, 7);
+  decisionAlertType = clampRange((int)@CoreState::selectedAlertDecisionType, 0, 15);
+  selectedAlertGateReason = clampRange((int)@CoreState::selectedAlertGateReason, 0, 7);
+  timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+
+  if ((decisionAlertLevel > 0 || decisionAlertType > 0) &&
+      selectedAlertGateReason == 0 &&
+      timeoutClear == 0)
+  {
+    return 1;
+  }
+
+  return 0;
 }
 
 int derivePresentationMode(int alertLevel, int alertType, int baseZoneContext)
@@ -406,10 +456,28 @@ on timer tIviCycle
   int emergencyDistanceM;
   int emergencyDistanceBand;
   int useBackbone;
+  int useDecision;
+  int useEffective;
   message frmClusterWarningMsg mCluster;
 
+  useEffective = useEffectiveAlertState();
+  useDecision = useDecisionAlertState();
   useBackbone = useBackboneAlertState();
-  if (useBackbone == 1)
+  if (useEffective == 1)
+  {
+    alertLevel = clampRange((int)@CoreState::selectedAlertEffectiveLevel, 0, 7);
+    alertType = clampRange((int)@CoreState::selectedAlertEffectiveType, 0, 15);
+    timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+    updateBackboneAlertState(alertLevel, alertType, timeoutClear);
+  }
+  else if (useDecision == 1)
+  {
+    alertLevel = clampRange((int)@CoreState::selectedAlertDecisionLevel, 0, 7);
+    alertType = clampRange((int)@CoreState::selectedAlertDecisionType, 0, 15);
+    timeoutClear = 0;
+    updateBackboneAlertState(alertLevel, alertType, timeoutClear);
+  }
+  else if (useBackbone == 1)
   {
     alertLevel = gBackboneAlertLevel;
     alertType = gBackboneAlertType;
@@ -421,8 +489,8 @@ on timer tIviCycle
     alertType = 0;
     timeoutClear = 0;
   }
-  emergencyType = (int)@V2X::emergencyType;
-  emergencyDirection = (int)@V2X::emergencyDirection;
+  emergencyType = (int)@Core::emergencyContext;
+  emergencyDirection = (int)@CoreState::emergencyIngressDirection;
   if (ethIsRecentTick(gVehicleStateRxMs, 300) == 1)
   {
     speed = clampRange(gCanVehicleSpeed, 0, 255);
@@ -435,7 +503,7 @@ on timer tIviCycle
   {
     alertLevel = 0;
   }
-  if (alertType < 0 || alertType > 7)
+  if (alertType < 0 || alertType > 15)
   {
     alertType = 0;
   }
@@ -448,7 +516,7 @@ on timer tIviCycle
     emergencyDirection = 0;
   }
   timeoutClear = (timeoutClear == 1) ? 1 : 0;
-  emergencyDistanceM = calcEmergencyDistanceM((int)@V2X::eta, speed);
+  emergencyDistanceM = calcEmergencyDistanceM((int)@CoreState::emergencyIngressEtaSec, speed);
   emergencyDistanceBand = 0;
   if (emergencyDistanceM > 0)
   {
@@ -510,6 +578,8 @@ on timer tIviBase50
   int displayModeOverride;
   int volumeOverride;
   int useBackbone;
+  int useDecision;
+  int useEffective;
 
   if (ethIsRecentTick(gVehicleStateRxMs, 300) == 1)
   {
@@ -521,8 +591,22 @@ on timer tIviBase50
     speed = 0;
     driveState = 0;
   }
+  useEffective = useEffectiveAlertState();
+  useDecision = useDecisionAlertState();
   useBackbone = useBackboneAlertState();
-  if (useBackbone == 1)
+  if (useEffective == 1)
+  {
+    alertLevel = clampRange((int)@CoreState::selectedAlertEffectiveLevel, 0, 7);
+    alertType = clampRange((int)@CoreState::selectedAlertEffectiveType, 0, 15);
+    updateBackboneAlertState(alertLevel, alertType, (((int)@Core::timeoutClear) == 1) ? 1 : 0);
+  }
+  else if (useDecision == 1)
+  {
+    alertLevel = clampRange((int)@CoreState::selectedAlertDecisionLevel, 0, 7);
+    alertType = clampRange((int)@CoreState::selectedAlertDecisionType, 0, 15);
+    updateBackboneAlertState(alertLevel, alertType, 0);
+  }
+  else if (useBackbone == 1)
   {
     alertLevel = clampRange(gBackboneAlertLevel, 0, 7);
     alertType = clampRange(gBackboneAlertType, 0, 15);
@@ -532,9 +616,9 @@ on timer tIviBase50
     alertLevel = 0;
     alertType = 0;
   }
-  emergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
-  emergencyDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
-  emergencyEta = clampRange((int)@V2X::eta, 0, 255);
+  emergencyType = clampRange((int)@Core::emergencyContext, 0, 2);
+  emergencyDirection = clampRange((int)@CoreState::emergencyIngressDirection, 0, 3);
+  emergencyEta = clampRange((int)@CoreState::emergencyIngressEtaSec, 0, 255);
   if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
   {
     baseZoneContext = deriveBaseZoneContextFromNavState(gCanNavRouteClass, gCanNavGuideType);

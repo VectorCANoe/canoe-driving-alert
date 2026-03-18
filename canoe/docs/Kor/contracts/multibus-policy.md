@@ -28,6 +28,7 @@
 3. `Primary source/mirror placement`, `GUI Ethernet runtime placement`, `extra CAN visibility`는 서로 다른 판단 축입니다.
 4. multibus assignment는 old backbone stub seam이 아니라 실제 foreign-domain CAN message visibility 필요성으로 결정합니다.
 5. direct Ethernet RX ownership은 현재 baseline에서 `CGW`, `ADAS`, `V2X`, `TEST_BAS`로 제한합니다.
+6. owner, observer, validation 예외는 `contracts/layer-separation-policy.md` 기준으로 해석합니다.
 
 ## 3. GUI 해석 규칙
 

@@ -20,6 +20,30 @@ on message frmSurroundParkMasterStateMsg
   gProximityClass = this.ProximityClass;
 }
 
+long waitForParkUltrasonicInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gMinDistanceCm != 28 ||
+          gProximityClass != 3) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gMinDistanceCm != 28 ||
+      gProximityClass != 3)
+  {
+    testStepFail("park-ultrasonic-input-state", "Park ultrasonic timeout waited=%d dist=%d prox=%d",
+                 waitedMs, gMinDistanceCm, gProximityClass);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_054_PUS_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -29,6 +53,11 @@ export testcase TC_CANOE_UT_INP_054_PUS_INPUT()
 
   if (!launchScenarioAndWait(234, 800, 1300))
   {
+    return;
+  }
+  if (!waitForParkUltrasonicInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

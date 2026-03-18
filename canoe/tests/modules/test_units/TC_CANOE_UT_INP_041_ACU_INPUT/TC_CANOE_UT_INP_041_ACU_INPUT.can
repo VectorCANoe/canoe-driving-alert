@@ -18,6 +18,35 @@ on message frmAcuStateMsg
   gAirbagWarn = this.AirbagWarn;
 }
 
+long waitForAcuInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gDeploymentArmed != 0 ||
+          gPretensionReq != 1 ||
+          gAirbagWarn != 1) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gDeploymentArmed != 0 ||
+      gPretensionReq != 1 ||
+      gAirbagWarn != 1)
+  {
+    testStepFail("acu-input-state", "ACU input timeout waited=%d armed=%d pretension=%d airbagWarn=%d",
+                 waitedMs,
+                 gDeploymentArmed,
+                 gPretensionReq,
+                 gAirbagWarn);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_041_ACU_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -27,6 +56,12 @@ export testcase TC_CANOE_UT_INP_041_ACU_INPUT()
 
   if (!launchScenarioAndWait(228, 800, 1300))
   {
+    return;
+  }
+
+  if (!waitForAcuInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

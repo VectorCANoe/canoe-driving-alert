@@ -18,6 +18,35 @@ on message frmDcdcStateMsg
   gLvOutputCurr = this.LvOutputCurr;
 }
 
+long waitForDcdcInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gDcdcMode != 2 ||
+          gLvOutputVolt != 140 ||
+          gLvOutputCurr != 35) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gDcdcMode != 2 ||
+      gLvOutputVolt != 140 ||
+      gLvOutputCurr != 35)
+  {
+    testStepFail("dcdc-input-state", "DCDC input timeout waited=%d mode=%d volt=%d curr=%d",
+                 waitedMs,
+                 gDcdcMode,
+                 gLvOutputVolt,
+                 gLvOutputCurr);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_067_DCDC_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -27,6 +56,12 @@ export testcase TC_CANOE_UT_INP_067_DCDC_INPUT()
 
   if (!launchScenarioAndWait(231, 800, 1300))
   {
+    return;
+  }
+
+  if (!waitForDcdcInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

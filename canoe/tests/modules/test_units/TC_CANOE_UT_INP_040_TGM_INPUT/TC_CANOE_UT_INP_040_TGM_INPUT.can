@@ -18,6 +18,35 @@ on message frmPowerTailgateCtrlStateMsg
   gTailgateActuatorCmd = this.TailgateActuatorCmd;
 }
 
+long waitForTgmInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gTailgateAssistMode != 2 ||
+          gTailgateOpenReq != 1 ||
+          gTailgateActuatorCmd != 0) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gTailgateAssistMode != 2 ||
+      gTailgateOpenReq != 1 ||
+      gTailgateActuatorCmd != 0)
+  {
+    testStepFail("tgm-input-state", "TGM input timeout waited=%d mode=%d openReq=%d actuator=%d",
+                 waitedMs,
+                 gTailgateAssistMode,
+                 gTailgateOpenReq,
+                 gTailgateActuatorCmd);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_040_TGM_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -27,6 +56,12 @@ export testcase TC_CANOE_UT_INP_040_TGM_INPUT()
 
   if (!launchScenarioAndWait(227, 800, 1300))
   {
+    return;
+  }
+
+  if (!waitForTgmInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

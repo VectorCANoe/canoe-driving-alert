@@ -34,14 +34,72 @@ on message frmDigitalKeyStateMsg
   gKeyPresence = this.KeyPresence;
 }
 
+long waitForServiceAccessState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gTmuLinkState != 2 ||
+          gTmuServiceMode != 1 ||
+          gRemoteClimateReq != 1 ||
+          gDKeyState != 2 ||
+          gAuthMode != 2 ||
+          gVehicleAccessState != 2 ||
+          gSecurityGrade != 2 ||
+          gKeyPresence != 1) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gTmuLinkState != 2 ||
+      gTmuServiceMode != 1 ||
+      gRemoteClimateReq != 1 ||
+      gDKeyState != 2 ||
+      gAuthMode != 2 ||
+      gVehicleAccessState != 2 ||
+      gSecurityGrade != 2 ||
+      gKeyPresence != 1)
+  {
+    testStepFail("ivi-access-service-state", "Service access timeout waited=%d link=%d service=%d remote=%d dkey=%d auth=%d access=%d grade=%d presence=%d",
+                 waitedMs,
+                 gTmuLinkState,
+                 gTmuServiceMode,
+                 gRemoteClimateReq,
+                 gDKeyState,
+                 gAuthMode,
+                 gVehicleAccessState,
+                 gSecurityGrade,
+                 gKeyPresence);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_EXT_022_IVI_SERVICE_ACCESS()
 {
   if (!resetValidationHarnessIfNeeded())
   {
     return;
   }
+  gTmuLinkState = -1;
+  gTmuServiceMode = -1;
+  gRemoteClimateReq = -1;
+  gSignalBars = -1;
+  gDKeyState = -1;
+  gAuthMode = -1;
+  gVehicleAccessState = -1;
+  gSecurityGrade = -1;
+  gKeyPresence = -1;
   if (!launchScenarioAndWait(229, 1500, 450))
   {
+    return;
+  }
+  if (!waitForServiceAccessState(1200))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
   assertIntEq("ivi-access-tmu-link", 2, gTmuLinkState, "TmuLinkState");

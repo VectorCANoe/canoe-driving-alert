@@ -1,19 +1,44 @@
 long observerStateIsReset()
 {
-  return ((long)@Test::obsFailSafeMode == -1 &&
-          (long)@Test::obsEmergencyContext == -1 &&
-          (long)@Test::obsDecelDecisionReq == -1 &&
-          (long)@Test::obsDecelAssistReq == -1 &&
-          (long)@Test::obsDecelRisk == -1 &&
-          (long)@Test::obsDecelGateReason == -1 &&
-          (long)@Test::obsSelectedAlertLevel == -1 &&
-          (long)@Test::obsSelectedAlertType == -1 &&
-          (long)@Test::obsObjectRiskClass == -1 &&
-          (long)@Test::obsObjectRiskLevel == -1 &&
-          (long)@Test::obsObjectTrackValid == -1 &&
-          (long)@Test::obsObjectConfidence == -1 &&
-          (long)@Test::obsIntersectionConflictFlag == -1 &&
-          (long)@Test::obsMergeCutInFlag == -1);
+  return ((((long)@Test::obsFailSafeMode == -1) || ((long)@Test::obsFailSafeMode == 0)) &&
+          (((long)@Test::obsEmergencyContext == -1) || ((long)@Test::obsEmergencyContext == 0)) &&
+          (((long)@Test::obsDecelDecisionReq == -1) || ((long)@Test::obsDecelDecisionReq == 0)) &&
+          (((long)@Test::obsDecelAssistReq == -1) || ((long)@Test::obsDecelAssistReq == 0)) &&
+          (((long)@Test::obsDecelRisk == -1) || ((long)@Test::obsDecelRisk == 0)) &&
+          (((long)@Test::obsDecelGateReason == -1) || ((long)@Test::obsDecelGateReason == 0)) &&
+          (((long)@Test::obsSelectedAlertLevel == -1) || ((long)@Test::obsSelectedAlertLevel == 0)) &&
+          (((long)@Test::obsSelectedAlertType == -1) || ((long)@Test::obsSelectedAlertType == 0)) &&
+          (((long)@Test::obsObjectRiskClass == -1) || ((long)@Test::obsObjectRiskClass == 0)) &&
+          (((long)@Test::obsObjectRiskLevel == -1) || ((long)@Test::obsObjectRiskLevel == 0)) &&
+          (((long)@Test::obsObjectTrackValid == -1) || ((long)@Test::obsObjectTrackValid == 0)) &&
+          (((long)@Test::obsObjectConfidence == -1) || ((long)@Test::obsObjectConfidence == 0)) &&
+          (((long)@Test::obsIntersectionConflictFlag == -1) || ((long)@Test::obsIntersectionConflictFlag == 0)) &&
+          (((long)@Test::obsMergeCutInFlag == -1) || ((long)@Test::obsMergeCutInFlag == 0)));
+}
+
+void forceValidationHarnessObserverReset()
+{
+  @Test::baseScenarioId = 0;
+  @Test::baseScenarioResult = 0;
+  @Test::baseFlowCoverageMask = 0;
+  @Test::baseTraceSnapshotId = 0;
+  @Test::baseTestHealth = 0;
+
+  @Test::obsFailSafeMode = -1;
+  @Test::obsEmergencyContext = -1;
+  @Test::obsDecelDecisionReq = -1;
+  @Test::obsDecelAssistReq = -1;
+  @Test::obsDecelRisk = -1;
+  @Test::obsDecelGateReason = -1;
+  @Test::obsDecelReleaseReason = -1;
+  @Test::obsSelectedAlertLevel = -1;
+  @Test::obsSelectedAlertType = -1;
+  @Test::obsObjectRiskClass = -1;
+  @Test::obsObjectRiskLevel = -1;
+  @Test::obsObjectTrackValid = -1;
+  @Test::obsObjectConfidence = -1;
+  @Test::obsIntersectionConflictFlag = -1;
+  @Test::obsMergeCutInFlag = -1;
 }
 
 long waitForObserverReset(dword timeoutMs)
@@ -29,7 +54,7 @@ long waitForObserverReset(dword timeoutMs)
 
   if (!observerStateIsReset())
   {
-    testStepFail("observer-reset", "Shared observer reset timeout waited=%d failSafe=%d decision=%d decel=%d gate=%d level=%d type=%d",
+    testStepFail("observer-reset", "Shared observer reset timeout waited=%d failSafe=%d decision=%d decel=%d gate=%d level=%d type=%d (idle accepts sentinel -1 or neutral 0)",
                  waitedMs,
                  (long)@Test::obsFailSafeMode,
                  (long)@Test::obsDecelDecisionReq,
@@ -106,6 +131,28 @@ long waitForObservedFailSafeValue(long expectedValue, dword timeoutMs)
   return 1;
 }
 
+long waitForObservedFailSafeMin(long minimumValue, dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((long)@Test::obsFailSafeMode < minimumValue &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::obsFailSafeMode < minimumValue)
+  {
+    testStepFail("observer-failsafe-min", "Fail-safe min timeout waited=%d minimum=%d actual=%d",
+                 waitedMs, minimumValue, (long)@Test::obsFailSafeMode);
+    return 0;
+  }
+
+  return 1;
+}
+
 long waitForObservedDecelAssist(dword timeoutMs)
 {
   dword waitedMs;
@@ -151,6 +198,92 @@ long waitForObservedSelectedAlert(dword timeoutMs)
                  waitedMs,
                  (long)@Test::obsSelectedAlertLevel,
                  (long)@Test::obsSelectedAlertType);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForObservedSelectedAlertState(long expectedLevel,
+                                      long expectedType,
+                                      dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((((long)@Test::obsSelectedAlertLevel != expectedLevel) ||
+          ((long)@Test::obsSelectedAlertType != expectedType)) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::obsSelectedAlertLevel != expectedLevel ||
+      (long)@Test::obsSelectedAlertType != expectedType)
+  {
+    testStepFail("observer-selected-alert-state", "Selected-alert state timeout waited=%d level=%d type=%d expectedLevel=%d expectedType=%d",
+                 waitedMs,
+                 (long)@Test::obsSelectedAlertLevel,
+                 (long)@Test::obsSelectedAlertType,
+                 expectedLevel,
+                 expectedType);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForObservedSelectedAlertMinState(long minimumLevel,
+                                         long expectedType,
+                                         dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((((long)@Test::obsSelectedAlertLevel < minimumLevel) ||
+          ((long)@Test::obsSelectedAlertType != expectedType)) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::obsSelectedAlertLevel < minimumLevel ||
+      (long)@Test::obsSelectedAlertType != expectedType)
+  {
+    testStepFail("observer-selected-alert-min-state", "Selected-alert min-state timeout waited=%d level=%d type=%d minimumLevel=%d expectedType=%d",
+                 waitedMs,
+                 (long)@Test::obsSelectedAlertLevel,
+                 (long)@Test::obsSelectedAlertType,
+                 minimumLevel,
+                 expectedType);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForObservedSelectedAlertType(long expectedType,
+                                     dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while (((long)@Test::obsSelectedAlertType != expectedType) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::obsSelectedAlertType != expectedType)
+  {
+    testStepFail("observer-selected-alert-type", "Selected-alert type timeout waited=%d level=%d type=%d expectedType=%d",
+                 waitedMs,
+                 (long)@Test::obsSelectedAlertLevel,
+                 (long)@Test::obsSelectedAlertType,
+                 expectedType);
     return 0;
   }
 
@@ -209,6 +342,88 @@ long waitForObservedObjectScenario(dword timeoutMs)
                  waitedMs,
                  (long)@Test::obsIntersectionConflictFlag,
                  (long)@Test::obsMergeCutInFlag);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForObservedIntersectionConflict(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((long)@Test::obsIntersectionConflictFlag != 1 &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::obsIntersectionConflictFlag != 1)
+  {
+    testStepFail("observer-intersection-conflict", "Intersection-conflict timeout waited=%d intersection=%d merge=%d",
+                 waitedMs,
+                 (long)@Test::obsIntersectionConflictFlag,
+                 (long)@Test::obsMergeCutInFlag);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForObservedMergeCutIn(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((long)@Test::obsMergeCutInFlag != 1 &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::obsMergeCutInFlag != 1)
+  {
+    testStepFail("observer-merge-cutin", "Merge-cutin timeout waited=%d intersection=%d merge=%d",
+                 waitedMs,
+                 (long)@Test::obsIntersectionConflictFlag,
+                 (long)@Test::obsMergeCutInFlag);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForObservedObjectRiskMin(long minimumClass,
+                                  long minimumLevel,
+                                  dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((((minimumClass >= 0) &&
+           ((long)@Test::obsObjectRiskClass < minimumClass)) ||
+          ((minimumLevel >= 0) &&
+           ((long)@Test::obsObjectRiskLevel < minimumLevel))) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (((minimumClass >= 0) &&
+       ((long)@Test::obsObjectRiskClass < minimumClass)) ||
+      ((minimumLevel >= 0) &&
+       ((long)@Test::obsObjectRiskLevel < minimumLevel)))
+  {
+    testStepFail("observer-object-risk-min", "Object-risk min timeout waited=%d class=%d level=%d minimumClass=%d minimumLevel=%d",
+                 waitedMs,
+                 (long)@Test::obsObjectRiskClass,
+                 (long)@Test::obsObjectRiskLevel,
+                 minimumClass,
+                 minimumLevel);
     return 0;
   }
 
@@ -338,6 +553,53 @@ long waitForStableAudioPolicy(long expectedFocusOwner,
   return 0;
 }
 
+long waitForAudioPolicyFloor(long minFocusOwner,
+                             long minDuckingLvl,
+                             long minVolumeLevel,
+                             long expectedPopupActive,
+                             dword timeoutMs)
+{
+  dword waitedMs;
+  dword stableMs;
+
+  waitedMs = 0;
+  stableMs = 0;
+  while (waitedMs < timeoutMs)
+  {
+    if ((long)@CoreState::audioFocusOwner >= minFocusOwner &&
+        (long)@CoreState::audioDuckingLvl >= minDuckingLvl &&
+        (long)@CoreState::volumeLevel >= minVolumeLevel &&
+        (expectedPopupActive < 0 ||
+         (long)@CoreState::popupActive == expectedPopupActive))
+    {
+      stableMs += 50;
+      if (stableMs >= 150)
+      {
+        return 1;
+      }
+    }
+    else
+    {
+      stableMs = 0;
+    }
+
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  testStepFail("audio-policy-floor", "Audio floor stability timeout waited=%d focus=%d ducking=%d volume=%d popup=%d minFocus=%d minDucking=%d minVolume=%d expectedPopup=%d",
+               waitedMs,
+               (long)@CoreState::audioFocusOwner,
+               (long)@CoreState::audioDuckingLvl,
+               (long)@CoreState::volumeLevel,
+               (long)@CoreState::popupActive,
+               minFocusOwner,
+               minDuckingLvl,
+               minVolumeLevel,
+               expectedPopupActive);
+  return 0;
+}
+
 long waitForStableDisplayPolicy(long expectedTheme,
                                 long expectedPopupActive,
                                 long expectedPopupPriority,
@@ -379,6 +641,373 @@ long waitForStableDisplayPolicy(long expectedTheme,
                (long)@CoreState::popupPriority,
                (long)@CoreState::clusterSyncState);
   return 0;
+}
+
+long waitForAmbientState(long expectedAlertLevel,
+                         long expectedAlertType,
+                         long expectedAmbientColor,
+                         long expectedAmbientPattern,
+                         dword timeoutMs)
+{
+  dword waitedMs;
+  dword stableMs;
+
+  waitedMs = 0;
+  stableMs = 0;
+  while (waitedMs < timeoutMs)
+  {
+    if ((expectedAlertLevel < 0 ||
+         (long)@Core::selectedAlertLevel == expectedAlertLevel) &&
+        (expectedAlertType < 0 ||
+         (long)@Core::selectedAlertType == expectedAlertType) &&
+        (expectedAmbientColor < 0 ||
+         (long)@Body::ambientColor == expectedAmbientColor) &&
+        (expectedAmbientPattern < 0 ||
+         (long)@Body::ambientPattern == expectedAmbientPattern))
+    {
+      stableMs += 50;
+      if (stableMs >= 150)
+      {
+        return 1;
+      }
+    }
+    else
+    {
+      stableMs = 0;
+    }
+
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  testStepFail("ambient-state", "Ambient state timeout waited=%d level=%d type=%d color=%d pattern=%d expectedLevel=%d expectedType=%d expectedColor=%d expectedPattern=%d",
+               waitedMs,
+               (long)@Core::selectedAlertLevel,
+               (long)@Core::selectedAlertType,
+               (long)@Body::ambientColor,
+               (long)@Body::ambientPattern,
+               expectedAlertLevel,
+               expectedAlertType,
+               expectedAmbientColor,
+               expectedAmbientPattern);
+  return 0;
+}
+
+long waitForDisplayPolicyFloor(long expectedPopupActive,
+                               long minPopupPriority,
+                               long expectedClusterSync,
+                               dword timeoutMs)
+{
+  dword waitedMs;
+  dword stableMs;
+
+  waitedMs = 0;
+  stableMs = 0;
+  while (waitedMs < timeoutMs)
+  {
+    if ((expectedPopupActive < 0 ||
+         (long)@CoreState::popupActive == expectedPopupActive) &&
+        (long)@CoreState::popupPriority >= minPopupPriority &&
+        (expectedClusterSync < 0 ||
+         (long)@CoreState::clusterSyncState == expectedClusterSync))
+    {
+      stableMs += 50;
+      if (stableMs >= 150)
+      {
+        return 1;
+      }
+    }
+    else
+    {
+      stableMs = 0;
+    }
+
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  testStepFail("display-policy-floor", "Display floor stability timeout waited=%d popup=%d priority=%d sync=%d expectedPopup=%d minPriority=%d expectedSync=%d",
+               waitedMs,
+               (long)@CoreState::popupActive,
+               (long)@CoreState::popupPriority,
+               (long)@CoreState::clusterSyncState,
+               expectedPopupActive,
+               minPopupPriority,
+               expectedClusterSync);
+  return 0;
+}
+
+long waitForAmbientStateMinLevel(long minimumAlertLevel,
+                                 long expectedAlertType,
+                                 long expectedAmbientColor,
+                                 long expectedAmbientPattern,
+                                 dword timeoutMs)
+{
+  dword waitedMs;
+  dword stableMs;
+
+  waitedMs = 0;
+  stableMs = 0;
+  while (waitedMs < timeoutMs)
+  {
+    if ((minimumAlertLevel < 0 ||
+         (long)@Core::selectedAlertLevel >= minimumAlertLevel) &&
+        (expectedAlertType < 0 ||
+         (long)@Core::selectedAlertType == expectedAlertType) &&
+        (expectedAmbientColor < 0 ||
+         (long)@Body::ambientColor == expectedAmbientColor) &&
+        (expectedAmbientPattern < 0 ||
+         (long)@Body::ambientPattern == expectedAmbientPattern))
+    {
+      stableMs += 50;
+      if (stableMs >= 150)
+      {
+        return 1;
+      }
+    }
+    else
+    {
+      stableMs = 0;
+    }
+
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  testStepFail("ambient-state-min-level", "Ambient state timeout waited=%d level=%d type=%d color=%d pattern=%d minimumLevel=%d expectedType=%d expectedColor=%d expectedPattern=%d",
+               waitedMs,
+               (long)@Core::selectedAlertLevel,
+               (long)@Core::selectedAlertType,
+               (long)@Body::ambientColor,
+               (long)@Body::ambientPattern,
+               minimumAlertLevel,
+               expectedAlertType,
+               expectedAmbientColor,
+               expectedAmbientPattern);
+  return 0;
+}
+
+long waitForDuplicatePopupGuard(long expectedMin, dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((long)@CoreState::duplicatePopupGuard < expectedMin &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@CoreState::duplicatePopupGuard < expectedMin)
+  {
+    testStepFail("duplicate-popup-guard", "Duplicate-popup guard timeout waited=%d expectedMin=%d actual=%d",
+                 waitedMs,
+                 expectedMin,
+                 (long)@CoreState::duplicatePopupGuard);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForCoreTurnLampState(long expectedTurnLampState, dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((long)@CoreState::turnLampState != expectedTurnLampState &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@CoreState::turnLampState != expectedTurnLampState)
+  {
+    testStepFail("core-turnlamp-state", "Turn lamp state timeout waited=%d expected=%d actual=%d",
+                 waitedMs,
+                 expectedTurnLampState,
+                 (long)@CoreState::turnLampState);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForCoreSportMode(long expectedSportMode, dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((long)@CoreState::sportMode != expectedSportMode &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@CoreState::sportMode != expectedSportMode)
+  {
+    testStepFail("core-sport-mode", "Sport mode timeout waited=%d expected=%d actual=%d",
+                 waitedMs,
+                 expectedSportMode,
+                 (long)@CoreState::sportMode);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForCoreBoundaryState(long expectedDomainBoundary,
+                              long expectedRoutingPolicy,
+                              long expectedWarningPathStatus,
+                              long expectedFailSafeMode,
+                              dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((((expectedDomainBoundary >= 0) &&
+           ((long)@CoreState::domainBoundaryStatus != expectedDomainBoundary)) ||
+          ((expectedRoutingPolicy >= 0) &&
+           ((long)@CoreState::routingPolicy != expectedRoutingPolicy)) ||
+          ((expectedWarningPathStatus >= 0) &&
+           ((long)@CoreState::warningPathStatus != expectedWarningPathStatus)) ||
+          ((expectedFailSafeMode >= 0) &&
+           ((long)@Core::failSafeMode != expectedFailSafeMode))) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (((expectedDomainBoundary >= 0) &&
+       ((long)@CoreState::domainBoundaryStatus != expectedDomainBoundary)) ||
+      ((expectedRoutingPolicy >= 0) &&
+       ((long)@CoreState::routingPolicy != expectedRoutingPolicy)) ||
+      ((expectedWarningPathStatus >= 0) &&
+       ((long)@CoreState::warningPathStatus != expectedWarningPathStatus)) ||
+      ((expectedFailSafeMode >= 0) &&
+       ((long)@Core::failSafeMode != expectedFailSafeMode)))
+  {
+    testStepFail("core-boundary-state", "Core boundary-state timeout waited=%d boundary=%d routing=%d warningPath=%d failSafe=%d expectedBoundary=%d expectedRouting=%d expectedWarningPath=%d expectedFailSafe=%d",
+                 waitedMs,
+                 (long)@CoreState::domainBoundaryStatus,
+                 (long)@CoreState::routingPolicy,
+                 (long)@CoreState::warningPathStatus,
+                 (long)@Core::failSafeMode,
+                 expectedDomainBoundary,
+                 expectedRoutingPolicy,
+                 expectedWarningPathStatus,
+                 expectedFailSafeMode);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForDiagSemanticState(long expectedServiceState,
+                              long expectedSecurityState,
+                              long expectedRouteOwner,
+                              long expectedResponseKind,
+                              long expectedReasonCode,
+                              dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((((expectedServiceState >= 0) &&
+           ((long)@Diag::ServiceState != expectedServiceState)) ||
+          (((expectedSecurityState >= 0) &&
+            ((long)@Diag::SecurityState != expectedSecurityState))) ||
+          (((expectedRouteOwner >= 0) &&
+            ((long)@Diag::RouteOwner != expectedRouteOwner))) ||
+          (((expectedResponseKind >= 0) &&
+            ((long)@Diag::ResponseKind != expectedResponseKind))) ||
+          (((expectedReasonCode >= 0) &&
+            ((long)@Diag::ReasonCode != expectedReasonCode)))) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (((expectedServiceState >= 0) &&
+       ((long)@Diag::ServiceState != expectedServiceState)) ||
+      ((expectedSecurityState >= 0) &&
+       ((long)@Diag::SecurityState != expectedSecurityState)) ||
+      ((expectedRouteOwner >= 0) &&
+       ((long)@Diag::RouteOwner != expectedRouteOwner)) ||
+      ((expectedResponseKind >= 0) &&
+       ((long)@Diag::ResponseKind != expectedResponseKind)) ||
+      ((expectedReasonCode >= 0) &&
+       ((long)@Diag::ReasonCode != expectedReasonCode)))
+  {
+    testStepFail("diag-semantic-state", "Diag semantic timeout waited=%d service=%d security=%d route=%d responseKind=%d reason=%d expectedService=%d expectedSecurity=%d expectedRoute=%d expectedResponseKind=%d expectedReason=%d",
+                 waitedMs,
+                 (long)@Diag::ServiceState,
+                 (long)@Diag::SecurityState,
+                 (long)@Diag::RouteOwner,
+                 (long)@Diag::ResponseKind,
+                 (long)@Diag::ReasonCode,
+                 expectedServiceState,
+                 expectedSecurityState,
+                 expectedRouteOwner,
+                 expectedResponseKind,
+                 expectedReasonCode);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForDiagLastExchange(long expectedRequestTarget,
+                             long expectedRequestSid,
+                             long expectedResponseTarget,
+                             long expectedResponseCode,
+                             dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((((expectedRequestTarget >= 0) &&
+           ((long)@Diag::LastRequestTarget != expectedRequestTarget)) ||
+          (((expectedRequestSid >= 0) &&
+            ((long)@Diag::LastRequestSid != expectedRequestSid))) ||
+          (((expectedResponseTarget >= 0) &&
+            ((long)@Diag::LastResponseTarget != expectedResponseTarget))) ||
+          (((expectedResponseCode >= 0) &&
+            ((long)@Diag::LastResponseCode != expectedResponseCode)))) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (((expectedRequestTarget >= 0) &&
+       ((long)@Diag::LastRequestTarget != expectedRequestTarget)) ||
+      ((expectedRequestSid >= 0) &&
+       ((long)@Diag::LastRequestSid != expectedRequestSid)) ||
+      ((expectedResponseTarget >= 0) &&
+       ((long)@Diag::LastResponseTarget != expectedResponseTarget)) ||
+      ((expectedResponseCode >= 0) &&
+       ((long)@Diag::LastResponseCode != expectedResponseCode)))
+  {
+    testStepFail("diag-last-exchange", "Diag exchange timeout waited=%d reqTarget=%d reqSid=%d respTarget=%d respCode=%d expectedReqTarget=%d expectedReqSid=%d expectedRespTarget=%d expectedRespCode=%d",
+                 waitedMs,
+                 (long)@Diag::LastRequestTarget,
+                 (long)@Diag::LastRequestSid,
+                 (long)@Diag::LastResponseTarget,
+                 (long)@Diag::LastResponseCode,
+                 expectedRequestTarget,
+                 expectedRequestSid,
+                 expectedResponseTarget,
+                 expectedResponseCode);
+    return 0;
+  }
+
+  return 1;
 }
 
 long waitForStableDistanceHistory(long expectedDistanceM,
@@ -456,6 +1085,7 @@ long resetValidationHarnessIfNeeded()
       (int)@Test::scenarioEvaluatedId == 0 &&
       (int)@Test::scenarioResult == 0)
   {
+    forceValidationHarnessObserverReset();
     if (!waitForObserverReset(500))
     {
       return 0;
@@ -466,6 +1096,22 @@ long resetValidationHarnessIfNeeded()
 
   @Test::scenarioCommand = 0;
   @Test::testScenario = 0;
+  if ((int)@Test::scenarioCommand == 0 &&
+      (int)@Test::testScenario == 0 &&
+      ((int)@Test::scenarioCommandAck != 0 ||
+       (int)@Test::scenarioActiveId != 0 ||
+       (int)@Test::scenarioSettledId != 0 ||
+       (int)@Test::scenarioEvaluatedId != 0 ||
+       (int)@Test::scenarioResult != 0))
+  {
+    /* Recovery path for stale lifecycle left behind after a completed scenario.
+       If command/mirror are already idle, clear residual lifecycle sysvars directly. */
+    @Test::scenarioCommandAck = 0;
+    @Test::scenarioActiveId = 0;
+    @Test::scenarioSettledId = 0;
+    @Test::scenarioEvaluatedId = 0;
+    @Test::scenarioResult = 0;
+  }
   waitedMs = 0;
   while (((int)@Test::testScenario != 0 ||
           (int)@Test::scenarioCommandAck != 0 ||
@@ -497,6 +1143,7 @@ long resetValidationHarnessIfNeeded()
     return 0;
   }
 
+  forceValidationHarnessObserverReset();
   if (!waitForObserverReset(500))
   {
     return 0;
@@ -594,26 +1241,26 @@ long waitForScenarioEvaluated(int scenarioId, dword timeoutMs)
 
 long launchScenarioAndWait(int scenarioId, dword ackTimeoutMs, dword settleMs)
 {
-  dword evalTimeoutMs;
-
   @Test::scenarioCommand = scenarioId;
   if (!waitForScenarioAck(scenarioId, ackTimeoutMs))
   {
     return 0;
   }
 
-  if (!waitForScenarioSettled(scenarioId, settleMs))
+  return waitForScenarioSettled(scenarioId, settleMs);
+}
+
+long launchScenarioAndEvaluate(int scenarioId,
+                               dword ackTimeoutMs,
+                               dword settleMs,
+                               dword evaluateTimeoutMs)
+{
+  if (!launchScenarioAndWait(scenarioId, ackTimeoutMs, settleMs))
   {
     return 0;
   }
 
-  evalTimeoutMs = settleMs + 2000;
-  if (evalTimeoutMs < 2500)
-  {
-    evalTimeoutMs = 2500;
-  }
-
-  return waitForScenarioEvaluated(scenarioId, evalTimeoutMs);
+  return waitForScenarioEvaluated(scenarioId, evaluateTimeoutMs);
 }
 
 long waitForBaseResult(int scenarioId, dword timeoutMs)
@@ -635,6 +1282,247 @@ long waitForBaseResult(int scenarioId, dword timeoutMs)
   }
 
   testStepPass("base-result-wait", "Base result ready for scenario %d", scenarioId);
+  return 1;
+}
+
+long waitForCoreSelectedAlertState(long expectedLevel,
+                                   long expectedType,
+                                   dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((((expectedLevel >= 0) &&
+           ((long)@Core::selectedAlertLevel != expectedLevel)) ||
+          ((expectedType >= 0) &&
+           ((long)@Core::selectedAlertType != expectedType))) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (((expectedLevel >= 0) &&
+       ((long)@Core::selectedAlertLevel != expectedLevel)) ||
+      ((expectedType >= 0) &&
+       ((long)@Core::selectedAlertType != expectedType)))
+  {
+    testStepFail("core-selected-alert", "Core selected alert timeout waited=%d level=%d type=%d expectedLevel=%d expectedType=%d",
+                 waitedMs,
+                 (long)@Core::selectedAlertLevel,
+                 (long)@Core::selectedAlertType,
+                 expectedLevel,
+                 expectedType);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForCoreDriveState(long expectedDriveState,
+                           long expectedVehicleSpeed,
+                           long expectedFailSafeMode,
+                           dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((((expectedDriveState >= 0) &&
+           ((long)@Core::driveStateNorm != expectedDriveState)) ||
+          ((expectedVehicleSpeed >= 0) &&
+           ((long)@Core::vehicleSpeedNorm != expectedVehicleSpeed)) ||
+          ((expectedFailSafeMode >= 0) &&
+           ((long)@Core::failSafeMode != expectedFailSafeMode))) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (((expectedDriveState >= 0) &&
+       ((long)@Core::driveStateNorm != expectedDriveState)) ||
+      ((expectedVehicleSpeed >= 0) &&
+       ((long)@Core::vehicleSpeedNorm != expectedVehicleSpeed)) ||
+      ((expectedFailSafeMode >= 0) &&
+       ((long)@Core::failSafeMode != expectedFailSafeMode)))
+  {
+    testStepFail("core-drive-state", "Core drive-state timeout waited=%d drive=%d speed=%d failSafe=%d expectedDrive=%d expectedSpeed=%d expectedFailSafe=%d",
+                 waitedMs,
+                 (long)@Core::driveStateNorm,
+                 (long)@Core::vehicleSpeedNorm,
+                 (long)@Core::failSafeMode,
+                 expectedDriveState,
+                 expectedVehicleSpeed,
+                 expectedFailSafeMode);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForCoreDriveStateMinSpeed(long expectedDriveState,
+                                   long minimumVehicleSpeed,
+                                   long expectedFailSafeMode,
+                                   dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((((expectedDriveState >= 0) &&
+           ((long)@Core::driveStateNorm != expectedDriveState)) ||
+          ((minimumVehicleSpeed >= 0) &&
+           ((long)@Core::vehicleSpeedNorm < minimumVehicleSpeed)) ||
+          ((expectedFailSafeMode >= 0) &&
+           ((long)@Core::failSafeMode != expectedFailSafeMode))) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (((expectedDriveState >= 0) &&
+       ((long)@Core::driveStateNorm != expectedDriveState)) ||
+      ((minimumVehicleSpeed >= 0) &&
+       ((long)@Core::vehicleSpeedNorm < minimumVehicleSpeed)) ||
+      ((expectedFailSafeMode >= 0) &&
+       ((long)@Core::failSafeMode != expectedFailSafeMode)))
+  {
+    testStepFail("core-drive-min-speed", "Core drive-state timeout waited=%d drive=%d speed=%d failSafe=%d expectedDrive=%d minimumSpeed=%d expectedFailSafe=%d",
+                 waitedMs,
+                 (long)@Core::driveStateNorm,
+                 (long)@Core::vehicleSpeedNorm,
+                 (long)@Core::failSafeMode,
+                 expectedDriveState,
+                 minimumVehicleSpeed,
+                 expectedFailSafeMode);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForCoreChassisState(long expectedVehicleSpeed,
+                             long expectedSteeringInput,
+                             long expectedBrakePedal,
+                             long expectedAccelPedal,
+                             dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((((expectedVehicleSpeed >= 0) &&
+           ((long)@Core::vehicleSpeedNorm != expectedVehicleSpeed)) ||
+          ((expectedSteeringInput >= 0) &&
+           ((long)@Core::steeringInputNorm != expectedSteeringInput)) ||
+          ((expectedBrakePedal >= 0) &&
+           ((long)@Core::brakePedalNorm != expectedBrakePedal))) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (((expectedVehicleSpeed >= 0) &&
+       ((long)@Core::vehicleSpeedNorm != expectedVehicleSpeed)) ||
+      ((expectedSteeringInput >= 0) &&
+       ((long)@Core::steeringInputNorm != expectedSteeringInput)) ||
+      ((expectedBrakePedal >= 0) &&
+       ((long)@Core::brakePedalNorm != expectedBrakePedal)))
+  {
+    testStepFail("core-chassis-state", "Core chassis-state timeout waited=%d speed=%d steer=%d brake=%d expectedSpeed=%d expectedSteer=%d expectedBrake=%d expectedAccel=%d accelSeam=unsupported",
+                 waitedMs,
+                 (long)@Core::vehicleSpeedNorm,
+                 (long)@Core::steeringInputNorm,
+                 (long)@Core::brakePedalNorm,
+                 expectedVehicleSpeed,
+                 expectedSteeringInput,
+                 expectedBrakePedal,
+                 expectedAccelPedal);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForNavContextState(long expectedZoneContext,
+                            long expectedSpeedLimit,
+                            dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((((expectedZoneContext >= 0) &&
+           ((long)@Core::baseZoneContext != expectedZoneContext)) ||
+          ((expectedSpeedLimit >= 0) &&
+           ((long)@Core::speedLimitNorm != expectedSpeedLimit))) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (((expectedZoneContext >= 0) &&
+       ((long)@Core::baseZoneContext != expectedZoneContext)) ||
+      ((expectedSpeedLimit >= 0) &&
+       ((long)@Core::speedLimitNorm != expectedSpeedLimit)))
+  {
+    testStepFail("nav-context-state", "Nav context timeout waited=%d zone=%d speedLimit=%d expectedZone=%d expectedSpeedLimit=%d",
+                 waitedMs,
+                 (long)@Core::baseZoneContext,
+                 (long)@Core::speedLimitNorm,
+                 expectedZoneContext,
+                 expectedSpeedLimit);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForV2xIngressState(long expectedAlertState,
+                            long expectedEmergencyType,
+                            long expectedEta,
+                            long expectedSourceId,
+                            dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((((expectedAlertState >= 0) &&
+           ((long)@V2X::alertState != expectedAlertState)) ||
+          ((expectedEmergencyType >= 0) &&
+           ((long)@V2X::emergencyType != expectedEmergencyType)) ||
+          ((expectedEta >= 0) &&
+           ((long)@V2X::eta != expectedEta)) ||
+          ((expectedSourceId >= 0) &&
+           ((long)@V2X::sourceId != expectedSourceId))) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (((expectedAlertState >= 0) &&
+       ((long)@V2X::alertState != expectedAlertState)) ||
+      ((expectedEmergencyType >= 0) &&
+       ((long)@V2X::emergencyType != expectedEmergencyType)) ||
+      ((expectedEta >= 0) &&
+       ((long)@V2X::eta != expectedEta)) ||
+      ((expectedSourceId >= 0) &&
+       ((long)@V2X::sourceId != expectedSourceId)))
+  {
+    testStepFail("v2x-ingress-state", "V2X ingress timeout waited=%d alertState=%d type=%d eta=%d source=%d expectedState=%d expectedType=%d expectedEta=%d expectedSource=%d",
+                 waitedMs,
+                 (long)@V2X::alertState,
+                 (long)@V2X::emergencyType,
+                 (long)@V2X::eta,
+                 (long)@V2X::sourceId,
+                 expectedAlertState,
+                 expectedEmergencyType,
+                 expectedEta,
+                 expectedSourceId);
+    return 0;
+  }
+
   return 1;
 }
 

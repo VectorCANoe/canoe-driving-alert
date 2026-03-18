@@ -19,7 +19,12 @@ export testcase TC_CANOE_UT_CORE_012_BODY_GW_ROUTE()
   {
     return;
   }
-  assertIntEq("body-gw-school-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForNavContextState(1, 30, 800) ||
+      !waitForAmbientStateMinLevel(3, 3, 3, 5, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("body-gw-school-route", 1, (long)@CoreState::routingPolicy, "routingPolicy");
   assertIntEq("body-gw-school-path", 0, (long)@CoreState::warningPathStatus, "warningPathStatus");
   assertIntEq("body-gw-school-color", 3, (long)@Body::ambientColor, "ambientColor");
@@ -33,7 +38,12 @@ export testcase TC_CANOE_UT_CORE_012_BODY_GW_ROUTE()
   {
     return;
   }
-  assertIntEq("body-gw-emergency-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+if (!waitForV2xIngressState(1, 1, 12, 11, 1500) ||
+      !waitForCoreSelectedAlertState(6, 1, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("body-gw-emergency-route", 2, (long)@CoreState::routingPolicy, "routingPolicy");
   assertIntEq("body-gw-emergency-path", 0, (long)@CoreState::warningPathStatus, "warningPathStatus");
   assertIntEq("body-gw-emergency-color", 6, (long)@Body::ambientColor, "ambientColor");

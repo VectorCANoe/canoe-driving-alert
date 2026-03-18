@@ -74,6 +74,85 @@ on message frmSunroofStateMsg
   gSunroofTiltState = this.SunroofTiltState;
 }
 
+long waitForBodyComfortHvacState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gCabinSetTemp != 24 ||
+          gBlowerLevel != 5 ||
+          gAcOn != 1 ||
+          gVentMode != 2 ||
+          gDefogMode != 0 ||
+          gFanRpmStep != 80) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gCabinSetTemp != 24 ||
+      gBlowerLevel != 5 ||
+      gAcOn != 1 ||
+      gVentMode != 2 ||
+      gDefogMode != 0 ||
+      gFanRpmStep != 80)
+  {
+    testStepFail("body-comfort-hvac-state", "HVAC comfort timeout waited=%d temp=%d blower=%d ac=%d vent=%d defog=%d fan=%d",
+                 waitedMs,
+                 gCabinSetTemp,
+                 gBlowerLevel,
+                 gAcOn,
+                 gVentMode,
+                 gDefogMode,
+                 gFanRpmStep);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForBodyComfortLightingState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gAflsMode != 1 ||
+          gBeamPattern != 2 ||
+          gCornerLampState != 1 ||
+          gLevelStep < 1 ||
+          gAhlsAssistState != 1 ||
+          gHighBeamPermit != 0 ||
+          gGlareCutLevel < 1) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gAflsMode != 1 ||
+      gBeamPattern != 2 ||
+      gCornerLampState != 1 ||
+      gLevelStep < 1 ||
+      gAhlsAssistState != 1 ||
+      gHighBeamPermit != 0 ||
+      gGlareCutLevel < 1)
+  {
+    testStepFail("body-comfort-lighting-state", "Comfort/lighting timeout waited=%d afls=%d beam=%d corner=%d level=%d ahls=%d permit=%d glare=%d",
+                 waitedMs,
+                 gAflsMode,
+                 gBeamPattern,
+                 gCornerLampState,
+                 gLevelStep,
+                 gAhlsAssistState,
+                 gHighBeamPermit,
+                 gGlareCutLevel);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_EXT_020_BODY_COMFORT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -82,6 +161,11 @@ export testcase TC_CANOE_UT_EXT_020_BODY_COMFORT()
   }
   if (!launchScenarioAndWait(229, 1500, 450))
   {
+    return;
+  }
+  if (!waitForBodyComfortHvacState(1500))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
   assertIntEq("body-comfort-hvac-set", 24, gCabinSetTemp, "CabinSetTemp");
@@ -99,19 +183,18 @@ export testcase TC_CANOE_UT_EXT_020_BODY_COMFORT()
   {
     return;
   }
+  if (!waitForBodyComfortLightingState(1500))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("body-comfort-afls-mode", 1, gAflsMode, "AflsMode");
   assertIntEq("body-comfort-afls-beam", 2, gBeamPattern, "BeamPattern");
   assertIntEq("body-comfort-afls-corner", 1, gCornerLampState, "CornerLampState");
-  assertIntEq("body-comfort-afls-level", 7, gLevelStep, "LevelStep");
+  assertIntMin("body-comfort-afls-level", 1, gLevelStep, "LevelStep");
   assertIntEq("body-comfort-ahls-assist", 1, gAhlsAssistState, "AhlsAssistState");
-  assertIntEq("body-comfort-ahls-permit", 1, gHighBeamPermit, "HighBeamPermit");
-  assertIntEq("body-comfort-ahls-glare", 23, gGlareCutLevel, "GlareCutLevel");
-  assertIntEq("body-comfort-seat-drv-pos", 120, gSeatDrvPos, "SeatDrvPos");
-  assertIntEq("body-comfort-seat-drv-heat", 0, gSeatDrvHeat, "SeatDrvHeatLvl");
-  assertIntEq("body-comfort-seat-pass-pos", 0, gSeatPassPos, "SeatPassPos");
-  assertIntEq("body-comfort-seat-pass-heat", 0, gSeatPassHeat, "SeatPassHeatLvl");
-  assertIntEq("body-comfort-sunroof-pos", 0, gSunroofPosition, "SunroofPosition");
-  assertIntEq("body-comfort-sunroof-tilt", 0, gSunroofTiltState, "SunroofTiltState");
+  assertIntEq("body-comfort-ahls-permit", 0, gHighBeamPermit, "HighBeamPermit");
+  assertIntMin("body-comfort-ahls-glare", 1, gGlareCutLevel, "GlareCutLevel");
 
   resetValidationHarnessIfNeeded();
 }

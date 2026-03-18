@@ -234,11 +234,97 @@ int getObservedScenarioVehicleSpeed()
   return clampRange(gLockVehicleSpeed, 0, 255);
 }
 
+int getObservedEmergencyType()
+{
+  int emergencyType;
+
+  emergencyType = clampRange((int)@Core::emergencyContext, 0, 2);
+  if (emergencyType == 0 && clampRange((int)@V2X::alertState, 0, 1) == 1)
+  {
+    emergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
+  }
+  return emergencyType;
+}
+
+int getObservedEmergencyDirection()
+{
+  int direction;
+
+  direction = clampRange((int)@CoreState::emergencyIngressDirection, 0, 3);
+  if (getObservedEmergencyType() > 0 &&
+      direction == 0 &&
+      clampRange((int)@V2X::alertState, 0, 1) == 1)
+  {
+    direction = clampRange((int)@V2X::emergencyDirection, 0, 3);
+  }
+  return direction;
+}
+
+int getObservedEmergencyEtaSec()
+{
+  int etaSec;
+
+  etaSec = clampRange((int)@CoreState::emergencyIngressEtaSec, 0, 255);
+  if (getObservedEmergencyType() > 0 &&
+      etaSec == 255 &&
+      clampRange((int)@V2X::alertState, 0, 1) == 1)
+  {
+    etaSec = clampRange((int)@V2X::eta, 0, 255);
+  }
+  return etaSec;
+}
+
+int getObservedEmergencySourceId()
+{
+  int sourceId;
+
+  sourceId = clampRange((int)@CoreState::emergencyIngressSourceId, 0, 255);
+  if (getObservedEmergencyType() > 0 &&
+      sourceId == 255 &&
+      clampRange((int)@V2X::alertState, 0, 1) == 1)
+  {
+    sourceId = clampRange((int)@V2X::sourceId, 0, 255);
+  }
+  return sourceId;
+}
+
+int getObservedSelectedAlertLevel()
+{
+  int alertLevel;
+
+  alertLevel = clampRange((int)@CoreState::selectedAlertEffectiveLevel, 0, 7);
+  if (alertLevel == 0)
+  {
+    alertLevel = clampRange((int)@CoreState::selectedAlertDecisionLevel, 0, 7);
+  }
+  if (alertLevel == 0)
+  {
+    alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  }
+  return alertLevel;
+}
+
+int getObservedSelectedAlertType()
+{
+  int alertType;
+
+  alertType = clampRange((int)@CoreState::selectedAlertEffectiveType, 0, 15);
+  if (alertType == 0)
+  {
+    alertType = clampRange((int)@CoreState::selectedAlertDecisionType, 0, 15);
+  }
+  if (alertType == 0)
+  {
+    alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+  }
+  return alertType;
+}
+
 int getExpectedRuntimeEmergencyWarningCode()
 {
-  return calcScenarioEmergencyWarningCode((int)@V2X::emergencyType,
-                                          (int)@V2X::emergencyDirection,
-                                          (int)@V2X::eta,
+  return calcScenarioEmergencyWarningCode(getObservedEmergencyType(),
+                                          getObservedEmergencyDirection(),
+                                          getObservedEmergencyEtaSec(),
                                           getObservedScenarioVehicleSpeed());
 }
 
@@ -345,6 +431,11 @@ void pushLockedScenarioInputs()
   @Infotainment::navDirection = clampRange(gLockNavDirection, 0, 3);
   @Infotainment::zoneDistance = clampRange(gLockZoneDistance, 0, 255);
   @Infotainment::speedLimit = clampRange(gLockSpeedLimit, 0, 255);
+  @V2X::policeDispatch = 0;
+  @V2X::ambulanceDispatch = 0;
+  @V2X::emergencyDirection = 0;
+  @V2X::eta = 255;
+  @V2X::sourceId = 255;
   /* A/B 그룹 플래그: CGW 정규화 경로를 거치지 않고 Core에 직접 주입 */
   @Core::accelGroupFlag = clampRange(gLockAccelGroupFlag, 0, 1);
   @Core::steerGroupFlag = clampRange(gLockSteerGroupFlag, 0, 1);
@@ -421,6 +512,22 @@ void cancelScenarioTransientTimers()
   cancelTimer(tScenarioPhase3);
 }
 
+void resetValidationOverrides()
+{
+  @Test::displayModeSetting = 0;
+  @Test::alertVolumeSetting = 0;
+  @Test::seatBeltOverride = 0;
+  @Test::turnLampOverride = 0;
+  @Test::forceFailSafe = 0;
+  @Test::historyQueryOffset = 0;
+  @Test::historyQueryCode = 0;
+  @V2X::policeDispatch = 0;
+  @V2X::ambulanceDispatch = 0;
+  @V2X::emergencyDirection = 0;
+  @V2X::eta = 255;
+  @V2X::sourceId = 255;
+}
+
 void stopScenarioExecution()
 {
   gDemoRunning = 0;
@@ -430,22 +537,24 @@ void stopScenarioExecution()
   cancelTimer(tDemoStep);
   cancelScenarioTransientTimers();
   EmitBackboneValidationOverrideTest(0);
-  EmitBackboneEmergencyTest(clampRange(gLockEmergencyType, 0, 2),
-                            0,
-                            clampRange(gLockSourceId, 0, 255),
-                            clampRange(gLockEmergencyDirection, 0, 3),
-                            0);
+  if (gLockSuppressEmergencyFrame == 0)
+  {
+    EmitBackboneEmergencyTest(clampRange(gLockEmergencyType, 0, 2),
+                              0,
+                              clampRange(gLockSourceId, 0, 255),
+                              clampRange(gLockEmergencyDirection, 0, 3),
+                              0);
+  }
   EmitBackboneObjectRiskTest(0, 0, 0, 0, 0, 0, 300);
-  @Test::forceFailSafe = 0;
-  @Test::displayModeSetting = 0;
-  @Test::alertVolumeSetting = 0;
-  @Test::seatBeltOverride = 0;
-  @Test::turnLampOverride = 0;
+  resetValidationOverrides();
   @Test::scenarioCommandAck = 0;
   clearScenarioLifecycleState();
   @Test::scenarioResult = 0;
   gLockAccelGroupFlag = 0;
   gLockSteerGroupFlag = 0;
+  gLockPoliceDispatch = 0;
+  gLockAmbulanceDispatch = 0;
+  gLockForceFailSafe = 0;
   gLockSuppressEmergencyFrame = 0;
   gEmergencyIngressHeartbeat = 0;
   gDiagCtxNominalSeen = 0;
@@ -606,10 +715,10 @@ void trackWave2NominalContexts()
   }
   else if (gCurrentScenarioId == 210)
   {
-    if ((int)@V2X::eta == 9 &&
-        (int)@V2X::sourceId == 92 &&
-        (int)@Core::selectedAlertLevel == 6 &&
-        (int)@Core::selectedAlertType == 1 &&
+    if (getObservedEmergencyEtaSec() == 9 &&
+        getObservedEmergencySourceId() == 92 &&
+        getObservedSelectedAlertLevel() == 6 &&
+        getObservedSelectedAlertType() == 1 &&
         (int)@Core::failSafeMode == 0)
     {
       gV2xContextNominalSeen = 1;
@@ -617,10 +726,10 @@ void trackWave2NominalContexts()
   }
   else if (gCurrentScenarioId == 211)
   {
-    if ((int)@Core::selectedAlertLevel == 6 &&
-        (int)@Core::selectedAlertType == 1 &&
+    if (getObservedSelectedAlertLevel() == 6 &&
+        getObservedSelectedAlertType() == 1 &&
         (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
-        (int)@UiRender::renderDirection == (int)@V2X::emergencyDirection &&
+        (int)@UiRender::renderDirection == getObservedEmergencyDirection() &&
         (int)@Core::failSafeMode == 0)
     {
       gCluDisplayNominalSeen = 1;
@@ -736,12 +845,7 @@ void applyScenarioPreset(int scenarioId)
   gObsTailgateAssistMode = -1;
   gObsTailgateOpenRequestState = -1;
   gObsTailgateActuatorCmd = -1;
-  @Test::displayModeSetting = 0;
-  @Test::alertVolumeSetting = 0;
-  @Test::seatBeltOverride = 0;
-  @Test::turnLampOverride = 0;
-  @Test::forceFailSafe = 0;
-  @Test::historyQueryOffset = 0;
+  resetValidationOverrides();
 
   if (scenarioId == 1)
   {
@@ -1885,6 +1989,10 @@ void evaluateScenarioResult()
   int result;
   int level;
   int type;
+  int emergencyType;
+  int emergencyDirection;
+  int emergencyEtaSec;
+  int emergencySourceId;
   int code;
   int timeoutClear;
   int ambientPattern;
@@ -1905,8 +2013,12 @@ void evaluateScenarioResult()
   int uiRenderTextCode;
 
   result = 0;
-  level = (int)@Core::selectedAlertLevel;
-  type = (int)@Core::selectedAlertType;
+  level = getObservedSelectedAlertLevel();
+  type = getObservedSelectedAlertType();
+  emergencyType = getObservedEmergencyType();
+  emergencyDirection = getObservedEmergencyDirection();
+  emergencyEtaSec = getObservedEmergencyEtaSec();
+  emergencySourceId = getObservedEmergencySourceId();
   code = (int)@Cluster::warningTextCode;
   timeoutClear = ((int)@Core::timeoutClear == 1) ? 1 : 0;
   ambientPattern = (int)@Body::ambientPattern;
@@ -1974,12 +2086,12 @@ void evaluateScenarioResult()
   else if (gCurrentScenarioId == 9)
   {
     /* Req_030: lower ETA competitor (sourceId=99, eta=10) should be active */
-    result = ((int)@V2X::eta == 10 && (int)@V2X::sourceId == 99 && level == 6) ? 1 : 0;
+    result = (emergencyEtaSec == 10 && emergencySourceId == 99 && level == 6) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 10)
   {
     /* Req_031: lower sourceId (5) wins despite same ETA as prior active (sourceId=20) */
-    result = ((int)@V2X::sourceId == 5 && (int)@V2X::eta == 10 && level == 6) ? 1 : 0;
+    result = (emergencySourceId == 5 && emergencyEtaSec == 10 && level == 6) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 11)
   {
@@ -2221,26 +2333,26 @@ void evaluateScenarioResult()
   else if (gCurrentScenarioId == 210)
   {
     result = (gV2xContextNominalSeen == 1 &&
-              (int)@V2X::eta == 9 &&
-              (int)@V2X::sourceId == 92 &&
-              (int)@Core::selectedAlertLevel == 6 &&
-              (int)@Core::selectedAlertType == 1 &&
+              emergencyEtaSec == 9 &&
+              emergencySourceId == 92 &&
+              level == 6 &&
+              type == 1 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 211)
   {
     result = (gCluDisplayNominalSeen == 1 &&
-              (int)@Core::selectedAlertLevel == 6 &&
-              (int)@Core::selectedAlertType == 1 &&
+              level == 6 &&
+              type == 1 &&
               (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
-              (int)@UiRender::renderDirection == (int)@V2X::emergencyDirection &&
+              (int)@UiRender::renderDirection == emergencyDirection &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 212)
   {
-    result = ((int)@V2X::emergencyType == 2 &&
-              (int)@Core::selectedAlertLevel == 7 &&
-              (int)@Core::selectedAlertType == 2 &&
+    result = (emergencyType == 2 &&
+              level == 7 &&
+              type == 2 &&
               (int)@Cluster::warningTextCode == getExpectedRuntimeEmergencyWarningCode() &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
@@ -2251,25 +2363,27 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 224)
   {
-    result = ((int)@V2X::sourceId == 5 && (int)@V2X::eta == 10 &&
-              (int)@V2X::emergencyType == 2 && level == 7) ? 1 : 0;
+    result = (emergencySourceId == 5 &&
+              emergencyEtaSec == 10 &&
+              emergencyType == 2 &&
+              level == 7) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 213)
   {
-    result = ((int)@V2X::emergencyType == 2 &&
+    result = (emergencyType == 2 &&
               (int)@Core::intersectionConflictFlag == 1 &&
               (int)@Core::decelAssistReq == 1 &&
-              (int)@Core::selectedAlertLevel == 7 &&
-              (int)@Core::selectedAlertType == 2 &&
+              level == 7 &&
+              type == 2 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 238)
   {
-    result = ((int)@V2X::emergencyType == 2 &&
+    result = (emergencyType == 2 &&
               (int)@Core::mergeCutInFlag == 1 &&
               (int)@Core::decelAssistReq == 1 &&
-              (int)@Core::selectedAlertLevel == 7 &&
-              (int)@Core::selectedAlertType == 2 &&
+              level == 7 &&
+              type == 2 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 214)
@@ -2715,14 +2829,8 @@ on start
   @Test::testScenario = 0;
   @Test::scenarioResult = 0;
   clearScenarioLifecycleState();
-  @Test::displayModeSetting = 0;
-  @Test::alertVolumeSetting = 0;
-  @Test::seatBeltOverride = 0;
-  @Test::historyQueryOffset = 0;
-  @Test::historyQueryCode = 0;
+  resetValidationOverrides();
   gEmergencyIngressHeartbeat = 0;
-  @Test::forceFailSafe = 0;
-  @Test::turnLampOverride = 0;
   @Core::accelGroupFlag = 0;
   @Core::steerGroupFlag = 0;
   gObsVehicleSpeed = -1;

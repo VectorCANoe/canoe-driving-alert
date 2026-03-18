@@ -20,9 +20,8 @@ export testcase TC_CANOE_ST_EXT_027_FRONTAL_OBJECT_RISK()
     return;
   }
 
-  assertIntEq("frontal-object-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedObjectRisk(800) ||
-      !waitForObservedFailSafe(800)) { resetValidationHarnessIfNeeded(); return; }
+  if (!waitForObservedObjectRiskMin(3, 60, 1200) ||
+      !waitForObservedFailSafeMin(1, 1500)) { resetValidationHarnessIfNeeded(); return; }
   assertIntEq("frontal-object-track-valid", 1, (long)@Test::obsObjectTrackValid, "ethObjectTrackValid");
   assertIntMin("frontal-object-risk-class", 3, (long)@Test::obsObjectRiskClass, "ethObjectRiskClass");
   assertIntMin("frontal-object-proximity", 60, (long)@Test::obsObjectRiskLevel, "ethObjectRiskLevel");

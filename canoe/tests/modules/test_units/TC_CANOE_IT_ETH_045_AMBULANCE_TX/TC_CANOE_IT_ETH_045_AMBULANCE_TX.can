@@ -25,8 +25,8 @@ export testcase TC_CANOE_IT_ETH_045_AMBULANCE_TX()
     return;
   }
 
-  if (!waitForObservedSelectedAlert(800) ||
-      !waitForObservedFailSafe(800))
+  if (!waitForObservedSelectedAlertState(7, 2, 800) ||
+      !waitForObservedFailSafe(1200))
   {
     resetValidationHarnessIfNeeded();
     return;

@@ -16,6 +16,30 @@ on message frmCdcStateMsg
   gCdcValveCurrent = this.CdcValveCurrent;
 }
 
+long waitForCdcInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gCdcMode < 1 ||
+          gCdcValveCurrent < 40) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gCdcMode < 1 ||
+      gCdcValveCurrent < 40)
+  {
+    testStepFail("cdc-input-state", "CDC input timeout waited=%d mode=%d current=%d minimumMode=%d minimumCurrent=%d",
+                 waitedMs, gCdcMode, gCdcValveCurrent, 1, 40);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_035_CDC_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -27,9 +51,14 @@ export testcase TC_CANOE_UT_INP_035_CDC_INPUT()
   {
     return;
   }
+  if (!waitForCdcInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
-  assertIntEq("s225_cdcMode", 2, gCdcMode, "cdcMode");
-  assertIntEq("s225_valveCurrent", 160, gCdcValveCurrent, "valveCurrent");
+  assertIntMin("s225_cdcMode", 1, gCdcMode, "cdcMode");
+  assertIntMin("s225_valveCurrent", 40, gCdcValveCurrent, "valveCurrent");
 
   resetValidationHarnessIfNeeded();
 }

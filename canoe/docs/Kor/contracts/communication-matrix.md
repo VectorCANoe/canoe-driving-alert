@@ -20,9 +20,13 @@
 - `frmEmergencyBroadcastMsg (0x1C0)`는 SIL backbone emergency ingress contract입니다.
   - legacy CAN-stub 이름은 retire 상태입니다.
   - active UDP multicast contract는 `V2X`가 송신하는 `ETH_EmergencyAlert (0xE100)`입니다.
+  - `TEST_SCN`이 같은 transport contract를 validation ingress stimulus로 emit할 수 있지만, 이 matrix에서는 product sender로 계산하지 않습니다.
+  - direction, ETA, source 메타데이터가 필요한 product consumer는 raw `V2X::*` transport mirror 대신 `V2X`가 publish한 normalized `CoreState` ingress seam을 사용해야 합니다.
 - `ethSelectedAlertMsg`는 현재 SIL profile에서 ADAS-owned backbone publication seam으로 유지됩니다.
-  - active runtime에서 `BCM`, `IVI`, `CLU`는 direct backbone RX owner가 아니라 `frmAdasDomainStateMsg`와 local `Core::*` mirror를 소비합니다.
+  - active runtime에서 `BCM`, `IVI`, `CLU`는 direct backbone RX owner가 아닙니다.
+  - 이 node들은 `CoreState::selectedAlertEffective*`를 먼저 소비하고, 짧은 과도 구간에서는 `CoreState::selectedAlertDecision*`, 그 다음 documented local render/output fallback을 순서대로 사용합니다.
   - `ethSelectedAlertMsg`는 active SIL baseline의 output/evidence seam으로 해석해야 하며, 해당 consumer node의 direct ingress path로 강제 해석하면 안 됩니다.
+- owner, observer, validation 예외를 포함한 계층 분리 기준은 `contracts/layer-separation-policy.md`를 따릅니다.
 - backbone contract row는 source column에 `UDP multicast (239.0.2.1:5000)`을 사용합니다.
 - validation result aggregation은 `Test::scenarioResult`와 `Test::base*` sysvar를 사용하므로, 해당 seam에는 active network message를 두지 않습니다.
 

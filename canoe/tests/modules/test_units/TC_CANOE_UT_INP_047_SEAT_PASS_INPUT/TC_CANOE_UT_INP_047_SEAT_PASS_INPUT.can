@@ -16,6 +16,32 @@ on message frmSeatPassStateMsg
   gSeatPassHeatLvl = this.SeatPassHeatLvl;
 }
 
+long waitForSeatPassInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gSeatPassPos != 0 ||
+          gSeatPassHeatLvl != 0) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gSeatPassPos != 0 ||
+      gSeatPassHeatLvl != 0)
+  {
+    testStepFail("seat-pass-input-state", "Seat passenger input timeout waited=%d pos=%d heat=%d",
+                 waitedMs,
+                 gSeatPassPos,
+                 gSeatPassHeatLvl);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_047_SEAT_PASS_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -27,6 +53,12 @@ export testcase TC_CANOE_UT_INP_047_SEAT_PASS_INPUT()
   gSeatPassHeatLvl = -1;
   if (!launchScenarioAndWait(229, 900, 1300))
   {
+    return;
+  }
+
+  if (!waitForSeatPassInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

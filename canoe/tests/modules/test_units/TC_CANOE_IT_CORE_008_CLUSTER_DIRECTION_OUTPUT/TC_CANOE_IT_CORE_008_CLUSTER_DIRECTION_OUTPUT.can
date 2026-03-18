@@ -20,7 +20,13 @@ export testcase TC_CANOE_IT_CORE_008_CLUSTER_DIRECTION_OUTPUT()
     return;
   }
 
-  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreSelectedAlertState(6, 1, 800) ||
+      !waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 2, 12, 20), 2, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("selected-alert-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("selected-alert-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
   assertIntEq("warning-text-code", deriveExpectedEmergencyWarningCode(1, 2, 12, 20), (long)@Cluster::warningTextCode, "warningTextCode");

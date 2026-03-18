@@ -16,6 +16,32 @@ on message frmAflsStateMsg
   gLevelStep = this.LevelStep;
 }
 
+long waitForAflsInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gAflsMode != 1 ||
+          gLevelStep < 1) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gAflsMode != 1 ||
+      gLevelStep < 1)
+  {
+    testStepFail("afls-input-state", "AFLS input timeout waited=%d mode=%d level=%d",
+                 waitedMs,
+                 gAflsMode,
+                 gLevelStep);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_043_AFLS_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -27,6 +53,12 @@ export testcase TC_CANOE_UT_INP_043_AFLS_INPUT()
   gLevelStep = -1;
   if (!launchScenarioAndWait(230, 800, 1300))
   {
+    return;
+  }
+
+  if (!waitForAflsInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

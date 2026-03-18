@@ -25,7 +25,6 @@ export testcase TC_CANOE_IT_EXT_035_DISTANCE_HISTORY()
     resetValidationHarnessIfNeeded();
     return;
   }
-  assertIntEq("distance-history-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("distance-history-distance", 180, (long)@CoreState::emergencyDistanceM, "emergencyDistanceM");
   assertIntEq("distance-history-code", deriveExpectedEmergencyWarningCode(1, 2, 9, 72), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntMin("distance-history-count", 1, (long)@CoreState::alertHistoryCount, "alertHistoryCount");

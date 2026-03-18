@@ -20,10 +20,9 @@ export testcase TC_CANOE_UT_CORE_005_ADAS_DECEL_ASSIST()
     return;
   }
 
-  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   if (!waitForObservedDecelState(1, 1, 0, 800) ||
-      !waitForObservedSelectedAlert(800) ||
-      !waitForObservedFailSafe(800))
+      !waitForObservedSelectedAlertState(7, 2, 800) ||
+      !waitForObservedFailSafe(1200))
   {
     resetValidationHarnessIfNeeded();
     return;

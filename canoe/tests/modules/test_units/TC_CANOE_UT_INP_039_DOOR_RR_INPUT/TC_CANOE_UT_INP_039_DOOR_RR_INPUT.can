@@ -18,6 +18,35 @@ on message frmAutoDoorCtrlStateMsg
   gDoorApproachScore = this.DoorApproachScore;
 }
 
+long waitForDoorRrInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gAutoDoorState != 1 ||
+          gAutoUnlockState != 1 ||
+          gDoorApproachScore < 80) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gAutoDoorState != 1 ||
+      gAutoUnlockState != 1 ||
+      gDoorApproachScore < 80)
+  {
+    testStepFail("door-rr-input-state", "Door RR input timeout waited=%d door=%d unlock=%d score=%d",
+                 waitedMs,
+                 gAutoDoorState,
+                 gAutoUnlockState,
+                 gDoorApproachScore);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_039_DOOR_RR_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -30,8 +59,15 @@ export testcase TC_CANOE_UT_INP_039_DOOR_RR_INPUT()
     return;
   }
 
+  if (!waitForDoorRrInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("s226_autoDoorState", 1, gAutoDoorState, "autoDoorState");
-  assertIntMin("s226_doorApproachScore", 50, gDoorApproachScore, "doorApproachScore");
+  assertIntEq("s226_autoUnlockState", 1, gAutoUnlockState, "autoUnlockState");
+  assertIntMin("s226_doorApproachScore", 80, gDoorApproachScore, "doorApproachScore");
 
   resetValidationHarnessIfNeeded();
 }

@@ -24,12 +24,52 @@ on message frmDoorFrStateMsg
   gDoorFrOpenState = this.DoorFrOpenState;
 }
 
+long waitForBodyControlLockState(long expectedDoorFlLockState,
+                                 long expectedDoorFrLockState,
+                                 long expectedDoorFlOpenState,
+                                 long expectedDoorFrOpenState,
+                                 dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gDoorFlLockState != expectedDoorFlLockState ||
+          gDoorFrLockState != expectedDoorFrLockState ||
+          gDoorFlOpenState != expectedDoorFlOpenState ||
+          gDoorFrOpenState != expectedDoorFrOpenState) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gDoorFlLockState != expectedDoorFlLockState ||
+      gDoorFrLockState != expectedDoorFrLockState ||
+      gDoorFlOpenState != expectedDoorFlOpenState ||
+      gDoorFrOpenState != expectedDoorFrOpenState)
+  {
+    testStepFail("it-body-control-lock", "Body control lock timeout waited=%d flLock=%d frLock=%d flOpen=%d frOpen=%d expectedFlLock=%d expectedFrLock=%d expectedFlOpen=%d expectedFrOpen=%d",
+                 waitedMs,
+                 gDoorFlLockState,
+                 gDoorFrLockState,
+                 gDoorFlOpenState,
+                 gDoorFrOpenState,
+                 expectedDoorFlLockState,
+                 expectedDoorFrLockState,
+                 expectedDoorFlOpenState,
+                 expectedDoorFrOpenState);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_IT_EXT_028_BODY_CONTROL_LOCK()
 {
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(226, 900, 1300)) { return; }
+  if (!waitForBodyControlLockState(0, 1, 1, 0, 800)) { resetValidationHarnessIfNeeded(); return; }
 
-  assertIntEq("it-body-lock-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("it-body-lock-fl", 0, gDoorFlLockState, "DoorFlLockState");
   assertIntEq("it-body-lock-fr", 1, gDoorFrLockState, "DoorFrLockState");
   assertIntEq("it-body-open-fl", 1, gDoorFlOpenState, "DoorFlOpenState");

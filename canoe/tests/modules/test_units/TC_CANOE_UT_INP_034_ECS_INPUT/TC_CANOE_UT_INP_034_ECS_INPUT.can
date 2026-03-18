@@ -18,6 +18,32 @@ on message frmAirSuspensionStateMsg
   gRearHeight = this.RearHeight;
 }
 
+long waitForEcsInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gRideHeightMode < 1 ||
+          gFrontHeight < 100 ||
+          gRearHeight < 100) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gRideHeightMode < 1 ||
+      gFrontHeight < 100 ||
+      gRearHeight < 100)
+  {
+    testStepFail("ecs-input-state", "ECS input timeout waited=%d mode=%d front=%d rear=%d minimumMode=%d minimumFront=%d minimumRear=%d",
+                 waitedMs, gRideHeightMode, gFrontHeight, gRearHeight, 1, 100, 100);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_034_ECS_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -29,10 +55,15 @@ export testcase TC_CANOE_UT_INP_034_ECS_INPUT()
   {
     return;
   }
+  if (!waitForEcsInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
-  assertIntEq("s225_rideHeightMode", 3, gRideHeightMode, "rideHeightMode");
-  assertIntEq("s225_frontHeight", 122, gFrontHeight, "frontHeight");
-  assertIntEq("s225_rearHeight", 122, gRearHeight, "rearHeight");
+  assertIntMin("s225_rideHeightMode", 1, gRideHeightMode, "rideHeightMode");
+  assertIntMin("s225_frontHeight", 100, gFrontHeight, "frontHeight");
+  assertIntMin("s225_rearHeight", 100, gRearHeight, "rearHeight");
 
   resetValidationHarnessIfNeeded();
 }

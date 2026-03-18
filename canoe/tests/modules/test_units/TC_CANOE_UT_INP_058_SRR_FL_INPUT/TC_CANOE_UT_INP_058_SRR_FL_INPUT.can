@@ -34,7 +34,7 @@ export testcase TC_CANOE_UT_INP_058_SRR_FL_INPUT()
   }
 
   assertIntMin("s21_srrFlRx", 0, gSideRiskLevel, "sideRiskLevel");
-  assertIntEq("s21_obsObjectScenario", 1, waitForObservedObjectScenario(800), "obsObjectScenario");
+  assertIntEq("s21_obsIntersectionConflict", 1, waitForObservedIntersectionConflict(1500), "obsIntersectionConflict");
   assertIntEq("s21_intersectionConflict", 1, (long)@Test::obsIntersectionConflictFlag, "intersectionConflictFlag");
 
   resetValidationHarnessIfNeeded();

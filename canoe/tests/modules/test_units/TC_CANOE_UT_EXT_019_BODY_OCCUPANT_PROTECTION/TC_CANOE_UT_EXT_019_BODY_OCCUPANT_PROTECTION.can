@@ -30,6 +30,47 @@ on message frmOdsStateMsg
   gChildSeatDetected = this.ChildSeatDetected;
 }
 
+long waitForOccupantProtectionState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gDeploymentArmed != 0 ||
+          gPretensionReq != 1 ||
+          gAirbagWarn != 1 ||
+          gOccupantDetected != 1 ||
+          gWeightClass != 1 ||
+          gAirbagSuppress != 1 ||
+          gChildSeatDetected != 1) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gDeploymentArmed != 0 ||
+      gPretensionReq != 1 ||
+      gAirbagWarn != 1 ||
+      gOccupantDetected != 1 ||
+      gWeightClass != 1 ||
+      gAirbagSuppress != 1 ||
+      gChildSeatDetected != 1)
+  {
+    testStepFail("occupant-protection-state", "Occupant protection timeout waited=%d armed=%d pretension=%d airbagWarn=%d occupant=%d weight=%d suppress=%d childSeat=%d",
+                 waitedMs,
+                 gDeploymentArmed,
+                 gPretensionReq,
+                 gAirbagWarn,
+                 gOccupantDetected,
+                 gWeightClass,
+                 gAirbagSuppress,
+                 gChildSeatDetected);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_EXT_019_BODY_OCCUPANT_PROTECTION()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -46,6 +87,11 @@ export testcase TC_CANOE_UT_EXT_019_BODY_OCCUPANT_PROTECTION()
   gChildSeatDetected = -1;
   if (!launchScenarioAndWait(228, 1500, 350))
   {
+    return;
+  }
+  if (!waitForOccupantProtectionState(800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
   assertIntEq("occupant-armed", 0, gDeploymentArmed, "DeploymentArmed");

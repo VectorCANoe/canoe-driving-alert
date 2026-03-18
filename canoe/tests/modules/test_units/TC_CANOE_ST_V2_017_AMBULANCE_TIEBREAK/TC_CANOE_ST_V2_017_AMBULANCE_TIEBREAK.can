@@ -20,11 +20,16 @@ export testcase TC_CANOE_ST_V2_017_AMBULANCE_TIEBREAK()
     return;
   }
 
-  assertIntEq("ambulance-tiebreak-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+if (!waitForV2xIngressState(1, 2, 10, 5, 1500))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("ambulance-tiebreak-eta", 10, (long)@V2X::eta, "eta");
   assertIntEq("ambulance-tiebreak-source", 5, (long)@V2X::sourceId, "sourceId");
   assertIntEq("ambulance-tiebreak-emergency-type", 2, (long)@V2X::emergencyType, "emergencyType");
-  if (!waitForObservedSelectedAlert(800))
+  if (!waitForObservedSelectedAlertState(7, 2, 800))
   {
     resetValidationHarnessIfNeeded();
     return;

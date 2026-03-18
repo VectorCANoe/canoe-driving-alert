@@ -16,6 +16,32 @@ on message frmSeatDrvStateMsg
   gSeatDrvHeatLvl = this.SeatDrvHeatLvl;
 }
 
+long waitForSeatDrvInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gSeatDrvPos != 120 ||
+          gSeatDrvHeatLvl != 0) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gSeatDrvPos != 120 ||
+      gSeatDrvHeatLvl != 0)
+  {
+    testStepFail("seat-drv-input-state", "Seat driver input timeout waited=%d pos=%d heat=%d",
+                 waitedMs,
+                 gSeatDrvPos,
+                 gSeatDrvHeatLvl);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_046_SEAT_DRV_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -30,6 +56,12 @@ export testcase TC_CANOE_UT_INP_046_SEAT_DRV_INPUT()
   gSeatDrvHeatLvl = -1;
   if (!launchScenarioAndWait(229, 900, 1300))
   {
+    return;
+  }
+
+  if (!waitForSeatDrvInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

@@ -15,17 +15,18 @@
 ### 완전 한국어판
 
 1. [communication-matrix.md](./contracts/communication-matrix.md)
-2. [diagnostic-description.md](./contracts/diagnostic-description.md)
-3. [diagnostic-matrix.md](./contracts/diagnostic-matrix.md)
-4. [diagnostic-sysvar-contract.md](./contracts/diagnostic-sysvar-contract.md)
-5. [test-asset-mapping.md](./verification/test-asset-mapping.md)
-6. [execution-guide.md](./verification/execution-guide.md)
-7. [VECTOR_ALIGNED_CLOSEOUT_STANDARD.md](./verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md)
-8. [evidence-policy.md](./verification/evidence-policy.md)
-9. [diagnostic-coverage.md](./verification/diagnostic-coverage.md)
-10. [diagnostic-seam-design.md](./verification/diagnostic-seam-design.md)
-11. [native-test-asset-naming.md](./verification/native-test-asset-naming.md)
-12. [test-suite-composition.md](./verification/test-suite-composition.md)
+2. [layer-separation-policy.md](./contracts/layer-separation-policy.md)
+3. [diagnostic-description.md](./contracts/diagnostic-description.md)
+4. [diagnostic-matrix.md](./contracts/diagnostic-matrix.md)
+5. [diagnostic-sysvar-contract.md](./contracts/diagnostic-sysvar-contract.md)
+6. [test-asset-mapping.md](./verification/test-asset-mapping.md)
+7. [execution-guide.md](./verification/execution-guide.md)
+8. [VECTOR_ALIGNED_CLOSEOUT_STANDARD.md](./verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md)
+9. [evidence-policy.md](./verification/evidence-policy.md)
+10. [diagnostic-coverage.md](./verification/diagnostic-coverage.md)
+11. [diagnostic-seam-design.md](./verification/diagnostic-seam-design.md)
+12. [native-test-asset-naming.md](./verification/native-test-asset-naming.md)
+13. [test-suite-composition.md](./verification/test-suite-composition.md)
 
 ### 안내본 / 진입점
 
@@ -49,12 +50,13 @@
 ### 핵심 계약 문서
 
 1. [communication-matrix.md](./contracts/communication-matrix.md)
-2. [owner-route.md](./contracts/owner-route.md)
-3. [multibus-policy.md](./contracts/multibus-policy.md)
-4. [ethernet-interface.md](./contracts/ethernet-interface.md)
-5. [panel-sysvar-contract.md](./contracts/panel-sysvar-contract.md)
-6. [diagnostic-matrix.md](./contracts/diagnostic-matrix.md)
-7. [diagnostic-sysvar-contract.md](./contracts/diagnostic-sysvar-contract.md)
+2. [layer-separation-policy.md](./contracts/layer-separation-policy.md)
+3. [owner-route.md](./contracts/owner-route.md)
+4. [multibus-policy.md](./contracts/multibus-policy.md)
+5. [ethernet-interface.md](./contracts/ethernet-interface.md)
+6. [panel-sysvar-contract.md](./contracts/panel-sysvar-contract.md)
+7. [diagnostic-matrix.md](./contracts/diagnostic-matrix.md)
+8. [diagnostic-sysvar-contract.md](./contracts/diagnostic-sysvar-contract.md)
 
 ### 핵심 검증 문서
 
@@ -80,6 +82,7 @@
 ### Contracts
 
 - [communication-matrix.md](./contracts/communication-matrix.md)
+- [layer-separation-policy.md](./contracts/layer-separation-policy.md)
 - [ethernet-backbone.md](./contracts/ethernet-backbone.md)
 - [owner-route.md](./contracts/owner-route.md)
 - [multibus-policy.md](./contracts/multibus-policy.md)

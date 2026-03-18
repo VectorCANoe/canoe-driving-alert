@@ -19,7 +19,11 @@ export testcase TC_CANOE_UT_EXT_016_CHS_BRAKE_EXT()
   {
     return;
   }
-  assertIntEq("chs-brake-park-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreDriveState(0, 0, -1, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("chs-brake-park-drive", 0, (long)@Core::driveStateNorm, "driveStateNorm");
   assertIntMin("chs-brake-park-pedal", 30, (long)@Core::brakePedalNorm, "brakePedalNorm");
 
@@ -31,7 +35,11 @@ export testcase TC_CANOE_UT_EXT_016_CHS_BRAKE_EXT()
   {
     return;
   }
-  assertIntEq("chs-brake-stop-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreChassisState(0, 0, 30, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("chs-brake-stop-drive", 0, (long)@Core::driveStateNorm, "driveStateNorm");
   assertIntMin("chs-brake-stop-pedal", 30, (long)@Core::brakePedalNorm, "brakePedalNorm");
   assertIntEq("chs-brake-stop-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");

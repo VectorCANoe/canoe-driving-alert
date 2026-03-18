@@ -20,9 +20,14 @@ export testcase TC_CANOE_ST_V2_015_AMBULANCE_PRIORITY()
     return;
   }
 
-  assertIntEq("ambulance-priority-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+if (!waitForV2xIngressState(1, 2, 8, 22, 1500))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("ambulance-priority-emergency-type", 2, (long)@V2X::emergencyType, "emergencyType");
-  if (!waitForObservedSelectedAlert(800))
+  if (!waitForObservedSelectedAlertState(7, 2, 800))
   {
     resetValidationHarnessIfNeeded();
     return;

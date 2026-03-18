@@ -20,8 +20,7 @@ export testcase TC_CANOE_ST_EXT_046_FAILSAFE_RECOVERY()
     return;
   }
 
-  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedFailSafe(800))
+  if (!waitForObservedFailSafe(1200))
   {
     resetValidationHarnessIfNeeded();
     return;

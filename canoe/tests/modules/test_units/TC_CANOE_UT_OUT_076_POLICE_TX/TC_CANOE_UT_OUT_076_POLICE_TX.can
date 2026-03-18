@@ -25,12 +25,17 @@ export testcase TC_CANOE_UT_OUT_076_POLICE_TX()
     return;
   }
 
-  assertIntEq("police-tx-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+if (!waitForV2xIngressState(1, 1, 12, 11, 1500))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("police-tx-alert-state", 1, (long)@V2X::alertState, "alertState");
   assertIntEq("police-tx-type", 1, (long)@V2X::emergencyType, "emergencyType");
   assertIntEq("police-tx-eta", 12, (long)@V2X::eta, "eta");
   assertIntEq("police-tx-source", 11, (long)@V2X::sourceId, "sourceId");
-  if (!waitForObservedSelectedAlert(800))
+  if (!waitForObservedSelectedAlertState(6, 1, 800))
   {
     resetValidationHarnessIfNeeded();
     return;

@@ -16,9 +16,10 @@ This folder provides the official developer documentation for the CANoe SIL base
 1. `architecture/ecu-classification.md`
 2. `architecture/surface-runtime-verification-map.md`
 3. `architecture/skeleton.md`
-4. `contracts/communication-matrix.md`
-5. `contracts/owner-route.md`
-6. `verification/oracle.md`
+4. `contracts/layer-separation-policy.md`
+5. `contracts/communication-matrix.md`
+6. `contracts/owner-route.md`
+7. `verification/oracle.md`
 
 ## Curated Delivery Set
 
@@ -26,6 +27,7 @@ Use this shortlist when you need the actual provided document subset rather than
 
 - English key contracts
   - `contracts/communication-matrix.md`
+  - `contracts/layer-separation-policy.md`
   - `contracts/owner-route.md`
   - `contracts/multibus-policy.md`
   - `contracts/ethernet-interface.md`
@@ -43,6 +45,7 @@ Use this shortlist when you need the actual provided document subset rather than
 - Korean key pack
   - `Kor/README.md`
   - `Kor/contracts/communication-matrix.md`
+  - `Kor/contracts/layer-separation-policy.md`
   - `Kor/contracts/owner-route.md`
   - `Kor/contracts/multibus-policy.md`
   - `Kor/contracts/ethernet-interface.md`
@@ -68,6 +71,7 @@ Use this shortlist when you need the actual provided document subset rather than
 ## Contracts
 
 - `contracts/communication-matrix.md`
+- `contracts/layer-separation-policy.md`
 - `contracts/owner-route.md`
 - `contracts/multibus-policy.md`
 - `contracts/ethernet-interface.md`

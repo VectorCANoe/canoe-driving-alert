@@ -19,8 +19,12 @@ export testcase TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS()
   {
     return;
   }
+  if (!waitForCoreBoundaryState(1, 1, -1, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
-  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("boundary-status", 1, (long)@CoreState::domainBoundaryStatus, "domainBoundaryStatus");
   assertIntEq("routing-policy", 1, (long)@CoreState::routingPolicy, "routingPolicy");
   assertIntEq("selected-alert-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");

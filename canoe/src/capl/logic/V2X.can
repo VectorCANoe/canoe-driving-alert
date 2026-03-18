@@ -39,6 +39,10 @@ variables
   int gLastTransportSourceId;
   int gLastTransportDirection;
   int gLastIngressHeartbeatSeen;
+  dword gLastAcceptedAlertSrcIp;
+  dword gLastAcceptedAlertSrcPort;
+  dword gLastRejectedAlertSrcIp;
+  dword gLastRejectedAlertSrcPort;
 }
 
 
@@ -51,6 +55,26 @@ void mirrorLastEmergencyRx(dword tickValue)
 {
   gActiveLastRxMs = tickValue;
   @CoreState::lastEmergencyRxMs = tickValue;
+}
+
+void publishNormalizedEmergencyIngress()
+{
+  @CoreState::emergencyIngressDirection = clampRange(gActiveEmergencyDirection, 0, 3);
+  @CoreState::emergencyIngressEtaSec = clampRange(gActiveEta, 0, 255);
+  @CoreState::emergencyIngressSourceId = clampRange(gActiveSourceId, 0, 255);
+}
+
+void bumpIngressHeartbeat()
+{
+  int heartbeat;
+
+  heartbeat = clampRange((int)@V2X::ingressHeartbeat, 0, 65535) + 1;
+  if (heartbeat > 65535)
+  {
+    heartbeat = 1;
+  }
+  gLastIngressHeartbeatSeen = heartbeat;
+  @V2X::ingressHeartbeat = heartbeat;
 }
 
 int getEmergencyPriorityRank(int emergencyType)
@@ -71,9 +95,24 @@ int getV2XTxPort()
   return ethBackbonePort() + 1;
 }
 
+dword getV2xRxLocalIp()
+{
+  return getV2xLocalIp();
+}
+
 dword getV2xLocalIp()
 {
   return IpGetAddressAsNumber("192.168.1.9");
+}
+
+int validationLifecycleIsActive()
+{
+  return (((int)@Test::scenarioCommand != 0) ||
+          ((int)@Test::testScenario != 0) ||
+          ((int)@Test::scenarioCommandAck != 0) ||
+          ((int)@Test::scenarioActiveId != 0) ||
+          ((int)@Test::scenarioSettledId != 0) ||
+          ((int)@Test::scenarioEvaluatedId != 0));
 }
 
 int isHigherPriority(int newType, int newEta, int newSourceId,
@@ -195,6 +234,26 @@ void applyEmergencyIngress(int vehicleType, int status, int sourceId, int etaSec
   stageEmergencyIngress(vehicleType, status, sourceId, etaSec, direction);
 }
 
+void logAlertIngressAccepted(dword address, dword port)
+{
+  if (address != gLastAcceptedAlertSrcIp || port != gLastAcceptedAlertSrcPort)
+  {
+    write("[V2X] ingress accept src=%lu port=%lu", address, port);
+    gLastAcceptedAlertSrcIp = address;
+    gLastAcceptedAlertSrcPort = port;
+  }
+}
+
+void logAlertIngressRejected(dword address, dword port)
+{
+  if (address != gLastRejectedAlertSrcIp || port != gLastRejectedAlertSrcPort)
+  {
+    write("[V2X] ingress unexpected src=%lu port=%lu", address, port);
+    gLastRejectedAlertSrcIp = address;
+    gLastRejectedAlertSrcPort = port;
+  }
+}
+
 void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
 {
   int msgId;
@@ -209,11 +268,18 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
     msgId = ethFrameMsgId(buffer, count);
     if (msgId == ethMsgEmergencyAlert() && ethFramePayloadLen(count) >= 4)
     {
-      if (gEthTxSocket != ethInvalidSocket() && port == (dword)getV2XTxPort())
+      if (ethMatchesSource(address, ethNodeIpV2x(), port, getV2XTxPort()) == 1)
       {
         ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
         return;
       }
+      if (ethMatchesSource(address, ethNodeIpTestScn(), port, ethTestScnTxPort()) == 0)
+      {
+        logAlertIngressRejected(address, port);
+        ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+        return;
+      }
+      logAlertIngressAccepted(address, port);
       typeAndDirection = ethGetU8(buffer, 0);
       applyEmergencyIngress(typeAndDirection & 0x3,
                             ethGetU8(buffer, 3) & 0x1,
@@ -233,6 +299,7 @@ void publishActiveEmergencyToV2X()
   @V2X::eta = gActiveEta;
   @V2X::sourceId = gActiveSourceId;
   @V2X::alertState = (gActiveEmergencyType > 0) ? 1 : 0;
+  publishNormalizedEmergencyIngress();
 }
 
 void syncLegacyDispatchInputs()
@@ -241,11 +308,20 @@ void syncLegacyDispatchInputs()
   int ambulanceDispatch;
   int direction;
   int eta;
+  int sourceId;
 
   policeDispatch = (((int)@V2X::policeDispatch) > 0) ? 1 : 0;
   ambulanceDispatch = (((int)@V2X::ambulanceDispatch) > 0) ? 1 : 0;
   direction = clampRange((int)@V2X::emergencyDirection, 0, 3);
   eta = clampRange((int)@V2X::eta, 0, 255);
+  sourceId = clampRange((int)@V2X::sourceId, 0, 255);
+
+  if (validationLifecycleIsActive() == 1)
+  {
+    gPrevPoliceDispatch = 0;
+    gPrevAmbDispatch = 0;
+    return;
+  }
 
   if (ambulanceDispatch == 1)
   {
@@ -253,7 +329,11 @@ void syncLegacyDispatchInputs()
     {
       eta = 20;
     }
-    stageEmergencyIngress(2, 1, 2, eta, direction);
+    if (sourceId == 0 || sourceId == 255)
+    {
+      sourceId = 2;
+    }
+    stageEmergencyIngress(2, 1, sourceId, eta, direction);
   }
   else if (policeDispatch == 1)
   {
@@ -261,15 +341,39 @@ void syncLegacyDispatchInputs()
     {
       eta = 30;
     }
-    stageEmergencyIngress(1, 1, 1, eta, direction);
+    if (sourceId == 0 || sourceId == 255)
+    {
+      sourceId = 1;
+    }
+    stageEmergencyIngress(1, 1, sourceId, eta, direction);
   }
   else if (gPrevAmbDispatch == 1)
   {
-    stageEmergencyIngress(2, 0, 2, 0, gActiveEmergencyDirection);
+    if (gActiveEmergencyType == 2 &&
+        gActiveSourceId > 0 &&
+        gActiveSourceId != 255)
+    {
+      sourceId = gActiveSourceId;
+    }
+    else
+    {
+      sourceId = 2;
+    }
+    stageEmergencyIngress(2, 0, sourceId, 0, gActiveEmergencyDirection);
   }
   else if (gPrevPoliceDispatch == 1)
   {
-    stageEmergencyIngress(1, 0, 1, 0, gActiveEmergencyDirection);
+    if (gActiveEmergencyType == 1 &&
+        gActiveSourceId > 0 &&
+        gActiveSourceId != 255)
+    {
+      sourceId = gActiveSourceId;
+    }
+    else
+    {
+      sourceId = 1;
+    }
+    stageEmergencyIngress(1, 0, sourceId, 0, gActiveEmergencyDirection);
   }
 
   gPrevPoliceDispatch = policeDispatch;
@@ -319,8 +423,13 @@ void recordAlertEvent()
   int eventPhase;
   int alertSnapshotId;
 
-  alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  alertType = clampRange((int)@CoreState::selectedAlertEffectiveType, 0, 15);
+  alertLevel = clampRange((int)@CoreState::selectedAlertEffectiveLevel, 0, 7);
+  if (alertType == 0 && alertLevel == 0)
+  {
+    alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+    alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  }
   alertSnapshotId = clampRange((int)@CoreState::arbitrationSnapshotId, 0, 65535);
   warningCode = clampRange((int)@Cluster::warningTextCode, 0, 255);
   eventPhase = 0;
@@ -357,7 +466,7 @@ void recordAlertEvent()
 
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
+  gEthSocket = ethOpenBackboneReceiverSocket(getV2xLocalIp());
   gEthTxSocket = ethOpenNodeSocketAt(getV2xLocalIp(), getV2XTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   clearEmergencyState();
@@ -383,6 +492,11 @@ on start
   gLastTransportSourceId = 0;
   gLastTransportDirection = 0;
   gLastIngressHeartbeatSeen = 0;
+  gLastAcceptedAlertSrcIp = 0;
+  gLastAcceptedAlertSrcPort = 0;
+  gLastRejectedAlertSrcIp = 0;
+  gLastRejectedAlertSrcPort = 0;
+  @V2X::ingressHeartbeat = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
     write("[V2X] tx socket unavailable");
@@ -458,6 +572,7 @@ on timer tRxCycle
     if (accepted == 1)
     {
       mirrorLastEmergencyRx(nowMs);
+      bumpIngressHeartbeat();
       publishActiveEmergencyToV2X();
       setTimeoutClear(0);
       setTimer(tWatchdog, 1000);
@@ -470,6 +585,7 @@ on timer tRxCycle
         sourceId == gActiveSourceId)
     {
       clearEmergencyState();
+      bumpIngressHeartbeat();
       publishActiveEmergencyToV2X();
       updateEmergencyContext();
     }
@@ -487,6 +603,7 @@ on timer tWatchdog
   if (gActiveEmergencyType != 0 && (nowMs - gActiveLastRxMs) >= 1000)
   {
     clearEmergencyState();
+    bumpIngressHeartbeat();
     publishActiveEmergencyToV2X();
     updateEmergencyContext();
     setTimeoutClear(1);

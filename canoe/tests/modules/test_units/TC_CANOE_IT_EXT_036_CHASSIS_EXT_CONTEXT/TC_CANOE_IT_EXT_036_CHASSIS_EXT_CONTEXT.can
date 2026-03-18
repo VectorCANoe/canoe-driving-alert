@@ -12,15 +12,15 @@ export testcase TC_CANOE_IT_EXT_036_CHASSIS_EXT_CONTEXT()
 {
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(218, 900, 1300)) { return; }
-  assertIntEq("it-chassis-steer-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreChassisState(68, 1, -1, -1, 800)) { resetValidationHarnessIfNeeded(); return; }
   assertIntEq("it-chassis-steer-input", 1, (long)@Core::steeringInputNorm, "steeringInputNorm");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(219, 900, 1300)) { return; }
-  assertIntEq("it-chassis-brake-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreChassisState(-1, -1, 30, -1, 800)) { resetValidationHarnessIfNeeded(); return; }
   assertIntMin("it-chassis-brake-pedal", 30, (long)@Core::brakePedalNorm, "brakePedalNorm");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(237, 900, 1300)) { return; }
-  assertIntEq("it-chassis-accel-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreDriveState(-1, -1, 0, 800)) { resetValidationHarnessIfNeeded(); return; }
   assertIntEq("it-chassis-drive-mode", 2, (long)@CoreState::driveMode, "driveMode");
   resetValidationHarnessIfNeeded();
 }

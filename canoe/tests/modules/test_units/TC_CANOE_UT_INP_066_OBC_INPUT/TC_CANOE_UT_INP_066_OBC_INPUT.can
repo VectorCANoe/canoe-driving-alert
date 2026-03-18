@@ -18,15 +18,49 @@ on message frmObcStateMsg
   gChargePowerKw = this.ChargePowerKw;
 }
 
+long waitForObcInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gObcState != 2 ||
+          gAcPlugState != 1 ||
+          gChargePowerKw != 20) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gObcState != 2 ||
+      gAcPlugState != 1 ||
+      gChargePowerKw != 20)
+  {
+    testStepFail("inp-obc-state", "OBC input timeout waited=%d obc=%d plug=%d kw=%d",
+                 waitedMs, gObcState, gAcPlugState, gChargePowerKw);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_066_OBC_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
   {
     return;
   }
+  gObcState = -1;
+  gAcPlugState = -1;
+  gChargePowerKw = -1;
 
   if (!launchScenarioAndWait(231, 800, 1300))
   {
+    return;
+  }
+  if (!waitForObcInputState(1800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

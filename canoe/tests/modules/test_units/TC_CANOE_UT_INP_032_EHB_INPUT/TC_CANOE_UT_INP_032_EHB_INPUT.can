@@ -19,6 +19,11 @@ export testcase TC_CANOE_UT_INP_032_EHB_INPUT()
   {
     return;
   }
+  if (!waitForCoreChassisState(0, 0, 30, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
   assertIntEq("s219_driveStateNorm", 0, (long)@Core::driveStateNorm, "driveStateNorm");
   assertIntMin("s219_brakePedalNorm", 30, (long)@Core::brakePedalNorm, "brakePedalNorm");

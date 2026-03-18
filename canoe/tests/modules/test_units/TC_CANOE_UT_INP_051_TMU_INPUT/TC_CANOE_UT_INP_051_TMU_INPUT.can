@@ -20,6 +20,34 @@ on message frmTmuServiceStateMsg
   gSignalBars = this.SignalBars;
 }
 
+long waitForTmuInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gTmuLinkState != 2 ||
+          gTmuServiceMode != 1 ||
+          gRemoteClimateReq != 1 ||
+          gSignalBars < 4) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gTmuLinkState != 2 ||
+      gTmuServiceMode != 1 ||
+      gRemoteClimateReq != 1 ||
+      gSignalBars < 4)
+  {
+    testStepFail("inp-tmu-state", "TMU input timeout waited=%d link=%d service=%d remote=%d bars=%d",
+                 waitedMs, gTmuLinkState, gTmuServiceMode, gRemoteClimateReq, gSignalBars);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_051_TMU_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -33,6 +61,11 @@ export testcase TC_CANOE_UT_INP_051_TMU_INPUT()
   gSignalBars = -1;
   if (!launchScenarioAndWait(229, 900, 1300))
   {
+    return;
+  }
+  if (!waitForTmuInputState(1800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -26,7 +26,13 @@ export testcase TC_CANOE_UT_CORE_010_EMS_ALERT_TXRX()
     return;
   }
 
-  assertIntEq("ems-police-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+if (!waitForV2xIngressState(1, 1, 12, 11, 1500) ||
+      !waitForCoreSelectedAlertState(6, -1, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("ems-police-alert-state", 1, (long)@V2X::alertState, "alertState");
   assertIntEq("ems-police-type", 1, (long)@V2X::emergencyType, "emergencyType");
   assertIntEq("ems-police-eta", 12, (long)@V2X::eta, "eta");
@@ -43,7 +49,13 @@ export testcase TC_CANOE_UT_CORE_010_EMS_ALERT_TXRX()
     return;
   }
 
-  assertIntEq("ems-ambulance-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+if (!waitForV2xIngressState(1, 2, 8, 22, 1500) ||
+      !waitForCoreSelectedAlertState(7, -1, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("ems-ambulance-alert-state", 1, (long)@V2X::alertState, "alertState");
   assertIntEq("ems-ambulance-type", 2, (long)@V2X::emergencyType, "emergencyType");
   assertIntEq("ems-ambulance-eta", 8, (long)@V2X::eta, "eta");
@@ -60,7 +72,13 @@ export testcase TC_CANOE_UT_CORE_010_EMS_ALERT_TXRX()
     return;
   }
 
-  assertIntEq("ems-timeout-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+if (!waitForV2xIngressState(0, 0, 0, 0, 1500) ||
+      !waitForCoreSelectedAlertState(0, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("ems-timeout-clear", 1, (long)@Core::timeoutClear, "timeoutClear");
   assertIntEq("ems-timeout-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("ems-timeout-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");

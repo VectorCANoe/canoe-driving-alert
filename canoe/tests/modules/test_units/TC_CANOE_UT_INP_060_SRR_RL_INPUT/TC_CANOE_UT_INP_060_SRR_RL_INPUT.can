@@ -33,7 +33,7 @@ export testcase TC_CANOE_UT_INP_060_SRR_RL_INPUT()
   }
 
   assertIntEq("s22_srrRlMergeConflict", 1, gMergeConflict, "mergeConflict");
-  assertIntEq("s22_obsObjectScenario", 1, waitForObservedObjectScenario(800), "obsObjectScenario");
+  assertIntEq("s22_obsMergeCutIn", 1, waitForObservedMergeCutIn(1500), "obsMergeCutIn");
   assertIntEq("s22_mergeCutIn", 1, (long)@Test::obsMergeCutInFlag, "mergeCutInFlag");
 
   resetValidationHarnessIfNeeded();

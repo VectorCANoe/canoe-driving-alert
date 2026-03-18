@@ -20,6 +20,13 @@ export testcase TC_CANOE_UT_INP_029_NAV_CONTEXT()
     return;
   }
 
+  if (!waitForNavContextState(1, 30, 800) ||
+      !waitForCoreDriveState(-1, -1, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntMin("s2_selectedAlertLevel", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("s2_failSafeMode", 0, (long)@Core::failSafeMode, "failSafeMode");
 
@@ -30,6 +37,13 @@ export testcase TC_CANOE_UT_INP_029_NAV_CONTEXT()
 
   if (!launchScenarioAndWait(7, 800, 1300))
   {
+    return;
+  }
+
+  if (!waitForNavContextState(3, -1, 800) ||
+      !waitForCoreDriveState(-1, -1, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

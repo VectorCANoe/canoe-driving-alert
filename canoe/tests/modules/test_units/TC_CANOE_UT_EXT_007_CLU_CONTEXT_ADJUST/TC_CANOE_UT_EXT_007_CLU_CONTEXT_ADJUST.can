@@ -20,7 +20,12 @@ export testcase TC_CANOE_UT_EXT_007_CLU_CONTEXT_ADJUST()
     return;
   }
 
-  assertIntEq("clu-seatbelt-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreSelectedAlertState(5, 3, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("clu-seatbelt-level", 5, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("clu-seatbelt-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
 
@@ -39,7 +44,6 @@ export testcase TC_CANOE_UT_EXT_007_CLU_CONTEXT_ADJUST()
     resetValidationHarnessIfNeeded();
     return;
   }
-  assertIntEq("clu-policy-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("clu-policy-code", deriveExpectedEmergencyWarningCode(1, 2, 11, 40), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("clu-policy-direction", 2, (long)@UiRender::renderDirection, "renderDirection");
 
@@ -58,7 +62,6 @@ export testcase TC_CANOE_UT_EXT_007_CLU_CONTEXT_ADJUST()
     resetValidationHarnessIfNeeded();
     return;
   }
-  assertIntEq("clu-distance-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("clu-distance-code", deriveExpectedEmergencyWarningCode(1, 2, 9, 72), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("clu-distance-m", 180, (long)@CoreState::emergencyDistanceM, "emergencyDistanceM");
 

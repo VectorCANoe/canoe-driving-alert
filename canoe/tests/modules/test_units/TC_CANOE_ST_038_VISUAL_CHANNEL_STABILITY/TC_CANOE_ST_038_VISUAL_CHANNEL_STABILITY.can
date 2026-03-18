@@ -20,6 +20,13 @@ export testcase TC_CANOE_ST_038_VISUAL_CHANNEL_STABILITY()
     return;
   }
 
+  if (!waitForDisplayPolicyFloor(1, 1, 1, 1200) ||
+      !waitForCoreDriveState(-1, -1, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("channel-contention-popup-active", 1, (long)@CoreState::popupActive, "popupActive");
   assertIntMin("channel-contention-popup-priority", 1, (long)@CoreState::popupPriority, "popupPriority");
   assertIntEq("channel-contention-cluster-sync", 1, (long)@CoreState::clusterSyncState, "clusterSyncState");

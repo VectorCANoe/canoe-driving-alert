@@ -29,6 +29,7 @@
 - 하나의 logical seam은 하나의 explicit owner를 가져야 합니다
 - cross-domain forwarding이 개입되면 owner와 route authority는 달라질 수 있습니다
 - timeout 및 clear 동작은 transport만으로 추정하지 말고 명시적으로 정의해야 합니다
+- 계층 분리와 observer 분리 원칙은 `contracts/layer-separation-policy.md`를 따릅니다
 - foreign-domain CAN visibility는 `contracts/multibus-policy.md`를 따릅니다
 - 상세 frame-level ownership은 `contracts/communication-matrix.md`에서 관리합니다
 
@@ -37,8 +38,13 @@
 | Seam | Owner | Primary bus | Timeout authority | Route authority | 비고 |
 | --- | --- | --- | --- | --- | --- |
 | Navigation context | `IVI` | Infotainment CAN | `IVI` | `CGW` when cross-domain delivery is required | road zone, direction, distance, speed-limit context |
-| Emergency context | `V2X` | Ethernet backbone | `CGW` boundary authority | `CGW` | emergency source, direction, ETA, active/clear context |
-| Arbitration result | core alert runtime | local runtime + published output seam | core alert runtime | `CGW` for cross-domain forwarding | selected alert level/type and clear behavior |
+| Emergency context | `V2X` | Ethernet backbone + normalized `Core/CoreState` seam | `CGW` boundary authority | `CGW` | emergency source, direction, ETA, active/clear context |
+| Arbitration decision | `ADAS` | local runtime + `CoreState::selectedAlertDecision*` seam | `ADAS` | `CGW` for cross-domain forwarding | gateway boundary 또는 fail-safe shaping 이전의 selected alert level/type |
+| Arbitration effective result | `CGW` | `CoreState::selectedAlertEffective*` seam + published output seam | `CGW` | `CGW` | boundary, timeout-clear, fail-safe shaping 이후의 selected alert level/type |
+| Decel decision | `ADAS` | local runtime + `@Core::decelAssistDecisionReq` + `CoreState::driverReleaseReason` | `ADAS` | `CGW` for cross-domain forwarding | 운전자 개입 해제 의미는 이 seam에서 먼저 정리됩니다 |
+| Decel effective result | `CGW` | `@Core::decelAssistReq` + `CoreState::decelGateReason` | `CGW` | `CGW` | fail-safe 적용 후의 최종 감속 보조 요청과 gate reason |
+| Render warning state | `IVI`, `CLU`, `HUD`, `AMP` | local render output + `CoreState::selectedAlertEffective*` consumer seam | 각 render owner | none | render owner는 `effective -> decision -> compatibility fallback` 순서로 소비하며 ingress/gateway owner가 되지 않습니다 |
+| Body ambient / hazard output | `BCM` | body output + `CoreState::selectedAlertEffective*` consumer seam | `BCM` | none | body warning actuation은 `effective -> decision -> compatibility fallback`과 local body policy를 함께 소비합니다 |
 | Boundary health | `CGW` | Ethernet backbone | `CGW` | `CGW` | fail-safe and cross-domain health summary |
 | Scenario result | `TEST_SCN` | test harness seam | `TEST_SCN` | none | per-scenario verdict and trace anchor |
 | Baseline result | `TEST_BAS` | SysVar-only seam | `TEST_BAS` | none | aggregate baseline verdict and health summary |
@@ -46,6 +52,7 @@
 ## 사용 규칙
 
 seam-level authority 판단은 이 문서를 기준으로 합니다.
+해당 seam이 transport, decision, boundary, render, observer, diagnostic semantic 가운데 무엇인지 먼저 판단할 때는 `contracts/layer-separation-policy.md`를 먼저 봅니다.
 frame-level ownership을 확인할 때는 `contracts/communication-matrix.md`를 사용합니다.
 
 ## 개발 메모

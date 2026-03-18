@@ -18,6 +18,35 @@ on message frmOdsStateMsg
   gChildSeatDetected = this.ChildSeatDetected;
 }
 
+long waitForOdsInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gOccupantDetected != 1 ||
+          gWeightClass != 1 ||
+          gChildSeatDetected != 1) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gOccupantDetected != 1 ||
+      gWeightClass != 1 ||
+      gChildSeatDetected != 1)
+  {
+    testStepFail("ods-input-state", "ODS input timeout waited=%d occupant=%d weight=%d childSeat=%d",
+                 waitedMs,
+                 gOccupantDetected,
+                 gWeightClass,
+                 gChildSeatDetected);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_042_ODS_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -27,6 +56,12 @@ export testcase TC_CANOE_UT_INP_042_ODS_INPUT()
 
   if (!launchScenarioAndWait(228, 800, 1300))
   {
+    return;
+  }
+
+  if (!waitForOdsInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

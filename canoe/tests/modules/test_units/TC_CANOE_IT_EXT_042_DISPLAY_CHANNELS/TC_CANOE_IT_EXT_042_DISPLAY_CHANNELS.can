@@ -13,7 +13,6 @@ export testcase TC_CANOE_IT_EXT_042_DISPLAY_CHANNELS()
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(220, 900, 1300)) { return; }
   if (!waitForStableDisplayPolicy(2, 1, 1, 1, 1200)) { resetValidationHarnessIfNeeded(); return; }
-  assertIntEq("it-display-channel-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("it-display-channel-theme", 2, (long)@CoreState::themeMode, "themeMode");
   assertIntEq("it-display-channel-popup", 1, (long)@CoreState::popupActive, "popupActive");
   assertIntEq("it-display-channel-priority", 1, (long)@CoreState::popupPriority, "popupPriority");
@@ -21,7 +20,6 @@ export testcase TC_CANOE_IT_EXT_042_DISPLAY_CHANNELS()
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(222, 900, 1300)) { return; }
   if (!waitForStableDistanceHistory(180, deriveExpectedEmergencyWarningCode(1, 2, 9, 72), 1, 1200)) { resetValidationHarnessIfNeeded(); return; }
-  assertIntEq("it-distance-display-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("it-distance-display-distance", 180, (long)@CoreState::emergencyDistanceM, "emergencyDistanceM");
   assertIntEq("it-distance-display-code", deriveExpectedEmergencyWarningCode(1, 2, 9, 72), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("it-distance-display-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");

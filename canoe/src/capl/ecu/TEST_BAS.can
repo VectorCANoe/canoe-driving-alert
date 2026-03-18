@@ -48,10 +48,6 @@ int resolveBaseScenarioId()
   {
     scenarioId = clampRange(gActiveBaseScenarioId, 0, 255);
   }
-  if (scenarioId == 0)
-  {
-    scenarioId = clampRange((int)@Test::scenarioCommandAck, 0, 255);
-  }
   return scenarioId;
 }
 
@@ -60,6 +56,40 @@ int hasActiveScenarioLifecycle()
   return (clampRange((int)@Test::scenarioActiveId, 0, 255) != 0 ||
           clampRange((int)@Test::scenarioSettledId, 0, 255) != 0 ||
           clampRange((int)@Test::scenarioEvaluatedId, 0, 255) != 0);
+}
+
+int observerLifecycleIsActive()
+{
+  return ((int)@Test::scenarioCommand != 0 ||
+          (int)@Test::testScenario != 0 ||
+          clampRange((int)@Test::scenarioCommandAck, 0, 255) != 0 ||
+          gScenarioAckActive == 1 ||
+          hasActiveScenarioLifecycle() == 1);
+}
+
+int observerStateNeedsReset()
+{
+  return (gObserverArmed == 1 ||
+          (int)@Test::baseScenarioId != 0 ||
+          (int)@Test::baseScenarioResult != 0 ||
+          (int)@Test::baseFlowCoverageMask != 0 ||
+          (int)@Test::baseTraceSnapshotId != 0 ||
+          (int)@Test::baseTestHealth != 0 ||
+          (int)@Test::obsFailSafeMode != -1 ||
+          (int)@Test::obsEmergencyContext != -1 ||
+          (int)@Test::obsDecelDecisionReq != -1 ||
+          (int)@Test::obsDecelAssistReq != -1 ||
+          (int)@Test::obsDecelRisk != -1 ||
+          (int)@Test::obsDecelGateReason != -1 ||
+          (int)@Test::obsDecelReleaseReason != -1 ||
+          (int)@Test::obsSelectedAlertLevel != -1 ||
+          (int)@Test::obsSelectedAlertType != -1 ||
+          (int)@Test::obsObjectRiskClass != -1 ||
+          (int)@Test::obsObjectRiskLevel != -1 ||
+          (int)@Test::obsObjectTrackValid != -1 ||
+          (int)@Test::obsObjectConfidence != -1 ||
+          (int)@Test::obsIntersectionConflictFlag != -1 ||
+          (int)@Test::obsMergeCutInFlag != -1);
 }
 
 void stageBaseScenarioLifecycle(int scenarioId)
@@ -74,6 +104,20 @@ void stageBaseScenarioLifecycle(int scenarioId)
   ensureObserverArmed();
   publishPendingBaseScenarioContext();
   gScenarioAckActive = 1;
+}
+
+void maybeClearBaseStateOnHarnessIdle()
+{
+  if ((int)@Test::testScenario == 0 &&
+      (int)@Test::scenarioCommand == 0 &&
+      (int)@Test::scenarioCommandAck == 0 &&
+      (int)@Test::scenarioActiveId == 0 &&
+      (int)@Test::scenarioSettledId == 0 &&
+      (int)@Test::scenarioEvaluatedId == 0 &&
+      (int)@Test::scenarioResult == 0)
+  {
+    clearBaseResultState();
+  }
 }
 
 int resolveTestHealth()
@@ -222,22 +266,41 @@ void mirrorObserverFromCore()
   int objectConfidence;
   int intersectionConflictFlag;
   int mergeCutInFlag;
+  int selectedAlertDecisionLevel;
+  int selectedAlertDecisionType;
+  int selectedAlertGateReason;
   dword nowMs;
 
-  if (hasActiveScenarioLifecycle() == 0)
+  if (observerLifecycleIsActive() == 0)
   {
     return;
   }
 
-  selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-  selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 31);
+  selectedAlertLevel = clampRange((int)@CoreState::selectedAlertEffectiveLevel, 0, 7);
+  selectedAlertType = clampRange((int)@CoreState::selectedAlertEffectiveType, 0, 31);
+  selectedAlertDecisionLevel = clampRange((int)@CoreState::selectedAlertDecisionLevel, 0, 7);
+  selectedAlertDecisionType = clampRange((int)@CoreState::selectedAlertDecisionType, 0, 31);
+  selectedAlertGateReason = clampRange((int)@CoreState::selectedAlertGateReason, 0, 3);
+  if (selectedAlertLevel == 0 &&
+      selectedAlertType == 0 &&
+      selectedAlertDecisionLevel == 0 &&
+      selectedAlertDecisionType == 0 &&
+      selectedAlertGateReason == 0)
+  {
+    selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+    selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 31);
+  }
   failSafeMode = clampRange((int)@Core::failSafeMode, 0, 3);
   emergencyContext = clampRange((int)@Core::emergencyContext, 0, 3);
   decelDecisionReq = clampRange((int)@Core::decelAssistDecisionReq, 0, 1);
   decelAssistReq = clampRange((int)@Core::decelAssistReq, 0, 1);
   decelRisk = clampRange((int)@Core::proximityRiskLevel, 0, 100);
   decelGateReason = clampRange((int)@CoreState::decelGateReason, 0, 3);
-  decelReleaseReason = clampRange(gDecelReleaseReason, 0, 3);
+  decelReleaseReason = clampRange((int)@CoreState::driverReleaseReason, 0, 3);
+  if (decelReleaseReason == 0)
+  {
+    decelReleaseReason = clampRange(gDecelReleaseReason, 0, 3);
+  }
   objectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
   objectRiskLevel = clampRange((int)@Core::proximityRiskLevel, 0, 100);
   objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
@@ -321,11 +384,21 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
     return;
   }
 
+  if (observerLifecycleIsActive() == 0)
+  {
+    ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+    return;
+  }
+
   if (result == 0)
   {
     msgId = ethFrameMsgId(buffer, count);
     if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
     {
+      if (ethMatchesSource(address, ethNodeIpCgw(), port, ethCgwTxPort()) == 0)
+      {
+        write("[TEST_BAS] failSafe unexpected src=%lu port=%lu", address, port);
+      }
       payload0 = ethGetU8(buffer, 0);
       gBoundaryStatus = clampRange((payload0 >> 6) & 0x1, 0, 1);
       gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
@@ -335,6 +408,10 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
     }
     else if (msgId == ethMsgDecelAssist() && ethFramePayloadLen(count) >= 2)
     {
+      if (ethMatchesSource(address, ethNodeIpAdas(), port, ethAdasTxPort()) == 0)
+      {
+        write("[TEST_BAS] decel unexpected src=%lu port=%lu", address, port);
+      }
       payload0 = ethGetU8(buffer, 0);
       gDecelDecisionReq = gDecelAssistReq;
       gDecelAssistReq = payload0 & 0x1;
@@ -357,12 +434,20 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
     }
     else if (msgId == ethMsgEmergencyMonitor() && ethFramePayloadLen(count) >= 1)
     {
+      if (ethMatchesSource(address, ethNodeIpV2x(), port, ethV2xTxPort()) == 0)
+      {
+        write("[TEST_BAS] mon unexpected src=%lu port=%lu", address, port);
+      }
       gEmergencyContext = clampRange(ethGetU8(buffer, 0), 0, 2);
       gEmergencyMonRxMs = getSimulationTimeMs();
       @Test::obsEmergencyContext = gEmergencyContext;
     }
     else if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 1)
     {
+      if (ethMatchesSource(address, ethNodeIpAdas(), port, ethAdasTxPort()) == 0)
+      {
+        write("[TEST_BAS] selected unexpected src=%lu port=%lu", address, port);
+      }
       payload0 = ethGetU8(buffer, 0);
       if ((payload0 & 0x7) != gLastSelectedAlertLevel ||
           ((payload0 >> 3) & 0x1F) != gLastSelectedAlertType)
@@ -377,6 +462,10 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
     }
     else if (msgId == ethMsgObjectRiskState() && ethFramePayloadLen(count) >= 6)
     {
+      if (ethMatchesSource(address, ethNodeIpAdas(), port, ethAdasTxPort()) == 0)
+      {
+        write("[TEST_BAS] objState unexpected src=%lu port=%lu", address, port);
+      }
       @Test::obsObjectRiskClass = clampRange(ethGetU8(buffer, 0), 0, 7);
       @Test::obsObjectRiskLevel = clampRange(ethGetU8(buffer, 3), 0, 100);
       @Test::obsObjectTrackValid = clampRange(ethGetU8(buffer, 4), 0, 1);
@@ -384,6 +473,10 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
     }
     else if (msgId == ethMsgObjectScenarioAlert() && ethFramePayloadLen(count) >= 2)
     {
+      if (ethMatchesSource(address, ethNodeIpAdas(), port, ethAdasTxPort()) == 0)
+      {
+        write("[TEST_BAS] objScenario unexpected src=%lu port=%lu", address, port);
+      }
       payload0 = ethGetU8(buffer, 1);
       @Test::obsIntersectionConflictFlag = payload0 & 0x1;
       @Test::obsMergeCutInFlag = (payload0 >> 1) & 0x1;
@@ -395,7 +488,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
 
 on message frmAdasDomainStateMsg
 {
-  if (hasActiveScenarioLifecycle() == 0)
+  if (observerLifecycleIsActive() == 0)
   {
     return;
   }
@@ -433,6 +526,7 @@ on sysvar Test::scenarioResult
 {
   if (hasActiveScenarioLifecycle() == 0)
   {
+    maybeClearBaseStateOnHarnessIdle();
     return;
   }
 
@@ -470,7 +564,7 @@ on sysvar Test::scenarioCommand
         hasActiveScenarioLifecycle() == 0 &&
         (int)@Test::scenarioResult == 0)
     {
-      clearBaseResultState();
+      maybeClearBaseStateOnHarnessIdle();
     }
     return;
   }
@@ -492,6 +586,7 @@ on sysvar Test::scenarioCommandAck
   else if (gScenarioAckActive == 1 && hasActiveScenarioLifecycle() == 0)
   {
     gScenarioAckActive = 0;
+    maybeClearBaseStateOnHarnessIdle();
   }
 }
 
@@ -501,6 +596,10 @@ on sysvar Test::scenarioActiveId
   {
     stageBaseScenarioLifecycle((int)@Test::scenarioActiveId);
   }
+  else
+  {
+    maybeClearBaseStateOnHarnessIdle();
+  }
 }
 
 on sysvar Test::scenarioSettledId
@@ -508,6 +607,10 @@ on sysvar Test::scenarioSettledId
   if ((int)@Test::scenarioSettledId != 0)
   {
     stageBaseScenarioLifecycle((int)@Test::scenarioSettledId);
+  }
+  else
+  {
+    maybeClearBaseStateOnHarnessIdle();
   }
 }
 
@@ -517,11 +620,25 @@ on sysvar Test::scenarioEvaluatedId
   {
     stageBaseScenarioLifecycle((int)@Test::scenarioEvaluatedId);
   }
+  else
+  {
+    maybeClearBaseStateOnHarnessIdle();
+  }
 }
 
 on timer tObserverPoll50
 {
-  mirrorObserverFromCore();
+  if (observerLifecycleIsActive() == 0)
+  {
+    if (observerStateNeedsReset() == 1)
+    {
+      clearBaseResultState();
+    }
+  }
+  else
+  {
+    mirrorObserverFromCore();
+  }
   setTimer(tObserverPoll50, 50);
 }
 

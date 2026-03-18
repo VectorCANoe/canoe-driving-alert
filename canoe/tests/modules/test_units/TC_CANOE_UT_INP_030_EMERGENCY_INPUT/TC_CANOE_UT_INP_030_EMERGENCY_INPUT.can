@@ -20,6 +20,12 @@ export testcase TC_CANOE_UT_INP_030_EMERGENCY_INPUT()
     return;
   }
 
+if (!waitForV2xIngressState(1, 1, 12, 11, 1500))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("s4_alertState", 1, (long)@V2X::alertState, "alertState");
   assertIntEq("s4_emergencyType", 1, (long)@V2X::emergencyType, "emergencyType");
 
@@ -27,6 +33,12 @@ export testcase TC_CANOE_UT_INP_030_EMERGENCY_INPUT()
 
   if (!launchScenarioAndWait(5, 700, 1200))
   {
+    return;
+  }
+
+if (!waitForV2xIngressState(1, 2, 8, 22, 1500))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

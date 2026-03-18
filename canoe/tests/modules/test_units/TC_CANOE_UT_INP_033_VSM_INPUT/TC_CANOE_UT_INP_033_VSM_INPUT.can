@@ -31,6 +31,13 @@ export testcase TC_CANOE_UT_INP_033_VSM_INPUT()
     return;
   }
 
+  if (!waitForCoreDriveState(3, -1, 0, 800) ||
+      !waitForCoreSelectedAlertState(0, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("s225_vsmCtrlState", 1, gVsmCtrlState, "vsmCtrlState");
   assertIntEq("s225_vsmIntervention", 0, gVsmIntervention, "vsmIntervention");
   assertIntEq("s225_driveStateNorm", 3, (long)@Core::driveStateNorm, "driveStateNorm");

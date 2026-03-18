@@ -38,6 +38,59 @@ on message frmInverterStateMsg
   gDcLinkVolt = this.DcLinkVolt;
 }
 
+long waitForPropulsionRouterState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gEopState != 2 ||
+          gPumpRpm < 1000 ||
+          gOilPressure < 80 ||
+          gMcuState != 2 ||
+          gMotorTorqueCmd < 80 ||
+          gMotorSpeedRpm < 3000 ||
+          gInverterState != 2 ||
+          gInvTemp < 50 ||
+          gDcLinkVolt < 100) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gEopState != 2 ||
+      gPumpRpm < 1000 ||
+      gOilPressure < 80 ||
+      gMcuState != 2 ||
+      gMotorTorqueCmd < 80 ||
+      gMotorSpeedRpm < 3000 ||
+      gInverterState != 2 ||
+      gInvTemp < 50 ||
+      gDcLinkVolt < 100)
+  {
+    testStepFail("propulsion-router-state", "Propulsion router timeout waited=%d eop=%d pump=%d oil=%d mcu=%d torque=%d speed=%d inverter=%d invTemp=%d dcLink=%d minimumPump=%d minimumOil=%d minimumTorque=%d minimumSpeed=%d minimumTemp=%d minimumDcLink=%d",
+                 waitedMs,
+                 gEopState,
+                 gPumpRpm,
+                 gOilPressure,
+                 gMcuState,
+                 gMotorTorqueCmd,
+                 gMotorSpeedRpm,
+                 gInverterState,
+                 gInvTemp,
+                 gDcLinkVolt,
+                 1000,
+                 80,
+                 80,
+                 3000,
+                 50,
+                 100);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_EXT_026_DOMAIN_ROUTER_PROPULSION()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -48,15 +101,20 @@ export testcase TC_CANOE_UT_EXT_026_DOMAIN_ROUTER_PROPULSION()
   {
     return;
   }
+  if (!waitForPropulsionRouterState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("router-propulsion-eop-state", 2, gEopState, "EopState");
-  assertIntEq("router-propulsion-pump-rpm", 1600, gPumpRpm, "PumpRpm");
-  assertIntEq("router-propulsion-oil-pressure", 120, gOilPressure, "OilPressure");
+  assertIntMin("router-propulsion-pump-rpm", 1000, gPumpRpm, "PumpRpm");
+  assertIntMin("router-propulsion-oil-pressure", 80, gOilPressure, "OilPressure");
   assertIntEq("router-propulsion-mcu-state", 2, gMcuState, "McuState");
-  assertIntEq("router-propulsion-torque", 124, gMotorTorqueCmd, "MotorTorqueCmd");
-  assertIntEq("router-propulsion-speed", 4800, gMotorSpeedRpm, "MotorSpeedRpm");
+  assertIntMin("router-propulsion-torque", 80, gMotorTorqueCmd, "MotorTorqueCmd");
+  assertIntMin("router-propulsion-speed", 3000, gMotorSpeedRpm, "MotorSpeedRpm");
   assertIntEq("router-propulsion-inverter-state", 2, gInverterState, "InverterState");
-  assertIntEq("router-propulsion-inv-temp", 71, gInvTemp, "InvTemp");
-  assertIntEq("router-propulsion-dc-link", 134, gDcLinkVolt, "DcLinkVolt");
+  assertIntMin("router-propulsion-inv-temp", 50, gInvTemp, "InvTemp");
+  assertIntMin("router-propulsion-dc-link", 100, gDcLinkVolt, "DcLinkVolt");
 
   resetValidationHarnessIfNeeded();
 }

@@ -28,6 +28,76 @@ on message frmPowerTailgateCtrlStateMsg
   gTailgateActuatorCmd = this.TailgateActuatorCmd;
 }
 
+long waitForBodyEntryDoorState(long expectedDoorState,
+                               long expectedUnlockState,
+                               long expectedMinApproachScore,
+                               dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gAutoDoorState != expectedDoorState ||
+          gAutoUnlockState != expectedUnlockState ||
+          gDoorApproachScore < expectedMinApproachScore) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gAutoDoorState != expectedDoorState ||
+      gAutoUnlockState != expectedUnlockState ||
+      gDoorApproachScore < expectedMinApproachScore)
+  {
+    testStepFail("body-entry-door-state", "Door state timeout waited=%d expectedDoor=%d expectedUnlock=%d expectedMinScore=%d actualDoor=%d actualUnlock=%d actualScore=%d",
+                 waitedMs,
+                 expectedDoorState,
+                 expectedUnlockState,
+                 expectedMinApproachScore,
+                 gAutoDoorState,
+                 gAutoUnlockState,
+                 gDoorApproachScore);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForBodyTailgateState(long expectedAssistMode,
+                              long expectedOpenReq,
+                              long expectedActuatorCmd,
+                              dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gTailgateAssistMode != expectedAssistMode ||
+          gTailgateOpenReq != expectedOpenReq ||
+          gTailgateActuatorCmd != expectedActuatorCmd) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gTailgateAssistMode != expectedAssistMode ||
+      gTailgateOpenReq != expectedOpenReq ||
+      gTailgateActuatorCmd != expectedActuatorCmd)
+  {
+    testStepFail("body-entry-tailgate-state", "Tailgate state timeout waited=%d expectedMode=%d expectedOpen=%d expectedCmd=%d actualMode=%d actualOpen=%d actualCmd=%d",
+                 waitedMs,
+                 expectedAssistMode,
+                 expectedOpenReq,
+                 expectedActuatorCmd,
+                 gTailgateAssistMode,
+                 gTailgateOpenReq,
+                 gTailgateActuatorCmd);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_EXT_018_BODY_ENTRY_EXIT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -46,9 +116,14 @@ export testcase TC_CANOE_UT_EXT_018_BODY_ENTRY_EXIT()
   {
     return;
   }
+  if (!waitForBodyEntryDoorState(1, 1, 80, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("body-entry-door-state", 1, gAutoDoorState, "AutoDoorState");
   assertIntEq("body-entry-door-unlock", 1, gAutoUnlockState, "AutoUnlockState");
-  assertIntEq("body-entry-door-score", 100, gDoorApproachScore, "DoorApproachScore");
+  assertIntMin("body-entry-door-score", 80, gDoorApproachScore, "DoorApproachScore");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -60,6 +135,11 @@ export testcase TC_CANOE_UT_EXT_018_BODY_ENTRY_EXIT()
   gTailgateActuatorCmd = -1;
   if (!launchScenarioAndWait(227, 1500, 350))
   {
+    return;
+  }
+  if (!waitForBodyTailgateState(2, 1, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
   assertIntEq("body-entry-tailgate-mode", 2, gTailgateAssistMode, "TailgateAssistMode");

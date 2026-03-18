@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -20,7 +20,12 @@ export testcase TC_CANOE_ST_CORE_004_BASIC_WARNING_CLEAR()
     return;
   }
 
-  assertIntEq("st004-active-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreSelectedAlertState(1, 1, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("st004-active-level", 1, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
 
   if (!launchScenarioAndWait(1, 700, 1000))
@@ -28,7 +33,14 @@ export testcase TC_CANOE_ST_CORE_004_BASIC_WARNING_CLEAR()
     return;
   }
 
-  assertIntEq("st004-clear-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreSelectedAlertState(0, 0, 800) ||
+      !waitForStableWarningRender(0, -1, 800) ||
+      !waitForCoreDriveState(-1, -1, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("st004-clear-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("st004-clear-type", 0, (long)@Core::selectedAlertType, "selectedAlertType");
   assertIntEq("st004-clear-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");

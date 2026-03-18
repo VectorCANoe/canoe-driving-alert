@@ -20,7 +20,13 @@ export testcase TC_CANOE_IT_016_DRIVE_MODE_SENSITIVITY()
     return;
   }
 
-  assertIntEq("drive-mode-sport-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreSelectedAlertState(4, 3, 800) ||
+      !waitForCoreSportMode(1, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("drive-mode-sport-level", 4, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("drive-mode-sport-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
   assertIntEq("drive-mode-sport-flag", 1, (long)@CoreState::sportMode, "sportMode");

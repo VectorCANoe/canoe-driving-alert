@@ -26,12 +26,57 @@ on message frmRainLightAutoMsg
   gAutoLightState = this.AutoLightState;
 }
 
+long waitForWiperRainBaseline(long expectedFrontWiperState,
+                              long expectedRearWiperState,
+                              long expectedWiperInterval,
+                              long expectedRainSenseLevel,
+                              long expectedAutoLightState,
+                              dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gFrontWiperState != expectedFrontWiperState ||
+          gRearWiperState != expectedRearWiperState ||
+          gWiperInterval != expectedWiperInterval ||
+          gRainSenseLevel != expectedRainSenseLevel ||
+          gAutoLightState != expectedAutoLightState) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gFrontWiperState != expectedFrontWiperState ||
+      gRearWiperState != expectedRearWiperState ||
+      gWiperInterval != expectedWiperInterval ||
+      gRainSenseLevel != expectedRainSenseLevel ||
+      gAutoLightState != expectedAutoLightState)
+  {
+    testStepFail("it-wiper-rain-baseline", "Wiper/rain baseline timeout waited=%d front=%d rear=%d interval=%d rain=%d autoLight=%d expectedFront=%d expectedRear=%d expectedInterval=%d expectedRain=%d expectedAutoLight=%d",
+                 waitedMs,
+                 gFrontWiperState,
+                 gRearWiperState,
+                 gWiperInterval,
+                 gRainSenseLevel,
+                 gAutoLightState,
+                 expectedFrontWiperState,
+                 expectedRearWiperState,
+                 expectedWiperInterval,
+                 expectedRainSenseLevel,
+                 expectedAutoLightState);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_IT_EXT_029_WIPER_RAIN_BASELINE()
 {
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(229, 1300, 1700)) { return; }
+  if (!waitForWiperRainBaseline(0, 0, 0, 0, 0, 800)) { resetValidationHarnessIfNeeded(); return; }
 
-  assertIntEq("it-wiper-rain-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("it-wiper-front", 0, gFrontWiperState, "FrontWiperState");
   assertIntEq("it-wiper-rear", 0, gRearWiperState, "RearWiperState");
   assertIntEq("it-wiper-interval", 0, gWiperInterval, "WiperInterval");

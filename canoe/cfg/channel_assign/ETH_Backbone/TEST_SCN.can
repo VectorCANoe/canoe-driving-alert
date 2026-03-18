@@ -345,6 +345,11 @@ void pushLockedScenarioInputs()
   @Infotainment::navDirection = clampRange(gLockNavDirection, 0, 3);
   @Infotainment::zoneDistance = clampRange(gLockZoneDistance, 0, 255);
   @Infotainment::speedLimit = clampRange(gLockSpeedLimit, 0, 255);
+  @V2X::policeDispatch = 0;
+  @V2X::ambulanceDispatch = 0;
+  @V2X::emergencyDirection = 0;
+  @V2X::eta = 255;
+  @V2X::sourceId = 255;
   /* A/B 그룹 플래그: CGW 정규화 경로를 거치지 않고 Core에 직접 주입 */
   @Core::accelGroupFlag = clampRange(gLockAccelGroupFlag, 0, 1);
   @Core::steerGroupFlag = clampRange(gLockSteerGroupFlag, 0, 1);
@@ -421,6 +426,22 @@ void cancelScenarioTransientTimers()
   cancelTimer(tScenarioPhase3);
 }
 
+void resetValidationOverrides()
+{
+  @Test::displayModeSetting = 0;
+  @Test::alertVolumeSetting = 0;
+  @Test::seatBeltOverride = 0;
+  @Test::turnLampOverride = 0;
+  @Test::forceFailSafe = 0;
+  @Test::historyQueryOffset = 0;
+  @Test::historyQueryCode = 0;
+  @V2X::policeDispatch = 0;
+  @V2X::ambulanceDispatch = 0;
+  @V2X::emergencyDirection = 0;
+  @V2X::eta = 255;
+  @V2X::sourceId = 255;
+}
+
 void stopScenarioExecution()
 {
   gDemoRunning = 0;
@@ -430,22 +451,24 @@ void stopScenarioExecution()
   cancelTimer(tDemoStep);
   cancelScenarioTransientTimers();
   EmitBackboneValidationOverrideTest(0);
-  EmitBackboneEmergencyTest(clampRange(gLockEmergencyType, 0, 2),
-                            0,
-                            clampRange(gLockSourceId, 0, 255),
-                            clampRange(gLockEmergencyDirection, 0, 3),
-                            0);
+  if (gLockSuppressEmergencyFrame == 0)
+  {
+    EmitBackboneEmergencyTest(clampRange(gLockEmergencyType, 0, 2),
+                              0,
+                              clampRange(gLockSourceId, 0, 255),
+                              clampRange(gLockEmergencyDirection, 0, 3),
+                              0);
+  }
   EmitBackboneObjectRiskTest(0, 0, 0, 0, 0, 0, 300);
-  @Test::forceFailSafe = 0;
-  @Test::displayModeSetting = 0;
-  @Test::alertVolumeSetting = 0;
-  @Test::seatBeltOverride = 0;
-  @Test::turnLampOverride = 0;
+  resetValidationOverrides();
   @Test::scenarioCommandAck = 0;
   clearScenarioLifecycleState();
   @Test::scenarioResult = 0;
   gLockAccelGroupFlag = 0;
   gLockSteerGroupFlag = 0;
+  gLockPoliceDispatch = 0;
+  gLockAmbulanceDispatch = 0;
+  gLockForceFailSafe = 0;
   gLockSuppressEmergencyFrame = 0;
   gEmergencyIngressHeartbeat = 0;
   gDiagCtxNominalSeen = 0;
@@ -736,12 +759,7 @@ void applyScenarioPreset(int scenarioId)
   gObsTailgateAssistMode = -1;
   gObsTailgateOpenRequestState = -1;
   gObsTailgateActuatorCmd = -1;
-  @Test::displayModeSetting = 0;
-  @Test::alertVolumeSetting = 0;
-  @Test::seatBeltOverride = 0;
-  @Test::turnLampOverride = 0;
-  @Test::forceFailSafe = 0;
-  @Test::historyQueryOffset = 0;
+  resetValidationOverrides();
 
   if (scenarioId == 1)
   {
@@ -2715,14 +2733,8 @@ on start
   @Test::testScenario = 0;
   @Test::scenarioResult = 0;
   clearScenarioLifecycleState();
-  @Test::displayModeSetting = 0;
-  @Test::alertVolumeSetting = 0;
-  @Test::seatBeltOverride = 0;
-  @Test::historyQueryOffset = 0;
-  @Test::historyQueryCode = 0;
+  resetValidationOverrides();
   gEmergencyIngressHeartbeat = 0;
-  @Test::forceFailSafe = 0;
-  @Test::turnLampOverride = 0;
   @Core::accelGroupFlag = 0;
   @Core::steerGroupFlag = 0;
   gObsVehicleSpeed = -1;

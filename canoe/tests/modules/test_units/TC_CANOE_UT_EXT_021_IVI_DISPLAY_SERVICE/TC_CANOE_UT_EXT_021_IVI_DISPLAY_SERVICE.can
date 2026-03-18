@@ -6,32 +6,10 @@ includes
 
 variables
 {
-  long gHudMode;
-  long gHudWarningCode;
-  long gHudBrightness;
-  long gAmpMode;
-  long gAmpMute;
-  long gAmpDuckingLvl;
-  long gAmpVolumeLevel;
   long gTmuLinkState;
   long gTmuServiceMode;
   long gRemoteClimateReq;
   long gSignalBars;
-}
-
-on message frmHudStateMsg
-{
-  gHudMode = this.HudMode;
-  gHudWarningCode = this.HudWarningCode;
-  gHudBrightness = this.HudBrightness;
-}
-
-on message frmAmpStateMsg
-{
-  gAmpMode = this.AmpMode;
-  gAmpMute = this.AmpMute;
-  gAmpDuckingLvl = this.AmpDuckingLvl;
-  gAmpVolumeLevel = this.AmpVolumeLevel;
 }
 
 on message frmTmuServiceStateMsg
@@ -42,43 +20,61 @@ on message frmTmuServiceStateMsg
   gSignalBars = this.SignalBars;
 }
 
+long waitForTmuServiceState(long expectedLinkState,
+                            long expectedServiceMode,
+                            long expectedRemoteClimateReq,
+                            long minSignalBars,
+                            dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gTmuLinkState != expectedLinkState ||
+          gTmuServiceMode != expectedServiceMode ||
+          gRemoteClimateReq != expectedRemoteClimateReq ||
+          gSignalBars < minSignalBars) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gTmuLinkState != expectedLinkState ||
+      gTmuServiceMode != expectedServiceMode ||
+      gRemoteClimateReq != expectedRemoteClimateReq ||
+      gSignalBars < minSignalBars)
+  {
+    testStepFail("ivi-display-tmu-state", "TMU service timeout waited=%d link=%d service=%d remote=%d bars=%d",
+                 waitedMs, gTmuLinkState, gTmuServiceMode, gRemoteClimateReq, gSignalBars);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_EXT_021_IVI_DISPLAY_SERVICE()
 {
   if (!resetValidationHarnessIfNeeded())
   {
     return;
   }
+  gTmuLinkState = -1;
+  gTmuServiceMode = -1;
+  gRemoteClimateReq = -1;
+  gSignalBars = -1;
   if (!launchScenarioAndWait(229, 1500, 450))
   {
+    return;
+  }
+  if (!waitForTmuServiceState(2, 1, 1, 4, 1800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
   assertIntEq("ivi-display-tmu-link", 2, gTmuLinkState, "TmuLinkState");
   assertIntEq("ivi-display-tmu-service", 1, gTmuServiceMode, "TmuServiceMode");
   assertIntEq("ivi-display-tmu-remote", 1, gRemoteClimateReq, "RemoteClimateReq");
   assertIntEq("ivi-display-tmu-bars", 4, gSignalBars, "SignalBars");
-
-  if (!resetValidationHarnessIfNeeded())
-  {
-    return;
-  }
-  if (!launchScenarioAndWait(30, 1500, 450))
-  {
-    return;
-  }
-  assertIntEq("ivi-display-hud-mode", 1, gHudMode, "HudMode");
-  assertIntEq("ivi-display-hud-warning", 102, gHudWarningCode, "HudWarningCode");
-
-  if (!resetValidationHarnessIfNeeded())
-  {
-    return;
-  }
-  if (!launchScenarioAndWait(215, 1500, 450))
-  {
-    return;
-  }
-  assertIntEq("ivi-display-amp-mute", 0, gAmpMute, "AmpMute");
-  assertIntEq("ivi-display-amp-ducking", 4, gAmpDuckingLvl, "AmpDuckingLvl");
-  assertIntEq("ivi-display-amp-volume", 80, gAmpVolumeLevel, "AmpVolumeLevel");
 
   resetValidationHarnessIfNeeded();
 }

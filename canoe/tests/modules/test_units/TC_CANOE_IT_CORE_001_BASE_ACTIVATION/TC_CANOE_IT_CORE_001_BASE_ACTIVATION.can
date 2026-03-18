@@ -20,7 +20,13 @@ export testcase TC_CANOE_IT_CORE_001_BASE_ACTIVATION()
     return;
   }
 
-  assertIntEq("idle-scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreSelectedAlertState(0, 0, 800) ||
+      !waitForStableWarningRender(0, -1, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("idle-alert-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("idle-warning-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
 
@@ -34,7 +40,13 @@ export testcase TC_CANOE_IT_CORE_001_BASE_ACTIVATION()
     return;
   }
 
-  assertIntEq("activation-scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForNavContextState(1, 30, 800) ||
+      !waitForCoreSelectedAlertState(3, 3, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("activation-alert-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("activation-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
 
@@ -48,7 +60,12 @@ export testcase TC_CANOE_IT_CORE_001_BASE_ACTIVATION()
     return;
   }
 
-  assertIntEq("guard-scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreSelectedAlertState(3, 3, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("guard-alert-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("guard-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
   assertIntMin("duplicate-popup-guard", 1, (long)@CoreState::duplicatePopupGuard, "duplicatePopupGuard");

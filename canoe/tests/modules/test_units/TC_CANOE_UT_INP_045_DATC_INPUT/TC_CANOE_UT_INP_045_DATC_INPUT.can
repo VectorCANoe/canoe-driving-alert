@@ -24,6 +24,38 @@ on message frmHvacActuatorMsg
   gVentMode = this.VentMode;
 }
 
+long waitForDatcInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gCabinSetTemp != 24 ||
+          gBlowerLevel != 5 ||
+          gAcOn != 1 ||
+          gVentMode != 2) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gCabinSetTemp != 24 ||
+      gBlowerLevel != 5 ||
+      gAcOn != 1 ||
+      gVentMode != 2)
+  {
+    testStepFail("datc-input-state", "DATC input timeout waited=%d temp=%d blower=%d ac=%d vent=%d",
+                 waitedMs,
+                 gCabinSetTemp,
+                 gBlowerLevel,
+                 gAcOn,
+                 gVentMode);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_045_DATC_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -37,6 +69,12 @@ export testcase TC_CANOE_UT_INP_045_DATC_INPUT()
   gVentMode = -1;
   if (!launchScenarioAndWait(229, 800, 1300))
   {
+    return;
+  }
+
+  if (!waitForDatcInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
     return;
   }
 

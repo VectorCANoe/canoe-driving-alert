@@ -20,8 +20,7 @@ export testcase TC_CANOE_ST_V2_020_TIMEOUT_CLEAR()
     return;
   }
 
-  assertIntEq("timeout-clear-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedSelectedAlert(800))
+  if (!waitForObservedSelectedAlertState(3, 3, 800))
   {
     resetValidationHarnessIfNeeded();
     return;

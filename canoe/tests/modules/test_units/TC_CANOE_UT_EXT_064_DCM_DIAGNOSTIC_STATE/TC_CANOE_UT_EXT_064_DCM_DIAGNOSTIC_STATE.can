@@ -21,7 +21,13 @@ export testcase TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE()
     return;
   }
 
-  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForDiagSemanticState(-1, -1, -1, 4, 2, 1800) ||
+      !waitForDiagLastExchange(2, 0x22, 2, 0x7F, 1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("request-target", 2, (long)@Diag::LastRequestTarget, "LastRequestTarget");
   assertIntEq("last-sid", 0x22, (long)@Diag::LastRequestSid, "LastRequestSid");
   assertIntEq("request-did-high", 0, (long)@Diag::LastRequestDidHigh, "LastRequestDidHigh");

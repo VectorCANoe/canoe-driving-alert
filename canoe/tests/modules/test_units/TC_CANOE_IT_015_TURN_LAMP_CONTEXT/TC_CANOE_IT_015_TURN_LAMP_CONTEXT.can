@@ -20,7 +20,13 @@ export testcase TC_CANOE_IT_015_TURN_LAMP_CONTEXT()
     return;
   }
 
-  assertIntEq("turn-lamp-context-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreSelectedAlertState(3, 6, 800) ||
+      !waitForCoreTurnLampState(2, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("turn-lamp-context-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("turn-lamp-context-type", 6, (long)@Core::selectedAlertType, "selectedAlertType");
   assertIntEq("turn-lamp-context-state", 2, (long)@CoreState::turnLampState, "turnLampState");

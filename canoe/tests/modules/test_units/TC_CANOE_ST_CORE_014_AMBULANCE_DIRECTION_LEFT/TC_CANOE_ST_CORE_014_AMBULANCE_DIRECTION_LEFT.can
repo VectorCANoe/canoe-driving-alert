@@ -20,7 +20,13 @@ export testcase TC_CANOE_ST_CORE_014_AMBULANCE_DIRECTION_LEFT()
     return;
   }
 
-  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForCoreSelectedAlertState(7, 2, 800) ||
+      !waitForStableWarningRender(deriveExpectedEmergencyWarningCode(2, 1, 8, 20), 1, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("selected-alert-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("selected-alert-type", 2, (long)@Core::selectedAlertType, "selectedAlertType");
   assertIntEq("warning-text-code", deriveExpectedEmergencyWarningCode(2, 1, 8, 20), (long)@Cluster::warningTextCode, "warningTextCode");

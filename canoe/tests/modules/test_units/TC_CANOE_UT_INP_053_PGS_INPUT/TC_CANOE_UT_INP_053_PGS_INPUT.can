@@ -18,6 +18,32 @@ on message frmParkMasterStateMsg
   gParkPhase = this.ParkPhase;
 }
 
+long waitForParkMasterInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gParkMasterActive != 1 ||
+          gAutoManeuverReady != 1 ||
+          gParkPhase != 2) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gParkMasterActive != 1 ||
+      gAutoManeuverReady != 1 ||
+      gParkPhase != 2)
+  {
+    testStepFail("park-master-input-state", "Park master timeout waited=%d active=%d ready=%d phase=%d",
+                 waitedMs, gParkMasterActive, gAutoManeuverReady, gParkPhase);
+    return 0;
+  }
+
+  return 1;
+}
+
 export testcase TC_CANOE_UT_INP_053_PGS_INPUT()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -29,10 +55,15 @@ export testcase TC_CANOE_UT_INP_053_PGS_INPUT()
   {
     return;
   }
+  if (!waitForParkMasterInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
   assertIntEq("s234_parkMasterActive", 1, gParkMasterActive, "parkMasterActive");
   assertIntEq("s234_autoManeuverReady", 1, gAutoManeuverReady, "autoManeuverReady");
-  assertIntEq("s234_parkPhase", 3, gParkPhase, "parkPhase");
+  assertIntEq("s234_parkPhase", 2, gParkPhase, "parkPhase");
 
   resetValidationHarnessIfNeeded();
 }

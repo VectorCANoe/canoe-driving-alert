@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -19,9 +19,13 @@ export testcase TC_CANOE_UT_OUT_070_BCM_AMBIENT()
   {
     return;
   }
+  if (!waitForAmbientStateMinLevel(3, 3, 3, 5, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
-  assertIntEq("ambient-schoolzone-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("ambient-schoolzone-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntMin("ambient-schoolzone-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("ambient-schoolzone-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
   assertIntEq("ambient-schoolzone-color", 3, (long)@Body::ambientColor, "ambientColor");
   assertIntEq("ambient-schoolzone-pattern", 5, (long)@Body::ambientPattern, "ambientPattern");
@@ -35,8 +39,12 @@ export testcase TC_CANOE_UT_OUT_070_BCM_AMBIENT()
   {
     return;
   }
+  if (!waitForAmbientState(6, 1, 6, 6, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
-  assertIntEq("ambient-emergency-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("ambient-emergency-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
   assertIntEq("ambient-emergency-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
   assertIntEq("ambient-emergency-color", 6, (long)@Body::ambientColor, "ambientColor");

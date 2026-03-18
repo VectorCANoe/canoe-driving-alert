@@ -25,8 +25,13 @@ export testcase TC_CANOE_ST_019_AMBULANCE_TX_PERIOD()
     return;
   }
 
-  assertIntEq("eth-ambulance-active-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedSelectedAlert(800))
+if (!waitForV2xIngressState(1, 2, 8, 22, 1500))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  if (!waitForObservedSelectedAlertState(7, 2, 800))
   {
     resetValidationHarnessIfNeeded();
     return;
