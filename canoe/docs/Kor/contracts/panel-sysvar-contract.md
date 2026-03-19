@@ -55,13 +55,13 @@
 
 | SysVar | 의미 | 방향 |
 | --- | --- | --- |
-| `V2X::emergencyType` | emergency vehicle type | panel writes |
-| `V2X::emergencyDirection` | emergency direction context | panel writes |
-| `V2X::eta` | emergency ETA | panel writes |
-| `V2X::sourceId` | emergency source identifier | tie-break 검증 시 panel writes |
-| `V2X::alertState` | emergency active/clear state | panel writes |
-| `V2X::policeDispatch` | police dispatch toggle | dispatch flow 검증 시 panel writes |
-| `V2X::ambulanceDispatch` | ambulance dispatch toggle | dispatch flow 검증 시 panel writes |
+| `V2X::emergencyType` | emergency vehicle type | panel reads |
+| `Test::compatEmergencyDirection` | dispatch-only compat 방향 입력 | panel writes |
+| `Test::compatEmergencyEta` | dispatch-only compat ETA 입력 | panel writes |
+| `Test::compatEmergencySourceId` | dispatch-only compat source identifier 입력 | tie-break 검증 시 panel writes |
+| `V2X::alertState` | emergency active/clear state | panel reads |
+| `Test::compatPoliceDispatch` | police dispatch compat toggle | dispatch flow 검증 시 panel writes |
+| `Test::compatAmbulanceDispatch` | ambulance dispatch compat toggle | dispatch flow 검증 시 panel writes |
 
 ### 3.4 Test control binding
 
@@ -72,6 +72,11 @@
 | `Test::forceFailSafe` | validation override | panel 또는 automation writes |
 | `Test::displayModeSetting` | test-only HMI mode override | panel 또는 automation writes |
 | `Test::alertVolumeSetting` | test-only audio override | panel 또는 automation writes |
+| `Test::compatPoliceDispatch` | dispatch-only compatibility stimulus | panel 또는 automation writes |
+| `Test::compatAmbulanceDispatch` | dispatch-only compatibility stimulus | panel 또는 automation writes |
+| `Test::compatEmergencyDirection` | dispatch-only compatibility direction | panel 또는 automation writes |
+| `Test::compatEmergencyEta` | dispatch-only compatibility ETA | panel 또는 automation writes |
+| `Test::compatEmergencySourceId` | dispatch-only compatibility source id | panel 또는 automation writes |
 
 ## 4. Read surface
 

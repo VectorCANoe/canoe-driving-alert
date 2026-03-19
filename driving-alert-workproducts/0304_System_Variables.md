@@ -84,6 +84,11 @@
 | 63 | CoreState | selectedAlertGateReason | uint32 | 0 | 3 | 0 | 경고 effective shaping 원인(0=없음 1=timeout-clear 2=boundary-hold 3=fail-safe-floor) |
 | 64 | V2X | ingressHeartbeat | uint32 | 0 | 65535 | 0 | V2X ingress freshness 추적용 heartbeat |
 | 65 | CoreState | driverReleaseReason | uint32 | 0 | 3 | 0 | ADAS owner가 판단한 운전자 감속 해제 원인(0=없음 1=조향 개입 2=제동 개입 3=예약) |
+| 66 | Test | compatPoliceDispatch | uint32 | 0 | 1 | 0 | dispatch-only 검증 경로에서 사용하는 경찰 출동 compat 입력(Validation-only) |
+| 67 | Test | compatAmbulanceDispatch | uint32 | 0 | 1 | 0 | dispatch-only 검증 경로에서 사용하는 구급차 출동 compat 입력(Validation-only) |
+| 68 | Test | compatEmergencyDirection | uint32 | 0 | 3 | 0 | dispatch-only 검증 경로에서 사용하는 긴급 방향 compat 입력(Validation-only) |
+| 69 | Test | compatEmergencyEta | uint32 | 0 | 255 | 255 | dispatch-only 검증 경로에서 사용하는 긴급 ETA compat 입력(Validation-only) |
+| 70 | Test | compatEmergencySourceId | uint32 | 0 | 255 | 255 | dispatch-only 검증 경로에서 사용하는 긴급 Source ID compat 입력(Validation-only) |
 | 101 | Chassis | AccelPedal | uint32 | 0 | 100 | 0 | 가속 페달 입력 |
 | 102 | Chassis | BrakePedal | uint32 | 0 | 100 | 0 | 브레이크 페달 입력 |
 | 103 | Chassis | SteeringState | uint32 | 0 | 3 | 0 | 조향 상태 |

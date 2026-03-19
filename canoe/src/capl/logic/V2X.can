@@ -301,11 +301,11 @@ void syncLegacyDispatchInputs()
   int eta;
   int sourceId;
 
-  policeDispatch = (((int)@V2X::policeDispatch) > 0) ? 1 : 0;
-  ambulanceDispatch = (((int)@V2X::ambulanceDispatch) > 0) ? 1 : 0;
-  direction = clampRange((int)@V2X::emergencyDirection, 0, 3);
-  eta = clampRange((int)@V2X::eta, 0, 255);
-  sourceId = clampRange((int)@V2X::sourceId, 0, 255);
+  policeDispatch = (((int)@Test::compatPoliceDispatch) > 0) ? 1 : 0;
+  ambulanceDispatch = (((int)@Test::compatAmbulanceDispatch) > 0) ? 1 : 0;
+  direction = clampRange((int)@Test::compatEmergencyDirection, 0, 3);
+  eta = clampRange((int)@Test::compatEmergencyEta, 0, 255);
+  sourceId = clampRange((int)@Test::compatEmergencySourceId, 0, 255);
 
   if (ambulanceDispatch == 1)
   {

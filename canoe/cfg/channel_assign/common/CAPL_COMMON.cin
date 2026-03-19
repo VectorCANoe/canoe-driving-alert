@@ -416,21 +416,18 @@ long ethOpenBackboneReceiverSocket(dword localIp)
 {
   long socket;
 
-  if (localIp != ethInvalidIp() && localIp != 0)
+  socket = ethOpenDefaultSocket();
+  if (socket != ethInvalidSocket())
   {
-    socket = ethOpenNodeSocketAt(localIp, ethBackbonePort());
-    if (socket != ethInvalidSocket())
-    {
-      return socket;
-    }
+    return socket;
   }
 
-  socket = ethOpenDefaultSocket();
-  if (socket != ethInvalidSocket() && localIp != ethInvalidIp() && localIp != 0)
+  if (localIp != ethInvalidIp() && localIp != 0)
   {
-    write("[ETH] rx fallback ip=%u port=%d", localIp, ethBackbonePort());
+    return ethOpenNodeSocketAt(localIp, ethBackbonePort());
   }
-  return socket;
+
+  return ethInvalidSocket();
 }
 
 void ethCloseSocket(long socket)

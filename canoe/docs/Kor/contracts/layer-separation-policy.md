@@ -125,7 +125,7 @@ active baseline은 아래 여섯 계층으로 나눕니다.
 - render node가 emergency ingress owner가 되면 안 됩니다.
 - render / decision node는 raw `V2X::*` transport mirror보다 `CoreState` normalized ingress metadata를 우선 소비해야 합니다.
 - raw ingress 직접 참조는 documented compatibility path일 때만 허용합니다.
-- `TEST_SCN`이 직접 emergency transport frame을 주입하는 동안에는 legacy dispatch compatibility 입력을 비워 둡니다. dispatch compatibility stimulus는 dispatch-only 검증 경로에서만 사용합니다.
+- `TEST_SCN`이 직접 emergency transport frame을 주입하는 동안에는 `Test::compat*` dispatch compatibility 입력을 비워 둡니다. dispatch compatibility stimulus는 dispatch-only 검증 경로에서만 사용하며 `V2X::*` owner mirror에 직접 쓰면 안 됩니다.
 
 ### Diagnostic path
 

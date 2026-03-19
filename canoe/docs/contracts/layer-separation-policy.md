@@ -128,7 +128,7 @@ Rule:
 - render nodes must not become alternate emergency ingress owners
 - render and decision nodes should consume normalized ingress metadata from `CoreState` instead of raw `V2X::*` transport mirrors
 - direct use of raw ingress context is allowed only as a documented compatibility path
-- when `TEST_SCN` injects a direct emergency transport frame, legacy dispatch compatibility inputs must stay cleared; dispatch compatibility stimulus is reserved for dispatch-only validation paths
+- when `TEST_SCN` injects a direct emergency transport frame, `Test::compat*` dispatch compatibility inputs must stay cleared; dispatch compatibility stimulus is reserved for dispatch-only validation paths and must not be written into `V2X::*` owner mirrors
 
 ### Diagnostic path
 

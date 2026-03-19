@@ -52,13 +52,13 @@ The panel write surface is limited to controlled input namespaces.
 
 | SysVar | Meaning | Direction |
 |---|---|---|
-| `V2X::emergencyType` | emergency vehicle type | panel writes |
-| `V2X::emergencyDirection` | emergency direction context | panel writes |
-| `V2X::eta` | emergency ETA | panel writes |
-| `V2X::sourceId` | emergency source identifier | panel writes when source tie-break is relevant |
-| `V2X::alertState` | emergency active/clear state | panel writes |
-| `V2X::policeDispatch` | police dispatch toggle | panel writes when dispatch flow is tested |
-| `V2X::ambulanceDispatch` | ambulance dispatch toggle | panel writes when dispatch flow is tested |
+| `V2X::emergencyType` | emergency vehicle type | panel reads |
+| `Test::compatEmergencyDirection` | dispatch-only compatibility direction input | panel writes |
+| `Test::compatEmergencyEta` | dispatch-only compatibility ETA input | panel writes |
+| `Test::compatEmergencySourceId` | dispatch-only compatibility source identifier input | panel writes when source tie-break is relevant |
+| `V2X::alertState` | emergency active/clear state | panel reads |
+| `Test::compatPoliceDispatch` | police dispatch compatibility toggle | panel writes when dispatch flow is tested |
+| `Test::compatAmbulanceDispatch` | ambulance dispatch compatibility toggle | panel writes when dispatch flow is tested |
 
 ### 3.4 Test control bindings
 
@@ -69,6 +69,11 @@ The panel write surface is limited to controlled input namespaces.
 | `Test::forceFailSafe` | validation override | panel or automation writes |
 | `Test::displayModeSetting` | test-only HMI mode override | panel or automation writes |
 | `Test::alertVolumeSetting` | test-only audio override | panel or automation writes |
+| `Test::compatPoliceDispatch` | dispatch-only compatibility stimulus | panel or automation writes |
+| `Test::compatAmbulanceDispatch` | dispatch-only compatibility stimulus | panel or automation writes |
+| `Test::compatEmergencyDirection` | dispatch-only compatibility direction | panel or automation writes |
+| `Test::compatEmergencyEta` | dispatch-only compatibility ETA | panel or automation writes |
+| `Test::compatEmergencySourceId` | dispatch-only compatibility source id | panel or automation writes |
 
 ## 4. Read surface
 

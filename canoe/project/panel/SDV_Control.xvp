@@ -372,7 +372,7 @@
         <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
         <Property Name="SwitchValues">1;2;0;1</Property>
         <Property Name="SwitchValuesRx">1;2;0;1</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;policeDispatch;1;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;compatPoliceDispatch;1;;;-1;;;Value;;;0</Property>
       </Object>
 
       <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtPoliceVal" ControlName="Txt Police Val">
@@ -393,7 +393,7 @@
         <Property Name="ValueDisplay">Double</Property>
         <Property Name="UsedValueTable">RawValue</Property>
         <Property Name="DescriptionSize">0, 0</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;policeDispatch;2;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;compatPoliceDispatch;2;;;-1;;;Value;;;0</Property>
       </Object>
 
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblPoliceTag" ControlName="Lbl Police Tag">
@@ -417,7 +417,7 @@
         <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
         <Property Name="SwitchValues">1;2;0;1</Property>
         <Property Name="SwitchValuesRx">1;2;0;1</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;ambulanceDispatch;1;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;compatAmbulanceDispatch;1;;;-1;;;Value;;;0</Property>
       </Object>
 
       <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtAmbulanceVal" ControlName="Txt Ambulance Val">
@@ -438,7 +438,7 @@
         <Property Name="ValueDisplay">Double</Property>
         <Property Name="UsedValueTable">RawValue</Property>
         <Property Name="DescriptionSize">0, 0</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;ambulanceDispatch;2;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;compatAmbulanceDispatch;2;;;-1;;;Value;;;0</Property>
       </Object>
 
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblAmbulanceTag" ControlName="Lbl Ambulance Tag">
@@ -480,7 +480,7 @@
         <Property Name="SwitchValuesVT">1;4;0/Lower/0;1/Lower/1;2/Lower/2;3/Lower/3</Property>
         <Property Name="SwitchValues">1;4;0;1;2;3</Property>
         <Property Name="SwitchValuesRx">1;4;0;1;2;3</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;emergencyDirection;1;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;compatEmergencyDirection;1;;;-1;;;Value;;;0</Property>
       </Object>
 
       <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtEmgDirVal" ControlName="Txt EmgDir Val">
@@ -501,7 +501,7 @@
         <Property Name="ValueDisplay">Double</Property>
         <Property Name="UsedValueTable">RawValue</Property>
         <Property Name="DescriptionSize">0, 0</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;emergencyDirection;2;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;compatEmergencyDirection;2;;;-1;;;Value;;;0</Property>
       </Object>
 
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblEtaHdr" ControlName="Lbl ETA Hdr">
@@ -527,7 +527,7 @@
         <Property Name="SmallChange">5</Property>
         <Property Name="LargeChange">15</Property>
         <Property Name="TickFrequency">20</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;eta;1;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;compatEmergencyEta;1;;;-1;;;Value;;;0</Property>
       </Object>
 
       <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtEtaVal" ControlName="Txt ETA Val">
@@ -548,7 +548,7 @@
         <Property Name="ValueDisplay">Double</Property>
         <Property Name="UsedValueTable">RawValue</Property>
         <Property Name="DescriptionSize">0, 0</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;eta;2;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;compatEmergencyEta;2;;;-1;;;Value;;;0</Property>
       </Object>
 
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblSourceHdr" ControlName="Lbl Source Hdr">
@@ -575,7 +575,7 @@
         <Property Name="ValueDisplay">Double</Property>
         <Property Name="UsedValueTable">RawValue</Property>
         <Property Name="DescriptionSize">0, 0</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;sourceId;1;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;compatEmergencySourceId;1;;;-1;;;Value;;;0</Property>
       </Object>
 
       <!-- ── Section 3: EMS node output (read-only, set by CAPL) ── -->

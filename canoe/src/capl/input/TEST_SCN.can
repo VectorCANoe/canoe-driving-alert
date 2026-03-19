@@ -405,15 +405,32 @@ void pushLockedScenarioInputs()
 
   if (compatDispatchActive == 1)
   {
-    @V2X::policeDispatch = clampRange(gLockPoliceDispatch, 0, 1);
-    @V2X::ambulanceDispatch = clampRange(gLockAmbulanceDispatch, 0, 1);
-    @V2X::emergencyDirection = clampRange(gLockEmergencyDirection, 0, 3);
-    @V2X::eta = clampRange(gLockEta, 0, 255);
-    @V2X::sourceId = clampRange(gLockSourceId, 0, 255);
+    @Test::compatPoliceDispatch = clampRange(gLockPoliceDispatch, 0, 1);
+    @Test::compatAmbulanceDispatch = clampRange(gLockAmbulanceDispatch, 0, 1);
+    @Test::compatEmergencyDirection = clampRange(gLockEmergencyDirection, 0, 3);
+    @Test::compatEmergencyEta = clampRange(gLockEta, 0, 255);
+    @Test::compatEmergencySourceId = clampRange(gLockSourceId, 0, 255);
   }
   /* A/B 그룹 플래그: CGW 정규화 경로를 거치지 않고 Core에 직접 주입 */
   @Core::accelGroupFlag = clampRange(gLockAccelGroupFlag, 0, 1);
   @Core::steerGroupFlag = clampRange(gLockSteerGroupFlag, 0, 1);
+
+  if (gLockSuppressEmergencyFrame == 0)
+  {
+    EmitBackboneEmergencyTest(clampRange(gLockEmergencyType, 0, 2),
+                              clampRange(gLockEta, 0, 255),
+                              clampRange(gLockSourceId, 0, 255),
+                              clampRange(gLockEmergencyDirection, 0, 3),
+                              clampRange(gLockAlertState, 0, 1));
+  }
+  EmitBackboneObjectRiskTest(clampRange(gLockObjectTrackValid, 0, 1),
+                             clampRange(gLockObjectRange, 0, 500),
+                             clampRange(gLockObjectRelSpeed, -200, 200),
+                             clampRange(gLockObjectConfidence, 0, 100),
+                             clampRange(gLockIntersectionConflictFlag, 0, 1),
+                             clampRange(gLockMergeCutInFlag, 0, 1),
+                             clampRange(gLockObjectAlertHoldMs, 0, 5000));
+  EmitBackboneValidationOverrideTest(clampRange(gLockForceFailSafe, 0, 1));
 }
 
 long EmitBackboneEmergencyTest(int emergencyType,
@@ -496,11 +513,11 @@ void resetValidationOverrides()
   @Test::forceFailSafe = 0;
   @Test::historyQueryOffset = 0;
   @Test::historyQueryCode = 0;
-  @V2X::policeDispatch = 0;
-  @V2X::ambulanceDispatch = 0;
-  @V2X::emergencyDirection = 0;
-  @V2X::eta = 255;
-  @V2X::sourceId = 255;
+  @Test::compatPoliceDispatch = 0;
+  @Test::compatAmbulanceDispatch = 0;
+  @Test::compatEmergencyDirection = 0;
+  @Test::compatEmergencyEta = 255;
+  @Test::compatEmergencySourceId = 255;
 }
 
 void stopScenarioExecution()
@@ -1357,20 +1374,21 @@ void applyScenarioPreset(int scenarioId)
   }
   else if (scenarioId == 212)
   {
-    /* IT_006: ambulance must win over police when both dispatch requests are active */
+    /* IT_006/ST_015: police direct ingress first, then ambulance direct ingress wins */
     gLockDriveState = 3;
     gLockVehicleSpeed = 45;
     gLockRoadZone = 0;
     gLockSpeedLimit = 60;
-    gLockAlertState = 0;
-    gLockEmergencyType = 0;
+    gLockAlertState = 1;
+    gLockEmergencyType = 1;
     gLockEta = 12;
-    gLockSourceId = 0;
+    gLockSourceId = 11;
     gLockEmergencyDirection = 1;
-    gLockPoliceDispatch = 1;
-    gLockAmbulanceDispatch = 1;
+    gLockPoliceDispatch = 0;
+    gLockAmbulanceDispatch = 0;
     gLockForceFailSafe = 0;
     gLockSuppressEmergencyFrame = 0;
+    setTimer(tScenarioPhase2, 300);
   }
   else if (scenarioId == 223)
   {
@@ -2638,6 +2656,19 @@ on timer tScenarioPhase2
     pushLockedScenarioInputs();
     setTimer(tScenarioPhase3, 400);
     write("[TEST_SCN] IT_040 phase2: suppress emergency refresh, expect integrated degraded context");
+  }
+  else if (gCurrentScenarioId == 212)
+  {
+    /* IT_006/ST_015: inject higher-priority ambulance competitor */
+    gLockAlertState = 1;
+    gLockEmergencyType = 2;
+    gLockEta = 8;
+    gLockSourceId = 22;
+    gLockEmergencyDirection = 2;
+    gLockPoliceDispatch = 0;
+    gLockAmbulanceDispatch = 0;
+    pushLockedScenarioInputs();
+    write("[TEST_SCN] IT_006/ST_015 phase2: inject ambulance eta=8 sourceId=22");
   }
   else if (gCurrentScenarioId == 223)
   {
