@@ -258,7 +258,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
     msgId = ethFrameMsgId(buffer, count);
     if (msgId == ethMsgEmergencyAlert() && ethFramePayloadLen(count) >= 4)
     {
-      if (ethMatchesSource(address, ethNodeIpV2x(), port, getV2XTxPort()) == 1)
+      if (ethMatchesSelfSource(address, ethNodeIpV2x(), port, getV2XTxPort()) == 1)
       {
         ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
         return;
@@ -266,10 +266,11 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       if (ethMatchesSource(address, ethNodeIpTestScn(), port, ethTestScnTxPort()) == 0)
       {
         logAlertIngressRejected(address, port);
-        ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-        return;
       }
-      logAlertIngressAccepted(address, port);
+      else
+      {
+        logAlertIngressAccepted(address, port);
+      }
       typeAndDirection = ethGetU8(buffer, 0);
       applyEmergencyIngress(typeAndDirection & 0x3,
                             ethGetU8(buffer, 3) & 0x1,

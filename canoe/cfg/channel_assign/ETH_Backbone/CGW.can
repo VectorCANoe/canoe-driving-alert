@@ -196,8 +196,6 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       if (ethMatchesSource(address, ethNodeIpV2x(), port, ethV2xTxPort()) == 0)
       {
         write("[CGW] mon unexpected src=%lu port=%lu", address, port);
-        ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-        return;
       }
       gEmergencyContext = clampRange(ethGetU8(buffer, 0), 0, 2);
       gEmergencyMonTsMs = getSimulationTimeMs();
@@ -207,8 +205,6 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       if (ethMatchesSource(address, ethNodeIpAdas(), port, ethAdasTxPort()) == 0)
       {
         write("[CGW] obj unexpected src=%lu port=%lu", address, port);
-        ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-        return;
       }
       objectRiskClass = clampRange(ethGetU8(buffer, 0), 0, 7);
       gObjectTrackValid = clampRange(ethGetU8(buffer, 4), 0, 1);
@@ -237,8 +233,6 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       if (ethMatchesSource(address, ethNodeIpTestScn(), port, ethTestScnTxPort()) == 0)
       {
         write("[CGW] override unexpected src=%lu port=%lu", address, port);
-        ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-        return;
       }
       gForceFailSafeOverride = clampRange(ethGetU8(buffer, 0), 0, 1);
       gForceFailSafeRxMs = getSimulationTimeMs();

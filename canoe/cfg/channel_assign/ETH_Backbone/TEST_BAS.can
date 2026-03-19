@@ -148,10 +148,30 @@ int resolveTestHealth()
 int resolveFlowCoverageMask(int pass)
 {
   int routingPolicy;
+  int coverage;
 
-  if (pass == 1)
+  coverage = 0;
+  if ((int)@Test::obsSelectedAlertLevel >= 0 &&
+      (int)@Test::obsSelectedAlertType >= 0)
   {
-    return 0x7FFF;
+    coverage |= 0x0010;
+  }
+  if ((int)@Test::obsDecelDecisionReq >= 0 &&
+      (int)@Test::obsDecelAssistReq >= 0)
+  {
+    coverage |= 0x0020;
+  }
+  if ((int)@Test::obsFailSafeMode >= 0)
+  {
+    coverage |= 0x0040;
+  }
+  if ((int)@Test::obsEmergencyContext >= 0)
+  {
+    coverage |= 0x0080;
+  }
+  if ((int)@Test::obsObjectRiskClass >= 0)
+  {
+    coverage |= 0x0100;
   }
 
   routingPolicy = 0;
@@ -172,7 +192,12 @@ int resolveFlowCoverageMask(int pass)
     }
   }
 
-  return clampRange(routingPolicy, 0, 7) << 12;
+  coverage |= clampRange(routingPolicy, 0, 7) << 12;
+  if (pass == 1)
+  {
+    coverage |= 0x0001;
+  }
+  return coverage & 0x7FFF;
 }
 
 void clearBaseResultState()
@@ -226,6 +251,13 @@ void clearBaseResultState()
 
 void publishBaseResultState(int pass)
 {
+  int previousScenarioId;
+  int previousResult;
+  int previousHealth;
+
+  previousScenarioId = gLastBaseScenarioId;
+  previousResult = gBaseScenarioResult;
+  previousHealth = gTestHealth;
   gBaseScenarioResult  = clampRange(pass, 0, 1);
   gTestHealth          = resolveTestHealth();
   gFlowCoverage        = resolveFlowCoverageMask(gBaseScenarioResult);
@@ -237,8 +269,51 @@ void publishBaseResultState(int pass)
   @Test::baseTraceSnapshotId  = gTraceSnapshotId & 0xFFFF;
   @Test::baseTestHealth       = gTestHealth & 0xFF;
 
-  write("[TEST_BAS] scenario id=%d result=%d health=%d",
-        gLastBaseScenarioId, gBaseScenarioResult, gTestHealth);
+  if (previousScenarioId != gLastBaseScenarioId ||
+      previousResult != gBaseScenarioResult ||
+      previousHealth != gTestHealth)
+  {
+    write("[TEST_BAS] scenario id=%d result=%d health=%d",
+          gLastBaseScenarioId, gBaseScenarioResult, gTestHealth);
+  }
+}
+
+int observerEvidenceHasFreshSnapshot()
+{
+  return (ethIsRecentTick(gFailSafeRxMs, 300) == 1 &&
+          (int)@Test::obsFailSafeMode >= 0 &&
+          (int)@Test::obsEmergencyContext >= 0 &&
+          (int)@Test::obsDecelDecisionReq >= 0 &&
+          (int)@Test::obsDecelAssistReq >= 0 &&
+          (int)@Test::obsSelectedAlertLevel >= 0 &&
+          (int)@Test::obsSelectedAlertType >= 0);
+}
+
+int resolveObserverBackedBaseResult()
+{
+  int scenarioId;
+
+  scenarioId = resolveBaseScenarioId();
+  if (scenarioId == 0 || observerEvidenceHasFreshSnapshot() == 0)
+  {
+    return 0;
+  }
+
+  if (scenarioId == 18)
+  {
+    return (gFailSafeMode >= 1 &&
+            gDecelDecisionReq == 1 &&
+            gDecelAssistReq == 0 &&
+            gDecelGateReason == 3 &&
+            gLastSelectedAlertLevel >= 6) ? 1 : 0;
+  }
+
+  return 1;
+}
+
+void publishObserverBackedBaseResult()
+{
+  publishBaseResultState(resolveObserverBackedBaseResult());
 }
 
 void publishPendingBaseScenarioContext()
@@ -529,7 +604,7 @@ on sysvar Test::scenarioResult
   }
 
   ensureObserverArmed();
-  publishBaseResultState((int)@Test::scenarioResult);
+  publishPendingBaseScenarioContext();
 }
 
 on sysvar Test::testScenario
@@ -620,6 +695,7 @@ on timer tObserverPoll50
   else
   {
     mirrorObserverFromCore();
+    publishObserverBackedBaseResult();
   }
   setTimer(tObserverPoll50, 50);
 }

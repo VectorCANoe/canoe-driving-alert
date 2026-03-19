@@ -163,6 +163,8 @@ The current active baseline must preserve producer identity at the backbone seam
 Implication:
 
 - backbone consumers must validate source ownership before treating a frame as authoritative
+- self-originated transport must be rejected with a strict self-source check
+- unexpected external sources may be traced and accepted for SIL continuity, but they must not silently become a second logical owner
 - message ID match alone is not a sufficient authority check for the active development baseline
 
 ## Reading Order

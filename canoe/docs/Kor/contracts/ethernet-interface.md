@@ -36,7 +36,11 @@ owner, observer, validation, render 계층 분리는 [layer-separation-policy.md
 retired CAN stub seam을 primary architecture contract로 취급하면 안 됩니다.
 
 현재 SIL validation baseline에서는 CANoe multicast runtime stack 동작에 따라 sender identity가 다르게 보일 수 있습니다.
-그래서 ingress owner는 먼저 self-originated transport를 배제하고, 문서화된 validation sender가 보이면 그 값을 우선 사용하며, 예상과 다른 external source는 trace를 남긴 뒤 external ingress로 수용합니다.
+그래서 ingress owner는 아래 원칙을 따릅니다.
+
+- strict self-source check로 self-originated transport를 먼저 배제한다
+- 문서화된 validation sender가 보이면 그 값을 우선 사용한다
+- 예상과 다른 external source는 trace를 남긴 뒤 external ingress로 수용한다
 
 ## 3. Contract seam 분류
 

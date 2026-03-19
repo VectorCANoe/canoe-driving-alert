@@ -1283,10 +1283,11 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       if (ethMatchesSource(address, ethNodeIpTestScn(), port, ethTestScnTxPort()) == 0)
       {
         logObjectRiskRejected(address, port);
-        ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-        return;
       }
-      logObjectRiskAccepted(address, port);
+      else
+      {
+        logObjectRiskAccepted(address, port);
+      }
       applyObjectRiskInput(ethGetU8(buffer, 0) & 0x1,
                            clampRange(ethGetU16Le(buffer, 1), 0, 500),
                            clampRange(ethGetS16Le(buffer, 3), -200, 200),

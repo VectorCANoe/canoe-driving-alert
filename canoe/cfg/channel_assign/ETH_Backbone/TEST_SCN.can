@@ -8,14 +8,11 @@ includes
 variables
 {
   msTimer tInput100;
-  msTimer tDemoStep;
   msTimer tScenarioEval;
   msTimer tScenarioPhase2;
   msTimer tScenarioPhase3;
   long gEthSocket;
   dword gEthTargetIp;
-  int gDemoStepIndex;
-  int gDemoRunning;
   int gCurrentScenarioId;
   int gArbitrationSnapshotBaseline;
   int gScenarioInputLock;
@@ -263,6 +260,10 @@ int getObservedSelectedAlertLevel()
   {
     alertLevel = clampRange((int)@CoreState::selectedAlertDecisionLevel, 0, 7);
   }
+  if (alertLevel == 0)
+  {
+    alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  }
   return alertLevel;
 }
 
@@ -274,6 +275,10 @@ int getObservedSelectedAlertType()
   if (alertType == 0)
   {
     alertType = clampRange((int)@CoreState::selectedAlertDecisionType, 0, 15);
+  }
+  if (alertType == 0)
+  {
+    alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
   }
   return alertType;
 }
@@ -488,11 +493,9 @@ void resetValidationOverrides()
 
 void stopScenarioExecution()
 {
-  gDemoRunning = 0;
   gScenarioInputLock = 0;
   gCurrentScenarioId = 0;
   gArbitrationSnapshotBaseline = 0;
-  cancelTimer(tDemoStep);
   cancelScenarioTransientTimers();
   EmitBackboneValidationOverrideTest(0);
   if (gLockSuppressEmergencyFrame == 0)
@@ -716,8 +719,6 @@ void publishScenarioResultFrame()
 
 void beginScenarioExecution(int scenarioId)
 {
-  gDemoRunning = 0;
-  cancelTimer(tDemoStep);
   cancelScenarioTransientTimers();
   clearScenarioLifecycleState();
   @Test::scenarioResult = 0;
@@ -726,16 +727,6 @@ void beginScenarioExecution(int scenarioId)
   setScenarioMirror(scenarioId);
   @Test::scenarioActiveId = clampRange(scenarioId, 0, 255);
   scheduleScenarioEvaluation(scenarioId);
-}
-
-void beginAutoDemoExecution()
-{
-  cancelScenarioTransientTimers();
-  gDemoRunning = 1;
-  gDemoStepIndex = 0;
-  clearScenarioLifecycleState();
-  setScenarioMirror(100);
-  runDemoStep();
 }
 
 void applyScenarioPreset(int scenarioId)
@@ -2495,27 +2486,11 @@ void evaluateScenarioResult()
     result = ((int)@Test::scenarioResult == 1) ? 1 : 0;
   }
 
-  if (gCurrentScenarioId != 0 && gDemoRunning == 0)
+  if (gCurrentScenarioId != 0)
   {
     @Test::scenarioEvaluatedId = clampRange(gCurrentScenarioId, 0, 255);
   }
   @Test::scenarioResult = result;
-}
-
-void runDemoStep()
-{
-  cancelScenarioTransientTimers();
-  gDemoStepIndex = gDemoStepIndex + 1;
-  if (gDemoStepIndex > 8)
-  {
-    gDemoStepIndex = 1;
-  }
-
-  applyScenarioPreset(gDemoStepIndex);
-  gCurrentScenarioId = gDemoStepIndex;
-  setScenarioMirror(gCurrentScenarioId);
-  scheduleScenarioEvaluation(gDemoStepIndex);
-  setTimer(tDemoStep, 4000);
 }
 
 on timer tScenarioPhase2
@@ -2746,8 +2721,6 @@ on start
 {
   gEthSocket = ethOpenNodeSocketAt(getTestScnLocalIp(), getTestScnTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
-  gDemoStepIndex = 0;
-  gDemoRunning = 0;
   gCurrentScenarioId = 0;
   gArbitrationSnapshotBaseline = 0;
   gScenarioInputLock = 0;
@@ -3160,8 +3133,7 @@ on timer tInput100
     ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectRiskInput(), objectFrame, 8);
     EmitBackboneValidationOverrideTest(gLockForceFailSafe);
 
-    if (gDemoRunning == 0 &&
-        gCurrentScenarioId != 0 &&
+    if (gCurrentScenarioId != 0 &&
         (int)@Test::scenarioSettledId != clampRange(gCurrentScenarioId, 0, 255))
     {
       @Test::scenarioSettledId = clampRange(gCurrentScenarioId, 0, 255);
@@ -3294,10 +3266,6 @@ on sysvar Test::scenarioCommand
     acceptedScenarioId = clampRange(scenarioId, 0, 255);
     write("[TEST_SCN] command execute scenario=%d", scenarioId);
   }
-  else if (scenarioId == 100)
-  {
-    write("[TEST_SCN] command reject demo trigger=%d official-plane-only", scenarioId);
-  }
   else
   {
     write("[TEST_SCN] command ignore invalid scenario=%d", scenarioId);
@@ -3329,14 +3297,6 @@ on sysvar Test::testScenario
     setScenarioMirror(mirrorScenarioId);
     write("[TEST_SCN] ignore direct testScenario write: req=%d keep=%d",
           scenarioId, mirrorScenarioId);
-  }
-}
-
-on timer tDemoStep
-{
-  if (gDemoRunning == 1)
-  {
-    runDemoStep();
   }
 }
 

@@ -35,7 +35,11 @@ This backbone is the active inter-domain seam for the current CANoe SIL profile.
 Retired CAN stub seams must not be treated as the primary architecture contract.
 
 In the current SIL validation baseline, multicast sender identity may vary by CANoe runtime stack behavior.
-Therefore ingress owners reject self-originated transport first, prefer the documented validation sender when it is visible, and trace unexpected external sources before accepting them as external ingress.
+Therefore ingress owners:
+
+- reject self-originated transport first with a strict self-source check
+- prefer the documented validation sender when it is visible
+- trace unexpected external sources before accepting them as external ingress
 
 ## 3. Contract classes
 

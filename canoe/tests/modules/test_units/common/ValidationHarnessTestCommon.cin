@@ -1324,20 +1324,30 @@ long waitForBaseResult(int scenarioId, dword timeoutMs)
   dword waitedMs;
 
   waitedMs = 0;
-  while ((int)@Test::baseScenarioId != scenarioId && waitedMs < timeoutMs)
+  while (((int)@Test::baseScenarioId != scenarioId ||
+          (int)@Test::baseTestHealth == 0) &&
+         waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if ((int)@Test::baseScenarioId != scenarioId)
+  if ((int)@Test::baseScenarioId != scenarioId ||
+      (int)@Test::baseTestHealth == 0)
   {
-    testStepFail("base-result-wait", "Base result timeout expected=%d actual=%d waited=%d",
-                 scenarioId, (int)@Test::baseScenarioId, waitedMs);
+    testStepFail("base-result-wait", "Base result timeout expected=%d actual=%d health=%d result=%d waited=%d",
+                 scenarioId,
+                 (int)@Test::baseScenarioId,
+                 (int)@Test::baseTestHealth,
+                 (int)@Test::baseScenarioResult,
+                 waitedMs);
     return 0;
   }
 
-  testStepPass("base-result-wait", "Base result ready for scenario %d", scenarioId);
+  testStepPass("base-result-wait", "Base result ready for scenario %d health=%d result=%d",
+               scenarioId,
+               (int)@Test::baseTestHealth,
+               (int)@Test::baseScenarioResult);
   return 1;
 }
 
