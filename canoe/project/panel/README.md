@@ -2,23 +2,46 @@
 
 CANoe panel artifacts for this project.
 
-## Files
-- `SDV_Control.xvp`: scenario/input control panel
-- `SDV_Monitor.xvp`: pipeline/output monitor panel
-- `SDV_Render_Debug.xvp`: UiRender adapter debug panel
-- `SDV_External_Road_View.xvp`: external environment macro view
-- `SDV_Cabin_Panorama_View.xvp`: in-cabin panoramic macro view
-- `SDV_Cluster_View.xvp`: cluster detail view
-- `SDV_Ambient_View.xvp`: ambient detail view
-- `SDV_Navigation_View.xvp`: navigation detail view
-- `SDV_Demo_Stage.xvp`: legacy combined panel (retirement target)
+## Donor Intake Status
+
+### Active donor set
+- `SDV_Ambient_Control.xvp`: adopted from `sh_rael_merge`
+- `input.xvp`: adopted from `sh_rael_merge`
+- `cluster.xvp`: adopted from `sh_rael_merge`
+- `Navigation.xvp`: adopted from `sh_rael_merge`
+- `SDV_Ambient_Top_View.xvp`: adopted from `sh_rael_merge`
+- `v2xpanel.xvp`: adopted from `merge/lee`
+- `scenariocontrol.xvp`: adopted from `merge/lee`
+
+### Deferred donor set
+- `sample_Dashboard.xvp`: source-staged only, raw CAN and `Display::animFrame` cleanup still needed
+- `windowstate.xvp`: source-staged only, direct body CAN bindings still need operator-safe review
+
+### No-go donor files
+- `MyDriverPanel.xvp`: do not adopt into the `develop` panel set
+- `sample_Control.xvp`: do not adopt into the `develop` panel set
+
+### Retirement targets
+- `SDV_Control.xvp`: current `develop` draft panel, delete only after GUI replacement proof
+- `SDV_Monitor.xvp`: current `develop` draft panel, delete only after GUI replacement proof
+- `SDV_Render_Debug.xvp`: current `develop` draft panel, delete only after GUI replacement proof
+- `SDV_External_Road_View.xvp`: current `develop` draft panel, delete only after GUI replacement proof
+- `SDV_Cabin_Panorama_View.xvp`: current `develop` draft panel, delete only after GUI replacement proof
+- `SDV_Cluster_View.xvp`: current `develop` draft panel, delete only after GUI replacement proof
+- `SDV_Ambient_View.xvp`: current `develop` draft panel, delete only after GUI replacement proof
+- `SDV_Navigation_View.xvp`: current `develop` draft panel, delete only after GUI replacement proof
+- `SDV_Demo_Stage.xvp`: current `develop` draft panel, delete only after GUI replacement proof
 
 ## Skin Assets (Project)
 - `Bitmaps/DashboardCombi.png`
 - `Bitmaps/DashboardCircleBlack.png`
+- `Bitmaps/DashboardABS.png`
+- `Bitmaps/DashboardFlasherLeft.png`
+- `Bitmaps/DashboardFlasherRight.png`
 - `Bitmaps/warnLevelFront.png`
 - `Bitmaps/warnLevelRear.png`
 - `Bitmaps/alert3.bmp`
+- `Bitmaps/brakelamp.png`
 - `Bitmaps/StageDashboard.png`
 - `Bitmaps/VehicleStrip11.png`
 - `Bitmaps/ZoneBadge4.png`
@@ -29,6 +52,13 @@ CANoe panel artifacts for this project.
 - `Bitmaps/AmbientPulseGlow4.png`
 - `Bitmaps/ExternalRoadScene.png`
 - `Bitmaps/CabinPanoramaScene.png`
+- `Bitmaps/ivi.png`
+- `Bitmaps/left flash.png`
+- `Bitmaps/right flash.png`
+- `Bitmaps/left window.png`
+- `Bitmaps/wifer.png`
+- `Bitmaps/KakaoTalk_20260310_003301280_10 (1).bmp`
+- `Bitmaps/KakaoTalk_20260310_003458323.bmp`
 - `Bitmaps/reference_pack_v1/*`: curated Vector sample pack for external/cabin upgrade
 
 ## Reference Source Matrix (Adopted)
@@ -61,6 +91,7 @@ CANoe panel artifacts for this project.
 - Donor panel compat outputs such as `V2X::v2xFrame`, `Infotainment::emergencySound`, and `UiRender::beep*` are display-only at the panel layer
 - Producer-owned compat sysvars may remain writable for CAPL publishers, but panel widgets must keep read-only bindings
 - Manual exploration inputs stay under `Test::*` or approved operator input namespaces
+- Panels still carrying direct `SymbolConfiguration` CAN bindings are source-only until they are reviewed against the `develop` owner model
 
 ## Render Variables
 Use these derived sysvars for animation-ready visualization:
