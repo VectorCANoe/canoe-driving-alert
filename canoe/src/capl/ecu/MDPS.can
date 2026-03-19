@@ -74,7 +74,7 @@ void traceMdpsInputHealth(int steeringInputStale, int vehicleInputStale)
 
 on start
 {
-  gEthTxSocket = ethOpenNodeSocketAt(getMdpsLocalIp(), getMdpsTxPort());
+  gEthTxSocket = ethOpenPreferredNodeSocket(getMdpsLocalIp(), getMdpsTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gSteeringInput = 0;
   gSpeedNorm = 0;

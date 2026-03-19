@@ -245,7 +245,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
 on start
 {
   gEthSocket = ethOpenBackboneReceiverSocket(getCgwLocalIp());
-  gEthTxSocket = ethOpenNodeSocketAt(getCgwLocalIp(), getCgwTxPort());
+  gEthTxSocket = ethOpenPreferredNodeSocket(getCgwLocalIp(), getCgwTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gChassisAlive = 0;
   gBodyAlive = 0;

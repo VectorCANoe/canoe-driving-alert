@@ -29,6 +29,9 @@ variables
   int gLastSelectedAlertType;
   dword gFailSafeRxMs;
   dword gEmergencyMonRxMs;
+  dword gSelectedAlertRxMs;
+  dword gDecelRxMs;
+  dword gObjectRxMs;
 }
 
 int resolveBaseScenarioId()
@@ -226,6 +229,9 @@ void clearBaseResultState()
   gLastSelectedAlertType = 0;
   gFailSafeRxMs        = 0;
   gEmergencyMonRxMs    = 0;
+  gSelectedAlertRxMs   = 0;
+  gDecelRxMs           = 0;
+  gObjectRxMs          = 0;
 
   @Test::baseScenarioId       = 0;
   @Test::baseScenarioResult   = 0;
@@ -342,12 +348,22 @@ void mirrorObserverFromCore()
   int selectedAlertDecisionLevel;
   int selectedAlertDecisionType;
   int selectedAlertGateReason;
-  dword nowMs;
+  int mirrorFailSafe;
+  int mirrorEmergency;
+  int mirrorDecel;
+  int mirrorSelectedAlert;
+  int mirrorObject;
 
   if (observerLifecycleIsActive() == 0)
   {
     return;
   }
+
+  mirrorFailSafe = (ethIsRecentTick(gFailSafeRxMs, 300) == 0) ? 1 : 0;
+  mirrorEmergency = (ethIsRecentTick(gEmergencyMonRxMs, 300) == 0) ? 1 : 0;
+  mirrorDecel = (ethIsRecentTick(gDecelRxMs, 300) == 0) ? 1 : 0;
+  mirrorSelectedAlert = (ethIsRecentTick(gSelectedAlertRxMs, 300) == 0) ? 1 : 0;
+  mirrorObject = (ethIsRecentTick(gObjectRxMs, 300) == 0) ? 1 : 0;
 
   selectedAlertLevel = clampRange((int)@CoreState::selectedAlertEffectiveLevel, 0, 7);
   selectedAlertType = clampRange((int)@CoreState::selectedAlertEffectiveType, 0, 31);
@@ -380,46 +396,54 @@ void mirrorObserverFromCore()
   objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
   intersectionConflictFlag = clampRange((int)@Core::intersectionConflictFlag, 0, 1);
   mergeCutInFlag = clampRange((int)@Core::mergeCutInFlag, 0, 1);
-  nowMs = getSimulationTimeMs();
 
-  if (selectedAlertLevel != gLastSelectedAlertLevel ||
-      selectedAlertType != gLastSelectedAlertType)
+  if (mirrorSelectedAlert == 1 &&
+      (selectedAlertLevel != gLastSelectedAlertLevel ||
+       selectedAlertType != gLastSelectedAlertType))
   {
     gTraceSnapshotId = (gTraceSnapshotId + 1) & 0xFFFF;
     @Test::baseTraceSnapshotId = gTraceSnapshotId & 0xFFFF;
   }
 
-  gLastSelectedAlertLevel = selectedAlertLevel;
-  gLastSelectedAlertType = selectedAlertType;
-  gFailSafeMode = failSafeMode;
-  gEmergencyContext = emergencyContext;
-  gDecelDecisionReq = decelDecisionReq;
-  gDecelAssistReq = decelAssistReq;
-  gDecelRisk = decelRisk;
-  gDecelGateReason = decelGateReason;
-  gDecelReleaseReason = decelReleaseReason;
-
-  if (resolveBaseScenarioId() != 0)
+  if (mirrorSelectedAlert == 1)
   {
-    gFailSafeRxMs = nowMs;
-    gEmergencyMonRxMs = nowMs;
+    gLastSelectedAlertLevel = selectedAlertLevel;
+    gLastSelectedAlertType = selectedAlertType;
+    @Test::obsSelectedAlertLevel = selectedAlertLevel;
+    @Test::obsSelectedAlertType = selectedAlertType;
   }
-
-  @Test::obsSelectedAlertLevel = selectedAlertLevel;
-  @Test::obsSelectedAlertType = selectedAlertType;
-  @Test::obsFailSafeMode = failSafeMode;
-  @Test::obsEmergencyContext = emergencyContext;
-  @Test::obsDecelDecisionReq = decelDecisionReq;
-  @Test::obsDecelAssistReq = decelAssistReq;
-  @Test::obsDecelRisk = decelRisk;
-  @Test::obsDecelGateReason = decelGateReason;
-  @Test::obsDecelReleaseReason = decelReleaseReason;
-  @Test::obsObjectRiskClass = objectRiskClass;
-  @Test::obsObjectRiskLevel = objectRiskLevel;
-  @Test::obsObjectTrackValid = objectTrackValid;
-  @Test::obsObjectConfidence = objectConfidence;
-  @Test::obsIntersectionConflictFlag = intersectionConflictFlag;
-  @Test::obsMergeCutInFlag = mergeCutInFlag;
+  if (mirrorFailSafe == 1)
+  {
+    gFailSafeMode = failSafeMode;
+    @Test::obsFailSafeMode = failSafeMode;
+  }
+  if (mirrorEmergency == 1)
+  {
+    gEmergencyContext = emergencyContext;
+    @Test::obsEmergencyContext = emergencyContext;
+  }
+  if (mirrorDecel == 1)
+  {
+    gDecelDecisionReq = decelDecisionReq;
+    gDecelAssistReq = decelAssistReq;
+    gDecelRisk = decelRisk;
+    gDecelGateReason = decelGateReason;
+    gDecelReleaseReason = decelReleaseReason;
+    @Test::obsDecelDecisionReq = decelDecisionReq;
+    @Test::obsDecelAssistReq = decelAssistReq;
+    @Test::obsDecelRisk = decelRisk;
+    @Test::obsDecelGateReason = decelGateReason;
+    @Test::obsDecelReleaseReason = decelReleaseReason;
+  }
+  if (mirrorObject == 1)
+  {
+    @Test::obsObjectRiskClass = objectRiskClass;
+    @Test::obsObjectRiskLevel = objectRiskLevel;
+    @Test::obsObjectTrackValid = objectTrackValid;
+    @Test::obsObjectConfidence = objectConfidence;
+    @Test::obsIntersectionConflictFlag = intersectionConflictFlag;
+    @Test::obsMergeCutInFlag = mergeCutInFlag;
+  }
 }
 
 void ensureObserverArmed()
@@ -499,6 +523,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
         gDecelGateReason = clampRange((payload0 >> 3) & 0x3, 0, 3);
       }
       gDecelReleaseReason = clampRange((payload0 >> 3) & 0x3, 0, 3);
+      gDecelRxMs = getSimulationTimeMs();
       @Test::obsDecelDecisionReq = gDecelDecisionReq;
       @Test::obsDecelAssistReq = gDecelAssistReq;
       @Test::obsDecelRisk = gDecelRisk;
@@ -530,6 +555,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       }
       gLastSelectedAlertLevel = clampRange(payload0 & 0x7, 0, 7);
       gLastSelectedAlertType = clampRange((payload0 >> 3) & 0x1F, 0, 31);
+      gSelectedAlertRxMs = getSimulationTimeMs();
       @Test::obsSelectedAlertLevel = gLastSelectedAlertLevel;
       @Test::obsSelectedAlertType = gLastSelectedAlertType;
     }
@@ -543,6 +569,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       @Test::obsObjectRiskLevel = clampRange(ethGetU8(buffer, 3), 0, 100);
       @Test::obsObjectTrackValid = clampRange(ethGetU8(buffer, 4), 0, 1);
       @Test::obsObjectConfidence = clampRange(ethGetU8(buffer, 5), 0, 100);
+      gObjectRxMs = getSimulationTimeMs();
     }
     else if (msgId == ethMsgObjectScenarioAlert() && ethFramePayloadLen(count) >= 2)
     {
@@ -553,6 +580,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       payload0 = ethGetU8(buffer, 1);
       @Test::obsIntersectionConflictFlag = payload0 & 0x1;
       @Test::obsMergeCutInFlag = (payload0 >> 1) & 0x1;
+      gObjectRxMs = getSimulationTimeMs();
     }
   }
 
@@ -583,6 +611,9 @@ on message frmAdasDomainStateMsg
   gDecelGateReason = clampRange((int)@CoreState::decelGateReason, 0, 3);
   gFailSafeRxMs = getSimulationTimeMs();
   gEmergencyMonRxMs = gFailSafeRxMs;
+  gSelectedAlertRxMs = gFailSafeRxMs;
+  gDecelRxMs = gFailSafeRxMs;
+  gObjectRxMs = gFailSafeRxMs;
 
   @Test::obsSelectedAlertLevel = gLastSelectedAlertLevel;
   @Test::obsSelectedAlertType = gLastSelectedAlertType;

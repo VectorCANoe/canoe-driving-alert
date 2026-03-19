@@ -1360,7 +1360,7 @@ on message frmSeatBeltStateMsg
 on start
 {
   gEthSocket = ethOpenBackboneReceiverSocket(getAdasLocalIp());
-  gEthTxSocket = ethOpenNodeSocketAt(getAdasLocalIp(), getAdasTxPort());
+  gEthTxSocket = ethOpenPreferredNodeSocket(getAdasLocalIp(), getAdasTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gLastWarningState = -1;
   gHighwayNoSteerStartMs = 0;

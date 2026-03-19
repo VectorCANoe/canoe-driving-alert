@@ -385,6 +385,28 @@ long ethOpenNodeSocketAt(dword localIp, int localPort)
   return socket;
 }
 
+long ethOpenPreferredNodeSocket(dword localIp, int localPort)
+{
+  long socket;
+
+  socket = ethInvalidSocket();
+  if (localIp != ethInvalidIp() && localIp != 0)
+  {
+    socket = ethOpenNodeSocketAt(localIp, localPort);
+    if (socket != ethInvalidSocket())
+    {
+      return socket;
+    }
+  }
+
+  socket = ethOpenNodeSocket(localPort);
+  if (socket != ethInvalidSocket() && localIp != ethInvalidIp() && localIp != 0)
+  {
+    write("[ETH] tx fallback ip=%u port=%d", localIp, localPort);
+  }
+  return socket;
+}
+
 long ethOpenDefaultSocket()
 {
   return ethOpenNodeSocket(ethBackbonePort());
@@ -394,18 +416,21 @@ long ethOpenBackboneReceiverSocket(dword localIp)
 {
   long socket;
 
-  socket = ethOpenDefaultSocket();
-  if (socket != ethInvalidSocket())
-  {
-    return socket;
-  }
-
   if (localIp != ethInvalidIp() && localIp != 0)
   {
-    return ethOpenNodeSocketAt(localIp, ethBackbonePort());
+    socket = ethOpenNodeSocketAt(localIp, ethBackbonePort());
+    if (socket != ethInvalidSocket())
+    {
+      return socket;
+    }
   }
 
-  return ethInvalidSocket();
+  socket = ethOpenDefaultSocket();
+  if (socket != ethInvalidSocket() && localIp != ethInvalidIp() && localIp != 0)
+  {
+    write("[ETH] rx fallback ip=%u port=%d", localIp, ethBackbonePort());
+  }
+  return socket;
 }
 
 void ethCloseSocket(long socket)

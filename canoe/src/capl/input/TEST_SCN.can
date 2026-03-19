@@ -387,6 +387,8 @@ void writeEvidenceOutLine(int scenarioId,
 
 void pushLockedScenarioInputs()
 {
+  int compatDispatchActive;
+
   @Chassis::driveState = clampRange(gLockDriveState, 0, 3);
   @Chassis::vehicleSpeed = clampRange(gLockVehicleSpeed, 0, 255);
   @Chassis::steeringInput = clampRange(gLockSteeringInput, 0, 1);
@@ -394,11 +396,21 @@ void pushLockedScenarioInputs()
   @Infotainment::navDirection = clampRange(gLockNavDirection, 0, 3);
   @Infotainment::zoneDistance = clampRange(gLockZoneDistance, 0, 255);
   @Infotainment::speedLimit = clampRange(gLockSpeedLimit, 0, 255);
-  @V2X::policeDispatch = 0;
-  @V2X::ambulanceDispatch = 0;
-  @V2X::emergencyDirection = 0;
-  @V2X::eta = 255;
-  @V2X::sourceId = 255;
+  compatDispatchActive = 0;
+  if (clampRange(gLockPoliceDispatch, 0, 1) == 1 ||
+      clampRange(gLockAmbulanceDispatch, 0, 1) == 1)
+  {
+    compatDispatchActive = 1;
+  }
+
+  if (compatDispatchActive == 1)
+  {
+    @V2X::policeDispatch = clampRange(gLockPoliceDispatch, 0, 1);
+    @V2X::ambulanceDispatch = clampRange(gLockAmbulanceDispatch, 0, 1);
+    @V2X::emergencyDirection = clampRange(gLockEmergencyDirection, 0, 3);
+    @V2X::eta = clampRange(gLockEta, 0, 255);
+    @V2X::sourceId = clampRange(gLockSourceId, 0, 255);
+  }
   /* A/B 그룹 플래그: CGW 정규화 경로를 거치지 않고 Core에 직접 주입 */
   @Core::accelGroupFlag = clampRange(gLockAccelGroupFlag, 0, 1);
   @Core::steerGroupFlag = clampRange(gLockSteerGroupFlag, 0, 1);
@@ -2719,7 +2731,7 @@ on timer tScenarioPhase3
 
 on start
 {
-  gEthSocket = ethOpenNodeSocketAt(getTestScnLocalIp(), getTestScnTxPort());
+  gEthSocket = ethOpenPreferredNodeSocket(getTestScnLocalIp(), getTestScnTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gCurrentScenarioId = 0;
   gArbitrationSnapshotBaseline = 0;

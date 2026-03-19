@@ -377,7 +377,7 @@ int deriveVehicleMotionStep(int roadZoneColorCode, int emergencyType, int emerge
 
 on start
 {
-  gEthTxSocket = ethOpenNodeSocketAt(getIviLocalIp(), getIviTxPort());
+  gEthTxSocket = ethOpenPreferredNodeSocket(getIviLocalIp(), getIviTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gLastWarningTextCode = -1;
   gInfoAliveCnt = 0;

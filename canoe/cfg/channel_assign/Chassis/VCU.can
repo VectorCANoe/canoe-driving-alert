@@ -309,7 +309,7 @@ void publishBackboneVehicleState(int vehicleSpeed, int driveState)
 
 on start
 {
-  gEthTxSocket = ethOpenNodeSocketAt(getVcuLocalIp(), getVcuTxPort());
+  gEthTxSocket = ethOpenPreferredNodeSocket(getVcuLocalIp(), getVcuTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gSpeed = 0;
   gAccelPedal = 0;

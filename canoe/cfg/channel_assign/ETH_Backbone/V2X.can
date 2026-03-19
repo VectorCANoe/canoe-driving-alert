@@ -451,7 +451,7 @@ void recordAlertEvent()
 on start
 {
   gEthSocket = ethOpenBackboneReceiverSocket(getV2xLocalIp());
-  gEthTxSocket = ethOpenNodeSocketAt(getV2xLocalIp(), getV2XTxPort());
+  gEthTxSocket = ethOpenPreferredNodeSocket(getV2xLocalIp(), getV2XTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   clearEmergencyState();
   gActiveLastRxMs = 0;
