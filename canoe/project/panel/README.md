@@ -58,8 +58,8 @@ CANoe panel artifacts for this project.
 - Agent may edit text docs, CAPL logic, and bitmap assets only
 
 ## Compat Guardrail
-- Donor panel compat outputs such as `V2X::v2xFrame`, `Infotainment::emergencySound`, and `UiRender::beep*` are display-only
-- Keep those compat sysvars read-only and producer-owned
+- Donor panel compat outputs such as `V2X::v2xFrame`, `Infotainment::emergencySound`, and `UiRender::beep*` are display-only at the panel layer
+- Producer-owned compat sysvars may remain writable for CAPL publishers, but panel widgets must keep read-only bindings
 - Manual exploration inputs stay under `Test::*` or approved operator input namespaces
 
 ## Render Variables
