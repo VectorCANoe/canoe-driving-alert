@@ -3,15 +3,9 @@
 CANoe panel artifacts for this project.
 
 ## Files
-- `SDV_Control.xvp`: scenario/input control panel
-- `SDV_Monitor.xvp`: pipeline/output monitor panel
-- `SDV_Render_Debug.xvp`: UiRender adapter debug panel
-- `SDV_External_Road_View.xvp`: external environment macro view
-- `SDV_Cabin_Panorama_View.xvp`: in-cabin panoramic macro view
-- `SDV_Cluster_View.xvp`: cluster detail view
-- `SDV_Ambient_View.xvp`: ambient detail view
-- `SDV_Navigation_View.xvp`: navigation detail view
-- `SDV_Demo_Stage.xvp`: legacy combined panel (retirement target)
+- Legacy `develop` draft XVP panels were retired and removed.
+- Active donor-panel integration work is maintained in the dedicated merge branch/worktree.
+- `develop` no longer keeps placeholder panel drafts as an in-repo baseline.
 
 ## Skin Assets (Project)
 - `Bitmaps/DashboardCombi.png`
@@ -39,10 +33,8 @@ CANoe panel artifacts for this project.
 - Additional control idioms: `reference/vector_code_sample`
 
 ## Panel Split (Target)
-- Validation panels: `SDV_Control.xvp`, `SDV_Monitor.xvp`, `SDV_Render_Debug.xvp`
-- Macro panels: `SDV_External_Road_View.xvp`, `SDV_Cabin_Panorama_View.xvp`
-- Detail panels (v2 skin aligned): `SDV_Cluster_View.xvp`, `SDV_Ambient_View.xvp`, `SDV_Navigation_View.xvp`
-- Legacy panel: `SDV_Demo_Stage.xvp` (freeze new features)
+- `develop` does not preserve draft-panel structure.
+- Final active panel registration is resolved through the donor merge branch and GUI registration cleanup.
 
 ## BP (Renderer-Only Contract)
 - Decision/arbitration logic stays in `ADAS` and `ADAS`
@@ -71,4 +63,3 @@ Use these derived sysvars for animation-ready visualization:
 - `UiRender::ambientPulsePhase`
 - `UiRender::icFlowPhase`
 - `UiRender::activeAlertType`
-
