@@ -21,16 +21,17 @@ CANoe panel artifacts for this project.
 - `MyDriverPanel.xvp`: do not adopt into the `develop` panel set
 - `sample_Control.xvp`: do not adopt into the `develop` panel set
 
-### Retirement targets
-- `SDV_Control.xvp`: current `develop` draft panel, delete only after GUI replacement proof
-- `SDV_Monitor.xvp`: current `develop` draft panel, delete only after GUI replacement proof
-- `SDV_Render_Debug.xvp`: current `develop` draft panel, delete only after GUI replacement proof
-- `SDV_External_Road_View.xvp`: current `develop` draft panel, delete only after GUI replacement proof
-- `SDV_Cabin_Panorama_View.xvp`: current `develop` draft panel, delete only after GUI replacement proof
-- `SDV_Cluster_View.xvp`: current `develop` draft panel, delete only after GUI replacement proof
-- `SDV_Ambient_View.xvp`: current `develop` draft panel, delete only after GUI replacement proof
-- `SDV_Navigation_View.xvp`: current `develop` draft panel, delete only after GUI replacement proof
-- `SDV_Demo_Stage.xvp`: current `develop` draft panel, delete only after GUI replacement proof
+### Removed from merge branch
+- `SDV_Control.xvp`: removed from this integration branch, preserved on `develop`
+- `SDV_Monitor.xvp`: removed from this integration branch, preserved on `develop`
+- `SDV_Render_Debug.xvp`: removed from this integration branch, preserved on `develop`
+- `SDV_External_Road_View.xvp`: removed from this integration branch, preserved on `develop`
+- `SDV_Cabin_Panorama_View.xvp`: removed from this integration branch, preserved on `develop`
+- `SDV_Cluster_View.xvp`: removed from this integration branch, preserved on `develop`
+- `SDV_Ambient_View.xvp`: removed from this integration branch, preserved on `develop`
+- `SDV_Navigation_View.xvp`: removed from this integration branch, preserved on `develop`
+- `SDV_Demo_Stage.xvp`: removed from this integration branch, preserved on `develop`
+- `SDV_Test_Operator.xvp`: removed from this integration branch, preserved on `develop`
 
 ## Skin Assets (Project)
 - `Bitmaps/DashboardCombi.png`
@@ -68,11 +69,10 @@ CANoe panel artifacts for this project.
 - Cabin panorama/window animation strips: `reference/vector_samples_19_4_10/LIN/LINSystem/Panels`
 - Additional control idioms: `reference/vector_code_sample`
 
-## Panel Split (Target)
-- Validation panels: `SDV_Control.xvp`, `SDV_Monitor.xvp`, `SDV_Render_Debug.xvp`
-- Macro panels: `SDV_External_Road_View.xvp`, `SDV_Cabin_Panorama_View.xvp`
-- Detail panels (v2 skin aligned): `SDV_Cluster_View.xvp`, `SDV_Ambient_View.xvp`, `SDV_Navigation_View.xvp`
-- Legacy panel: `SDV_Demo_Stage.xvp` (freeze new features)
+## Panel Split (Integration Branch)
+- Active donor panels: `SDV_Ambient_Control.xvp`, `input.xvp`, `cluster.xvp`, `Navigation.xvp`, `SDV_Ambient_Top_View.xvp`, `v2xpanel.xvp`, `scenariocontrol.xvp`
+- Deferred donor panels: `sample_Dashboard.xvp`, `windowstate.xvp`
+- Removed local drafts stay only on `develop`
 
 ## BP (Renderer-Only Contract)
 - Decision/arbitration logic stays in `ADAS` and `ADAS`
@@ -86,6 +86,9 @@ CANoe panel artifacts for this project.
 - `.xvp` layout/property/binding changes must be done in CANoe GUI Panel Editor
 - `.cfg`, `.cfg.ini`, `.stcfg` save/generation must be done in CANoe GUI
 - Agent may edit text docs, CAPL logic, and bitmap assets only
+
+## GUI Cleanup Pending
+- `CAN_v2_topology.cfg` may still reference removed draft XVP files until the next CANoe GUI panel-registration save
 
 ## Compat Guardrail
 - Donor panel compat outputs such as `V2X::v2xFrame`, `Infotainment::emergencySound`, and `UiRender::beep*` are display-only at the panel layer
