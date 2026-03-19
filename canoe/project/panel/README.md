@@ -17,7 +17,8 @@ CANoe panel artifacts for this project.
 - `SDV_Control.xvp`: restored from `sh_rael_merge`
 - `sample_Dashboard.xvp`: source-staged only, raw CAN and `Display::animFrame` cleanup still needed
 - `sample_Control.xvp`: source-staged only, local bitmap path normalized, raw CAN review still needed
-- `MyDriverPanel.xvp`: source-staged only, donor-only utility panel
+- `MyDriverPanel.xvp`: source-staged only, refreshed from latest `origin/lee`
+- `car_inner.xvp`: source-staged only, latest `origin/lee` cabin interior panel
 - `windowstate.xvp`: source-staged only, direct body CAN bindings still need operator-safe review
 
 ### Draft-panel note
@@ -67,7 +68,7 @@ CANoe panel artifacts for this project.
 ## Panel Split (Integration Branch)
 - Donor union intake was pruned to exclude unchanged `develop` draft XVP carry-overs
 - GUI-activated donor panels: `SDV_Ambient_Control.xvp`, `input.xvp`, `cluster.xvp`, `Navigation.xvp`, `SDV_Ambient_Top_View.xvp`, `v2xpanel.xvp`, `scenariocontrol.xvp`
-- Source-staged donor panels still need GUI/operator review before activation: `SDV_Control.xvp`, `sample_Dashboard.xvp`, `sample_Control.xvp`, `MyDriverPanel.xvp`, `windowstate.xvp`
+- Source-staged donor panels still need GUI/operator review before activation: `SDV_Control.xvp`, `sample_Dashboard.xvp`, `sample_Control.xvp`, `MyDriverPanel.xvp`, `car_inner.xvp`, `windowstate.xvp`
 
 ## BP (Renderer-Only Contract)
 - Decision/arbitration logic stays in `ADAS` and `ADAS`

@@ -103,7 +103,6 @@
         <Property Name="TabIndex">0</Property>
         <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;LimeGreen&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;</Property>
         <Property Name="UsedLEDColorOff">LimeGreen</Property>
-        <Property Name="UsedLEDColorOn">Red</Property>
         <Property Name="SymbolConfiguration">8;16;Body;;;doorLockCmd;1;;;-1;;;Value;;;0</Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="XdoorOpenLED001" ControlName="도어오픈LED">
@@ -153,7 +152,7 @@ P
         <Property Name="MaximumSize">30, 100000</Property>
         <Property Name="Maximum">3</Property>
         <Property Name="LargeChange">1</Property>
-        <Property Name="SymbolConfiguration">8;2;powertrain_can;VCU;frmVehicleModeMsg;DriveMode;1;Powertrain;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Chassis;;;driveState;1;;;-1;;;Value;;;0</Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X92b9388ce5f20e457ae87b9e257b7c17477c" ControlName="엔진시동 스위치">
         <Property Name="Name">X92b9388ce5f20e457ae87b9e257b7c17477c</Property>
@@ -378,6 +377,21 @@ OFF
         <Property Name="SwitchValuesRx">1;2;0;1</Property>
         <Property Name="Text">운전자 벨트 OFF</Property>
       </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="XpassengerBeltSwitch001" ControlName="동승자 벨트">
+        <Property Name="Name">XpassengerBeltSwitch001</Property>
+        <Property Name="Size">110, 30</Property>
+        <Property Name="Location">210, 240</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;passengerBeltOff;1;;;-1;;;Value;;;0</Property>
+        <Property Name="TabIndex">24</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+        <Property Name="Text">동승자 벨트 OFF</Property>
+      </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xv2xPoliceLabel001" ControlName="경찰차위치 라벨">
         <Property Name="Name">Xv2xPoliceLabel001</Property>
         <Property Name="Size">90, 18</Property>
@@ -418,15 +432,41 @@ OFF
         <Property Name="LargeChange">1</Property>
         <Property Name="SymbolConfiguration">8;16;V2X;;;ambulancePos;1;;;-1;;;Value;;;0</Property>
       </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="XsteeringAngleLabel001" ControlName="핸들각도 라벨">
+        <Property Name="Name">XsteeringAngleLabel001</Property>
+        <Property Name="Size">90, 18</Property>
+        <Property Name="Location">5, 397</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">핸들 각도</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="XsteeringAngleSlider001" ControlName="핸들각도 슬라이더">
+        <Property Name="Name">XsteeringAngleSlider001</Property>
+        <Property Name="Size">320, 30</Property>
+        <Property Name="Location">100, 393</Property>
+        <Property Name="TabIndex">50</Property>
+        <Property Name="MaximumDouble">138</Property>
+        <Property Name="MaximumSize">100000, 30</Property>
+        <Property Name="Maximum">138</Property>
+        <Property Name="SymbolConfiguration">8;16;Chassis;;;steeringAngle;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="XsteeringCenterLabel001" ControlName="핸들중앙 안내">
+        <Property Name="Name">XsteeringCenterLabel001</Property>
+        <Property Name="Size">250, 18</Property>
+        <Property Name="Location">100, 428</Property>
+        <Property Name="ForeColor">Yellow</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
+        <Property Name="Text">← 좌(0=full) 중앙(69=직진) 우(138=full) →</Property>
+      </Object>
       <Property Name="Name">X47c835c7e7625e4100e9a0fe2ae23ab5fa8a</Property>
-      <Property Name="Size">532, 390</Property>
+      <Property Name="Size">532, 455</Property>
       <Property Name="Location">5, 5</Property>
       <Property Name="Text">드라이버 컨트롤</Property>
       <Property Name="TabIndex">2</Property>
       <Property Name="UseWindowsStyle">False</Property>
     </Object>
     <Property Name="Name">Panel</Property>
-    <Property Name="Size">546, 406</Property>
+    <Property Name="Size">569, 475</Property>
     <Property Name="Location">0, 0</Property>
     <Property Name="BackColor">255, 127, 127, 127</Property>
   </Object>

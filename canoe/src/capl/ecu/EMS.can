@@ -1,178 +1,21 @@
 includes
 {
-  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
 {
   msTimer tEngineCycle;
-  int gAccelPedal;
-  int gBrakePedal;
   int gIgnitionState;
   int gEngineState;
-  int gVehicleSpeed;
-  dword gPedalRxMs;
-  dword gIgnitionRxMs;
-  dword gVehicleRxMs;
-  int gLastPedalInputStale;
-  int gLastIgnitionInputStale;
-  int gLastVehicleInputStale;
   int gLastEngineState;
   int gFuelLevel;
   int gBatterySoc;
 }
 
-void traceEmsInputHealth(int ignitionInputStale, int pedalInputStale, int vehicleInputStale)
-{
-  if (ignitionInputStale != gLastIgnitionInputStale)
-  {
-    if (ignitionInputStale == 1)
-    {
-      write("[EMS] ignition input stale");
-    }
-    else
-    {
-      write("[EMS] ignition input restored");
-    }
-    gLastIgnitionInputStale = ignitionInputStale;
-  }
-
-  if (pedalInputStale != gLastPedalInputStale)
-  {
-    if (pedalInputStale == 1)
-    {
-      write("[EMS] pedal input stale");
-    }
-    else
-    {
-      write("[EMS] pedal input restored");
-    }
-    gLastPedalInputStale = pedalInputStale;
-  }
-
-  if (vehicleInputStale != gLastVehicleInputStale)
-  {
-    if (vehicleInputStale == 1)
-    {
-      write("[EMS] vehicle input stale");
-    }
-    else
-    {
-      write("[EMS] vehicle input restored");
-    }
-    gLastVehicleInputStale = vehicleInputStale;
-  }
-}
-
-int deriveThrottlePos(int engineState, int accelPedal, int brakePedal)
-{
-  int throttlePos;
-
-  if (engineState != 3)
-  {
-    return 0;
-  }
-
-  throttlePos = accelPedal;
-  if (brakePedal >= 20)
-  {
-    throttlePos = throttlePos - (brakePedal / 2);
-  }
-  return clampRange(throttlePos, 0, 100);
-}
-
-int deriveEngineRpm(int engineState, int accelPedal, int brakePedal, int speed)
-{
-  int rpm;
-
-  if (engineState == 0)
-  {
-    return 0;
-  }
-  if (engineState == 1)
-  {
-    return 500;
-  }
-  if (engineState == 2)
-  {
-    return 850;
-  }
-
-  rpm = 850 + (speed * 12);
-  rpm = rpm + (accelPedal * 18);
-  if (speed < 10 && accelPedal >= 40)
-  {
-    rpm = rpm + 250;
-  }
-  if (brakePedal >= 20)
-  {
-    rpm = rpm - (brakePedal * 4);
-  }
-
-  return clampRange(rpm, 700, 6500);
-}
-
-int deriveEngineLoad(int engineState, int throttlePos, int brakePedal, int speed)
-{
-  int engineLoad;
-
-  if (engineState != 3)
-  {
-    return 0;
-  }
-
-  engineLoad = (throttlePos * 3 / 4) + (speed / 10);
-  if (speed < 15 && throttlePos >= 30)
-  {
-    engineLoad = engineLoad + 10;
-  }
-  if (brakePedal >= 20)
-  {
-    engineLoad = engineLoad - 5;
-  }
-
-  return clampRange(engineLoad, 0, 100);
-}
-
-int deriveEngineTorque(int engineState, int engineLoad, int rpm)
-{
-  int torque;
-
-  if (engineState != 3)
-  {
-    return 0;
-  }
-
-  torque = engineLoad * 2;
-  if (rpm < 2000)
-  {
-    torque = torque + (rpm / 40);
-  }
-  else if (rpm < 3500)
-  {
-    torque = torque + 50 + ((3500 - rpm) / 30);
-  }
-  else
-  {
-    torque = torque + 20 + ((5000 - rpm) / 60);
-  }
-
-  return clampRange(torque, 0, 300);
-}
-
 on start
 {
-  gAccelPedal      = 0;
-  gBrakePedal      = 0;
   gIgnitionState   = 0;
   gEngineState     = 0;
-  gVehicleSpeed    = 0;
-  gPedalRxMs       = 0;
-  gIgnitionRxMs    = 0;
-  gVehicleRxMs     = 0;
-  gLastPedalInputStale = 0;
-  gLastIgnitionInputStale = 0;
-  gLastVehicleInputStale = 0;
   gLastEngineState = -1;
   gFuelLevel       = 80;
   gBatterySoc      = 95;
@@ -182,22 +25,10 @@ on start
 
 on message frmIgnitionEngineMsg
 {
-  gIgnitionState = clampRange((int)this.IgnitionState, 0, 1);
-  gEngineState   = clampRange((int)this.EngineState, 0, 3);
-  gIgnitionRxMs = getSimulationTimeMs();
-}
-
-on message frmPedalInputCanMsg
-{
-  gAccelPedal = clampRange((int)this.AccelPedal, 0, 100);
-  gBrakePedal = clampRange((int)this.BrakePedal, 0, 100);
-  gPedalRxMs = getSimulationTimeMs();
-}
-
-on message frmVehicleStateCanMsg
-{
-  gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
-  gVehicleRxMs = getSimulationTimeMs();
+  gIgnitionState = this.IgnitionState;
+  gEngineState   = this.EngineState;
+  if (gIgnitionState < 0 || gIgnitionState > 1) gIgnitionState = 0;
+  if (gEngineState   < 0 || gEngineState   > 3) gEngineState   = 0;
 }
 
 on timer tEngineCycle
@@ -208,58 +39,32 @@ on timer tEngineCycle
   message frmEngineTorqueMsg     mTorque;
   message frmEngineLoadMsg       mLoad;
   message frmThermalMgmtStateMsg mThermal;
-  int ignitionInputStale;
-  int pedalInputStale;
-  int vehicleInputStale;
-  int ignitionState;
-  int engineState;
-  int accelPedal;
-  int brakePedal;
   int rpm;
   int throttlePos;
   int engineLoad;
   int torque;
   int speed;
-  int coolantTemp;
-  int oilTemp;
-  int fanDuty;
 
-  ignitionInputStale = (ethIsRecentTick(gIgnitionRxMs, 300) == 1) ? 0 : 1;
-  pedalInputStale = (ethIsRecentTick(gPedalRxMs, 300) == 1) ? 0 : 1;
-  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
-  traceEmsInputHealth(ignitionInputStale, pedalInputStale, vehicleInputStale);
-
-  ignitionState = gIgnitionState;
-  engineState = gEngineState;
-  accelPedal = gAccelPedal;
-  brakePedal = gBrakePedal;
-  speed = gVehicleSpeed;
-  if (ignitionInputStale == 1)
+  if      (gEngineState == 0) { rpm = 0; }
+  else if (gEngineState == 1) { rpm = 400; }
+  else if (gEngineState == 2) { rpm = 800; }
+  else
   {
-    ignitionState = 0;
-    engineState = 0;
-  }
-  if (pedalInputStale == 1)
-  {
-    accelPedal = 0;
-    brakePedal = 0;
-  }
-  if (vehicleInputStale == 1)
-  {
-    speed = 0;
+    speed = (int)@Core::vehicleSpeedNorm;
+    rpm   = 800 + (speed * 25);
+    if (rpm > 6500) rpm = 6500;
   }
 
-  rpm = deriveEngineRpm(engineState, accelPedal, brakePedal, speed);
-  throttlePos = deriveThrottlePos(engineState, accelPedal, brakePedal);
-  engineLoad = deriveEngineLoad(engineState, throttlePos, brakePedal, speed);
-  torque = deriveEngineTorque(engineState, engineLoad, rpm);
-  coolantTemp = (engineState > 0) ? clampRange(75 + (engineLoad / 5), 20, 120) : 20;
-  oilTemp = (engineState > 0) ? clampRange(80 + (engineLoad / 4), 20, 140) : 20;
-  fanDuty = (engineState == 3) ? clampRange(engineLoad / 10, 0, 10) : 0;
+  throttlePos = (gEngineState == 3) ? (int)@Core::vehicleSpeedNorm : 0;
+  if (throttlePos > 100) throttlePos = 100;
+  engineLoad  = (gEngineState == 3) ? (throttlePos * 8 / 10) : 0;
+  if (engineLoad > 100) engineLoad = 100;
+  torque      = (gEngineState == 3) ? (engineLoad * 3) : 0;
+  if (torque > 300) torque = 300;
 
   mSpeedTemp.EngineRpm   = rpm & 0xFFFF;
-  mSpeedTemp.CoolantTemp = coolantTemp;
-  mSpeedTemp.OilTemp     = oilTemp;
+  mSpeedTemp.CoolantTemp = (gEngineState > 0) ? 85 : 20;
+  mSpeedTemp.OilTemp     = (gEngineState > 0) ? 90 : 20;
   output(mSpeedTemp);
 
   mFuelBat.FuelLevel     = gFuelLevel;
@@ -277,16 +82,16 @@ on timer tEngineCycle
   mLoad.EngineLoad = engineLoad;
   output(mLoad);
 
-  mThermal.ThermalMode   = (engineState > 0) ? 1 : 0;
-  mThermal.FanDuty       = fanDuty;
+  mThermal.ThermalMode   = (gEngineState > 0) ? 1 : 0;
+  mThermal.FanDuty       = (gEngineState == 3) ? 8 : 0;
   mThermal.CoolantTarget = 90;
   output(mThermal);
 
-  if (engineState != gLastEngineState)
+  if (gEngineState != gLastEngineState)
   {
-    write("[EMS] ignition=%d engine=%d rpm=%d throttle=%d load=%d torque=%d",
-          ignitionState, engineState, rpm, throttlePos, engineLoad, torque);
-    gLastEngineState = engineState;
+    write("[EMS] ignition=%d engine=%d rpm=%d",
+          gIgnitionState, gEngineState, rpm);
+    gLastEngineState = gEngineState;
   }
 
   setTimer(tEngineCycle, 100);
