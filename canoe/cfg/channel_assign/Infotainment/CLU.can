@@ -5,6 +5,7 @@ includes
 
 variables
 {
+  // --- 기존 변수 ---
   msTimer tDuplicateGuard;
   int gLastDisplayedCode;
   dword gLastDisplayMs;
@@ -29,8 +30,29 @@ variables
   int gHistorySnaps[16];
   int gHistoryWriteIdx;
   int gHistoryCount;
+
+  // --- 이미지 매핑용 신규 변수 ---
+  msTimer tEvalTimer;       // 50ms 주기 평가 타이머
+  msTimer tGearHold;        // 기어 표시 1초 유지 타이머
+
+  // CAN 메시지에서 읽은 신호 캐시
+  int gRearObjectDetected;  // frmRearRadarMasterStateMsg
+  int gRearRiskLevel;       // frmRearRadarMasterStateMsg
+  int gBcwWarnLeft;         // frmBcwStateMsg
+  int gBcwWarnRight;        // frmBcwStateMsg
+  int gDoorOpenWarn;        // frmDoorStateMsg
+  int gDriverMonitorReq;    // frmHighwayPilotStateMsg
+
+  // 기어 홀드 상태
+  int gPrevDriveState;
+  int gGearHoldCode;
+  int gGearHoldActive;
 }
 
+
+// ============================================================
+// 기존 함수 (유지)
+// ============================================================
 
 int applyDisplayPolicy(int code)
 {
@@ -177,58 +199,458 @@ void respondHistoryQuery()
   @Test::historyQueryCode = response;
 }
 
+
+// ============================================================
+// 신규: 54개 이미지 우선순위 결정 함수
+// ============================================================
+
+int resolveClusterImageCode()
+{
+  int animFrame;
+  int emergencyType;
+  int alertState;
+  int objectRiskClass;
+  int vehicleSpeed;
+  int speedLimit;
+  int roadZone;
+  int navDirection;
+  int mergeCutIn;
+
+  // ---------------------------------------------------
+  // 우선순위 1: 시동 애니메이션 (이미지 23~50)
+  // EMS.can: animFrame 23~50 (28프레임) → warningTextCode 23~50 직접 대응
+  // animFrame 0   = 기본 주행 (애니 없음)
+  // animFrame 1~9 = EMS 정적 경고 슬롯 (CLU는 sysvar로 직접 처리)
+  // ---------------------------------------------------
+  animFrame = (int)@Display::animFrame;
+  if (animFrame >= 23 && animFrame <= 50)
+  {
+    return animFrame;  // 23->23, 24->24, ..., 50->50 (직접 대응)
+  }
+
+  // ---------------------------------------------------
+  // 우선순위 2: 긴급차량 경고
+  // ---------------------------------------------------
+  emergencyType = (int)@V2X::emergencyType;
+  alertState    = (int)@V2X::alertState;
+  if (alertState == 1)
+  {
+    if (emergencyType == 1) return 1;  // 경찰차 접근 경고
+    if (emergencyType == 2) return 2;  // 구급차 접근 경고
+  }
+
+  // ---------------------------------------------------
+  // 우선순위 3: 충돌 경고
+  // ---------------------------------------------------
+  objectRiskClass = (int)@Core::objectRiskClass;
+  if (objectRiskClass >= 3)
+  {
+    return 10;  // 전방충돌 경고
+  }
+
+  if (gRearObjectDetected == 1 && gRearRiskLevel > 50)
+  {
+    return 11;  // 후방충돌 경고
+  }
+
+  if (gBcwWarnRight == 1) return 12;  // 후측방 우측 경고
+  if (gBcwWarnLeft  == 1) return 13;  // 후측방 좌측 경고
+
+  // ---------------------------------------------------
+  // 우선순위 4: 과속 경고
+  // ---------------------------------------------------
+  vehicleSpeed = (int)@Chassis::vehicleSpeed;
+  speedLimit   = (int)@Infotainment::speedLimit;
+  if (speedLimit > 0 && vehicleSpeed > speedLimit)
+  {
+    return 9;  // 과속 경고
+  }
+
+  // ---------------------------------------------------
+  // 우선순위 5: 안전벨트 / 도어 개방
+  // ---------------------------------------------------
+  if ((int)@Test::driverBeltOff == 1 || (int)@Test::passengerBeltOff == 1)
+  {
+    return 17;  // 안전벨트 미착용 경고
+  }
+
+  if (gDoorOpenWarn == 1)
+  {
+    return 18;  // 차량 도어 개방 경고
+  }
+
+  // ---------------------------------------------------
+  // 우선순위 6: 핸들 미조향 경고
+  // DriverMonitorReq=1 이면 핸들 잡으라는 요청 (HWP/DMS 기반)
+  // 또는 슬라이더가 중앙(35±2) + 주행중(10km/h 이상) → 미조향
+  // ---------------------------------------------------
+  if (gDriverMonitorReq == 1)
+  {
+    return 19;  // HWP/DMS 기반 핸들 미조향 경고
+  }
+
+  // 슬라이더 기반 핸들 미조향: 중앙(미조작) + 주행중
+  vehicleSpeed = (int)@Chassis::vehicleSpeed;
+  if ((int)@Chassis::steeringInput == 0 && vehicleSpeed > 10)
+  {
+    return 19;  // 핸들 슬라이더 중앙 + 주행중 = 미조향 경고
+  }
+
+  // ---------------------------------------------------
+  // 우선순위 7: 도로 구간 / 내비게이션 가이드
+  // ---------------------------------------------------
+  roadZone     = (int)@Infotainment::roadZone;
+  navDirection = (int)@Infotainment::navDirection;
+  mergeCutIn   = (int)@Core::mergeCutInFlag;
+
+  if (roadZone == 1)
+  {
+    return 3;  // 스쿨존 접근 경고
+  }
+
+  if (roadZone == 2)
+  {
+    return 4;  // 고속도로 진입
+  }
+
+  // 합류구간 (mergeCutInFlag 우선)
+  if (mergeCutIn == 1)
+  {
+    if (navDirection == 1) return 7;  // 합류구간 좌회전
+    if (navDirection == 2) return 8;  // 합류구간 우회전
+  }
+
+  // 교차로 가이드 (roadZone=3=Guide)
+  if (roadZone == 3)
+  {
+    if (navDirection == 1) return 5;  // 교차로 좌회전
+    if (navDirection == 2) return 6;  // 교차로 우회전
+  }
+
+  // ---------------------------------------------------
+  // 우선순위 8: 기어 변경 1초 유지
+  // ---------------------------------------------------
+  if (gGearHoldActive == 1)
+  {
+    return gGearHoldCode;
+  }
+
+  // ---------------------------------------------------
+  // 기본: 기본 주행 화면
+  // ---------------------------------------------------
+  return 0;
+}
+
+
+// ============================================================
+// 신규: 이미지 코드 적용 함수
+// ============================================================
+
+void applyClusterImage()
+{
+  int code;
+  int prevCode;
+
+  prevCode = gLastDisplayedCode;
+  code = resolveClusterImageCode();
+
+  if (code == prevCode)
+  {
+    return;
+  }
+
+  gLastDisplayedCode = code;
+  @Cluster::warningTextCode = code;
+
+  if (code > 0)
+  {
+    pushHistory(code);
+    respondHistoryQuery();
+  }
+
+  write("[CLU] image=%d (prev=%d)", code, prevCode);
+}
+
+
+// ============================================================
+// on start
+// ============================================================
+
 on start
 {
   int i;
 
   gLastDisplayedCode = 0;
-  gLastDisplayMs = 0;
-  gBaseClusterSpeed = 0;
-  gBaseClusterGear = 0;
+  gLastDisplayMs     = 0;
+  gBaseClusterSpeed  = 0;
+  gBaseClusterGear   = 0;
   gBaseClusterStatus = 0;
   gLastBaseSyncState = -1;
   gLastBaseSyncError = -1;
-  gThemeMode = 0;
-  gPopupType = 0;
-  gPopupPriority = 0;
-  gPopupActive = 0;
-  gVolumeLevel = 30;
-  gAudioFocusOwner = 0;
-  gAudioDuckingLvl = 0;
-  gTtsState = 0;
-  gNotifType = 0;
-  gNotifArg = 0;
-  gClusterSyncState = 1;
-  gClusterSyncSeq = 0;
-  gHistoryWriteIdx = 0;
-  gHistoryCount = 0;
+  gThemeMode         = 0;
+  gPopupType         = 0;
+  gPopupPriority     = 0;
+  gPopupActive       = 0;
+  gVolumeLevel       = 30;
+  gAudioFocusOwner   = 0;
+  gAudioDuckingLvl   = 0;
+  gTtsState          = 0;
+  gNotifType         = 0;
+  gNotifArg          = 0;
+  gClusterSyncState  = 1;
+  gClusterSyncSeq    = 0;
+  gHistoryWriteIdx   = 0;
+  gHistoryCount      = 0;
   for (i = 0; i < 16; i = i + 1)
   {
     gHistoryCodes[i] = 0;
     gHistorySnaps[i] = 0;
   }
+
+  // 신규 변수 초기화
+  gRearObjectDetected = 0;
+  gRearRiskLevel      = 0;
+  gBcwWarnLeft        = 0;
+  gBcwWarnRight       = 0;
+  gDoorOpenWarn       = 0;
+  gDriverMonitorReq   = 0;
+  gPrevDriveState     = -1;
+  gGearHoldCode       = 0;
+  gGearHoldActive     = 0;
+
   @CoreState::duplicatePopupGuard = 0;
-  @CoreState::themeMode = 0;
-  @CoreState::popupType = 0;
-  @CoreState::popupPriority = 0;
-  @CoreState::popupActive = 0;
-  @CoreState::volumeLevel = 30;
-  @CoreState::audioFocusOwner = 0;
-  @CoreState::audioDuckingLvl = 0;
-  @CoreState::ttsState = 0;
-  @CoreState::clusterNotifType = 0;
-  @CoreState::clusterNotifPrio = 0;
-  @CoreState::clusterSyncState = 1;
-  @CoreState::clusterSyncSeq = 0;
-  @CoreState::alertHistoryCount = 0;
-  @Test::historyQueryCode = 0;
+  @CoreState::themeMode           = 0;
+  @CoreState::popupType           = 0;
+  @CoreState::popupPriority       = 0;
+  @CoreState::popupActive         = 0;
+  @CoreState::volumeLevel         = 30;
+  @CoreState::audioFocusOwner     = 0;
+  @CoreState::audioDuckingLvl     = 0;
+  @CoreState::ttsState            = 0;
+  @CoreState::clusterNotifType    = 0;
+  @CoreState::clusterNotifPrio    = 0;
+  @CoreState::clusterSyncState    = 1;
+  @CoreState::clusterSyncSeq      = 0;
+  @CoreState::alertHistoryCount   = 0;
+  @Test::historyQueryCode         = 0;
+
+  // 핸들 기본값: 중앙(69) → frame=0(직진 strip 0)
+  @Chassis::steeringAngle  = 69;
+  @Display::steeringFrame  = 0;
+  @Chassis::steeringInput  = 0;
+
+  setTimer(tEvalTimer, 50);
   write("[CLU] start");
 }
 
+
+// ============================================================
+// 50ms 주기 평가 타이머
+// ============================================================
+
+on timer tEvalTimer
+{
+  applyClusterImage();
+  setTimer(tEvalTimer, 50);
+}
+
+
+// ============================================================
+// 기어 홀드 타이머 (1초 후 해제)
+// ============================================================
+
+on timer tGearHold
+{
+  int animFrame;
+
+  gGearHoldActive = 0;
+  applyClusterImage();
+
+  // 기어 표시 프레임(19~22)이면 기본 화면으로 복귀
+  animFrame = (int)@Display::animFrame;
+  if (animFrame >= 19 && animFrame <= 22)
+    @Display::animFrame = 0;
+
+  write("[CLU] gear hold cleared");
+}
+
+
+// ============================================================
+// 기어 변경 감지 (driveState 변경 -> 1초 유지)
+// ============================================================
+
+on sysvar Chassis::driveState
+{
+  int newState;
+  int code;
+  int curFrame;
+
+  newState = (int)@Chassis::driveState;
+  if (newState == gPrevDriveState)
+  {
+    return;
+  }
+
+  code = 0;
+  if      (newState == 3) code = 20;  // D
+  else if (newState == 2) code = 21;  // N
+  else if (newState == 1) code = 22;  // R
+  else if (newState == 0) code = 23;  // P
+
+  if (code > 0)
+  {
+    gGearHoldCode   = code;
+    gGearHoldActive = 1;
+    cancelTimer(tGearHold);
+    setTimer(tGearHold, 1000);
+    write("[CLU] gear change -> code=%d (1s hold)", code);
+
+    // animFrame 기어 표시 (경고/시동애니 미재생 시에만): 19=D 20=N 21=R 22=P
+    curFrame = (int)@Display::animFrame;
+    if (curFrame < 23)  // 시동 애니메이션(23~50) 아닐 때
+    {
+      if (curFrame != 1 && curFrame != 2 && curFrame != 7 && curFrame != 8)
+      {
+        if      (newState == 3) @Display::animFrame = 19;  // D
+        else if (newState == 2) @Display::animFrame = 20;  // N
+        else if (newState == 1) @Display::animFrame = 21;  // R
+        else if (newState == 0) @Display::animFrame = 22;  // P
+      }
+    }
+  }
+
+  gPrevDriveState = newState;
+  applyClusterImage();
+}
+
+
+// ============================================================
+// CAN 메시지 핸들러 (신호 캐시 + 즉시 평가)
+// ============================================================
+
+// 후방충돌 (frmRearRadarMasterStateMsg ID=475=0x1EB)
+// RearObjectDetected: bit0, RearRiskLevel: byte1
+on message 0x1EB
+{
+  gRearObjectDetected = (int)(this.byte(0)) & 0x01;
+  gRearRiskLevel      = (int)(this.byte(1));
+  applyClusterImage();
+}
+
+// 후측방 경고 (frmBcwStateMsg ID=458=0x1CA)
+// BcwWarnLeft: bit0, BcwWarnRight: bit1
+on message 0x1CA
+{
+  gBcwWarnLeft  = (int)(this.byte(0)) & 0x01;
+  gBcwWarnRight = ((int)(this.byte(0)) >> 1) & 0x01;
+  applyClusterImage();
+}
+
+// 도어 개방 경고 - Body::doorOpenCmd sysvar 사용 (DBC 미할당 우회)
+on sysvar Body::doorOpenCmd
+{
+  gDoorOpenWarn = (int)@Body::doorOpenCmd;
+  applyClusterImage();
+}
+
+// 핸들 미조향 (frmHighwayPilotStateMsg ID=477=0x1ED)
+// DriverMonitorReq: bit3
+on message 0x1ED
+{
+  gDriverMonitorReq = ((int)(this.byte(0)) >> 3) & 0x01;
+  applyClusterImage();
+}
+
+
+// ============================================================
+// SysVar 핸들러 (변경 즉시 평가)
+// ============================================================
+
+on sysvar V2X::emergencyType      { applyClusterImage(); }
+on sysvar V2X::alertState         { applyClusterImage(); }
+on sysvar Core::objectRiskClass   { applyClusterImage(); }
+on sysvar Chassis::vehicleSpeed   { applyClusterImage(); }
+on sysvar Infotainment::speedLimit { applyClusterImage(); }
+on sysvar Infotainment::roadZone  { applyClusterImage(); }
+on sysvar Infotainment::navDirection { applyClusterImage(); }
+on sysvar Core::mergeCutInFlag    { applyClusterImage(); }
+on sysvar Test::driverBeltOff     { applyClusterImage(); }
+on sysvar Test::passengerBeltOff  { applyClusterImage(); }
+on sysvar Display::animFrame      { applyClusterImage(); }
+
+// ============================================================
+// 핸들 각도 슬라이더 → Display::steeringFrame 변환 로직
+//
+// 슬라이더 범위: 0 ~ 138  (center = 69)
+// 스프라이트: 71프레임 (0~70), 360° 시계방향 회전
+//   frame 0  = 12시 직진
+//   frame 35 = 6시 (180° 회전)
+//   frame 70 ≈ 360° (12시 근접)
+//
+// [변환 공식]  (스프라이트 71장, StateCnt=70, frame 0~69 사용)
+//   frame↑ = 반시계방향(좌회전), frame↓ = 시계방향(우회전)
+//   우회전 (angle 69→138): frame = 69-(angle-69)*34/69 → 69~35 (시계방향 ✓)
+//   좌회전 (angle 69→0):   frame = (69-angle)*35/69   →  0~35 (반시계방향 ✓)
+//
+//  angle:   0   69  138
+//  frame:  35   0/69  35
+//  (frame 0 = 직진, frame 69 ≈ 직진, frame 35 = 최대회전)
+//
+// steeringInput: 0 = 미조향(중앙±4스텝=±20도), 1 = 조향 중
+// ============================================================
+on sysvar Chassis::steeringAngle
+{
+  int angle;
+  int frame;
+  int deviation;
+
+  angle = (int)@Chassis::steeringAngle;
+
+  if (angle >= 69)
+  {
+    // 우회전: frame 69→35 (시계방향)
+    frame = 69 - (angle - 69) * 34 / 69;
+  }
+  else
+  {
+    // 좌회전: frame 0→35 (반시계방향)
+    frame = (69 - angle) * 35 / 69;
+  }
+  if (frame < 0)  frame = 0;
+  if (frame > 69) frame = 69;
+
+  @Display::steeringFrame = frame;
+
+  // 미조향 판정: 중앙(angle=69) ±4스텝(±20도) 이내
+  deviation = 69 - angle;
+  if (deviation < 0) deviation = angle - 69;  // abs
+
+  if (deviation <= 4)
+  {
+    @Chassis::steeringInput = 0;  // 핸들 미조작 (중앙)
+  }
+  else
+  {
+    @Chassis::steeringInput = 1;  // 핸들 조작 중
+
+    if (angle < 69)
+      write("[CLU] steering LEFT  angle=%d frame=%d", angle, frame);
+    else
+      write("[CLU] steering RIGHT angle=%d frame=%d", angle, frame);
+  }
+
+  applyClusterImage();
+}
+
+
+// ============================================================
+// 기존 CAN 메시지 핸들러 (sync/audio/popup 상태 관리)
+// ============================================================
+
 on message frmClusterBaseStateMsg
 {
-  gBaseClusterSpeed = clampRange((int)this.ClusterSpeed, 0, 255);
-  gBaseClusterGear = clampRange((int)this.ClusterGear, 0, 15);
+  gBaseClusterSpeed  = clampRange((int)this.ClusterSpeed,  0, 255);
+  gBaseClusterGear   = clampRange((int)this.ClusterGear,   0, 15);
   gBaseClusterStatus = clampRange((int)this.ClusterStatus, 0, 15);
 }
 
@@ -240,12 +662,12 @@ on message frmClusterThemeMsg
 
 on message frmHmiPopupStateMsg
 {
-  gPopupType = clampRange((int)this.PopupType, 0, 15);
+  gPopupType     = clampRange((int)this.PopupType,     0, 15);
   gPopupPriority = clampRange((int)this.PopupPriority, 0, 7);
-  gPopupActive = clampRange((int)this.PopupActive, 0, 1);
-  @CoreState::popupType = gPopupType;
+  gPopupActive   = clampRange((int)this.PopupActive,   0, 1);
+  @CoreState::popupType     = gPopupType;
   @CoreState::popupPriority = gPopupPriority;
-  @CoreState::popupActive = gPopupActive;
+  @CoreState::popupActive   = gPopupActive;
 }
 
 on message frmMediaStateMsg
@@ -271,9 +693,9 @@ on message frmSpeechTtsStateMsg
 on message frmClusterSyncStateMsg
 {
   gClusterSyncState = clampRange((int)this.ClusterSyncState, 0, 15);
-  gClusterSyncSeq = clampRange((int)this.ClusterSyncAge, 0, 255);
+  gClusterSyncSeq   = clampRange((int)this.ClusterSyncAge,   0, 255);
   @CoreState::clusterSyncState = gClusterSyncState;
-  @CoreState::clusterSyncSeq = gClusterSyncSeq;
+  @CoreState::clusterSyncSeq   = gClusterSyncSeq;
   if (gClusterSyncState != gLastBaseSyncState ||
       (int)this.ClusterSyncError != gLastBaseSyncError)
   {
@@ -288,75 +710,17 @@ on message frmClusterSyncStateMsg
 on message frmClusterNotifMsg
 {
   gNotifType = clampRange((int)this.ClusterNotifType, 0, 255);
-  gNotifArg = clampRange((int)this.ClusterNotifArg, 0, 255);
+  gNotifArg  = clampRange((int)this.ClusterNotifArg,  0, 255);
   @CoreState::clusterNotifType = gNotifType;
   @CoreState::clusterNotifPrio = gNotifArg;
 }
 
+// 백본 경고 메시지 (로깅 전용 - warningTextCode는 applyClusterImage()가 관리)
 on message frmClusterWarningMsg
 {
-  int code;
   int rawCode;
-  int prevCode;
-  int guardRemainMs;
-  dword nowMs;
-  dword elapsedMs;
-
-  prevCode = gLastDisplayedCode;
   rawCode = clampRange((int)this.WarningTextCode, 0, 255);
-  code = applyDisplayPolicy(rawCode);
-  code = applyRobustPolicy(code);
-  nowMs = getSimulationTimeMs();
-  guardRemainMs = 0;
-
-  if (code == 0)
-  {
-    cancelTimer(tDuplicateGuard);
-    gLastDisplayedCode = 0;
-    gLastDisplayMs = 0;
-    @CoreState::duplicatePopupGuard = 0;
-    @Cluster::warningTextCode = 0;
-    write("[CLU] clear");
-  }
-  else
-  {
-    if (code == gLastDisplayedCode)
-    {
-      elapsedMs = nowMs - gLastDisplayMs;
-      if (elapsedMs < 1000)
-      {
-        guardRemainMs = 1000 - (int)elapsedMs;
-      }
-      else
-      {
-        gLastDisplayMs = nowMs;
-        guardRemainMs = 1000;
-      }
-    }
-    else
-    {
-      gLastDisplayedCode = code;
-      gLastDisplayMs = nowMs;
-      guardRemainMs = 1000;
-    }
-
-    @Cluster::warningTextCode = code;
-    @CoreState::duplicatePopupGuard = guardRemainMs;
-    if (guardRemainMs > 0)
-    {
-      setTimer(tDuplicateGuard, 100);
-    }
-
-    if (code != prevCode)
-    {
-      pushHistory(code);
-      respondHistoryQuery();
-    }
-
-    write("[CLU] warning code=%d raw=%d focus=%d duck=%d tts=%d popup=%d/%d sync=%d age=%d",
-          code, rawCode, gAudioFocusOwner, gAudioDuckingLvl, gTtsState,
-          gPopupPriority, gPopupActive, gClusterSyncState, gClusterSyncSeq);
-  }
+  write("[CLU] backbone warning raw=%d (ignored: image mapper active)", rawCode);
 }
 
 on sysvar Test::historyQueryOffset
@@ -378,7 +742,7 @@ on timer tDuplicateGuard
     return;
   }
 
-  nowMs = getSimulationTimeMs();
+  nowMs     = getSimulationTimeMs();
   elapsedMs = nowMs - gLastDisplayMs;
   if (elapsedMs >= 1000)
   {
@@ -395,5 +759,3 @@ on timer tDuplicateGuard
     setTimer(tDuplicateGuard, 100);
   }
 }
-
-

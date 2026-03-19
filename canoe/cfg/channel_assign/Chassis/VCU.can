@@ -109,12 +109,13 @@ on timer tVcuCycle
   int spd;
 
   // ── 기어 동기화 ────────────────────────────────────────────────
-  // testScenario=0: MyDriverPanel 기어레버 → frmVehicleModeMsg → on message → gDriveMode
-  //                 gDriveMode를 그대로 사용, gGearState에 동기
-  // testScenario≠0: TEST_SCN → frmGearStateMsg → on message → gGearState
-  //                 gGearState로부터 gDriveMode 업데이트
+  // testScenario=0: MyDriverPanel 기어레버 슬라이더(@Chassis::driveState) → gDriveMode
+  // testScenario≠0: TEST_SCN → frmGearStateMsg → on message → gGearState → gDriveMode
   if ((int)@Test::testScenario == 0)
+  {
+    gDriveMode = clampRange((int)@Chassis::driveState, 0, 3);
     gGearState = gDriveMode;
+  }
   else
     gDriveMode = clampRange(gGearState, 0, 7);
   // ──────────────────────────────────────────────────────────────
@@ -219,9 +220,8 @@ on timer tVcuCycle
   output(mState);
   @Chassis::vehicleSpeed = (int)gSpeed;
   // driveState sysvar = 실제 기어 위치 (0=P 1=R 2=N 3=D)
-  if ((int)@Test::testScenario == 0)
-    @Chassis::driveState = gDriveMode;
-  else
+  // testScenario=0: 패널 슬라이더가 직접 제어 - 덮어쓰지 않음
+  if ((int)@Test::testScenario != 0)
     @Chassis::driveState = driveState;
   publishBackboneVehicleState();
 

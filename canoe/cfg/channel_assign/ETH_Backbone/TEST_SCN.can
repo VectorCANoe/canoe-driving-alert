@@ -72,7 +72,7 @@ int calcBaselineIgnitionState(int speed, int driveState)
 
 void pushLockedScenarioInputs()
 {
-  @Chassis::driveState = clampRange(gLockDriveState, 0, 3);
+  /* driveState는 패널 슬라이더가 직접 제어 - 덮어쓰지 않음 */
   @Chassis::vehicleSpeed = clampRange(gLockVehicleSpeed, 0, 255);
   @Chassis::steeringInput = clampRange(gLockSteeringInput, 0, 1);
   @Infotainment::roadZone = clampRange(gLockRoadZone, 0, 3);

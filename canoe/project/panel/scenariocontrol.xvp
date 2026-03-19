@@ -310,13 +310,42 @@
     </Object>
 
     <!-- ================================================================ -->
+    <!-- ROW 4: 수동 조작 모드 버튼 (기어/벨트/도어 직접 제어)           -->
+    <!-- ================================================================ -->
+
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="XmanualModeBtn001" ControlName="수동모드버튼">
+      <Property Name="Name">XmanualModeBtn001</Property>
+      <Property Name="Size">290, 26</Property>
+      <Property Name="Location">5, 124</Property>
+      <Property Name="SymbolConfiguration">8;16;Test;;;testScenario;1;;;-1;;;Value;;;0</Property>
+      <Property Name="IsButton">True</Property>
+      <Property Name="TabIndex">15</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/0</Property>
+      <Property Name="SwitchValues">1;2;0;0</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+      <Property Name="Text">🔓 수동 조작 모드 ON  (기어·벨트·도어 직접 제어)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="XmanualModeHint001" ControlName="수동모드안내">
+      <Property Name="Name">XmanualModeHint001</Property>
+      <Property Name="Size">320, 26</Property>
+      <Property Name="Location">300, 124</Property>
+      <Property Name="ForeColor">Gray</Property>
+      <Property Name="Font">Microsoft Sans Serif, 7.5pt</Property>
+      <Property Name="Text">← 버튼 클릭 시 시나리오 해제 → MyDriverPanel 기어레버 활성화</Property>
+    </Object>
+
+    <!-- ================================================================ -->
     <!-- SEPARATOR + STATUS ROW                                            -->
     <!-- ================================================================ -->
 
     <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1a0000000000000000000000000000000000" ControlName="Sep1">
       <Property Name="Name">X1a0000000000000000000000000000000000</Property>
       <Property Name="Size">628, 2</Property>
-      <Property Name="Location">6, 122</Property>
+      <Property Name="Location">6, 156</Property>
       <Property Name="BackColor">Gray</Property>
       <Property Name="Text"></Property>
     </Object>
@@ -324,14 +353,14 @@
     <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1b0000000000000000000000000000000000" ControlName="Label_CurScn">
       <Property Name="Name">X1b0000000000000000000000000000000000</Property>
       <Property Name="Size">80, 22</Property>
-      <Property Name="Location">5, 130</Property>
+      <Property Name="Location">5, 162</Property>
       <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
       <Property Name="Text">현재 시나리오 :</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1c0000000000000000000000000000000000" ControlName="Display_CurScn">
       <Property Name="Name">X1c0000000000000000000000000000000000</Property>
       <Property Name="Size">44, 22</Property>
-      <Property Name="Location">88, 130</Property>
+      <Property Name="Location">88, 162</Property>
       <Property Name="AlarmGeneralSettings">0;0;0;25</Property>
       <Property Name="AlarmLowerBkgColor">Salmon</Property>
       <Property Name="AlarmLowerTextColor">Black</Property>
@@ -351,14 +380,14 @@
     <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1d0000000000000000000000000000000000" ControlName="Label_Result">
       <Property Name="Name">X1d0000000000000000000000000000000000</Property>
       <Property Name="Size">38, 22</Property>
-      <Property Name="Location">145, 130</Property>
+      <Property Name="Location">145, 162</Property>
       <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
       <Property Name="Text">결과 :</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1e0000000000000000000000000000000000" ControlName="Display_Result">
       <Property Name="Name">X1e0000000000000000000000000000000000</Property>
       <Property Name="Size">44, 22</Property>
-      <Property Name="Location">186, 130</Property>
+      <Property Name="Location">186, 162</Property>
       <Property Name="AlarmGeneralSettings">1;1;0.5;1.5</Property>
       <Property Name="AlarmLowerBkgColor">Salmon</Property>
       <Property Name="AlarmLowerTextColor">Black</Property>
@@ -378,7 +407,7 @@
     <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1f0000000000000000000000000000000000" ControlName="Label_Hint">
       <Property Name="Name">X1f0000000000000000000000000000000000</Property>
       <Property Name="Size">108, 22</Property>
-      <Property Name="Location">238, 130</Property>
+      <Property Name="Location">238, 162</Property>
       <Property Name="ForeColor">Gray</Property>
       <Property Name="Font">Microsoft Sans Serif, 7.5pt</Property>
       <Property Name="Text">결과: 0=FAIL  1=PASS</Property>
@@ -387,7 +416,7 @@
     <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X200000000000000000000000000000000000" ControlName="Label_ColorHint">
       <Property Name="Name">X200000000000000000000000000000000000</Property>
       <Property Name="Size">210, 22</Property>
-      <Property Name="Location">360, 130</Property>
+      <Property Name="Location">360, 162</Property>
       <Property Name="ForeColor">Gray</Property>
       <Property Name="Font">Microsoft Sans Serif, 7.5pt</Property>
       <Property Name="Text">■녹=정상  ■노=도로경고  ■주=긴급  ■청=안내  ■적=충돌</Property>
@@ -395,7 +424,7 @@
 
     <!-- ================================================================ -->
     <Property Name="Name">Panel</Property>
-    <Property Name="Size">640, 160</Property>
+    <Property Name="Size">640, 192</Property>
     <Property Name="Location">0, 0</Property>
     <Property Name="BackColor">White</Property>
     <Property Name="BorderStyle">FixedSingle</Property>

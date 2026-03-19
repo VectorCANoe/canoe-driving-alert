@@ -4,6 +4,7 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="vehicleSpeed" comment="Panel input speed" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="driveState" comment="0=P 1=R 2=N 3=D" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="steeringInput" comment="0=NoInput 1=Input" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="steeringAngle" comment="Steering slider 0-138 (69=center/straight, 0=full-left, 138=full-right)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="138" maxValuePhys="138"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="throttlePosition" comment="Throttle position 0-100 (panel input, scenario=0)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="brakePressure" comment="Brake pressure 0-100 (panel input, scenario=0)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="gearCmd" comment="Manual gear 0=P 1=R 2=N 3=D (scenario=0 only)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
@@ -162,6 +163,7 @@
 
   <namespace name="Display" comment="" interface="">
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="animFrame" comment="Startup animation frame index (0=off, 1=idle, 11~N=anim, set by EMS)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="50" maxValuePhys="50"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="steeringFrame" comment="Steering wheel display frame 0-69 (0=center, 69=full turn). Computed by CLU from Chassis::steeringAngle" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="69" maxValuePhys="69"/>
   </namespace>
 
   <namespace name="UiRender" comment="" interface="">

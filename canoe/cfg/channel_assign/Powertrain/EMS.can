@@ -47,11 +47,11 @@ on start
   //  7 = 안전벨트 미착용 경고
   //  8 = 차량 도어 열림 경고
   //  9 = 핸들 조향 없을 시 경고
-  // 10~39 = 시동 애니메이션 (30장, 4초)
-  gAnimEndFrame  = 39;
+  // 23~50 = 시동 애니메이션 (28장, 4초)
+  gAnimEndFrame  = 50;
   gAnimFrame     = 0;
   gAnimRunning   = 0;
-  gAnimInterval  = 4000 / (gAnimEndFrame - 10 + 1);  // 4초 / 30프레임 = 133ms
+  gAnimInterval  = 4000 / (gAnimEndFrame - 23 + 1);  // 4초 / 28프레임 = 143ms
   gInitDone      = 0;         // 첫 tEngineCycle 전까지 sysvar 핸들러 차단
   @Display::animFrame = 0;
   // ─────────────────────────────────────────────────────────────
@@ -331,15 +331,15 @@ on timer tEngineCycle
     write("[EMS] ignition=%d engine=%d rpm=%d",
           gIgnitionState, gEngineState, rpm);
 
-    // ── 시동 ON 감지: 12번 프레임부터 애니메이션 시작 ──────────
+    // ── 시동 ON 감지: 23번 프레임부터 애니메이션 시작 ──────────
     if (gEngineState > 0 && gLastEngineState == 0)
     {
-      gAnimFrame    = 10;
+      gAnimFrame    = 23;
       gAnimRunning  = 1;
-      gAnimInterval = 4000 / (gAnimEndFrame - 10 + 1);  // 133ms
+      gAnimInterval = 4000 / (gAnimEndFrame - 23 + 1);  // 143ms
       @Display::animFrame = gAnimFrame;
       setTimer(tAnimStep, gAnimInterval);
-      write("[EMS] anim start: frame=10 end=%d interval=%dms",
+      write("[EMS] anim start: frame=23 end=%d interval=%dms",
             gAnimEndFrame, gAnimInterval);
     }
     // ── 시동 OFF: 애니메이션 중단, 프레임 0으로 ───────
