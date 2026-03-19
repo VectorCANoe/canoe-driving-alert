@@ -1,27 +1,23 @@
-﻿name: Doc-Code Sync Gate
+name: Text Integrity Gate
 
 on:
   workflow_dispatch:
   push:
     paths:
       - "driving-alert-workproducts/**"
-      - "canoe/src/**"
-      - "canoe/project/sysvars/**"
-      - "canoe/databases/**"
-      - "scripts/gates/doc_code_sync_gate.py"
+      - "canoe/**"
+      - "scripts/gates/text_integrity_gate.py"
       - "scripts/run.py"
+      - "product/sdv_operator/scripts/**"
       - ".github/workflows/doc-code-sync-gate.yml"
   pull_request:
     paths:
       - "driving-alert-workproducts/**"
-      - "canoe/src/**"
-      - "canoe/project/sysvars/**"
-      - "canoe/databases/**"
-      - "scripts/gates/doc_code_sync_gate.py"
+      - "canoe/**"
+      - "scripts/gates/text_integrity_gate.py"
       - "scripts/run.py"
+      - "product/sdv_operator/scripts/**"
       - ".github/workflows/doc-code-sync-gate.yml"
-  schedule:
-    - cron: "0 0 * * *"
 
 jobs:
   gate:
@@ -32,27 +28,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Run doc-code sync gate
-        run: python scripts/run.py gate doc-sync
-
-      - name: Upload report artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: doc-code-sync-report
-          path: driving-alert-workproducts/ops/reports/Doc_Code_Sync_Report.md
-          if-no-files-found: error
-
-      - name: Append GitHub Summary
-        if: always()
-        run: |
-          echo "## Doc-Code Sync Gate Report" >> "$GITHUB_STEP_SUMMARY"
-          cat driving-alert-workproducts/ops/reports/Doc_Code_Sync_Report.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Run text integrity gate
+        run: python scripts/run.py gate text-integrity

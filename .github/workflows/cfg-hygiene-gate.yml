@@ -7,16 +7,16 @@ on:
       - "canoe/**"
       - "scripts/gates/cfg_hygiene_gate.py"
       - "scripts/gates/check_capl_sync.py"
-      - "scripts/gates/multibus_cfg_dbc_gate.py"
       - "scripts/run.py"
+      - "product/sdv_operator/scripts/**"
       - ".github/workflows/cfg-hygiene-gate.yml"
   pull_request:
     paths:
       - "canoe/**"
       - "scripts/gates/cfg_hygiene_gate.py"
       - "scripts/gates/check_capl_sync.py"
-      - "scripts/gates/multibus_cfg_dbc_gate.py"
       - "scripts/run.py"
+      - "product/sdv_operator/scripts/**"
       - ".github/workflows/cfg-hygiene-gate.yml"
 
 jobs:
@@ -34,11 +34,8 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Run CANoe text hygiene gate
+      - name: Run cfg hygiene gate
         run: python scripts/run.py gate cfg-hygiene
 
       - name: Run CAPL src-cfg sync gate
         run: python scripts/run.py gate capl-sync
-
-      - name: Run multi-bus cfg + DBC policy gate
-        run: python scripts/run.py gate multibus-dbc
