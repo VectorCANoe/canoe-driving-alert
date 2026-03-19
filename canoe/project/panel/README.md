@@ -14,7 +14,6 @@ CANoe panel artifacts for this project.
 - `scenariocontrol.xvp`: adopted from `merge/lee`
 
 ### Source-staged donor set
-- `SDV_Control.xvp`: restored from `sh_rael_merge`
 - `sample_Dashboard.xvp`: source-staged only, raw CAN and `Display::animFrame` cleanup still needed
 - `sample_Control.xvp`: source-staged only, local bitmap path normalized, raw CAN review still needed
 - `MyDriverPanel.xvp`: source-staged only, refreshed from latest `origin/lee`
@@ -23,7 +22,8 @@ CANoe panel artifacts for this project.
 
 ### Draft-panel note
 - Unchanged `develop` draft XVP carry-overs were removed again after donor union intake
-- Only donor-modified `SDV_*` panels remain in this branch
+- Exact `main/develop` carry-over `SDV_Control.xvp` was removed from this branch
+- Only donor-new or donor-modified panels remain in this branch
 
 ## Skin Assets (Project)
 - `Bitmaps/DashboardCombi.png`
@@ -32,21 +32,9 @@ CANoe panel artifacts for this project.
 - `Bitmaps/DashboardFlasherLeft.png`
 - `Bitmaps/DashboardFlasherRight.png`
 - `Bitmaps/CruiseControlIndicator.bmp`
-- `Bitmaps/warnLevelFront.png`
-- `Bitmaps/warnLevelRear.png`
-- `Bitmaps/alert3.bmp`
 - `Bitmaps/brakelamp.png`
 - `Bitmaps/brake.bmp`
 - `Bitmaps/StageDashboard.png`
-- `Bitmaps/VehicleStrip11.png`
-- `Bitmaps/ZoneBadge4.png`
-- `Bitmaps/FlowBadge3.png`
-- `Bitmaps/VehicleClassStrip8.png`
-- `Bitmaps/AmbientColorRail8.png`
-- `Bitmaps/AmbientPatternRail8.png`
-- `Bitmaps/AmbientPulseGlow4.png`
-- `Bitmaps/ExternalRoadScene.png`
-- `Bitmaps/CabinPanoramaScene.png`
 - `Bitmaps/ivi.png`
 - `Bitmaps/left flash.png`
 - `Bitmaps/right flash.png`
@@ -58,6 +46,11 @@ CANoe panel artifacts for this project.
 - `Bitmaps/KakaoTalk_20260310_003458323.bmp`
 - `Bitmaps/reference_pack_v1/*`: curated Vector sample pack for external/cabin upgrade
 
+## Legacy Carry-Over Status
+- Exact `main/develop` carry-over bitmaps that were unused by current donor panels were removed.
+- Three exact carry-over bitmaps remain only because current donor panels still reference them:
+  `Bitmaps/DashboardCircleBlack.png`, `Bitmaps/DashboardCombi.png`, `Bitmaps/StageDashboard.png`
+
 ## Reference Source Matrix (Adopted)
 - External vehicle/light base: `reference/vector_samples_19_4_10/CAN/CANSystem/CANoe/Panels`
 - External top-view/road line icons: `reference/vector_samples_19_4_10/Ethernet/EthernetSystem/Panel`
@@ -68,7 +61,7 @@ CANoe panel artifacts for this project.
 ## Panel Split (Integration Branch)
 - Donor union intake was pruned to exclude unchanged `develop` draft XVP carry-overs
 - GUI-activated donor panels: `SDV_Ambient_Control.xvp`, `input.xvp`, `cluster.xvp`, `Navigation.xvp`, `SDV_Ambient_Top_View.xvp`, `v2xpanel.xvp`, `scenariocontrol.xvp`
-- Source-staged donor panels still need GUI/operator review before activation: `SDV_Control.xvp`, `sample_Dashboard.xvp`, `sample_Control.xvp`, `MyDriverPanel.xvp`, `car_inner.xvp`, `windowstate.xvp`
+- Source-staged donor panels still need GUI/operator review before activation: `sample_Dashboard.xvp`, `sample_Control.xvp`, `MyDriverPanel.xvp`, `car_inner.xvp`, `windowstate.xvp`
 
 ## BP (Renderer-Only Contract)
 - Decision/arbitration logic stays in `ADAS` and `ADAS`
