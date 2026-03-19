@@ -57,6 +57,11 @@ CANoe panel artifacts for this project.
 - `.cfg`, `.cfg.ini`, `.stcfg` save/generation must be done in CANoe GUI
 - Agent may edit text docs, CAPL logic, and bitmap assets only
 
+## Compat Guardrail
+- Donor panel compat outputs such as `V2X::v2xFrame`, `Infotainment::emergencySound`, and `UiRender::beep*` are display-only
+- Keep those compat sysvars read-only and producer-owned
+- Manual exploration inputs stay under `Test::*` or approved operator input namespaces
+
 ## Render Variables
 Use these derived sysvars for animation-ready visualization:
 - `UiRender::renderMode`
@@ -71,4 +76,3 @@ Use these derived sysvars for animation-ready visualization:
 - `UiRender::ambientPulsePhase`
 - `UiRender::icFlowPhase`
 - `UiRender::activeAlertType`
-

@@ -59,7 +59,7 @@ Rule:
 | Existing bindings on `develop` | `Test::alertVolumeSetting`, `UiRender::roadZoneColorCode`, `UiRender::roadFlowDirection`, `Core::vehicleSpeedNorm`, `Core::speedLimitNorm` |
 | Remaining unresolved bindings | `UiRender::renderVolumLevel`, `UiRender::navLaneFrame` |
 | Newly staged compat bindings | `UiRender::beepIC`, `UiRender::beepSpeed`, `UiRender::warningBeepState`, `UiRender::beepEmergency`, `CoreState::volumeLevel` rebinding complete |
-| Recommended action | keep the staged beep vars read-only; if `renderVolumLevel` or `navLaneFrame` still block GUI import, disable those widgets before expanding logic |
+| Recommended action | keep the staged beep vars sysvar-level read-only; if `renderVolumLevel` or `navLaneFrame` still block GUI import, disable those widgets before expanding logic |
 | `develop` files to touch if kept | `canoe/project/sysvars/project.sysvars`, `canoe/src/capl/output/IVI.can`, `canoe/cfg/channel_assign/Infotainment/IVI.can`, optional `canoe/src/capl/ecu/AMP.can`, optional `canoe/cfg/channel_assign/Infotainment/AMP.can` |
 | DBC impact | none by default |
 
@@ -107,7 +107,7 @@ Rule:
 | Assets to import | `Bitmaps/Emergency Siren 7.mp3`, `Bitmaps/CarTop.png`, `Bitmaps/Group (1).png`, `Bitmaps/Group (2)(1).png`, `Bitmaps/Group (2)(2).png`, `Bitmaps/Group (3).png`, `Bitmaps/Group (4).png`, `Bitmaps/Group (5).png` |
 | Existing bindings on `develop` | none used directly by this donor panel |
 | Compat binding | `Infotainment::emergencySound` |
-| Current stance | staged in panel branch as read-only compat surface produced by V2X compat layer |
+| Current stance | staged in panel branch as sysvar-level read-only compat surface produced by V2X compat layer |
 | Recommended action | keep as compat render/sound hook; do not let this surface become a product audio owner |
 | `develop` files to touch if kept | `canoe/project/sysvars/project.sysvars`, `canoe/src/capl/ecu/AMP.can`, `canoe/cfg/channel_assign/Infotainment/AMP.can`, optional `canoe/src/capl/output/IVI.can`, optional `canoe/cfg/channel_assign/Infotainment/IVI.can` |
 | DBC impact | none by default |
@@ -135,7 +135,7 @@ Rule:
 | Assets to import | `Bitmaps/v2x.png` |
 | Compat binding | `V2X::v2xFrame` |
 | Current producer path | staged in panel branch `V2X.can` compat layer, not EMS |
-| Recommended action | keep producer in V2X only; keep panel widget read-only |
+| Recommended action | keep producer in V2X only; keep the sysvar and panel widget read-only |
 | `develop` files to touch if kept | `canoe/project/sysvars/project.sysvars`, `canoe/src/capl/logic/V2X.can`, `canoe/cfg/channel_assign/ETH_Backbone/V2X.can` |
 | Optional extra vars | only if slider-driven control is adopted later: `V2X::policePos`, `V2X::ambulancePos` |
 | DBC impact | none |
