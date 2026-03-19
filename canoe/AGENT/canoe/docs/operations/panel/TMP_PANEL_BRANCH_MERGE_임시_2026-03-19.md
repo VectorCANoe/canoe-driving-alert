@@ -19,6 +19,7 @@
 | Donor branch scope | Donor branches are panel/UI donors first. Their CAPL/sysvar/DBC changes are reference only. |
 | CAPL merge mode | Never wholesale-merge `canoe/src/capl/**` from donor branches. Mine required behavior only, then rewrite on top of `develop`. |
 | Sysvar merge mode | Never replace `canoe/project/sysvars/project.sysvars` wholesale. Add only missing variables required by selected donor panels. |
+| Scenario control path | Official launch/stop stays on `Test::scenarioCommand`; `Test::testScenario` is status mirror/read-only only. |
 | Channel assign merge mode | Never accept donor `channel_assign/*.can` wholesale. Re-apply only the minimum missing owner/input/output hooks on top of `develop`. |
 | DBC merge mode | Never accept donor owner changes that weaken the `develop` owner model. |
 | CANoe cfg | `.cfg`, `.cfg.ini`, `.stcfg` registration/save remains GUI-only. |

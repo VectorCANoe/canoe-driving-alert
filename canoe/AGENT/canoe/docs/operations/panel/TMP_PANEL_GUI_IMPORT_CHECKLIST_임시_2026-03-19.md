@@ -208,7 +208,9 @@ Action:
 
 1. Import panel only after the first six panels are already checked.
 2. Verify the existing `Test::scenarioCommand`, `Test::testScenario`, `Test::scenarioResult` bindings.
-3. Stop on `Display::animFrame`.
+3. Keep `Test::scenarioCommand` as the only writable launch/stop path.
+4. Keep `Test::testScenario` read-only as the current scenario mirror.
+5. Stop on `Display::animFrame`.
 
 Decision gate:
 
