@@ -1,78 +1,80 @@
-﻿
-
+﻿/*@!Encoding:65001*/
 includes
 {
+  // 공통 CAPL 라이브러리 포함 (이더넷 통신, 공용 함수 등)
   #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
 {
-  msTimer tInput100;
-  msTimer tDemoStep;
-  msTimer tScenarioEval;
-  msTimer tScenarioPhase2;
-  msTimer tScenarioPhase3;
-  long gEthSocket;
-  dword gEthTargetIp;
-  int gDemoStepIndex;
-  int gDemoRunning;
-  int gCurrentScenarioId;
-  int gArbitrationSnapshotBaseline;
-  int gScenarioInputLock;
-  int gLockDriveState;
-  int gLockVehicleSpeed;
-  int gLockSteeringInput;
-  int gLockRoadZone;
-  int gLockNavDirection;
-  int gLockZoneDistance;
-  int gLockSpeedLimit;
-  int gLockAlertState;
-  int gLockEmergencyType;
-  int gLockEmergencyDirection;
-  int gLockEta;
-  int gLockSourceId;
-  int gLockForceFailSafe;
-  int gLockObjectTrackValid;
-  int gLockObjectRange;
-  int gLockObjectRelSpeed;
-  int gLockObjectConfidence;
-  int gLockIntersectionConflictFlag;
-  int gLockMergeCutInFlag;
-  int gLockObjectAlertHoldMs;
-  int gScenarioCmdInternalClear;
-  int gScenarioMirrorInternalWrite;
+  // --- 타이머 변수 ---
+  msTimer tInput100;       // 100ms 주기 메인 루프 타이머 (입력 및 통신 갱신)
+  msTimer tDemoStep;       // 자동 데모 모드에서 다음 시나리오로 넘어가는 타이머
+  msTimer tScenarioEval;   // 시나리오 결과 평가 타이머 (일정 시간 지연 후 평가)
+  msTimer tScenarioPhase2; // 시나리오 2단계 진입 타이머 (순차적 이벤트 발생용)
+  msTimer tScenarioPhase3; // 시나리오 3단계 진입 타이머 (순차적 이벤트 발생용)
+
+  // --- 이더넷 통신 변수 ---
+  long gEthSocket;         // 이더넷 소켓 핸들
+  dword gEthTargetIp;      // 목적지 IP 주소
+
+  // --- 시나리오 관리 변수 ---
+  int gDemoStepIndex;      // 현재 자동 데모 단계
+  int gDemoRunning;        // 자동 데모 실행 여부 플래그
+  int gCurrentScenarioId;  // 현재 실행 중인 시나리오 ID
+  int gArbitrationSnapshotBaseline; // 중재(우선순위 결정) 스냅샷 기준값 (상태 변화 감지용)
+  int gScenarioInputLock;  // 시나리오 실행 중 사용자 입력 차단 (락) 플래그
+
+  // --- 시나리오 입력 락(Lock) 변수 (테스트 강제 주입용) ---
+  int gLockDriveState;           // 기어 상태 강제 주입값
+  int gLockVehicleSpeed;         // 차량 속도 강제 주입값
+  int gLockSteeringInput;        // 조향 입력 강제 주입값
+  int gLockRoadZone;             // 도로 구역 강제 주입값
+  int gLockNavDirection;         // 내비게이션 방향 강제 주입값
+  int gLockZoneDistance;         // 구역 거리 강제 주입값
+  int gLockSpeedLimit;           // 제한 속도 강제 주입값
+  int gLockAlertState;           // 긴급 상황 알림 상태 강제 주입값
+  int gLockEmergencyType;        // 긴급 차량 타입 강제 주입값
+  int gLockEmergencyDirection;   // 긴급 차량 방향 강제 주입값
+  int gLockEta;                  // 예상 도착 시간(ETA) 강제 주입값
+  int gLockSourceId;             // 긴급 차량 소스 ID 강제 주입값
+  int gLockForceFailSafe;        // 강제 페일세이프(안전 모드) 주입값
+  
+  // 객체(장애물) 인지 관련 락 변수
+  int gLockObjectTrackValid;     // 객체 추적 유효성 강제 주입값
+  int gLockObjectRange;          // 객체 거리 강제 주입값
+  int gLockObjectRelSpeed;       // 객체 상대 속도 강제 주입값
+  int gLockObjectConfidence;     // 객체 인지 신뢰도 강제 주입값
+  int gLockIntersectionConflictFlag; // 교차로 충돌 플래그 강제 주입값
+  int gLockMergeCutInFlag;       // 합류/끼어들기 플래그 강제 주입값
+  int gLockObjectAlertHoldMs;    // 객체 경고 유지 시간 강제 주입값
+
+  // --- 시나리오 동기화/제어 플래그 ---
+  int gScenarioCmdInternalClear;    // 시나리오 명령어 내부 처리 완료 플래그
+  int gScenarioMirrorInternalWrite; // 시나리오 ID 패널 미러링 방지 플래그
 }
 
 
+// 기어 상태(driveState)를 기본 기어 값(0:P, 1:R, 2:N, 3:D)으로 변환
 int calcBaselineGearState(int driveState)
 {
-  if (driveState <= 0)
-  {
-    return 0; /* P */
-  }
-  if (driveState == 1)
-  {
-    return 1; /* R */
-  }
-  if (driveState == 2)
-  {
-    return 2; /* N */
-  }
+  if (driveState <= 0) return 0; /* P */
+  if (driveState == 1) return 1; /* R */
+  if (driveState == 2) return 2; /* N */
   return 3;   /* D */
 }
 
+// 차량 속도나 기어 상태를 기반으로 시동(Ignition) 상태 계산 (주행 중이면 시동 켜짐)
 int calcBaselineIgnitionState(int speed, int driveState)
 {
-  if (speed > 0 || driveState > 0)
-  {
-    return 1;
-  }
+  if (speed > 0 || driveState > 0) return 1;
   return 0;
 }
 
+// 시나리오 설정된 '락(Lock) 변수' 값들을 실제 시스템 변수(sysvar)에 강제로 덮어씌움 (테스트 환경 조성)
 void pushLockedScenarioInputs()
 {
-  @Chassis::driveState = clampRange(gLockDriveState, 0, 3);
+  /* driveState는 패널 슬라이더가 직접 제어 - 덮어쓰지 않음 */
   @Chassis::vehicleSpeed = clampRange(gLockVehicleSpeed, 0, 255);
   @Chassis::steeringInput = clampRange(gLockSteeringInput, 0, 1);
   @Infotainment::roadZone = clampRange(gLockRoadZone, 0, 3);
@@ -82,56 +84,42 @@ void pushLockedScenarioInputs()
   @Test::forceFailSafe = clampRange(gLockForceFailSafe, 0, 1);
 }
 
-long EmitBackboneEmergencyTest(int emergencyType,
-                               int etaSec,
-                               int sourceId,
-                               int emergencyDirection,
-                               int alertState)
+// 백본망을 통해 긴급차량(경찰차/구급차) 테스트 메시지를 이더넷으로 전송
+long EmitBackboneEmergencyTest(int emergencyType, int etaSec, int sourceId, int emergencyDirection, int alertState)
 {
   char emergencyFrame[8];
 
-  if (gEthSocket == ethInvalidSocket())
-  {
-    return -1;
-  }
+  if (gEthSocket == ethInvalidSocket()) return -1;
 
+  // 이더넷 프레임 초기화 및 페이로드 조립
   ethInitFrame(emergencyFrame, ethMsgEmergencyAlert(), 4);
-  ethSetU8(emergencyFrame, 0,
-           clampRange(emergencyType, 0, 2) |
-           (clampRange(emergencyDirection, 0, 3) << 2));
+  ethSetU8(emergencyFrame, 0, clampRange(emergencyType, 0, 2) | (clampRange(emergencyDirection, 0, 3) << 2));
   ethSetU8(emergencyFrame, 1, clampRange(etaSec, 0, 255));
   ethSetU8(emergencyFrame, 2, clampRange(sourceId, 0, 255));
   ethSetU8(emergencyFrame, 3, (alertState == 1) ? 1 : 0);
+  
   return ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyAlert(), emergencyFrame, 4);
 }
 
-long EmitBackboneObjectRiskTest(int trackValid,
-                                int rangeM,
-                                int relSpeedKph,
-                                int confidence,
-                                int intersectionConflict,
-                                int mergeCutIn,
-                                int holdMs)
+// 백본망을 통해 전방 장애물(객체) 위험 테스트 메시지를 이더넷으로 전송
+long EmitBackboneObjectRiskTest(int trackValid, int rangeM, int relSpeedKph, int confidence, int intersectionConflict, int mergeCutIn, int holdMs)
 {
   char objectFrame[12];
 
-  if (gEthSocket == ethInvalidSocket())
-  {
-    return -1;
-  }
+  if (gEthSocket == ethInvalidSocket()) return -1;
 
+  // 이더넷 프레임 조립 (비트 연산 및 바이트 정렬 처리)
   ethInitFrame(objectFrame, ethMsgObjectRiskInput(), 8);
-  ethSetU8(objectFrame, 0,
-           (trackValid == 1 ? 1 : 0) |
-           ((intersectionConflict == 1 ? 1 : 0) << 1) |
-           ((mergeCutIn == 1 ? 1 : 0) << 2));
+  ethSetU8(objectFrame, 0, (trackValid == 1 ? 1 : 0) | ((intersectionConflict == 1 ? 1 : 0) << 1) | ((mergeCutIn == 1 ? 1 : 0) << 2));
   ethSetU16Le(objectFrame, 1, clampRange(rangeM, 0, 500));
   ethSetS16Le(objectFrame, 3, clampRange(relSpeedKph, -200, 200));
   ethSetU8(objectFrame, 5, clampRange(confidence, 0, 100));
   ethSetU16Le(objectFrame, 6, clampRange(holdMs, 0, 5000));
+  
   return ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectRiskInput(), objectFrame, 8);
 }
 
+// 진행 중인 시나리오 타이머(단계 및 평가) 모두 취소
 void cancelScenarioTransientTimers()
 {
   cancelTimer(tScenarioEval);
@@ -139,6 +127,7 @@ void cancelScenarioTransientTimers()
   cancelTimer(tScenarioPhase3);
 }
 
+// 시나리오 실행 완전 중지 및 상태 초기화
 void stopScenarioExecution()
 {
   gDemoRunning = 0;
@@ -151,30 +140,33 @@ void stopScenarioExecution()
   @Test::scenarioResult = 0;
 }
 
+// 패널의 시나리오 선택 변수값 동기화 (순환 루프 방지 처리)
 void setScenarioMirror(int scenarioId)
 {
   gScenarioMirrorInternalWrite = 1;
   @Test::testScenario = clampRange(scenarioId, 0, 255);
 }
 
+// 최종 시나리오 평가 결과를 로그에 출력
 void publishScenarioResultFrame()
 {
-  write("[TEST_SCN] scenario result=%d",
-        (((int)@Test::scenarioResult) == 1) ? 1 : 0);
+  write("[TEST_SCN] scenario result=%d", (((int)@Test::scenarioResult) == 1) ? 1 : 0);
 }
 
+// 특정 ID의 시나리오 실행 시작 (초기화 -> 프리셋 적용 -> 지연 평가)
 void beginScenarioExecution(int scenarioId)
 {
   gDemoRunning = 0;
   cancelTimer(tDemoStep);
   cancelScenarioTransientTimers();
   @Test::scenarioResult = 0;
+  applyScenarioPreset(scenarioId); // 시나리오 환경 구축
   gCurrentScenarioId = scenarioId;
-  setScenarioMirror(scenarioId);      // applyScenarioPreset 전에 먼저 설정
-  applyScenarioPreset(scenarioId);
-  scheduleScenarioEvaluation(scenarioId);
+  setScenarioMirror(scenarioId);
+  scheduleScenarioEvaluation(scenarioId); // 일정 시간 뒤 결과 판단 예약
 }
 
+// 1번 시나리오부터 순차적으로 실행하는 자동 데모 모드 시작
 void beginAutoDemoExecution()
 {
   cancelScenarioTransientTimers();
@@ -184,9 +176,11 @@ void beginAutoDemoExecution()
   runDemoStep();
 }
 
+// 시나리오 ID에 맞춰 가상의 차량 주행 상태(속도, 구역, 위험상황 등)를 강제로 세팅
 void applyScenarioPreset(int scenarioId)
 {
-  gScenarioInputLock = 1;
+  gScenarioInputLock = 1; // 입력 락 활성화
+  // 기본 주행 설정 (D단, 20km/h, 조향입력 있음)
   gLockDriveState = 3;
   gLockVehicleSpeed = 20;
   gLockSteeringInput = 1;
@@ -194,6 +188,7 @@ void applyScenarioPreset(int scenarioId)
   gLockNavDirection = 0;
   gLockZoneDistance = 50;
   gLockSpeedLimit = 30;
+  // 기본 V2X 및 위험 상태 초기화
   gLockAlertState = 0;
   gLockEmergencyType = 0;
   gLockEmergencyDirection = 1;
@@ -207,357 +202,123 @@ void applyScenarioPreset(int scenarioId)
   gLockIntersectionConflictFlag = 0;
   gLockMergeCutInFlag = 0;
   gLockObjectAlertHoldMs = 300;
+  
+  // 패널 설정 초기화
   @Test::displayModeSetting = 0;
   @Test::alertVolumeSetting = 0;
   @Test::seatBeltOverride = 0;
   @Test::historyQueryOffset = 0;
-  @Display::animFrame = 0;  // 기본값: 기본 주행 화면
 
-  if (scenarioId == 1)
-  {
-    /* Normal idle */
-    @Display::animFrame = 0;
-  }
-  else if (scenarioId == 2)
-  {
-    /* School zone overspeed */
-    gLockRoadZone = 1;
-    gLockVehicleSpeed = 45;
-    gLockSpeedLimit = 30;
-    @Display::animFrame = 3;  // 스쿨존 과속 경고
-  }
-  else if (scenarioId == 3)
-  {
-    /* Highway no steering */
-    gLockRoadZone = 2;
-    gLockSteeringInput = 0;
-    gLockVehicleSpeed = 80;
-    gLockSpeedLimit = 100;
-    @Display::animFrame = 9;  // 핸들 조향 없음 경고
-  }
-  else if (scenarioId == 4)
-  {
-    /* Police emergency */
-    gLockAlertState = 1;
-    gLockEmergencyType = 1;
-    gLockEta = 12;
-    gLockEmergencyDirection = 1;
-    gLockSourceId = 11;
-    @Display::animFrame = 1;  // 경찰차 접근 경고
-  }
-  else if (scenarioId == 5)
-  {
-    /* Ambulance emergency */
-    gLockAlertState = 1;
-    gLockEmergencyType = 2;
-    gLockEta = 8;
-    gLockEmergencyDirection = 2;
-    gLockSourceId = 22;
-    @Display::animFrame = 2;  // 구급차 접근 경고
-  }
-  else if (scenarioId == 6)
-  {
-    /* Timeout test preparation: emergency active then stop update externally */
-    gLockAlertState = 1;
-    gLockEmergencyType = 2;
-    gLockEta = 5;
-    gLockSourceId = 33;
-    @Display::animFrame = 2;  // 구급차 접근 경고
-  }
-  else if (scenarioId == 7)
-  {
-    /* Guide zone left */
-    gLockRoadZone = 3;
-    gLockNavDirection = 1;
-    gLockVehicleSpeed = 35;
-    @Display::animFrame = 5;  // 교차로 진입 좌회전 안내
-  }
-  else if (scenarioId == 8)
-  {
-    /* Guide zone right */
-    gLockRoadZone = 3;
-    gLockNavDirection = 2;
-    gLockVehicleSpeed = 35;
-    @Display::animFrame = 6;  // 합류구간 진입 우회전 안내
-  }
-  else if (scenarioId == 9)
-  {
-    /* Req_030: ETA priority - Phase 1: Police ETA=20 sourceId=5 */
-    gLockAlertState = 1;
-    gLockEmergencyType = 1;
-    gLockEta = 20;
-    gLockSourceId = 5;
-    gLockEmergencyDirection = 1;
+  // 시나리오 ID별 특수 환경 조성 로직
+  if (scenarioId == 1) {
+    /* Normal idle (기본 상태 유지) */
+  } else if (scenarioId == 2) {
+    /* School zone overspeed: 스쿨존 + 과속 (45/30) */
+    gLockRoadZone = 1; gLockVehicleSpeed = 45; gLockSpeedLimit = 30;
+  } else if (scenarioId == 3) {
+    /* Highway no steering: 고속도로 + 핸들 놓음 + 80km/h */
+    gLockRoadZone = 2; gLockSteeringInput = 0; gLockVehicleSpeed = 80; gLockSpeedLimit = 100;
+  } else if (scenarioId == 4) {
+    /* Police emergency: 경찰차 접근 경고 */
+    gLockAlertState = 1; gLockEmergencyType = 1; gLockEta = 12; gLockEmergencyDirection = 1; gLockSourceId = 11;
+  } else if (scenarioId == 5) {
+    /* Ambulance emergency: 구급차 접근 경고 */
+    gLockAlertState = 1; gLockEmergencyType = 2; gLockEta = 8; gLockEmergencyDirection = 2; gLockSourceId = 22;
+  } else if (scenarioId == 6) {
+    /* Timeout test preparation: 알람 발생 후 끊김 테스트 */
+    gLockAlertState = 1; gLockEmergencyType = 2; gLockEta = 5; gLockSourceId = 33;
+  } else if (scenarioId == 7) {
+    /* Guide zone left: 내비게이션 교차로/합류 좌회전 */
+    gLockRoadZone = 3; gLockNavDirection = 1; gLockVehicleSpeed = 35;
+  } else if (scenarioId == 8) {
+    /* Guide zone right: 내비게이션 교차로/합류 우회전 */
+    gLockRoadZone = 3; gLockNavDirection = 2; gLockVehicleSpeed = 35;
+  } else if (scenarioId == 9) {
+    /* Req_030: ETA priority - 경찰차 ETA 20초 (이후 페이즈2에서 더 빠른 차 진입) */
+    gLockAlertState = 1; gLockEmergencyType = 1; gLockEta = 20; gLockSourceId = 5; gLockEmergencyDirection = 1;
     setTimer(tScenarioPhase2, 300);
-    @Display::animFrame = 1;  // 경찰차 접근 경고
-  }
-  else if (scenarioId == 10)
-  {
-    /* Req_031: SourceID tiebreaker - Phase 1: Police ETA=10 sourceId=20 */
-    gLockAlertState = 1;
-    gLockEmergencyType = 1;
-    gLockEta = 10;
-    gLockSourceId = 20;
-    gLockEmergencyDirection = 1;
+  } else if (scenarioId == 10) {
+    /* Req_031: SourceID tiebreaker - 경찰차 ETA 10초 (동일 ETA시 Source ID 경쟁) */
+    gLockAlertState = 1; gLockEmergencyType = 1; gLockEta = 10; gLockSourceId = 20; gLockEmergencyDirection = 1;
     setTimer(tScenarioPhase2, 300);
-    @Display::animFrame = 1;  // 경찰차 접근 경고
-  }
-  else if (scenarioId == 11)
-  {
-    /* Req_034: nav->emergency transition - Phase 1: guide zone stable */
-    gLockRoadZone = 3;
-    gLockNavDirection = 1;
-    gLockVehicleSpeed = 35;
-    gLockAlertState = 0;
-    gLockEmergencyType = 0;
+  } else if (scenarioId == 11) {
+    /* Req_034: nav->emergency transition - 내비 안내 중 긴급차량 발생 대비 */
+    gLockRoadZone = 3; gLockNavDirection = 1; gLockVehicleSpeed = 35; gLockAlertState = 0; gLockEmergencyType = 0;
     setTimer(tScenarioPhase2, 400);
-    @Display::animFrame = 5;  // 교차로 진입 좌회전 안내
-  }
-  else if (scenarioId == 12)
-  {
-    /* Req_006 + Req_026: duplicate guard - Phase 1: school zone overspeed active */
-    gLockRoadZone = 1;
-    gLockVehicleSpeed = 45;
-    gLockSpeedLimit = 30;
-    gLockAlertState = 0;
-    gLockEmergencyType = 0;
+  } else if (scenarioId == 12) {
+    /* Req_006 + Req_026: duplicate guard - 스쿨존 과속 상태 (팝업 중복 방지 테스트) */
+    gLockRoadZone = 1; gLockVehicleSpeed = 45; gLockSpeedLimit = 30; gLockAlertState = 0; gLockEmergencyType = 0;
     setTimer(tScenarioPhase2, 300);
-    @Display::animFrame = 3;  // 스쿨존 과속 경고
-  }
-  else if (scenarioId == 13)
-  {
-    /* Req_015: zone transition stability - Phase 1: school zone warning stable */
-    gLockRoadZone = 1;
-    gLockVehicleSpeed = 45;
-    gLockSpeedLimit = 30;
-    gLockSteeringInput = 1;
-    gLockAlertState = 0;
-    gLockEmergencyType = 0;
+  } else if (scenarioId == 13) {
+    /* Req_015: zone transition stability - 스쿨존->고속도로 구역 전환 안정성 */
+    gLockRoadZone = 1; gLockVehicleSpeed = 45; gLockSpeedLimit = 30; gLockSteeringInput = 1; gLockAlertState = 0; gLockEmergencyType = 0;
     setTimer(tScenarioPhase2, 300);
-    @Display::animFrame = 3;  // 스쿨존 과속 경고
-  }
-  else if (scenarioId == 14)
-  {
-    /* Req_110 + Req_111 + Req_112: domain boundary health - normal driving D gear */
-    gLockDriveState = 3;
-    gLockVehicleSpeed = 60;
-    gLockRoadZone = 0;
-    gLockAlertState = 0;
-    gLockEmergencyType = 0;
-    @Display::animFrame = 0;  // 기본 주행 화면
-  }
-  else if (scenarioId == 15)
-  {
-    /* Req_120: emergency proximity risk score update */
-    gLockVehicleSpeed = 70;
-    gLockSteeringInput = 0;
-    gLockAlertState = 1;
-    gLockEmergencyType = 1;
-    gLockEmergencyDirection = 0;
-    gLockEta = 6;
-    gLockSourceId = 41;
-    @Display::animFrame = 1;  // 경찰차 접근 경고
-  }
-  else if (scenarioId == 16)
-  {
-    /* Req_121: risk-threshold decel assist activation */
-    gLockVehicleSpeed = 90;
-    gLockSteeringInput = 0;
-    gLockAlertState = 1;
-    gLockEmergencyType = 2;
-    gLockEmergencyDirection = 0;
-    gLockEta = 4;
-    gLockSourceId = 42;
-    @Display::animFrame = 2;  // 구급차 접근 경고
-  }
-  else if (scenarioId == 17)
-  {
-    /* Req_123: driver intervention release */
-    gLockVehicleSpeed = 90;
-    gLockSteeringInput = 0;
-    gLockAlertState = 1;
-    gLockEmergencyType = 2;
-    gLockEmergencyDirection = 0;
-    gLockEta = 4;
-    gLockSourceId = 43;
+  } else if (scenarioId == 14) {
+    /* Req_110 + 111 + 112: domain boundary health - 정상 주행 확인 */
+    gLockDriveState = 3; gLockVehicleSpeed = 60; gLockRoadZone = 0; gLockAlertState = 0; gLockEmergencyType = 0;
+  } else if (scenarioId == 15) {
+    /* Req_120: emergency proximity risk score update - 근접 위험도 평가 */
+    gLockVehicleSpeed = 70; gLockSteeringInput = 0; gLockAlertState = 1; gLockEmergencyType = 1; gLockEmergencyDirection = 0; gLockEta = 6; gLockSourceId = 41;
+  } else if (scenarioId == 16) {
+    /* Req_121: risk-threshold decel assist activation - 위험 임계치 감속 보조 활성화 */
+    gLockVehicleSpeed = 90; gLockSteeringInput = 0; gLockAlertState = 1; gLockEmergencyType = 2; gLockEmergencyDirection = 0; gLockEta = 4; gLockSourceId = 42;
+  } else if (scenarioId == 17) {
+    /* Req_123: driver intervention release - 핸들 조작 시 감속 보조 해제 테스트 준비 */
+    gLockVehicleSpeed = 90; gLockSteeringInput = 0; gLockAlertState = 1; gLockEmergencyType = 2; gLockEmergencyDirection = 0; gLockEta = 4; gLockSourceId = 43;
     setTimer(tScenarioPhase2, 250);
-    @Display::animFrame = 2;  // 구급차 접근 경고
-  }
-  else if (scenarioId == 18)
-  {
-    /* Req_127 + Req_128 + Req_129 (Legacy Req_124): forced fail-safe gating */
-    gLockVehicleSpeed = 70;
-    gLockAlertState = 1;
-    gLockEmergencyType = 1;
-    gLockEta = 6;
-    gLockSourceId = 44;
-    gLockForceFailSafe = 1;
-    @Display::animFrame = 0;  // 페일세이프 활성 → 기본 주행 화면
-  }
-  else if (scenarioId == 19)
-  {
-    /* Req_125 + Req_126 (Legacy Req_122): decel assist + emergency warning sync */
-    gLockRoadZone = 1;
-    gLockSpeedLimit = 30;
-    gLockVehicleSpeed = 75;
-    gLockSteeringInput = 0;
-    gLockAlertState = 1;
-    gLockEmergencyType = 2;
-    gLockEmergencyDirection = 0;
-    gLockEta = 4;
-    gLockSourceId = 45;
-    @Display::animFrame = 2;  // 구급차 접근 경고 (긴급차량 우선)
-  }
-  else if (scenarioId == 20)
-  {
-    /* Req_132: longitudinal TTC forward conflict */
-    gLockRoadZone = 2;
-    gLockVehicleSpeed = 85;
-    gLockSteeringInput = 0;
-    gLockObjectTrackValid = 1;
-    gLockObjectRange = 40;
-    gLockObjectRelSpeed = -45;
-    gLockObjectConfidence = 85;
-    gLockObjectAlertHoldMs = 300;
-    @Display::animFrame = 9;  // 핸들 조향 없음 / 전방 충돌 경고
-  }
-  else if (scenarioId == 21)
-  {
-    /* Req_134: intersection lateral conflict */
-    gLockRoadZone = 2;
-    gLockVehicleSpeed = 60;
-    gLockSteeringInput = 1;
-    gLockObjectTrackValid = 1;
-    gLockObjectRange = 35;
-    gLockObjectRelSpeed = -35;
-    gLockObjectConfidence = 80;
-    gLockIntersectionConflictFlag = 1;
-    gLockObjectAlertHoldMs = 300;
-    @Display::animFrame = 9;  // 교차로 충돌 경고
-  }
-  else if (scenarioId == 22)
-  {
-    /* Req_135: merge/cut-in conflict */
-    gLockRoadZone = 2;
-    gLockVehicleSpeed = 78;
-    gLockSteeringInput = 1;
-    gLockObjectTrackValid = 1;
-    gLockObjectRange = 32;
-    gLockObjectRelSpeed = -38;
-    gLockObjectConfidence = 82;
-    gLockMergeCutInFlag = 1;
-    gLockObjectAlertHoldMs = 300;
-    @Display::animFrame = 9;  // 합류 충돌 경고
-  }
-  else if (scenarioId == 23)
-  {
-    /* Req_137: object risk + decel assist request without emergency context */
-    gLockRoadZone = 2;
-    gLockVehicleSpeed = 90;
-    gLockSteeringInput = 0;
-    gLockObjectTrackValid = 1;
-    gLockObjectRange = 28;
-    gLockObjectRelSpeed = -55;
-    gLockObjectConfidence = 90;
-    gLockObjectAlertHoldMs = 300;
-    @Display::animFrame = 9;  // 전방 물체 위험 경고
-  }
-  else if (scenarioId == 24)
-  {
-    /* Req_138: confidence degradation must force fail-safe-like downgrade */
-    gLockRoadZone = 2;
-    gLockVehicleSpeed = 80;
-    gLockSteeringInput = 0;
-    gLockObjectTrackValid = 1;
-    gLockObjectRange = 30;
-    gLockObjectRelSpeed = -40;
-    gLockObjectConfidence = 20;
-    gLockObjectAlertHoldMs = 300;
-    @Display::animFrame = 0;  // 신뢰도 저하 → 기본 주행 화면
-  }
-  else if (scenarioId == 25)
-  {
-    /* Req_136: object tracking loss hold-time behavior */
-    gLockRoadZone = 2;
-    gLockVehicleSpeed = 72;
-    gLockSteeringInput = 1;
-    gLockObjectTrackValid = 1;
-    gLockObjectRange = 34;
-    gLockObjectRelSpeed = -34;
-    gLockObjectConfidence = 75;
-    gLockObjectAlertHoldMs = 500;
-    setTimer(tScenarioPhase2, 350);
-    @Display::animFrame = 9;  // 물체 추적 경고
+  } else if (scenarioId == 18) {
+    /* Req_127 + 128 + 129: forced fail-safe gating - 강제 페일세이프(안전모드) 동작 확인 */
+    gLockVehicleSpeed = 70; gLockAlertState = 1; gLockEmergencyType = 1; gLockEta = 6; gLockSourceId = 44; gLockForceFailSafe = 1;
+  } else if (scenarioId == 19) {
+    /* Req_125 + 126: decel assist + emergency warning sync - 스쿨존+구급차 복합 위험 상태 */
+    gLockRoadZone = 1; gLockSpeedLimit = 30; gLockVehicleSpeed = 75; gLockSteeringInput = 0; gLockAlertState = 1; gLockEmergencyType = 2; gLockEmergencyDirection = 0; gLockEta = 4; gLockSourceId = 45;
+  } else if (scenarioId == 20) {
+    /* Req_132: longitudinal TTC forward conflict - 전방 객체 충돌 위험 (상대속도 -45) */
+    gLockRoadZone = 2; gLockVehicleSpeed = 85; gLockSteeringInput = 0; gLockObjectTrackValid = 1; gLockObjectRange = 40; gLockObjectRelSpeed = -45; gLockObjectConfidence = 85; gLockObjectAlertHoldMs = 300;
+  } else if (scenarioId == 21) {
+    /* Req_134: intersection lateral conflict - 교차로 측면 충돌 위험 */
+    gLockRoadZone = 2; gLockVehicleSpeed = 60; gLockSteeringInput = 1; gLockObjectTrackValid = 1; gLockObjectRange = 35; gLockObjectRelSpeed = -35; gLockObjectConfidence = 80; gLockIntersectionConflictFlag = 1; gLockObjectAlertHoldMs = 300;
+  } else if (scenarioId == 22) {
+    /* Req_135: merge/cut-in conflict - 끼어들기/합류 충돌 위험 */
+    gLockRoadZone = 2; gLockVehicleSpeed = 78; gLockSteeringInput = 1; gLockObjectTrackValid = 1; gLockObjectRange = 32; gLockObjectRelSpeed = -38; gLockObjectConfidence = 82; gLockMergeCutInFlag = 1; gLockObjectAlertHoldMs = 300;
+  } else if (scenarioId == 23) {
+    /* Req_137: object risk + decel assist request - 긴급상황 없이 객체 위험만으로 감속 보조 */
+    gLockRoadZone = 2; gLockVehicleSpeed = 90; gLockSteeringInput = 0; gLockObjectTrackValid = 1; gLockObjectRange = 28; gLockObjectRelSpeed = -55; gLockObjectConfidence = 90; gLockObjectAlertHoldMs = 300;
+  } else if (scenarioId == 24) {
+    /* Req_138: confidence degradation - 인지 신뢰도 하락(20%) 시 페일세이프 강등 테스트 */
+    gLockRoadZone = 2; gLockVehicleSpeed = 80; gLockSteeringInput = 0; gLockObjectTrackValid = 1; gLockObjectRange = 30; gLockObjectRelSpeed = -40; gLockObjectConfidence = 20; gLockObjectAlertHoldMs = 300;
+  } else if (scenarioId == 25) {
+    /* Req_136: object tracking loss hold-time - 추적 소실 시 알람 유지 시간(HoldMs) 테스트 */
+    gLockRoadZone = 2; gLockVehicleSpeed = 72; gLockSteeringInput = 1; gLockObjectTrackValid = 1; gLockObjectRange = 34; gLockObjectRelSpeed = -34; gLockObjectConfidence = 75; gLockObjectAlertHoldMs = 500;
+    setTimer(tScenarioPhase2, 350); // 트래킹 소실 유도
   }
 
-  pushLockedScenarioInputs();
-  write("[EVIDENCE_IN] scenario=%d inputTsMs=%lu",
-        scenarioId, getSimulationTimeMs());
+  pushLockedScenarioInputs(); // 설정된 값을 sysvar에 반영
+  write("[EVIDENCE_IN] scenario=%d inputTsMs=%lu", scenarioId, getSimulationTimeMs());
 }
 
+// 각 시나리오의 동작 특성을 고려하여 평가(결과 확인) 시점을 타이머로 지연 예약
 void scheduleScenarioEvaluation(int scenarioId)
 {
-  int evalDelayMs;
+  int evalDelayMs = 700; // 기본 대기 시간 700ms
 
-  evalDelayMs = 700;
-  if (scenarioId == 3)
-  {
-    evalDelayMs = 11000;
-  }
-  else if (scenarioId == 6)
-  {
-    evalDelayMs = 1500; /* Req_024: ensure 200ms timeoutClear pulse has fully expired before eval */
-  }
-  else if (scenarioId == 7 || scenarioId == 8)
-  {
-    evalDelayMs = 700;
-  }
-  else if (scenarioId == 9 || scenarioId == 10)
-  {
-    evalDelayMs = 700;
-  }
-  else if (scenarioId == 11)
-  {
-    evalDelayMs = 800;
-  }
-  else if (scenarioId == 12)
-  {
-    evalDelayMs = 900;
-  }
-  else if (scenarioId == 13)
-  {
-    evalDelayMs = 1000;
-  }
-  else if (scenarioId == 14)
-  {
-    evalDelayMs = 700;
-  }
-  else if (scenarioId == 15 || scenarioId == 16 || scenarioId == 19)
-  {
-    evalDelayMs = 800;
-  }
-  else if (scenarioId == 17)
-  {
-    evalDelayMs = 900;
-  }
-  else if (scenarioId == 18)
-  {
-    evalDelayMs = 700;
-  }
-  else if (scenarioId >= 20 && scenarioId <= 24)
-  {
-    evalDelayMs = 900;
-  }
-  else if (scenarioId == 25)
-  {
-    evalDelayMs = 1100;
-  }
+  // 긴 시간 대기가 필요한 시나리오들 예외 처리
+  if (scenarioId == 3) evalDelayMs = 11000;
+  else if (scenarioId == 6) evalDelayMs = 1500; /* Req_024: 200ms timeoutClear 만료 대기 */
+  else if (scenarioId == 11) evalDelayMs = 800;
+  else if (scenarioId == 12 || scenarioId == 17 || (scenarioId >= 20 && scenarioId <= 24)) evalDelayMs = 900;
+  else if (scenarioId == 13) evalDelayMs = 1000;
+  else if (scenarioId == 15 || scenarioId == 16 || scenarioId == 19) evalDelayMs = 800;
+  else if (scenarioId == 25) evalDelayMs = 1100;
+
   setTimer(tScenarioEval, evalDelayMs);
 }
 
+// 예약된 시간이 도래하면 시나리오별 "성공 조건(통과 기준)"을 만족했는지 검사
 void evaluateScenarioResult()
 {
-  int result;
+  int result = 0;
+  // 각 모듈의 현재 상태 수집
   int level;
   int type;
   int code;
@@ -577,7 +338,7 @@ void evaluateScenarioResult()
   int mergeCutInFlag;
   int uiRenderAlertType;
   int uiRenderTextCode;
-
+  
   result = 0;
   level = (int)@Core::selectedAlertLevel;
   type = (int)@Core::selectedAlertType;
@@ -598,318 +359,125 @@ void evaluateScenarioResult()
   uiRenderAlertType = (int)@UiRender::activeAlertType;
   uiRenderTextCode = (int)@UiRender::renderTextCode;
 
-  if (gCurrentScenarioId == 1)
-  {
-    result = (level == 0 && code == 0) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 2)
-  {
-    /* Req_010 + Req_037: school zone overspeed, fixed red fast-flash pattern */
-    result = (level == 3 && type == 3 && ambientColor == 3 && ambientPattern == 5) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 3)
-  {
-    /* Req_011 + Req_037 (Legacy Req_038): highway no-steer, fixed orange pulse pattern */
-    result = (level == 2 && type == 4 && ambientColor == 4 && ambientPattern == 4) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 4)
-  {
-    /* Req_017 + Req_035 (Legacy Req_036): police emergency, distinct red-blue color+pattern */
-    result = (level == 6 && type == 1 && code == 101 && duplicatePopupGuard > 0 &&
-              ambientColor == 6 && ambientPattern == 6) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 5)
-  {
-    /* Req_017 + Req_035 (Legacy Req_018/036): ambulance emergency, distinct red-white color+pattern */
-    result = (level == 7 && type == 2 && code == 202 && duplicatePopupGuard > 0 &&
-              ambientColor == 7 && ambientPattern == 7) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 6)
-  {
-    result = (timeoutClear == 1 && level == 0 && code == 0) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 7)
-  {
-    /* Req_013 + Req_037 (Legacy Req_039): guide left, cyan flow-left pattern */
-    result = (level == 2 && type == 5 && ambientColor == 5 && ambientPattern == 2 && code == 31) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 8)
-  {
-    /* Req_014 + Req_037 (Legacy Req_039): guide right, cyan flow-right pattern */
-    result = (level == 2 && type == 6 && ambientColor == 5 && ambientPattern == 3 && code == 32) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 9)
-  {
-    /* Req_030: lower ETA competitor (sourceId=99, eta=10) should be active */
-    result = ((int)@V2X::eta == 10 && (int)@V2X::sourceId == 99 && level == 6) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 10)
-  {
-    /* Req_031: lower sourceId (5) wins despite same ETA as prior active (sourceId=20) */
-    result = ((int)@V2X::sourceId == 5 && (int)@V2X::eta == 10 && level == 6) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 11)
-  {
-    /* Req_034: emergency took over AND arbitration delta <= 3 (no repeated flips) */
+  // 3. 시나리오 ID별 Pass(1) / Fail(0) 조건 정의
+  if (gCurrentScenarioId == 1) { result = (level == 0 && code == 0) ? 1 : 0; }
+  else if (gCurrentScenarioId == 2) { /* 스쿨존 과속: 빨간색, 빠른 점멸 */ result = (level == 3 && type == 3 && ambientColor == 3 && ambientPattern == 5) ? 1 : 0; }
+  else if (gCurrentScenarioId == 3) { /* 고속도로 조향안함: 주황색 맥동 */ result = (level == 2 && type == 4 && ambientColor == 4 && ambientPattern == 4) ? 1 : 0; }
+  else if (gCurrentScenarioId == 4) { /* 경찰차: 적청색, 인덱스 101 */ result = (level == 6 && type == 1 && code == 101 && duplicatePopupGuard > 0 && ambientColor == 6 && ambientPattern == 6) ? 1 : 0; }
+  else if (gCurrentScenarioId == 5) { /* 구급차: 적백색, 인덱스 202 */ result = (level == 7 && type == 2 && code == 202 && duplicatePopupGuard > 0 && ambientColor == 7 && ambientPattern == 7) ? 1 : 0; }
+  else if (gCurrentScenarioId == 6) { result = (timeoutClear == 1 && level == 0 && code == 0) ? 1 : 0; }
+  else if (gCurrentScenarioId == 7) { /* 내비 좌회전: 시안색 흐름 */ result = (level == 2 && type == 5 && ambientColor == 5 && ambientPattern == 2 && code == 31) ? 1 : 0; }
+  else if (gCurrentScenarioId == 8) { /* 내비 우회전: 시안색 흐름 */ result = (level == 2 && type == 6 && ambientColor == 5 && ambientPattern == 3 && code == 32) ? 1 : 0; }
+  else if (gCurrentScenarioId == 9) { /* ETA 우선순위 (10초짜리가 표시되어야 함) */ result = ((int)@V2X::eta == 10 && (int)@V2X::sourceId == 99 && level == 6) ? 1 : 0; }
+  else if (gCurrentScenarioId == 10){ /* SourceID 동점자 처리 (더 낮은 5가 승리) */ result = ((int)@V2X::sourceId == 5 && (int)@V2X::eta == 10 && level == 6) ? 1 : 0; }
+  else if (gCurrentScenarioId == 11){ /* 내비에서 긴급전환 시 상태 잦은 변경(flip) 없어야 함 */ 
     snapshotDelta = ((int)@CoreState::arbitrationSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
-    result = (level == 6 && type == 1 && snapshotDelta <= 3) ? 1 : 0;
+    result = (level == 6 && type == 1 && snapshotDelta <= 3) ? 1 : 0; 
   }
-  else if (gCurrentScenarioId == 12)
-  {
-    /* Req_006 + Req_026: re-triggered school zone warning still within guard window */
-    result = (level == 3 && type == 3 && duplicatePopupGuard > 0) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 13)
-  {
-    /* Req_015: after zone flip (school->highway->school), settle correctly, <=3 arb changes */
+  else if (gCurrentScenarioId == 12){ /* 중복 팝업 방지 테스트 */ result = (level == 3 && type == 3 && duplicatePopupGuard > 0) ? 1 : 0; }
+  else if (gCurrentScenarioId == 13){ /* 구역 변경 안정성 검사 */
     snapshotDelta = ((int)@CoreState::arbitrationSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
     result = (level == 3 && type == 3 && snapshotDelta <= 3) ? 1 : 0;
   }
-  else if (gCurrentScenarioId == 14)
-  {
-    /* Req_110 + Req_111 + Req_112: all domain boundaries healthy, routing normal */
-    result = ((int)@CoreState::domainBoundaryStatus == 1 &&
-              (int)@CoreState::routingPolicy == 1 &&
-              level == 0) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 15)
-  {
-    /* Req_120: risk level must be periodically computed from emergency/speed/ETA */
-    result = (proximityRiskLevel >= 60 && proximityRiskLevel <= 100) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 16)
-  {
-    /* Req_121: threshold-crossing should request decel assist */
-    result = (proximityRiskLevel >= 70 && decelAssistReq == 1 && failSafeMode == 0 &&
-              level == 7 && type == 2) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 17)
-  {
-    /* Req_123: steering intervention releases decel assist */
-    result = ((int)@Core::steeringInputNorm == 1 && decelAssistReq == 0 &&
-              failSafeMode == 0) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 18)
-  {
-    /* Req_127 + Req_128 + Req_129 (Legacy Req_124): fail-safe blocks decel assist but keeps minimum warning path */
-    result = (failSafeMode >= 1 && decelAssistReq == 0 &&
-              level >= 6 && code >= 100) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 19)
-  {
-    /* Req_125 + Req_126 (Legacy Req_122): decel assist active with emergency-priority sync to renderer */
-    result = (decelAssistReq == 1 && level == 7 && type == 2 &&
-              uiRenderAlertType == 2 && uiRenderTextCode >= 200 &&
-              ambientColor == 7 && code >= 200) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 20)
-  {
-    /* Req_132: TTC-based forward object conflict warning */
-    result = (objectTrackValid == 1 && objectRiskClass >= 3 && objectTtcMin <= 3500 &&
-              proximityRiskLevel >= 60) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 21)
-  {
-    /* Req_134: intersection conflict should map to object-context alert */
-    result = (intersectionConflictFlag == 1 && objectRiskClass >= 3 &&
-              level >= 4 && type == 5) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 22)
-  {
-    /* Req_135: merge/cut-in conflict should map to object-context alert */
-    result = (mergeCutInFlag == 1 && objectRiskClass >= 3 &&
-              level >= 4 && type == 6) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 23)
-  {
-    /* Req_137: object high-risk must trigger decel assist without emergency input */
-    result = ((int)@Core::emergencyContext == 0 && objectRiskClass >= 4 &&
-              proximityRiskLevel >= 75 && decelAssistReq == 1 && failSafeMode == 0) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 24)
-  {
-    /* Req_138: low confidence must force degrade and cancel decel assist */
-    result = (objectTrackValid == 1 && (int)@Core::objectConfidence < 35 &&
-              failSafeMode >= 1 && decelAssistReq == 0) ? 1 : 0;
-  }
-  else if (gCurrentScenarioId == 25)
-  {
-    /* Req_136: hold-time should keep risk class/event around short track loss window */
-    result = (objectTrackValid == 1 && objectRiskClass >= 3 &&
-              objectEventCode >= 1381 && objectEventCode <= 1383) ? 1 : 0;
-  }
-  else
-  {
-    result = ((int)@Test::scenarioResult == 1) ? 1 : 0;
-  }
+  else if (gCurrentScenarioId == 14){ /* 경계면 통신 정상 체크 */ result = ((int)@CoreState::domainBoundaryStatus == 1 && (int)@CoreState::routingPolicy == 1 && level == 0) ? 1 : 0; }
+  else if (gCurrentScenarioId == 15){ result = (proximityRiskLevel >= 60 && proximityRiskLevel <= 100) ? 1 : 0; }
+  else if (gCurrentScenarioId == 16){ /* 임계치 초과 시 감속 보조 활성화 검증 */ result = (proximityRiskLevel >= 70 && decelAssistReq == 1 && failSafeMode == 0 && level == 7 && type == 2) ? 1 : 0; }
+  else if (gCurrentScenarioId == 17){ /* 운전자 조향 조작 시 감속 보조 해제 검증 */ result = ((int)@Core::steeringInputNorm == 1 && decelAssistReq == 0 && failSafeMode == 0) ? 1 : 0; }
+  else if (gCurrentScenarioId == 18){ /* 강제 페일세이프 시 감속 차단되나 경고는 유지됨 */ result = (failSafeMode >= 1 && decelAssistReq == 0 && level >= 6 && code >= 100) ? 1 : 0; }
+  else if (gCurrentScenarioId == 19){ /* 감속보조와 렌더링 텍스트 싱크 검증 */ result = (decelAssistReq == 1 && level == 7 && type == 2 && uiRenderAlertType == 2 && uiRenderTextCode >= 200 && ambientColor == 7 && code >= 200) ? 1 : 0; }
+  else if (gCurrentScenarioId == 20){ /* 전방 물체 TTC 위험 검증 */ result = (objectTrackValid == 1 && objectRiskClass >= 3 && objectTtcMin <= 3500 && proximityRiskLevel >= 60) ? 1 : 0; }
+  else if (gCurrentScenarioId == 21){ /* 교차로 충돌 위험 매핑 검증 */ result = (intersectionConflictFlag == 1 && objectRiskClass >= 3 && level >= 4 && type == 5) ? 1 : 0; }
+  else if (gCurrentScenarioId == 22){ /* 합류 구간 충돌 위험 매핑 검증 */ result = (mergeCutInFlag == 1 && objectRiskClass >= 3 && level >= 4 && type == 6) ? 1 : 0; }
+  else if (gCurrentScenarioId == 23){ /* 객체 단독 위험으로 인한 감속 요청 검증 */ result = ((int)@Core::emergencyContext == 0 && objectRiskClass >= 4 && proximityRiskLevel >= 75 && decelAssistReq == 1 && failSafeMode == 0) ? 1 : 0; }
+  else if (gCurrentScenarioId == 24){ /* 낮은 신뢰도 객체 무시 및 페일세이프 강등 검증 */ result = (objectTrackValid == 1 && (int)@Core::objectConfidence < 35 && failSafeMode >= 1 && decelAssistReq == 0) ? 1 : 0; }
+  else if (gCurrentScenarioId == 25){ /* 객체 추적 소실 시 일시 유지(Hold) 기능 검증 */ result = (objectTrackValid == 1 && objectRiskClass >= 3 && objectEventCode >= 1381 && objectEventCode <= 1383) ? 1 : 0; }
+  else { result = ((int)@Test::scenarioResult == 1) ? 1 : 0; }
 
   @Test::scenarioResult = result;
 }
 
+// 자동 데모 스텝 진행 (다음 시나리오 실행)
 void runDemoStep()
 {
   cancelScenarioTransientTimers();
   gDemoStepIndex = gDemoStepIndex + 1;
-  if (gDemoStepIndex > 8)
-  {
-    gDemoStepIndex = 1;
-  }
+  if (gDemoStepIndex > 8) { gDemoStepIndex = 1; }
 
   applyScenarioPreset(gDemoStepIndex);
   gCurrentScenarioId = gDemoStepIndex;
   setScenarioMirror(gCurrentScenarioId);
   scheduleScenarioEvaluation(gDemoStepIndex);
-  setTimer(tDemoStep, 4000);
+  setTimer(tDemoStep, 4000); // 4초마다 다음 데모
 }
 
+// 복합 시나리오의 2단계 이벤트 주입 (Phase 2 타이머 도달 시 실행)
 on timer tScenarioPhase2
 {
-  if (gCurrentScenarioId == 9)
-  {
-    /* Req_030: Phase 2 - inject lower ETA competitor (different sourceId) */
-    gLockEmergencyType = 1;
-    gLockEta = 10;
-    gLockSourceId = 99;
-    gLockEmergencyDirection = 2;
-    pushLockedScenarioInputs();
-    write("[TEST_SCN] Req_030 phase2: inject eta=10 sourceId=99");
-  }
-  else if (gCurrentScenarioId == 10)
-  {
-    /* Req_031: Phase 2 - inject same ETA, lower SourceID competitor */
-    gLockEmergencyType = 1;
-    gLockEta = 10;
-    gLockSourceId = 5;
-    gLockEmergencyDirection = 2;
-    pushLockedScenarioInputs();
-    write("[TEST_SCN] Req_031 phase2: inject eta=10 sourceId=5");
-  }
-  else if (gCurrentScenarioId == 11)
-  {
-    /* Req_034: Phase 2 - snapshot arbitration baseline then inject emergency */
+  if (gCurrentScenarioId == 9) {
+    /* 더 빠른 ETA 10초 경쟁 차량 난입 */
+    gLockEmergencyType = 1; gLockEta = 10; gLockSourceId = 99; gLockEmergencyDirection = 2; pushLockedScenarioInputs();
+  } else if (gCurrentScenarioId == 10) {
+    /* 동일 ETA 10초, 더 낮은 Source ID(5) 차량 난입 */
+    gLockEmergencyType = 1; gLockEta = 10; gLockSourceId = 5; gLockEmergencyDirection = 2; pushLockedScenarioInputs();
+  } else if (gCurrentScenarioId == 11) {
+    /* 내비 안내 중 긴급차량 난입 (스냅샷 저장 후 변화 추적) */
     gArbitrationSnapshotBaseline = (int)@CoreState::arbitrationSnapshotId;
-    gLockAlertState = 1;
-    gLockEmergencyType = 1;
-    gLockEta = 15;
-    gLockSourceId = 10;
-    gLockEmergencyDirection = 1;
-    pushLockedScenarioInputs();
-    write("[TEST_SCN] Req_034 phase2: inject police, baseline snapshotId=%d",
-          gArbitrationSnapshotBaseline);
-  }
-  else if (gCurrentScenarioId == 12)
-  {
-    /* Req_006 + Req_026: Phase 2 - clear school zone warning (speed drops below limit) */
-    gLockVehicleSpeed = 20;
-    pushLockedScenarioInputs();
+    gLockAlertState = 1; gLockEmergencyType = 1; gLockEta = 15; gLockSourceId = 10; gLockEmergencyDirection = 1; pushLockedScenarioInputs();
+  } else if (gCurrentScenarioId == 12) {
+    /* 속도를 낮춰 스쿨존 과속 해제 (팝업 해제) */
+    gLockVehicleSpeed = 20; pushLockedScenarioInputs();
     setTimer(tScenarioPhase3, 100);
-    write("[TEST_SCN] Req_006 phase2: speed=20 clear warning");
-  }
-  else if (gCurrentScenarioId == 13)
-  {
-    /* Req_015: Phase 2 - snapshot baseline + switch to highway zone (steerInput=1: no warn) */
+  } else if (gCurrentScenarioId == 13) {
+    /* 고속도로 진입 시 스냅샷 저장 및 조향 입력 활성화 */
     gArbitrationSnapshotBaseline = (int)@CoreState::arbitrationSnapshotId;
-    gLockRoadZone = 2;
-    gLockVehicleSpeed = 80;
-    gLockSpeedLimit = 100;
-    gLockSteeringInput = 1;
-    pushLockedScenarioInputs();
+    gLockRoadZone = 2; gLockVehicleSpeed = 80; gLockSpeedLimit = 100; gLockSteeringInput = 1; pushLockedScenarioInputs();
     setTimer(tScenarioPhase3, 200);
-    write("[TEST_SCN] Req_015 phase2: roadZone=2 baseline snapshotId=%d",
-          gArbitrationSnapshotBaseline);
-  }
-  else if (gCurrentScenarioId == 17)
-  {
-    /* Req_123: simulate driver intervention (steering input) */
-    gLockSteeringInput = 1;
-    pushLockedScenarioInputs();
-    write("[TEST_SCN] Req_123 phase2: steering intervention");
-  }
-  else if (gCurrentScenarioId == 25)
-  {
-    /* Req_136: force temporary object loss and verify hold-time behavior */
-    gLockObjectTrackValid = 0;
-    pushLockedScenarioInputs();
-    write("[TEST_SCN] Req_136 phase2: object track lost");
+  } else if (gCurrentScenarioId == 17) {
+    /* 운전자 조향 개입 모사 */
+    gLockSteeringInput = 1; pushLockedScenarioInputs();
+  } else if (gCurrentScenarioId == 25) {
+    /* 카메라/레이더 추적 일시 소실 모사 */
+    gLockObjectTrackValid = 0; pushLockedScenarioInputs();
   }
 }
 
+// 복합 시나리오의 3단계 이벤트 주입 (Phase 3 타이머 도달 시 실행)
 on timer tScenarioPhase3
 {
-  if (gCurrentScenarioId == 12)
-  {
-    /* Req_006 + Req_026: Phase 3 - re-trigger school zone warning */
-    gLockVehicleSpeed = 45;
-    pushLockedScenarioInputs();
-    write("[TEST_SCN] Req_006 phase3: speed=45 re-trigger warning");
-  }
-  else if (gCurrentScenarioId == 13)
-  {
-    /* Req_015: Phase 3 - return to school zone (must re-settle without flip-flop) */
-    gLockRoadZone = 1;
-    gLockVehicleSpeed = 45;
-    gLockSpeedLimit = 30;
-    gLockSteeringInput = 1;
-    pushLockedScenarioInputs();
-    write("[TEST_SCN] Req_015 phase3: roadZone=1 back to school zone");
+  if (gCurrentScenarioId == 12) {
+    /* 다시 가속하여 팝업 재발생 유도 (중복 가드 테스트) */
+    gLockVehicleSpeed = 45; pushLockedScenarioInputs();
+  } else if (gCurrentScenarioId == 13) {
+    /* 다시 스쿨존으로 복귀 */
+    gLockRoadZone = 1; gLockVehicleSpeed = 45; gLockSpeedLimit = 30; gLockSteeringInput = 1; pushLockedScenarioInputs();
   }
 }
 
+// 노드 시작 시 초기화 설정
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
+  gEthSocket = ethOpenDefaultSocket(); // 이더넷 포트 개방
   gEthTargetIp = ethGetDefaultIpAddress();
-  gDemoStepIndex = 0;
-  gDemoRunning = 0;
-  gCurrentScenarioId = 0;
-  gArbitrationSnapshotBaseline = 0;
-  gScenarioInputLock = 0;
-  gLockDriveState = 3;
-  gLockVehicleSpeed = 20;
-  gLockSteeringInput = 1;
-  gLockRoadZone = 0;
-  gLockNavDirection = 0;
-  gLockZoneDistance = 50;
-  gLockSpeedLimit = 30;
-  gLockAlertState = 0;
-  gLockEmergencyType = 0;
-  gLockEmergencyDirection = 1;
-  gLockEta = 10;
-  gLockSourceId = 1;
-  gLockForceFailSafe = 0;
-  gLockObjectTrackValid = 0;
-  gLockObjectRange = 0;
-  gLockObjectRelSpeed = 0;
-  gLockObjectConfidence = 0;
-  gLockIntersectionConflictFlag = 0;
-  gLockMergeCutInFlag = 0;
-  gLockObjectAlertHoldMs = 300;
-  gScenarioCmdInternalClear = 0;
-  gScenarioMirrorInternalWrite = 0;
-  @Test::scenarioCommand = 0;
-  @Test::scenarioCommandAck = 0;
-  @Test::testScenario = 0;
-  @Test::scenarioResult = 0;
-  @Test::forceFailSafe = 0;
-  @Test::displayModeSetting = 0;
-  @Test::alertVolumeSetting = 0;
-  @Test::seatBeltOverride = 0;
-  @Test::historyQueryOffset = 0;
-  @Test::historyQueryCode = 0;
-  @Core::objectTrackValid = 0;
-  @Core::objectRange = 0;
-  @Core::objectRelSpeed = 0;
-  @Core::objectConfidence = 0;
-  @Core::objectRiskClass = 0;
-  @Core::objectTtcMin = 10000;
-  @Core::intersectionConflictFlag = 0;
-  @Core::mergeCutInFlag = 0;
-  @Core::objectAlertHoldMs = 300;
-  @Core::objectEventCode = 0;
-  setTimer(tInput100, 100);
+  
+  // 시나리오 관련 변수 및 락 설정 초기화
+  gDemoStepIndex = 0; gDemoRunning = 0; gCurrentScenarioId = 0; gArbitrationSnapshotBaseline = 0; gScenarioInputLock = 0;
+  gLockDriveState = 3; gLockVehicleSpeed = 20; gLockSteeringInput = 1; gLockRoadZone = 0; gLockNavDirection = 0; gLockZoneDistance = 50; gLockSpeedLimit = 30;
+  gLockAlertState = 0; gLockEmergencyType = 0; gLockEmergencyDirection = 1; gLockEta = 10; gLockSourceId = 1; gLockForceFailSafe = 0;
+  gLockObjectTrackValid = 0; gLockObjectRange = 0; gLockObjectRelSpeed = 0; gLockObjectConfidence = 0; gLockIntersectionConflictFlag = 0; gLockMergeCutInFlag = 0; gLockObjectAlertHoldMs = 300;
+  gScenarioCmdInternalClear = 0; gScenarioMirrorInternalWrite = 0;
+  
+  // 모든 테스트 관련 시스템 변수(SysVar)를 0 또는 기본값으로 리셋
+  @Test::scenarioCommand = 0; @Test::scenarioCommandAck = 0; @Test::testScenario = 0; @Test::scenarioResult = 0; @Test::forceFailSafe = 0;
+  @Test::displayModeSetting = 0; @Test::alertVolumeSetting = 0; @Test::seatBeltOverride = 0; @Test::historyQueryOffset = 0; @Test::historyQueryCode = 0;
+  @Core::objectTrackValid = 0; @Core::objectRange = 0; @Core::objectRelSpeed = 0; @Core::objectConfidence = 0; @Core::objectRiskClass = 0; @Core::objectTtcMin = 10000;
+  @Core::intersectionConflictFlag = 0; @Core::mergeCutInFlag = 0; @Core::objectAlertHoldMs = 300; @Core::objectEventCode = 0;
+  @Chassis::driveState = 3; @Chassis::vehicleSpeed = 20; @Chassis::steeringInput = 1; @Infotainment::speedLimit = 30; @Infotainment::roadZone = 0;
+  
+  setTimer(tInput100, 100); // 메인 루프 시작
   write("[TEST_SCN] start");
 }
 
+// 100ms마다 반복 실행: 현재 상태를 읽어 CAN 및 이더넷 메시지로 지속적 송신
 on timer tInput100
 {
   message frmSteeringCanMsg mStr;
@@ -919,33 +487,14 @@ on timer tInput100
   message frmPedalInputCanMsg mPedal;
   char emergencyFrame[8];
   char objectFrame[12];
-  int speed;
-  int driveState;
-  int steeringInput;
-  int roadZone;
-  int navDirection;
-  int zoneDistance;
-  int speedLimit;
-  int ignitionState;
-  int engineState;
-  int gearState;
-  int accelPedal;
-  int brakePedal;
-  int objectTrackValid;
-  int objectRange;
-  int objectRelSpeed;
-  int objectConfidence;
-  int intersectionConflictFlag;
-  int mergeCutInFlag;
-  int objectAlertHoldMs;
-  int alertState;
-  int emergencyType;
-  int emergencyDirection;
-  int eta;
-  int sourceId;
+  
+  // 데이터 수집 변수들
+  int speed, driveState, steeringInput, roadZone, navDirection, zoneDistance, speedLimit, ignitionState, engineState, gearState, accelPedal, brakePedal;
+  int objectTrackValid, objectRange, objectRelSpeed, objectConfidence, intersectionConflictFlag, mergeCutInFlag, objectAlertHoldMs;
+  int alertState, emergencyType, emergencyDirection, eta, sourceId;
 
-  if (gScenarioInputLock == 1)
-  {
+  // 시나리오 진행 중(Lock 활성화)이면 락 변수값을 사용, 아니면 패널/시스템 변수값 사용
+  if (gScenarioInputLock == 1) {
     speed = clampRange(gLockVehicleSpeed, 0, 255);
     driveState = clampRange(gLockDriveState, 0, 3);
     steeringInput = clampRange(gLockSteeringInput, 0, 1);
@@ -959,9 +508,7 @@ on timer tInput100
     eta = clampRange(gLockEta, 0, 255);
     sourceId = clampRange(gLockSourceId, 0, 255);
     pushLockedScenarioInputs();
-  }
-  else
-  {
+  } else {
     speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
     driveState = clampRange((int)@Chassis::driveState, 0, 3);
     steeringInput = clampRange((int)@Chassis::steeringInput, 0, 1);
@@ -969,17 +516,17 @@ on timer tInput100
     navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
     zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
     speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
-    alertState = 0;
-    emergencyType = 0;
-    emergencyDirection = 0;
-    eta = 0;
-    sourceId = 0;
+    alertState = 0; emergencyType = 0; emergencyDirection = 0; eta = 0; sourceId = 0;
   }
+  
+  // 물리 상태 계산
   ignitionState = calcBaselineIgnitionState(speed, driveState);
   engineState = (ignitionState == 1) ? 2 : 0;
   gearState = calcBaselineGearState(driveState);
-  accelPedal = clampRange(speed / 2, 0, 100);
+  accelPedal = (gScenarioInputLock == 1) ? clampRange(speed / 2, 0, 100) : clampRange((int)@Chassis::manualAccel, 0, 100);
   brakePedal = (driveState == 0) ? 30 : 0;
+  
+  // 객체 정보 로드
   objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
   objectRange = clampRange((int)@Core::objectRange, 0, 500);
   objectRelSpeed = clampRange((int)@Core::objectRelSpeed, -200, 200);
@@ -988,34 +535,15 @@ on timer tInput100
   mergeCutInFlag = clampRange((int)@Core::mergeCutInFlag, 0, 1);
   objectAlertHoldMs = clampRange((int)@Core::objectAlertHoldMs, 0, 5000);
 
-  mStr.SteeringInput = steeringInput;
-  output(mStr);
+  // --- CAN 메시지 송신부 ---
+  mStr.SteeringInput = steeringInput; output(mStr);
+  mNav.gRoadZone = roadZone; mNav.gNavDirection = navDirection; mNav.gZoneDistance = zoneDistance; mNav.gSpeedLimit = speedLimit; output(mNav);
+  mIgn.IgnitionState = ignitionState; mIgn.EngineState = engineState; output(mIgn);
+  mGear.GearInput = gearState; mGear.GearState = gearState; output(mGear);
+  mPedal.AccelPedal = accelPedal; mPedal.BrakePedal = brakePedal; output(mPedal);
 
-  mNav.gRoadZone = roadZone;
-  mNav.gNavDirection = navDirection;
-  mNav.gZoneDistance = zoneDistance;
-  mNav.gSpeedLimit = speedLimit;
-  output(mNav);
-
-  /* Comm_101 baseline powertrain path */
-  mIgn.IgnitionState = ignitionState;
-  mIgn.EngineState = engineState;
-  output(mIgn);
-
-  mGear.GearInput = gearState;
-  mGear.GearState = gearState;
-  output(mGear);
-
-  /* Comm_102 baseline chassis input path */
-  mPedal.AccelPedal = accelPedal;
-  mPedal.BrakePedal = brakePedal;
-  output(mPedal);
-
-  /* Product-side generated frames stay on ECU owners:
-     VCU emits vehicle state, EMS emits engine detail, TCU emits transmission detail. */
-
-  if (gScenarioInputLock == 1)
-  {
+  // --- 이더넷 메시지 송신부 (시나리오 작동 시에만) ---
+  if (gScenarioInputLock == 1) {
     ethInitFrame(emergencyFrame, ethMsgEmergencyAlert(), 4);
     ethSetU8(emergencyFrame, 0, emergencyType | (emergencyDirection << 2));
     ethSetU8(emergencyFrame, 1, eta);
@@ -1024,9 +552,7 @@ on timer tInput100
     ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyAlert(), emergencyFrame, 4);
 
     ethInitFrame(objectFrame, ethMsgObjectRiskInput(), 8);
-    ethSetU8(objectFrame, 0, objectTrackValid |
-                           (intersectionConflictFlag << 1) |
-                           (mergeCutInFlag << 2));
+    ethSetU8(objectFrame, 0, objectTrackValid | (intersectionConflictFlag << 1) | (mergeCutInFlag << 2));
     ethSetU16Le(objectFrame, 1, objectRange);
     ethSetS16Le(objectFrame, 3, objectRelSpeed);
     ethSetU8(objectFrame, 5, objectConfidence);
@@ -1037,113 +563,53 @@ on timer tInput100
   setTimer(tInput100, 100);
 }
 
-on sysvar Test::scenarioResult
-{
-  publishScenarioResultFrame();
-}
+// 시나리오 결과가 변경되면 로그에 기록
+on sysvar Test::scenarioResult { publishScenarioResultFrame(); }
 
+// 외부명령(버튼/패널 등)으로 시나리오 제어
 on sysvar Test::scenarioCommand
 {
-  int scenarioId;
-  scenarioId = (int)@Test::scenarioCommand;
+  int scenarioId; // 1. 선언 먼저
 
-  if (gScenarioCmdInternalClear == 1)
-  {
-    gScenarioCmdInternalClear = 0;
-    return;
-  }
+  scenarioId = (int)@Test::scenarioCommand; // 2. 대입은 나중에
 
-  if (scenarioId == 100)
-  {
-    beginAutoDemoExecution();
-    write("[TEST_SCN] command: auto demo start");
-  }
-  else if (scenarioId == 0)
-  {
-    stopScenarioExecution();
-    setScenarioMirror(0);
-    write("[TEST_SCN] command: auto demo stop");
-  }
-  else if (scenarioId >= 1 && scenarioId <= 25)
-  {
-    beginScenarioExecution(scenarioId);
-    write("[TEST_SCN] command apply scenario=%d", scenarioId);
-  }
-  else if (scenarioId >= 200 && scenarioId <= 255)
-  {
-    beginScenarioExecution(scenarioId);
-    write("[TEST_SCN] command execute scenario=%d", scenarioId);
-  }
-  else
-  {
-    write("[TEST_SCN] command ignore invalid scenario=%d", scenarioId);
-  }
+  if (gScenarioCmdInternalClear == 1) { gScenarioCmdInternalClear = 0; return; } // 중복 트리거 방지
 
-  @Test::scenarioCommandAck = clampRange(scenarioId, 0, 255);
+  if (scenarioId == 100) { beginAutoDemoExecution(); } // 자동 데모 시작
+  else if (scenarioId == 0) { stopScenarioExecution(); setScenarioMirror(0); } // 중지
+  else if (scenarioId >= 1 && scenarioId <= 25) { beginScenarioExecution(scenarioId); } // 시나리오 실행
+  else if (scenarioId >= 200 && scenarioId <= 255) { beginScenarioExecution(scenarioId); }
+  
+  @Test::scenarioCommandAck = clampRange(scenarioId, 0, 255); // 명령 수신 확인(Ack) 응답
   gScenarioCmdInternalClear = 1;
-  @Test::scenarioCommand = 0;
+  @Test::scenarioCommand = 0; // 명령 변수 리셋
 }
 
+// 패널의 콤보박스(또는 목록)에서 시나리오 선택 시 실행
 on sysvar Test::testScenario
 {
   int scenarioId;
 
-  if (gScenarioMirrorInternalWrite == 1)
-  {
-    gScenarioMirrorInternalWrite = 0;
-    return;
-  }
+  if (gScenarioMirrorInternalWrite == 1) { gScenarioMirrorInternalWrite = 0; return; }
 
   scenarioId = (int)@Test::testScenario;
 
-  if (gScenarioInputLock == 1 &&
-      scenarioId != 0 &&
-      scenarioId != 100 &&
-      scenarioId != gCurrentScenarioId)
-  {
-    /* Ignore panel re-write while a locked scenario is running.
-       Switch scenario only via explicit reset (scenario 0) first. */
+  // 이미 시나리오가 락(진행중) 상태일 때 강제 변경 방지 (0이나 100이 아니면 무시)
+  if (gScenarioInputLock == 1 && scenarioId != 0 && scenarioId != 100 && scenarioId != gCurrentScenarioId) {
     setScenarioMirror(gCurrentScenarioId);
-    write("[TEST_SCN] ignore scenario change while locked: req=%d keep=%d",
-          scenarioId, gCurrentScenarioId);
     return;
   }
 
-  if (scenarioId == 100)
-  {
-    beginAutoDemoExecution();
-    write("[TEST_SCN] auto demo start");
-  }
-  else if (scenarioId == 0)
-  {
-    stopScenarioExecution();
-    setScenarioMirror(0);
-    write("[TEST_SCN] auto demo stop");
-  }
-  else if (scenarioId >= 1 && scenarioId <= 25)
-  {
-    beginScenarioExecution(scenarioId);
-    write("[TEST_SCN] apply scenario=%d", scenarioId);
-  }
-  else if (scenarioId >= 200 && scenarioId <= 255)
-  {
-    beginScenarioExecution(scenarioId);
-    write("[TEST_SCN] execute scenario=%d", scenarioId);
-  }
-  else
-  {
-    write("[TEST_SCN] ignore invalid scenario=%d", scenarioId);
-  }
+  if (scenarioId == 100) { beginAutoDemoExecution(); }
+  else if (scenarioId == 0) { stopScenarioExecution(); setScenarioMirror(0); }
+  else if (scenarioId >= 1 && scenarioId <= 25) { beginScenarioExecution(scenarioId); }
+  else if (scenarioId >= 200 && scenarioId <= 255) { beginScenarioExecution(scenarioId); }
 }
 
-on timer tDemoStep
-{
-  if (gDemoRunning == 1)
-  {
-    runDemoStep();
-  }
-}
+// 데모 타이머 도달 시 다음 스텝 수행
+on timer tDemoStep { if (gDemoRunning == 1) { runDemoStep(); } }
 
+// 시나리오 평가 예약 타이머 만료 시 상태 진단 및 로그 출력
 on timer tScenarioEval
 {
   int coreLevel;
@@ -1160,7 +626,9 @@ on timer tScenarioEval
   int renderTextCode;
   int clusterCode;
 
+  // 성공 조건 달성 여부 확인
   evaluateScenarioResult();
+
   coreLevel = (int)@Core::selectedAlertLevel;
   coreType = (int)@Core::selectedAlertType;
   timeoutClear = (int)@Core::timeoutClear;
@@ -1175,14 +643,16 @@ on timer tScenarioEval
   renderTextCode = (int)@UiRender::renderTextCode;
   clusterCode = (int)@Cluster::warningTextCode;
 
-write("[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d objValid=%d objClass=%d objTtc=%d objEvent=%d renderType=%d renderCode=%d",
+  // 테스트 결과를 상세 로깅
+  write("[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d objValid=%d objClass=%d objTtc=%d objEvent=%d renderType=%d renderCode=%d",
         gCurrentScenarioId, getSimulationTimeMs(), (int)@Test::scenarioResult,
         coreLevel, coreType, clusterCode, timeoutClear, proximityRiskLevel,
         decelAssistReq, failSafeMode, objectTrackValid, objectRiskClass,
         objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
-
 }
 
+
+// 시뮬레이션 측정 정지 시 안전하게 초기화 및 소켓 반환
 on stopMeasurement
 {
   stopScenarioExecution();
@@ -1190,5 +660,3 @@ on stopMeasurement
   ethCloseSocket(gEthSocket);
   gEthSocket = ethInvalidSocket();
 }
-
-
