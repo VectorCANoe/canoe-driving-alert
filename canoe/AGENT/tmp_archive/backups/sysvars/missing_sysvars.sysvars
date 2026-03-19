@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="Infotainment" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="speedLimit" comment="Zone speed limit from CAN input" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+  </namespace>
+  <namespace name="Core" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="speedLimitNorm" comment="Normalized speed limit from NAV_CTX_MGR" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+  </namespace>
+  <namespace name="CoreState" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="domainBoundaryStatus" comment="Domain boundary health: 1=all Chassis/Body/Info domains alive within 300ms" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="routingPolicy" comment="GW routing policy: 0=timeout 1=normal 2=emergency" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
+  </namespace>
+</systemvariables>
