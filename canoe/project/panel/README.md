@@ -14,24 +14,15 @@ CANoe panel artifacts for this project.
 - `scenariocontrol.xvp`: adopted from `merge/lee`
 
 ### Source-staged donor set
-- `SDV_Ambient_View.xvp`: restored from `sh_rael_merge`
-- `SDV_Cabin_Panorama_View.xvp`: restored from `sh_rael_merge`
-- `SDV_Cluster_View.xvp`: restored from `sh_rael_merge`
 - `SDV_Control.xvp`: restored from `sh_rael_merge`
-- `SDV_Demo_Stage.xvp`: restored from `sh_rael_merge`
-- `SDV_External_Road_View.xvp`: restored from `sh_rael_merge`
-- `SDV_Monitor.xvp`: restored from `sh_rael_merge`
-- `SDV_Navigation_View.xvp`: restored from `sh_rael_merge`
-- `SDV_Render_Debug.xvp`: restored from `sh_rael_merge`
-- `SDV_Test_Operator.xvp`: restored from `sh_rael_merge`
 - `sample_Dashboard.xvp`: source-staged only, raw CAN and `Display::animFrame` cleanup still needed
 - `sample_Control.xvp`: source-staged only, local bitmap path normalized, raw CAN review still needed
 - `MyDriverPanel.xvp`: source-staged only, donor-only utility panel
 - `windowstate.xvp`: source-staged only, direct body CAN bindings still need operator-safe review
 
 ### Draft-panel note
-- Files with `SDV_*` names in this branch are donor versions restored from `sh_rael_merge`
-- The earlier `develop` draft XVP contents are not used in this branch
+- Unchanged `develop` draft XVP carry-overs were removed again after donor union intake
+- Only donor-modified `SDV_*` panels remain in this branch
 
 ## Skin Assets (Project)
 - `Bitmaps/DashboardCombi.png`
@@ -74,9 +65,9 @@ CANoe panel artifacts for this project.
 - Additional control idioms: `reference/vector_code_sample`
 
 ## Panel Split (Integration Branch)
-- Full donor XVP inventory from `sh_rael_merge` and `merge/lee` is staged in this branch
+- Donor union intake was pruned to exclude unchanged `develop` draft XVP carry-overs
 - GUI-activated donor panels: `SDV_Ambient_Control.xvp`, `input.xvp`, `cluster.xvp`, `Navigation.xvp`, `SDV_Ambient_Top_View.xvp`, `v2xpanel.xvp`, `scenariocontrol.xvp`
-- Source-staged donor panels still need GUI/operator review before activation
+- Source-staged donor panels still need GUI/operator review before activation: `SDV_Control.xvp`, `sample_Dashboard.xvp`, `sample_Control.xvp`, `MyDriverPanel.xvp`, `windowstate.xvp`
 
 ## BP (Renderer-Only Contract)
 - Decision/arbitration logic stays in `ADAS` and `ADAS`
