@@ -4,7 +4,7 @@ CANoe panel artifacts for this project.
 
 ## Donor Intake Status
 
-### Active donor set
+### GUI-activated donor set
 - `SDV_Ambient_Control.xvp`: adopted from `sh_rael_merge`
 - `input.xvp`: adopted from `sh_rael_merge`
 - `cluster.xvp`: adopted from `sh_rael_merge`
@@ -13,25 +13,25 @@ CANoe panel artifacts for this project.
 - `v2xpanel.xvp`: adopted from `merge/lee`
 - `scenariocontrol.xvp`: adopted from `merge/lee`
 
-### Deferred donor set
+### Source-staged donor set
+- `SDV_Ambient_View.xvp`: restored from `sh_rael_merge`
+- `SDV_Cabin_Panorama_View.xvp`: restored from `sh_rael_merge`
+- `SDV_Cluster_View.xvp`: restored from `sh_rael_merge`
+- `SDV_Control.xvp`: restored from `sh_rael_merge`
+- `SDV_Demo_Stage.xvp`: restored from `sh_rael_merge`
+- `SDV_External_Road_View.xvp`: restored from `sh_rael_merge`
+- `SDV_Monitor.xvp`: restored from `sh_rael_merge`
+- `SDV_Navigation_View.xvp`: restored from `sh_rael_merge`
+- `SDV_Render_Debug.xvp`: restored from `sh_rael_merge`
+- `SDV_Test_Operator.xvp`: restored from `sh_rael_merge`
 - `sample_Dashboard.xvp`: source-staged only, raw CAN and `Display::animFrame` cleanup still needed
+- `sample_Control.xvp`: source-staged only, local bitmap path normalized, raw CAN review still needed
+- `MyDriverPanel.xvp`: source-staged only, donor-only utility panel
 - `windowstate.xvp`: source-staged only, direct body CAN bindings still need operator-safe review
 
-### No-go donor files
-- `MyDriverPanel.xvp`: do not adopt into the `develop` panel set
-- `sample_Control.xvp`: do not adopt into the `develop` panel set
-
-### Removed from merge branch
-- `SDV_Control.xvp`: removed from this integration branch, preserved on `develop`
-- `SDV_Monitor.xvp`: removed from this integration branch, preserved on `develop`
-- `SDV_Render_Debug.xvp`: removed from this integration branch, preserved on `develop`
-- `SDV_External_Road_View.xvp`: removed from this integration branch, preserved on `develop`
-- `SDV_Cabin_Panorama_View.xvp`: removed from this integration branch, preserved on `develop`
-- `SDV_Cluster_View.xvp`: removed from this integration branch, preserved on `develop`
-- `SDV_Ambient_View.xvp`: removed from this integration branch, preserved on `develop`
-- `SDV_Navigation_View.xvp`: removed from this integration branch, preserved on `develop`
-- `SDV_Demo_Stage.xvp`: removed from this integration branch, preserved on `develop`
-- `SDV_Test_Operator.xvp`: removed from this integration branch, preserved on `develop`
+### Draft-panel note
+- Files with `SDV_*` names in this branch are donor versions restored from `sh_rael_merge`
+- The earlier `develop` draft XVP contents are not used in this branch
 
 ## Skin Assets (Project)
 - `Bitmaps/DashboardCombi.png`
@@ -39,10 +39,12 @@ CANoe panel artifacts for this project.
 - `Bitmaps/DashboardABS.png`
 - `Bitmaps/DashboardFlasherLeft.png`
 - `Bitmaps/DashboardFlasherRight.png`
+- `Bitmaps/CruiseControlIndicator.bmp`
 - `Bitmaps/warnLevelFront.png`
 - `Bitmaps/warnLevelRear.png`
 - `Bitmaps/alert3.bmp`
 - `Bitmaps/brakelamp.png`
+- `Bitmaps/brake.bmp`
 - `Bitmaps/StageDashboard.png`
 - `Bitmaps/VehicleStrip11.png`
 - `Bitmaps/ZoneBadge4.png`
@@ -57,7 +59,9 @@ CANoe panel artifacts for this project.
 - `Bitmaps/left flash.png`
 - `Bitmaps/right flash.png`
 - `Bitmaps/left window.png`
+- `Bitmaps/pedal.bmp`
 - `Bitmaps/wifer.png`
+- `Bitmaps/ControlIgnition.png`
 - `Bitmaps/KakaoTalk_20260310_003301280_10 (1).bmp`
 - `Bitmaps/KakaoTalk_20260310_003458323.bmp`
 - `Bitmaps/reference_pack_v1/*`: curated Vector sample pack for external/cabin upgrade
@@ -70,9 +74,9 @@ CANoe panel artifacts for this project.
 - Additional control idioms: `reference/vector_code_sample`
 
 ## Panel Split (Integration Branch)
-- Active donor panels: `SDV_Ambient_Control.xvp`, `input.xvp`, `cluster.xvp`, `Navigation.xvp`, `SDV_Ambient_Top_View.xvp`, `v2xpanel.xvp`, `scenariocontrol.xvp`
-- Deferred donor panels: `sample_Dashboard.xvp`, `windowstate.xvp`
-- Removed local drafts stay only on `develop`
+- Full donor XVP inventory from `sh_rael_merge` and `merge/lee` is staged in this branch
+- GUI-activated donor panels: `SDV_Ambient_Control.xvp`, `input.xvp`, `cluster.xvp`, `Navigation.xvp`, `SDV_Ambient_Top_View.xvp`, `v2xpanel.xvp`, `scenariocontrol.xvp`
+- Source-staged donor panels still need GUI/operator review before activation
 
 ## BP (Renderer-Only Contract)
 - Decision/arbitration logic stays in `ADAS` and `ADAS`
@@ -88,7 +92,7 @@ CANoe panel artifacts for this project.
 - Agent may edit text docs, CAPL logic, and bitmap assets only
 
 ## GUI Cleanup Pending
-- `CAN_v2_topology.cfg` may still reference removed draft XVP files until the next CANoe GUI panel-registration save
+- `CAN_v2_topology.cfg` must reflect the final donor registration set on the next CANoe GUI panel-registration save
 
 ## Compat Guardrail
 - Donor panel compat outputs such as `V2X::v2xFrame`, `Infotainment::emergencySound`, and `UiRender::beep*` are display-only at the panel layer
