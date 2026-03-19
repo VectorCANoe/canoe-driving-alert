@@ -1,15 +1,21 @@
 # Short Paper Workspace
 
-- Markdown draft: `short_paper_draft.md`
-- Working markdown copy: `short_paper_working.md`
-- Single-column LaTeX source: `short_paper_manuscript.tex`
-- Single-column PDF: `short_paper_manuscript.pdf`
-- Two-column LaTeX source: `short_paper_twocolumn.tex`
-- Two-column PDF: `short_paper_twocolumn.pdf`
+이 폴더는 소논문 원고와 포스터 자료를 함께 관리한다.
 
-Build example:
+## Structure
+
+- `paper/`
+  - `short_paper_draft.md`
+  - `short_paper_working.md`
+  - `short_paper_manuscript.tex`
+  - `short_paper_twocolumn.tex`
+- `poster/`
+  - `poster_session_draft.md`
+  - `post.png`
+
+## Build
 
 ```bash
-cd driving-alert-workproducts/governance/short-paper
+cd driving-alert-workproducts/governance/short-paper/paper
 tectonic short_paper_twocolumn.tex
 ```

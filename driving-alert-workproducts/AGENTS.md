@@ -7,10 +7,10 @@
 
 ## Paper Draft Target
 - Primary target:
-  - `driving-alert-workproducts/governance/short-paper/short_paper_draft.md`
+  - `driving-alert-workproducts/governance/short-paper/paper/short_paper_draft.md`
 - LaTeX sources:
-  - `driving-alert-workproducts/governance/short-paper/short_paper_manuscript.tex`
-  - `driving-alert-workproducts/governance/short-paper/short_paper_twocolumn.tex`
+  - `driving-alert-workproducts/governance/short-paper/paper/short_paper_manuscript.tex`
+  - `driving-alert-workproducts/governance/short-paper/paper/short_paper_twocolumn.tex`
 - When editing this paper, do not treat it as a product brochure, marketing copy, or project diary.
 - Treat it as a short academic-style conference paper draft written in Korean.
 
@@ -169,7 +169,7 @@
 
 ## Editing Discipline
 - Before revising the paper, read:
-  - `driving-alert-workproducts/governance/short-paper/short_paper_draft.md`
+  - `driving-alert-workproducts/governance/short-paper/paper/short_paper_draft.md`
   - this file
 - If revising title/abstract:
   - review only title, abstract, keywords, and introduction opening first
