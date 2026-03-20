@@ -63,6 +63,37 @@ CANoe panel artifacts for this project.
 - GUI-activated donor panels: `Ambient_Control.xvp`, `input.xvp`, `cluster.xvp`, `Navigation.xvp`, `Ambient_Top_View.xvp`, `v2xpanel.xvp`, `scenariocontrol.xvp`
 - Source-staged donor panels still need GUI/operator review before activation: `sample_Dashboard.xvp`, `sample_Control.xvp`, `MyDriverPanel.xvp`, `car_inner.xvp`, `windowstate.xvp`
 
+## Interaction Model
+
+### Official Scenario Control
+- `scenariocontrol.xvp`
+- Official automated flow stays on `Test::scenarioCommand`
+- `Test::testScenario` is status mirror only
+- `Test::scenarioResult` is verdict display only
+
+### Manual Sandbox / Operator Input
+- `input.xvp`
+  - direct operator inputs such as `Chassis::driveState`, `Chassis::vehicleSpeed`, `Infotainment::speedLimit`
+- `MyDriverPanel.xvp`
+  - broad exploratory control surface for doors, locks, ignition, wiper, windows, turn command, steering, belt-off flags, and emergency vehicle positions
+- `sample_Control.xvp`
+  - raw/manual driving controls such as throttle and brake inputs
+- `Navigation.xvp`
+  - keeps writable `Test::alertVolumeSetting` for exploratory panel-side tuning
+
+### Display-Only Panels
+- `Ambient_Control.xvp`
+- `Ambient_Top_View.xvp`
+- `cluster.xvp`
+- `v2xpanel.xvp`
+- Compat outputs like `V2X::v2xFrame`, `Infotainment::emergencySound`, and `UiRender::beep*` are panel-read-only
+
+### Source-Staged Review Set
+- `car_inner.xvp`
+- `sample_Dashboard.xvp`
+- `windowstate.xvp`
+- These are not yet part of the official GUI-activated set and still require operator/layout review.
+
 ## BP (Renderer-Only Contract)
 - Decision/arbitration logic stays in `ADAS` and `ADAS`
 - `IVI` and XVP panels are display-only
@@ -85,6 +116,7 @@ CANoe panel artifacts for this project.
 - Manual exploration inputs stay under `Test::*` or approved operator input namespaces
 - Panels still carrying direct `SymbolConfiguration` CAN bindings are source-only until they are reviewed against the `develop` owner model
 - Remaining direct-CAN source-only panel: `sample_Control.xvp`
+- Do not lock manual sandbox widgets just because official scenario widgets are read-only; exploratory operator inputs are intentional.
 
 ## Render Variables
 Use these derived sysvars for animation-ready visualization:
