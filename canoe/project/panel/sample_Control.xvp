@@ -33,7 +33,7 @@ on. Click again to turn it off.</Property>
           <Property Name="Name">X8589b9aae4acae48a2e903be723fb1f0e609</Property>
           <Property Name="Size">36, 33</Property>
           <Property Name="Location">52, 14</Property>
-          <Property Name="SymbolConfiguration">8;2;powertrain_can;SCC;frmCruiseStateMsg;CruiseState;1;Powertrain;;-1;;;Value;;;0</Property>
+          <Property Name="SymbolConfiguration">8;16;Powertrain;;;cruiseState;1;;;-1;;;Value;;;0</Property>
           <Property Name="ImageFile">Bitmaps\CruiseControlIndicator.bmp</Property>
           <Property Name="TransparentColor">Fuchsia</Property>
           <Property Name="TabIndex">3</Property>
@@ -52,7 +52,7 @@ on. Click again to turn it off.</Property>
           <Property Name="Location">25, 53</Property>
           <Property Name="TabIndex">2</Property>
           <Property Name="Text">-</Property>
-          <Property Name="SymbolConfiguration">8;2;powertrain_can;SCC;frmCruiseStateMsg;CruiseState;1;Powertrain;;-1;;;Value;;;0</Property>
+          <Property Name="SymbolConfiguration">8;16;Powertrain;;;cruiseState;1;;;-1;;;Value;;;0</Property>
         </Object>
         <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X304d4cf2e0a87e4ee2e9651eab5d0b9562fb" ControlName="Button 3">
           <Property Name="Name">X304d4cf2e0a87e4ee2e9651eab5d0b9562fb</Property>
@@ -60,7 +60,7 @@ on. Click again to turn it off.</Property>
           <Property Name="Location">72, 53</Property>
           <Property Name="TabIndex">1</Property>
           <Property Name="Text">+</Property>
-          <Property Name="SymbolConfiguration">8;2;powertrain_can;SCC;frmCruiseStateMsg;CruiseSetSpeed;1;Powertrain;;-1;;;Value;;;0</Property>
+          <Property Name="SymbolConfiguration">8;16;Powertrain;;;cruiseSetSpeed;1;;;-1;;;Value;;;0</Property>
         </Object>
         <Property Name="Name">X285b0436e8782e4e9de9543e26d5410c1a70</Property>
         <Property Name="Size">138, 121</Property>
@@ -86,7 +86,7 @@ on. Click again to turn it off.</Property>
         <Property Name="ValueDisplay">Double</Property>
         <Property Name="UsedValueTable">RawValue</Property>
         <Property Name="DescriptionSize">5, 21</Property>
-        <Property Name="SymbolConfiguration">8;2;powertrain_can;SCC;frmCruiseStateMsg;CruiseSetSpeed;1;Powertrain;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Powertrain;;;cruiseSetSpeed;1;;;-1;;;Value;;;0</Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xaa9f2178e3525e40e1eb6bdefdeafada7bc8" ControlName="Static Text 8">
         <Property Name="Name">Xaa9f2178e3525e40e1eb6bdefdeafada7bc8</Property>
