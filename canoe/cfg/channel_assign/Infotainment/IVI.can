@@ -403,6 +403,10 @@ on start
   gNavStateRxMs = 0;
   gRouteRxMs = 0;
   @CoreState::infoHealthTick = 0;
+  @UiRender::beepEmergency = 0;
+  @UiRender::beepIC = 0;
+  @UiRender::beepSpeed = 0;
+  @UiRender::warningBeepState = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
     write("[IVI] tx socket unavailable");
@@ -577,6 +581,9 @@ on timer tIviBase50
   int effectiveVolume;
   int displayModeOverride;
   int volumeOverride;
+  int compatBeepEmergency;
+  int compatBeepIC;
+  int compatBeepSpeed;
   int useBackbone;
   int useDecision;
   int useEffective;
@@ -817,6 +824,9 @@ on timer tIviBase50
   }
 
   renderDirection = deriveRenderDirection(renderTextCode, alertType);
+  compatBeepEmergency = (alertLevel > 0 && emergencyType > 0) ? 1 : 0;
+  compatBeepIC = ((alertType == 5 || alertType == 6) && alertLevel > 0) ? 1 : 0;
+  compatBeepSpeed = ((roadZoneColorCode == 1 || roadZoneColorCode == 2) && alertLevel > 0) ? 1 : 0;
   @UiRender::renderMode = renderMode;
   @UiRender::renderColor = renderColor;
   @UiRender::renderPattern = renderPattern;
@@ -829,6 +839,10 @@ on timer tIviBase50
   @UiRender::ambientPulsePhase = gAmbientPulsePhase;
   @UiRender::icFlowPhase = gIcFlowPhase;
   @UiRender::activeAlertType = clampRange(alertType, 0, 7);
+  @UiRender::beepEmergency = compatBeepEmergency;
+  @UiRender::beepIC = compatBeepIC;
+  @UiRender::beepSpeed = compatBeepSpeed;
+  @UiRender::warningBeepState = (compatBeepEmergency + compatBeepIC + compatBeepSpeed > 0) ? 1 : 0;
 
   setTimer(tIviBase50, 50);
 }

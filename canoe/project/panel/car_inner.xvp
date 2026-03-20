@@ -72,7 +72,7 @@
       <Property Name="ValueDisplay">Symbolic</Property>
       <Property Name="UsedValueTable">RawValue</Property>
       <Property Name="DescriptionSize">0, 0</Property>
-      <Property Name="SymbolConfiguration">8;2;powertrain_can;TEST_SCN;frmGearStateMsg;GearState;1;Powertrain;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;16;Chassis;;;driveState;1;;;-1;;;Value;;;0</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.MeterControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xc8b7bb70eeeb8e4140e824ae9b8b66893413" ControlName="Meter 4">
       <Property Name="Name">Xc8b7bb70eeeb8e4140e824ae9b8b66893413</Property>
@@ -89,13 +89,13 @@
       <Property Name="Name">Xb490cb97eb504e4746ebef0efaeb9430907a</Property>
       <Property Name="Size">33, 33</Property>
       <Property Name="Location">450, 374</Property>
-      <Property Name="ImageFile">..\..\..\..\canoe-develop\canoe\project\panel\Bitmaps\DashboardCircleBlack.png</Property>
+      <Property Name="ImageFile">Bitmaps\DashboardCircleBlack.png</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.MeterControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xbe1aefc3eb3ede43d6e9e82e006f4db6b113" ControlName="Meter 3">
       <Property Name="Name">Xbe1aefc3eb3ede43d6e9e82e006f4db6b113</Property>
       <Property Name="Size">56, 47</Property>
       <Property Name="Location">435, 372</Property>
-      <Property Name="SymbolConfiguration">8;2;powertrain_can;EMS;frmEngineSpeedTempMsg;EngineRpm;1;Powertrain;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;16;Powertrain;;;engineRpm;1;;;-1;;;Value;;;0</Property>
       <Property Name="PivotDistance">45</Property>
       <Property Name="NeedleShape">TriangleSlimFilled</Property>
       <Property Name="ScaleMax">8000</Property>
@@ -114,7 +114,7 @@
       <Property Name="Name">Xd126ee6fec986e4fa4e8275e9b5b0382002d</Property>
       <Property Name="Size">33, 33</Property>
       <Property Name="Location">582, 374</Property>
-      <Property Name="ImageFile">..\..\..\..\canoe-develop\canoe\project\panel\Bitmaps\DashboardCircleBlack.png</Property>
+      <Property Name="ImageFile">Bitmaps\DashboardCircleBlack.png</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.MeterControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X30cd48fbe3f0fe44e8e9c3be2a55c7ee8ef6" ControlName="Meter 1">
       <Property Name="Name">X30cd48fbe3f0fe44e8e9c3be2a55c7ee8ef6</Property>

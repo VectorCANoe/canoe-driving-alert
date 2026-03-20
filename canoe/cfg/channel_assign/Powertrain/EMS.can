@@ -33,6 +33,7 @@ on start
   gBatterySoc      = 95;
   gCoolantTemp     = 20;   // 시동 전 냉간 온도
   gFuelDisplay     = 0;    // 시동 전 게이지 0
+  @Powertrain::engineRpm   = 0;
   @Powertrain::coolantTemp = gCoolantTemp;
   @Powertrain::fuelLevel   = gFuelDisplay;
 
@@ -299,6 +300,7 @@ on timer tEngineCycle
     if (gFuelDisplay < 0) gFuelDisplay = 0;
   }
 
+  @Powertrain::engineRpm   = rpm;
   @Powertrain::coolantTemp = gCoolantTemp;
   @Powertrain::fuelLevel   = gFuelDisplay;
 

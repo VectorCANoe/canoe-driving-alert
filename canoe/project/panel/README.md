@@ -14,11 +14,11 @@ CANoe panel artifacts for this project.
 - `scenariocontrol.xvp`: adopted from `merge/lee`
 
 ### Source-staged donor set
-- `sample_Dashboard.xvp`: source-staged only, raw CAN and `Display::animFrame` cleanup still needed
+- `sample_Dashboard.xvp`: source-staged only, dashboard raw CAN bindings were reduced to sysvars, but GUI/operator review is still pending
 - `sample_Control.xvp`: source-staged only, local bitmap path normalized, raw CAN review still needed
 - `MyDriverPanel.xvp`: source-staged only, refreshed from latest `origin/lee`
-- `car_inner.xvp`: source-staged only, latest `origin/lee` cabin interior panel
-- `windowstate.xvp`: source-staged only, direct body CAN bindings still need operator-safe review
+- `car_inner.xvp`: source-staged only, cabin panel raw CAN bindings were reduced to sysvars, but GUI/operator review is still pending
+- `windowstate.xvp`: source-staged only, body display bindings were moved to sysvars, but GUI/operator review is still pending
 
 ### Draft-panel note
 - Unchanged `develop` draft XVP carry-overs were removed again after donor union intake
@@ -84,6 +84,7 @@ CANoe panel artifacts for this project.
 - Producer-owned compat sysvars may remain writable for CAPL publishers, but panel widgets must keep read-only bindings
 - Manual exploration inputs stay under `Test::*` or approved operator input namespaces
 - Panels still carrying direct `SymbolConfiguration` CAN bindings are source-only until they are reviewed against the `develop` owner model
+- Remaining direct-CAN source-only panel: `sample_Control.xvp`
 
 ## Render Variables
 Use these derived sysvars for animation-ready visualization:
