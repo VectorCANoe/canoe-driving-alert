@@ -5,11 +5,11 @@ CANoe panel artifacts for this project.
 ## Donor Intake Status
 
 ### GUI-activated donor set
-- `SDV_Ambient_Control.xvp`: adopted from `sh_rael_merge`
+- `Ambient_Control.xvp`: adopted from `sh_rael_merge`
 - `input.xvp`: adopted from `sh_rael_merge`
 - `cluster.xvp`: adopted from `sh_rael_merge`
 - `Navigation.xvp`: adopted from `sh_rael_merge`
-- `SDV_Ambient_Top_View.xvp`: adopted from `sh_rael_merge`
+- `Ambient_Top_View.xvp`: adopted from `sh_rael_merge`
 - `v2xpanel.xvp`: adopted from `merge/lee`
 - `scenariocontrol.xvp`: adopted from `merge/lee`
 
@@ -60,7 +60,7 @@ CANoe panel artifacts for this project.
 
 ## Panel Split (Integration Branch)
 - Donor union intake was pruned to exclude unchanged `develop` draft XVP carry-overs
-- GUI-activated donor panels: `SDV_Ambient_Control.xvp`, `input.xvp`, `cluster.xvp`, `Navigation.xvp`, `SDV_Ambient_Top_View.xvp`, `v2xpanel.xvp`, `scenariocontrol.xvp`
+- GUI-activated donor panels: `Ambient_Control.xvp`, `input.xvp`, `cluster.xvp`, `Navigation.xvp`, `Ambient_Top_View.xvp`, `v2xpanel.xvp`, `scenariocontrol.xvp`
 - Source-staged donor panels still need GUI/operator review before activation: `sample_Dashboard.xvp`, `sample_Control.xvp`, `MyDriverPanel.xvp`, `car_inner.xvp`, `windowstate.xvp`
 
 ## BP (Renderer-Only Contract)
