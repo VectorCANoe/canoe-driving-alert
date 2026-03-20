@@ -116,14 +116,9 @@ Action:
    - `Infotainment::zoneDistance`
    - `Infotainment::navDirection`
    - `Infotainment::roadZone`
-3. For `Test::manualAlertOverride`, do one of these:
-   - disable the widget
-   - hide the widget
-   - temporarily leave it unbound and mark it as unresolved
-
-Do not:
-
-- add `manualAlertOverride` just to make the panel import clean
+3. `Test::manualAlertOverride` is now staged in the panel branch compat layer.
+4. Keep it as exploratory input only.
+5. Do not connect official PASS/FAIL logic to it.
 
 ### 4.3 `cluster.xvp`
 
@@ -152,14 +147,9 @@ Action:
 
 1. Stage `Bitmaps/v2x.png`.
 2. Import panel.
-3. Expect binding failure on `V2X::v2xFrame`.
-4. Do not invent a temporary GUI-side workaround.
-5. Mark this panel as “imported, waiting for sysvar + V2X producer patch”.
-
-Required later code work:
-
-- add `V2X::v2xFrame`
-- produce it from `develop` V2X logic, not EMS
+3. `V2X::v2xFrame` is now staged in the panel branch compat layer.
+4. Keep this widget read-only.
+5. If GUI still reports missing binding, treat it as a config reload issue first and reopen the branch-local cfg before debugging CAPL.
 
 ### 4.5 `Navigation.xvp`
 
@@ -174,23 +164,15 @@ Action:
    - `Core::vehicleSpeedNorm`
    - `Core::speedLimitNorm`
    - `Infotainment::zoneDistance`
-4. Rebind `CoreState::baseVolume` display to `CoreState::volumeLevel`.
-5. For these orphan bindings, do not force-add during GUI session:
-   - `UiRender::beepIC`
-   - `UiRender::beepSpeed`
-   - `UiRender::warningBeepState`
-   - `UiRender::beepEmergency`
+4. `CoreState::baseVolume` display has already been rebased to `CoreState::volumeLevel`.
+5. `UiRender::beepIC`, `UiRender::beepSpeed`, `UiRender::warningBeepState`, and `UiRender::beepEmergency` are now staged as compat read-only render vars.
+6. Remaining unresolved candidates, if any, should still be treated conservatively:
    - `UiRender::renderVolumLevel`
    - `UiRender::navLaneFrame`
-6. For the orphan bindings above, choose one temporary treatment:
+7. For the unresolved items above, choose one temporary treatment:
    - disable widget
    - hide widget
    - leave unresolved and document it
-
-Recommended temporary stance:
-
-- get the static/navigation visual part opening first
-- defer sound/animated lane behavior until logic contract is patched
 
 ### 4.6 `SDV_Ambient_Top_View.xvp`
 
@@ -198,17 +180,21 @@ Action:
 
 1. Stage all required image/audio assets first.
 2. Import panel.
-3. Expect unresolved `Infotainment::emergencySound`.
-4. Do not add the variable during the GUI session unless already approved in code review.
-5. Keep the panel as a visual donor and leave sound behavior disabled or unresolved for the first pass.
+3. `Infotainment::emergencySound` is now staged in the panel branch compat layer.
+4. Keep the media widget read-only and verify that GUI resolves the binding after cfg reopen.
+5. If binding still appears broken, debug GUI reload/config state before changing CAPL again.
 
 ### 4.7 `scenariocontrol.xvp`
 
 Action:
 
 1. Import panel only after the first six panels are already checked.
-2. Verify the existing `Test::scenarioCommand`, `Test::testScenario`, `Test::scenarioResult` bindings.
-3. Stop on `Display::animFrame`.
+2. Verify these bindings:
+   - `Test::scenarioCommand` = writable
+   - `Test::testScenario` = read-only
+   - `Test::scenarioResult` = read-only
+   - `Display::animFrame` = read-only
+3. Keep `Test::scenarioCommand` as the only writable launch/stop path.
 
 Decision gate:
 
@@ -239,6 +225,11 @@ After each gate:
 2. Compile CAPL.
 3. Start measurement.
 4. Verify that existing `develop` logic still runs.
+
+Important config note:
+
+- If `project.sysvars` or panel assets changed in the worktree, close CANoe completely and reopen the branch-local [CAN_v2_topology.cfg](/C:/Users/이준영/.codex-tmp/panel-merge-20260319/canoe/cfg/CAN_v2_topology.cfg) before compile.
+- If GUI reports many `Variable name ... not found` or broad `Database missing? / this not allowed in this context` errors across unrelated ECUs, treat that as stale GUI config state first, not as CAPL-wide logic failure.
 
 ## 6. Smoke Verification Set
 

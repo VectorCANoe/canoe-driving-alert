@@ -103,6 +103,8 @@ void publishCruiseState()
   mCruise.GapLevel = gapLevel;
   mCruise.CruiseSetSpeed = cruiseSetSpeed;
   output(mCruise);
+  @Powertrain::cruiseState = cruiseState;
+  @Powertrain::cruiseSetSpeed = cruiseSetSpeed;
 
   if (cruiseState != gLastCruiseState ||
       gapLevel != gLastGapLevel ||
@@ -138,6 +140,8 @@ on start
   gLastCruiseState = -1;
   gLastGapLevel = -1;
   gLastCruiseSetSpeed = -1;
+  @Powertrain::cruiseState = 0;
+  @Powertrain::cruiseSetSpeed = 0;
   setTimer(tSccCycle, 50);
   write("[SCC] start");
 }

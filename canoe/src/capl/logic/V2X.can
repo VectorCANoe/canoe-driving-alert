@@ -64,6 +64,30 @@ void publishNormalizedEmergencyIngress()
   @CoreState::emergencyIngressSourceId = clampRange(gActiveSourceId, 0, 255);
 }
 
+int getCompatV2xFrame(int emergencyType, int etaSec)
+{
+  int proximityFrame;
+
+  if (emergencyType <= 0)
+  {
+    return 0;
+  }
+
+  etaSec = clampRange(etaSec, 0, 255);
+  proximityFrame = 7 - (etaSec / 32);
+  proximityFrame = clampRange(proximityFrame, 0, 7);
+
+  if (emergencyType == 2)
+  {
+    return 8 + proximityFrame;
+  }
+  if (emergencyType == 1)
+  {
+    return proximityFrame;
+  }
+  return 0;
+}
+
 void bumpIngressHeartbeat()
 {
   int heartbeat;
@@ -290,6 +314,8 @@ void publishActiveEmergencyToV2X()
   @V2X::eta = gActiveEta;
   @V2X::sourceId = gActiveSourceId;
   @V2X::alertState = (gActiveEmergencyType > 0) ? 1 : 0;
+  @V2X::v2xFrame = getCompatV2xFrame(gActiveEmergencyType, gActiveEta);
+  @Infotainment::emergencySound = (gActiveEmergencyType > 0) ? 1 : 0;
   publishNormalizedEmergencyIngress();
 }
 

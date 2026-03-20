@@ -232,6 +232,24 @@ void respondHistoryQuery()
   @Test::historyQueryCode = response;
 }
 
+void publishCompatSteeringFrame()
+{
+  int angle;
+  int frame;
+
+  angle = clampRange((int)@Chassis::steeringAngle, 0, 138);
+  if (angle >= 69)
+  {
+    frame = 69 - ((angle - 69) * 34 / 69);
+  }
+  else
+  {
+    frame = ((69 - angle) * 35 / 69);
+  }
+
+  @Display::steeringFrame = clampRange(frame, 0, 69);
+}
+
 on start
 {
   int i;
@@ -281,6 +299,8 @@ on start
   @CoreState::clusterSyncSeq = 0;
   @CoreState::alertHistoryCount = 0;
   @Test::historyQueryCode = 0;
+  @Chassis::steeringAngle = 69;
+  @Display::steeringFrame = 0;
   write("[CLU] start");
 }
 
@@ -349,6 +369,11 @@ on message frmClusterSyncStateMsg
     gLastBaseSyncState = gClusterSyncState;
     gLastBaseSyncError = (int)this.ClusterSyncError;
   }
+}
+
+on sysvar Chassis::steeringAngle
+{
+  publishCompatSteeringFrame();
 }
 
 on stopMeasurement

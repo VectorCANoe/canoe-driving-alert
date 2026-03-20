@@ -57,9 +57,9 @@ Rule:
 | Assets already in `develop` | none |
 | Assets to import | `Bitmaps/IC.wav`, `Bitmaps/speed.mp3`, `Bitmaps/beep.wav`, `Bitmaps/lane.png`, `Bitmaps/zone.png`, `Bitmaps/roadFlowDirection.png`, `Bitmaps/gps.png`, `Bitmaps/bg.png`, `Bitmaps/vol.png` |
 | Existing bindings on `develop` | `Test::alertVolumeSetting`, `UiRender::roadZoneColorCode`, `UiRender::roadFlowDirection`, `Core::vehicleSpeedNorm`, `Core::speedLimitNorm` |
-| Missing/orphan bindings | `UiRender::beepIC`, `UiRender::beepSpeed`, `UiRender::warningBeepState`, `UiRender::beepEmergency`, `UiRender::renderVolumLevel`, `UiRender::navLaneFrame`, `CoreState::baseVolume` |
-| Donor completeness | all seven missing bindings are also missing from donor `project.sysvars` and donor CAPL/search traces |
-| Recommended action | rebind `CoreState::baseVolume` display to current `CoreState::volumeLevel`; treat the six audio/nav animation fields as new optional render vars instead of donor truth |
+| Remaining unresolved bindings | `UiRender::renderVolumLevel`, `UiRender::navLaneFrame` |
+| Newly staged compat bindings | `UiRender::beepIC`, `UiRender::beepSpeed`, `UiRender::warningBeepState`, `UiRender::beepEmergency`, `CoreState::volumeLevel` rebinding complete |
+| Recommended action | keep the staged beep vars sysvar-level read-only; if `renderVolumLevel` or `navLaneFrame` still block GUI import, disable those widgets before expanding logic |
 | `develop` files to touch if kept | `canoe/project/sysvars/project.sysvars`, `canoe/src/capl/output/IVI.can`, `canoe/cfg/channel_assign/Infotainment/IVI.can`, optional `canoe/src/capl/ecu/AMP.can`, optional `canoe/cfg/channel_assign/Infotainment/AMP.can` |
 | DBC impact | none by default |
 
@@ -82,9 +82,9 @@ Rule:
 |---|---|
 | Assets | none |
 | Existing bindings on `develop` | `Chassis::driveState`, `Core::vehicleSpeedNorm`, `Core::speedLimitNorm`, `Core::baseZoneContext`, `Core::selectedAlertType`, `Core::selectedAlertLevel`, `Chassis::vehicleSpeed`, `V2X::emergencyType`, `V2X::emergencyDirection`, `V2X::alertState`, `V2X::eta`, `Infotainment::speedLimit`, `Infotainment::zoneDistance`, `Infotainment::navDirection`, `Infotainment::roadZone` |
-| Missing/orphan binding | `Test::manualAlertOverride` |
-| Donor completeness | `manualAlertOverride` is not defined in donor `project.sysvars` and has no donor CAPL writer |
-| Recommended action | keep the panel, but either remove/disable the override widget or add a new override contract deliberately on top of `develop` |
+| Compat-only binding | `Test::manualAlertOverride` |
+| Current stance | added as dormant compat var for donor import, but panel widget is read-only and not part of official control flow |
+| Recommended action | keep disabled/read-only unless the team later approves a formal manual override contract |
 | `develop` files to touch if override is kept | `canoe/project/sysvars/project.sysvars`, `canoe/src/capl/input/TEST_SCN.can`, `canoe/cfg/channel_assign/ETH_Backbone/TEST_SCN.can` |
 | DBC impact | none |
 
@@ -106,9 +106,9 @@ Rule:
 | Assets already in `develop` | none |
 | Assets to import | `Bitmaps/Emergency Siren 7.mp3`, `Bitmaps/CarTop.png`, `Bitmaps/Group (1).png`, `Bitmaps/Group (2)(1).png`, `Bitmaps/Group (2)(2).png`, `Bitmaps/Group (3).png`, `Bitmaps/Group (4).png`, `Bitmaps/Group (5).png` |
 | Existing bindings on `develop` | none used directly by this donor panel |
-| Missing/orphan binding | `Infotainment::emergencySound` |
-| Donor completeness | `emergencySound` is also missing from donor `project.sysvars` and donor CAPL/search traces |
-| Recommended action | keep the panel as visual donor, but do not trust donor sound contract; either add a new approved sound state or rebind to an existing alert/audio state after review |
+| Compat binding | `Infotainment::emergencySound` |
+| Current stance | staged in panel branch as sysvar-level read-only compat surface produced by V2X compat layer |
+| Recommended action | keep as compat render/sound hook; do not let this surface become a product audio owner |
 | `develop` files to touch if kept | `canoe/project/sysvars/project.sysvars`, `canoe/src/capl/ecu/AMP.can`, `canoe/cfg/channel_assign/Infotainment/AMP.can`, optional `canoe/src/capl/output/IVI.can`, optional `canoe/cfg/channel_assign/Infotainment/IVI.can` |
 | DBC impact | none by default |
 
@@ -133,9 +133,9 @@ Rule:
 |---|---|
 | Assets already in `develop` | none |
 | Assets to import | `Bitmaps/v2x.png` |
-| Missing binding | `V2X::v2xFrame` |
-| Donor producer path | donor writes `@V2X::v2xFrame` in `merge/lee` `Powertrain/EMS.can` using `policePos`/`ambulancePos` |
-| Recommended action | add `V2X::v2xFrame`, but implement producer in the V2X layer on top of `develop`, not in EMS |
+| Compat binding | `V2X::v2xFrame` |
+| Current producer path | staged in panel branch `V2X.can` compat layer, not EMS |
+| Recommended action | keep producer in V2X only; keep the sysvar and panel widget read-only |
 | `develop` files to touch if kept | `canoe/project/sysvars/project.sysvars`, `canoe/src/capl/logic/V2X.can`, `canoe/cfg/channel_assign/ETH_Backbone/V2X.can` |
 | Optional extra vars | only if slider-driven control is adopted later: `V2X::policePos`, `V2X::ambulancePos` |
 | DBC impact | none |
@@ -174,15 +174,15 @@ Treat them as UI placeholders, not donor truth.
 
 | Source panel | Orphan binding | Recommended handling |
 |---|---|---|
-| `Navigation.xvp` | `CoreState::baseVolume` | rebind to `CoreState::volumeLevel` |
-| `Navigation.xvp` | `UiRender::beepIC` | new optional render/audio state or remove |
-| `Navigation.xvp` | `UiRender::beepSpeed` | new optional render/audio state or remove |
-| `Navigation.xvp` | `UiRender::warningBeepState` | new optional render/audio state or remove |
-| `Navigation.xvp` | `UiRender::beepEmergency` | new optional render/audio state or remove |
+| `Navigation.xvp` | `CoreState::baseVolume` | already rebased to `CoreState::volumeLevel` |
+| `Navigation.xvp` | `UiRender::beepIC` | staged compat render var, keep read-only |
+| `Navigation.xvp` | `UiRender::beepSpeed` | staged compat render var, keep read-only |
+| `Navigation.xvp` | `UiRender::warningBeepState` | staged compat render var, keep read-only |
+| `Navigation.xvp` | `UiRender::beepEmergency` | staged compat render var, keep read-only |
 | `Navigation.xvp` | `UiRender::renderVolumLevel` | rebind to `CoreState::volumeLevel` or rename to approved render var |
 | `Navigation.xvp` | `UiRender::navLaneFrame` | map to an approved nav render state only after owner decision |
-| `input.xvp` | `Test::manualAlertOverride` | remove, disable, or formally add to `TEST_SCN` contract |
-| `SDV_Ambient_Top_View.xvp` | `Infotainment::emergencySound` | remove, disable, or formally add through approved audio path |
+| `input.xvp` | `Test::manualAlertOverride` | keep dormant/read-only or formally add later; do not use for official flow |
+| `SDV_Ambient_Top_View.xvp` | `Infotainment::emergencySound` | staged compat hook; keep read-only |
 
 ## 5. Direct CAN Binding Watchlist
 
