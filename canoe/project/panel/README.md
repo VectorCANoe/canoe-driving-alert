@@ -14,10 +14,10 @@ CANoe panel artifacts for this project.
 - `scenariocontrol.xvp`: adopted from `merge/lee`
 
 ### Source-staged donor set
-- `sample_Dashboard.xvp`: source-staged only, dashboard raw CAN bindings were reduced to sysvars, but GUI/operator review is still pending
-- `sample_Control.xvp`: source-staged only, local bitmap path normalized, raw CAN review still needed
+- `sample_Dashboard.xvp`: source-staged only, dashboard bindings were normalized onto panel/sysvar contracts, but GUI/operator review is still pending
+- `sample_Control.xvp`: source-staged only, cruise widgets now bind via `Powertrain::*` compat sysvars and GUI/operator review is still pending
 - `MyDriverPanel.xvp`: source-staged only, refreshed from latest `origin/lee`
-- `car_inner.xvp`: source-staged only, cabin panel raw CAN bindings were reduced to sysvars, but GUI/operator review is still pending
+- `car_inner.xvp`: source-staged only, cabin panel bindings were normalized onto panel/sysvar contracts, but GUI/operator review is still pending
 - `windowstate.xvp`: source-staged only, body display bindings were moved to sysvars, but GUI/operator review is still pending
 
 ### Draft-panel note
@@ -111,11 +111,10 @@ CANoe panel artifacts for this project.
 - `CAN_v2_topology.cfg` must reflect the final donor registration set on the next CANoe GUI panel-registration save
 
 ## Compat Guardrail
-- Donor panel compat outputs such as `V2X::v2xFrame`, `Infotainment::emergencySound`, and `UiRender::beep*` are display-only at the panel layer
+- Donor panel compat outputs such as `V2X::v2xFrame`, `Infotainment::emergencySound`, `Display::steeringFrame`, and `UiRender::beep*` are display-only at the panel layer
 - Producer-owned compat sysvars may remain writable for CAPL publishers, but panel widgets must keep read-only bindings
 - Manual exploration inputs stay under `Test::*` or approved operator input namespaces
-- Panels still carrying direct `SymbolConfiguration` CAN bindings are source-only until they are reviewed against the `develop` owner model
-- Remaining direct-CAN source-only panel: `sample_Control.xvp`
+- Current donor XVP set is normalized onto sysvar contracts; no direct `SymbolConfiguration` CAN bindings remain in active donor files
 - Do not lock manual sandbox widgets just because official scenario widgets are read-only; exploratory operator inputs are intentional.
 
 ## Render Variables
