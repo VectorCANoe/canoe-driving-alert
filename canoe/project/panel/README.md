@@ -24,6 +24,7 @@ CANoe panel artifacts for this project.
 - Unchanged `develop` draft XVP carry-overs were removed again after donor union intake
 - Exact `main/develop` carry-over `SDV_Control.xvp` was removed from this branch
 - Only donor-new or donor-modified panels remain in this branch
+- Bitmap assets are kept broadly to avoid donor panel breakage, even when some files also exist in older baselines
 
 ## Skin Assets (Project)
 - `Bitmaps/DashboardCombi.png`
@@ -47,9 +48,8 @@ CANoe panel artifacts for this project.
 - `Bitmaps/reference_pack_v1/*`: curated Vector sample pack for external/cabin upgrade
 
 ## Legacy Carry-Over Status
-- Exact `main/develop` carry-over bitmaps that were unused by current donor panels were removed.
-- Three exact carry-over bitmaps remain only because current donor panels still reference them:
-  `Bitmaps/DashboardCircleBlack.png`, `Bitmaps/DashboardCombi.png`, `Bitmaps/StageDashboard.png`
+- Legacy XVP carry-overs are removed aggressively.
+- Bitmap assets are retained if they may support current donor panels or future GUI activation work.
 
 ## Reference Source Matrix (Adopted)
 - External vehicle/light base: `reference/vector_samples_19_4_10/CAN/CANSystem/CANoe/Panels`
