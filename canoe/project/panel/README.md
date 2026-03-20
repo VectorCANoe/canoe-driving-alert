@@ -54,7 +54,7 @@ Normalized CANoe panel source set for root `develop`.
 | `Cabin_Cockpit.xvp` | `CabinCockpit` | `Display::steeringFrame`, `Display::animFrame`, `Chassis::*`, `Powertrain::*` |
 | `Cluster_Alert.xvp` | `ClusterAlert` | `Core::*`, `Cluster::*`, `UiRender::*`, `V2X::*` |
 | `Cruise_Pedal.xvp` | `CruisePedal` | `Powertrain::cruiseState`, `Powertrain::cruiseSetSpeed`, `Chassis::throttlePosition`, `Chassis::brakePressure` |
-| `Diagnostic_Console.xvp` | `DiagnosticConsole` | `Diag::*` observer seam for request, response, security, and domain health |
+| `Diagnostic_Console.xvp` | `DiagnosticConsole` | tabbed `Diag::*` observer dashboard for overview, security, request-response, and domain health |
 | `Driver_Control.xvp` | `DriverControl` | door, window, wiper, turn, ignition, belt, steering, emergency vehicle position |
 | `Navigation_Alert.xvp` | `NavigationAlert` | volume, road-flow, zone, beep, and alert presentation |
 | `Operator_Input.xvp` | `OperatorInput` | manual operator/test inputs and compat controls |
