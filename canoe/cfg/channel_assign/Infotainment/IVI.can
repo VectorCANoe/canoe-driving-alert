@@ -723,7 +723,10 @@ on timer tIviBase50
   if ((gIviBaseTick % 2) == 0)
   {
     mHealth.InfoAliveCnt = gInfoAliveCnt & 0xFF;
+    mHealth.InfoDiagState = 1;
     mHealth.InfoFailCode = 0;
+    @Diag::InfoDiagState = mHealth.InfoDiagState;
+    @Diag::InfoFailCode = mHealth.InfoFailCode;
     output(mHealth);
     @CoreState::infoHealthTick = mHealth.InfoAliveCnt;
     gInfoAliveCnt = (gInfoAliveCnt + 1) & 0xFF;

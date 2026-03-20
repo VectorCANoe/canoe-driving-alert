@@ -615,7 +615,10 @@ on timer tBodyBase100
   output(mCabinAir);
 
   mHealth.BodyAliveCnt = gBodyAliveCnt & 0xFF;
+  mHealth.BodyDiagState = 1;
   mHealth.BodyFailCode = 0;
+  @Diag::BodyDiagState = mHealth.BodyDiagState;
+  @Diag::BodyFailCode = mHealth.BodyFailCode;
   output(mHealth);
   @CoreState::bodyHealthTick = mHealth.BodyAliveCnt;
 

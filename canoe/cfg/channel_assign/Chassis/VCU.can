@@ -572,7 +572,10 @@ on timer tVcuCycle
   output(mPowerLimit);
 
   mPtHealth.PtAliveCnt = gPtAliveCnt & 0xFF;
+  mPtHealth.PtDiagState = 1;
   mPtHealth.PtFailCode = 0;
+  @Diag::PtDiagState = mPtHealth.PtDiagState;
+  @Diag::PtFailCode = mPtHealth.PtFailCode;
   output(mPtHealth);
   gPtAliveCnt = (gPtAliveCnt + 1) & 0xFF;
 

@@ -1190,6 +1190,7 @@ void updateWarningState()
     warningState = 2;
   }
 
+  @Diag::AdasHealthLevel = (warningState > 0) ? 1 : 0;
   if (warningState != gLastWarningState)
   {
     message frmAdasChassisStatusMsg mAdas;

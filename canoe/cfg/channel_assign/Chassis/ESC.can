@@ -250,7 +250,10 @@ on timer tEscCycle
   output(mBrakeStatus);
 
   mHealth.ChassisAliveCnt = gChassisAliveCnt & 0xFF;
+  mHealth.ChassisDiagState = 1;
   mHealth.ChassisFailCode = 0;
+  @Diag::ChassisDiagState = mHealth.ChassisDiagState;
+  @Diag::ChassisFailCode = mHealth.ChassisFailCode;
   output(mHealth);
   gChassisAliveCnt = (gChassisAliveCnt + 1) & 0xFF;
 

@@ -30,7 +30,7 @@ The active diagnostic namespace is:
 
 - `Diag`
 
-It contains request mirrors, response mirrors, counters, and timestamps.
+It contains request mirrors, response mirrors, counters, timestamps, session/security observers, and domain health summary mirrors.
 
 ## 4. Request-side contract
 
@@ -70,6 +70,39 @@ It contains request mirrors, response mirrors, counters, and timestamps.
 These variables are verdict-facing semantic seams.
 
 They are not a replacement for full transport trace or full tester payload review.
+
+## 6.1 Session and security observer contract
+
+| SysVar | Meaning | Typical producer | Typical consumer |
+|---|---|---|---|
+| `Diag::SessionState` | current diagnostic session summary | `SGW` security/session observer | panel and evidence tools |
+| `Diag::TesterPresentActive` | whether the current diagnostic path is considered actively maintained | `SGW` security/session observer | panel and evidence tools |
+| `Diag::GatewayOpen` | whether the gateway currently allows the active diagnostic route | `SGW` security/session observer | panel and evidence tools |
+| `Diag::AuthState` | current diagnostic authentication summary | `SGW` security/session observer | panel and evidence tools |
+| `Diag::SecurityFault` | compact security fault summary code | `SGW` security/session observer | panel and evidence tools |
+| `Diag::SecurityPolicy` | compact security policy summary code | `SGW` security/session observer | panel and evidence tools |
+
+These variables are observer-facing semantic mirrors for the external diagnostic console.
+
+They are intended to show what the vehicle-side gateway currently believes about the diagnostic path.
+
+## 6.2 Domain health summary contract
+
+| SysVar | Meaning | Typical producer | Typical consumer |
+|---|---|---|---|
+| `Diag::AdasHealthLevel` | ADAS diagnostic health summary | `ADAS` domain health producer | panel and evidence tools |
+| `Diag::BodyDiagState` | Body domain diagnostic state summary | `BCM` domain health producer | panel and evidence tools |
+| `Diag::BodyFailCode` | Body domain fail-code summary | `BCM` domain health producer | panel and evidence tools |
+| `Diag::ChassisDiagState` | Chassis domain diagnostic state summary | `ESC` domain health producer | panel and evidence tools |
+| `Diag::ChassisFailCode` | Chassis domain fail-code summary | `ESC` domain health producer | panel and evidence tools |
+| `Diag::InfoDiagState` | Infotainment domain diagnostic state summary | `IVI` domain health producer | panel and evidence tools |
+| `Diag::InfoFailCode` | Infotainment domain fail-code summary | `IVI` domain health producer | panel and evidence tools |
+| `Diag::PtDiagState` | Powertrain domain diagnostic state summary | `VCU` domain health producer | panel and evidence tools |
+| `Diag::PtFailCode` | Powertrain domain fail-code summary | `VCU` domain health producer | panel and evidence tools |
+
+These health fields are panel-friendly observer mirrors.
+
+They exist so the diagnostic console can display domain health without binding directly to DBC messages.
 
 ## 7. Contract rules
 

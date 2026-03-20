@@ -10,6 +10,7 @@ Normalized CANoe panel source set for root `develop`.
 - `Cabin_Cockpit.xvp`
 - `Cluster_Alert.xvp`
 - `Cruise_Pedal.xvp`
+- `Diagnostic_Console.xvp`
 - `Driver_Control.xvp`
 - `Navigation_Alert.xvp`
 - `Operator_Input.xvp`
@@ -34,6 +35,7 @@ Normalized CANoe panel source set for root `develop`.
 | `car_inner.xvp` | `Cabin_Cockpit.xvp` | donor/internal name removed |
 | `cluster.xvp` | `Cluster_Alert.xvp` | alert role made explicit |
 | `input.xvp` | `Operator_Input.xvp` | operator role made explicit |
+| `native diagnostic observer` | `Diagnostic_Console.xvp` | dedicated external diagnostic monitor panel |
 | `MyDriverPanel.xvp` | `Driver_Control.xvp` | donor/personal naming removed |
 | `Navigation.xvp` | `Navigation_Alert.xvp` | alert role made explicit |
 | `sample_Control.xvp` | `Cruise_Pedal.xvp` | sample naming removed, actual function retained |
@@ -52,6 +54,7 @@ Normalized CANoe panel source set for root `develop`.
 | `Cabin_Cockpit.xvp` | `CabinCockpit` | `Display::steeringFrame`, `Display::animFrame`, `Chassis::*`, `Powertrain::*` |
 | `Cluster_Alert.xvp` | `ClusterAlert` | `Core::*`, `Cluster::*`, `UiRender::*`, `V2X::*` |
 | `Cruise_Pedal.xvp` | `CruisePedal` | `Powertrain::cruiseState`, `Powertrain::cruiseSetSpeed`, `Chassis::throttlePosition`, `Chassis::brakePressure` |
+| `Diagnostic_Console.xvp` | `DiagnosticConsole` | `Diag::*` observer seam for request, response, security, and domain health |
 | `Driver_Control.xvp` | `DriverControl` | door, window, wiper, turn, ignition, belt, steering, emergency vehicle position |
 | `Navigation_Alert.xvp` | `NavigationAlert` | volume, road-flow, zone, beep, and alert presentation |
 | `Operator_Input.xvp` | `OperatorInput` | manual operator/test inputs and compat controls |
@@ -82,6 +85,7 @@ Grouped GUI copies live under [Desktop_ASSIGN](C:/Users/이준영/CANoe-IVI-OTA/
 - `Ambient_Control.xvp`
 - `Cluster_Alert.xvp`
 - `Cruise_Pedal.xvp`
+- `Diagnostic_Console.xvp`
 - `Driver_Control.xvp`
 - `Navigation_Alert.xvp`
 - `Operator_Input.xvp`
