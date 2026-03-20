@@ -587,6 +587,45 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
   ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
+on message frmAdasDomainStateMsg
+{
+  if (observerLifecycleIsActive() == 0)
+  {
+    return;
+  }
+
+  if ((int)this.SelectedAlertLevel != gLastSelectedAlertLevel ||
+      (int)this.SelectedAlertType != gLastSelectedAlertType)
+  {
+    gTraceSnapshotId = (gTraceSnapshotId + 1) & 0xFFFF;
+    @Test::baseTraceSnapshotId = gTraceSnapshotId & 0xFFFF;
+  }
+
+  gLastSelectedAlertLevel = clampRange((int)this.SelectedAlertLevel, 0, 7);
+  gLastSelectedAlertType = clampRange((int)this.SelectedAlertType, 0, 31);
+  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 3);
+  gEmergencyContext = clampRange((int)this.EmergencyContext, 0, 3);
+  gDecelDecisionReq = clampRange((int)@Core::decelAssistDecisionReq, 0, 1);
+  gDecelAssistReq = clampRange((int)this.DecelAssistReq, 0, 1);
+  gDecelRisk = clampRange((int)this.RiskLevel, 0, 100);
+  gDecelGateReason = clampRange((int)@CoreState::decelGateReason, 0, 3);
+  gFailSafeRxMs = getSimulationTimeMs();
+  gEmergencyMonRxMs = gFailSafeRxMs;
+  gSelectedAlertRxMs = gFailSafeRxMs;
+  gDecelRxMs = gFailSafeRxMs;
+  gObjectRxMs = gFailSafeRxMs;
+
+  @Test::obsSelectedAlertLevel = gLastSelectedAlertLevel;
+  @Test::obsSelectedAlertType = gLastSelectedAlertType;
+  @Test::obsFailSafeMode = gFailSafeMode;
+  @Test::obsEmergencyContext = gEmergencyContext;
+  @Test::obsDecelDecisionReq = gDecelDecisionReq;
+  @Test::obsDecelAssistReq = gDecelAssistReq;
+  @Test::obsDecelRisk = gDecelRisk;
+  @Test::obsDecelGateReason = gDecelGateReason;
+  @Test::obsObjectRiskClass = clampRange((int)this.ObjectRiskClass, 0, 7);
+}
+
 on sysvar Test::scenarioResult
 {
   if (hasActiveScenarioLifecycle() == 0)
