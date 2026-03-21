@@ -395,7 +395,7 @@ on timer tBodyCycle
     alertType = 0;
   }
   timeoutClear = (timeoutClear == 1) ? 1 : 0;
-  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   if (manualMode == 1)
   {
     ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
@@ -544,7 +544,7 @@ on timer tBodyBase100
     hazardActive = 0;
   }
   turnLampInputStale = (ethIsRecentTick(gTurnLampInputRxMs, 300) == 1) ? 0 : 1;
-  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   driveState = gDriveState;
   ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
   routingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);

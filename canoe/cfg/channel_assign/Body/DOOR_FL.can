@@ -184,7 +184,7 @@ on timer tDoorFlCycle
   {
     openRequest = 1;
   }
-  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   manualLockCmd = clampRange((int)@Body::doorLockCmd, 0, 1);
   manualOpenCmd = clampRange((int)@Body::doorOpenCmd, 0, 1);
 

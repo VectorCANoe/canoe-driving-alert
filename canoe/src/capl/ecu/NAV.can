@@ -105,19 +105,19 @@ void publishNavLaneFrame()
   int manualMode;
   int period;
 
-  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   if (manualMode == 1)
   {
     roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
     navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+    speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
   }
   else
   {
     roadZone = clampRange(gRoadZone, 0, 3);
     navDirection = clampRange(gNavDirection, 0, 3);
+    speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   }
-
-  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   if (roadZone != 3 || navDirection == 0 || speed <= 0)
   {
     gNavAnimFrame = 1;
@@ -164,7 +164,7 @@ void publishNavState()
   int navDirection;
   int zoneDistance;
 
-  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   if (manualMode == 1)
   {
     navInputStale = 0;

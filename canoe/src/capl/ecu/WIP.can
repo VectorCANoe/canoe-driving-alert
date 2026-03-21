@@ -60,7 +60,7 @@ void publishWiperState()
   rearWiperState = 0;
   wiperInterval = 0;
   manualWiperCmd = 0;
-  if ((int)@Test::testScenario == 0)
+  if ((int)@Test::scenarioActiveId == 0)
   {
     manualWiperCmd = clampRange((int)@Body::wiperCmd, 0, 2);
   }

@@ -375,6 +375,63 @@ int deriveVehicleMotionStep(int roadZoneColorCode, int emergencyType, int emerge
   return clampRange(step, 1, 10);
 }
 
+int deriveCabinAmbientAnimFrame(int renderMode,
+                                int renderColor,
+                                int renderPattern,
+                                int roadZoneColorCode,
+                                int roadFlowDirection,
+                                int alertLevel,
+                                int emergencyType,
+                                int ambientPulsePhase)
+{
+  int pulse3;
+  int frame;
+
+  pulse3 = clampRange(ambientPulsePhase, 0, 2);
+  renderMode = clampRange(renderMode, 0, 7);
+  renderColor = clampRange(renderColor, 0, 15);
+  renderPattern = clampRange(renderPattern, 0, 15);
+  roadZoneColorCode = clampRange(roadZoneColorCode, 0, 3);
+  roadFlowDirection = clampRange(roadFlowDirection, 0, 2);
+  alertLevel = clampRange(alertLevel, 0, 7);
+  emergencyType = clampRange(emergencyType, 0, 2);
+
+  if (renderMode == 0 && alertLevel == 0 && roadZoneColorCode == 0 && emergencyType == 0)
+  {
+    return 0;
+  }
+
+  if (alertLevel >= 6 && emergencyType > 0)
+  {
+    return 19 + pulse3;
+  }
+
+  if (roadZoneColorCode == 1)
+  {
+    return 15;
+  }
+  if (roadZoneColorCode == 2)
+  {
+    return 16;
+  }
+  if (roadZoneColorCode == 3)
+  {
+    return (roadFlowDirection == 2) ? 18 : 17;
+  }
+
+  frame = clampRange(renderColor, 1, 14);
+  if (renderPattern >= 4)
+  {
+    frame = frame + clampRange(ambientPulsePhase, 0, 3);
+    if (frame > 14)
+    {
+      frame = 14;
+    }
+  }
+
+  return frame;
+}
+
 on start
 {
   gEthTxSocket = ethOpenPreferredNodeSocket(getIviLocalIp(), getIviTxPort());
@@ -407,6 +464,7 @@ on start
   @UiRender::beepIC = 0;
   @UiRender::beepSpeed = 0;
   @UiRender::warningBeepState = 0;
+  @Infotainment::cabinAmbientAnimFrame = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
     write("[IVI] tx socket unavailable");
@@ -496,7 +554,7 @@ on timer tIviCycle
     alertType = 0;
     timeoutClear = 0;
   }
-  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
   manualAlertMode = (manualMode == 1 && manualAlertOverride > 0) ? 1 : 0;
   if (manualAlertMode == 1)
@@ -592,6 +650,7 @@ on timer tIviBase50
   int renderPattern;
   int renderTextCode;
   int renderDirection;
+  int cabinAmbientAnimFrame;
   int vehicleMotionStep;
   int presentationMode;
   int effectiveVolume;
@@ -606,6 +665,8 @@ on timer tIviBase50
   int manualMode;
   int manualAlertOverride;
   int manualAlertMode;
+  int manualRoadZone;
+  int manualNavDirection;
 
   if (ethIsRecentTick(gVehicleStateRxMs, 300) == 1)
   {
@@ -617,13 +678,13 @@ on timer tIviBase50
     speed = 0;
     driveState = 0;
   }
-  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
   manualAlertMode = (manualMode == 1 && manualAlertOverride > 0) ? 1 : 0;
   if (manualAlertMode == 1)
   {
-    speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-    driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+    speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+    driveState = clampRange((int)@Chassis::driveState, 0, 3);
   }
   useEffective = useEffectiveAlertState();
   useDecision = useDecisionAlertState();
@@ -668,7 +729,9 @@ on timer tIviBase50
   }
   if (manualAlertMode == 1)
   {
-    baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
+    manualRoadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+    manualNavDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+    baseZoneContext = deriveBaseZoneContextFromNavState(manualRoadZone, manualNavDirection);
   }
   renderMode = clampRange((int)@Body::ambientMode, 0, 7);
   renderColor = clampRange((int)@Body::ambientColor, 0, 15);
@@ -882,6 +945,15 @@ on timer tIviBase50
   @UiRender::beepIC = compatBeepIC;
   @UiRender::beepSpeed = compatBeepSpeed;
   @UiRender::warningBeepState = (compatBeepEmergency + compatBeepIC + compatBeepSpeed > 0) ? 1 : 0;
+  cabinAmbientAnimFrame = deriveCabinAmbientAnimFrame(renderMode,
+                                                      renderColor,
+                                                      renderPattern,
+                                                      roadZoneColorCode,
+                                                      roadFlowDirection,
+                                                      alertLevel,
+                                                      emergencyType,
+                                                      gAmbientPulsePhase);
+  @Infotainment::cabinAmbientAnimFrame = cabinAmbientAnimFrame;
 
   setTimer(tIviBase50, 50);
 }

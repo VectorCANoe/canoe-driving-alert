@@ -224,7 +224,7 @@ on timer tEscCycle
   {
     appliedBrakePedal = 0;
   }
-  if ((int)@Test::testScenario == 0)
+  if ((int)@Test::scenarioActiveId == 0)
   {
     manualBrakePressure = clampRange((int)@Chassis::brakePressure, 0, 100);
     manualBrakeButtonBrake = (((int)@Chassis::brakePedalBtn) == 1) ? 80 : 0;

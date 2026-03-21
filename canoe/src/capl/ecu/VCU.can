@@ -490,7 +490,7 @@ on timer tVcuCycle
     gearState = 0;
   }
 
-  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   manualDriveStateCmd = 0;
   manualVehicleSpeedCmd = 0;
   manualCruiseState = 0;

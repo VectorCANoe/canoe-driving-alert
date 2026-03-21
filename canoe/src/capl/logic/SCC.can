@@ -79,7 +79,7 @@ void publishCruiseState()
 
   manualCruiseStateCmd = clampRange((int)@Test::manualCruiseStateCmd, 0, 2);
   manualCruiseSetSpeedCmd = clampRange((int)@Test::manualCruiseSetSpeedCmd, 0, 255);
-  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   panelCruiseInputFresh = (manualMode == 1 && ethIsRecentTick(gPanelCruiseRxMs, 600) == 1) ? 1 : 0;
 
   if (panelCruiseInputFresh == 1)

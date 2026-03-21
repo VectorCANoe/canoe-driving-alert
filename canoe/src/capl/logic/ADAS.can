@@ -559,7 +559,7 @@ void runArbiter()
   int selectedAlertLevel;
   int selectedAlertType;
 
-  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
   manualAlertMode = (manualMode == 1 && manualAlertOverride > 0) ? 1 : 0;
   emergencyContext = clampRange((int)@Core::emergencyContext, 0, 2);
@@ -1016,7 +1016,7 @@ void updateWarningState()
     speedLimit = 30;
     baseZoneContext = 0;
   }
-  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
   manualAlertMode = (manualMode == 1 && manualAlertOverride > 0) ? 1 : 0;
   if (manualAlertMode == 1)
