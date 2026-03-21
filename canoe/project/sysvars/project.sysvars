@@ -23,6 +23,7 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="m" name="zoneDistance" comment="Distance to zone boundary" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="speedLimit" comment="Zone speed limit from CAN input" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="emergencySound" comment="Compat donor emergency sound flag" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="cabinAmbientAnimFrame" comment="Infotainment cabin ambient animation frame" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="55" maxValuePhys="55"/>
   </namespace>
 
   <namespace name="V2X" comment="" interface="">
