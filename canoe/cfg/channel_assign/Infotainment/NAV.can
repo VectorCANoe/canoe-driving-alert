@@ -172,7 +172,7 @@ void publishNavState()
     roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
     navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
     zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
-    speedLimit = calcEffectiveSpeedLimit((int)@Infotainment::speedLimit);
+    speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
   }
   else
   {
