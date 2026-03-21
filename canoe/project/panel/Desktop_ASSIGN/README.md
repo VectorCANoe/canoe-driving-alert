@@ -34,6 +34,7 @@ Current file placement below reflects the latest GUI save.
 - `Body_Status.xvp`
 - `Driver_Control.xvp`
 - `Scenario_Control.xvp`
+- `V2X_Cross.xvp`
 - `V2X_Ingress.xvp`
 
 ### Diag
@@ -50,6 +51,7 @@ Current file placement below reflects the latest GUI save.
 | Cruise / vehicle | `Module/Cruise_Pedal.xvp`, `Cabin/Cruise_Pedal.xvp` | `Cabin/Vehicle_Dashboard.xvp` | keep dashboard view paired with cruise/pedal input |
 | Manual warning | `Module/Operator_Input.xvp` | `Module/Cluster_Alert.xvp`, `Module/Navigation_Alert.xvp`, `Module/Ambient_TopView.xvp`, `3D/Ambient_TopView.xvp` | keep warning outputs visible with operator input |
 | Scenario warning | `3D/Scenario_Control.xvp` | `3D/V2X_Ingress.xvp`, `Module/Cluster_Alert.xvp`, `Module/Navigation_Alert.xvp`, `Module/Ambient_TopView.xvp`, `3D/Ambient_TopView.xvp` | keep ingress and warning outputs visible with scenario control |
+| Cross scene | `3D/Scenario_Control.xvp` or future local scenario input | `3D/V2X_Cross.xvp` | keep crossing observer visible with scenario trigger source |
 | Diagnostic | none | `Diag/Diagnostic_Console.xvp` | observer-only |
 
 ## Layout Intent
@@ -60,6 +62,21 @@ Current file placement below reflects the latest GUI save.
 - `Diag` hosts the diagnostic observer desktop.
 - Some panel sets are intentionally paired across folders; they are not alternatives.
 - If one side of a pair is assigned in GUI, the matching display/control side must also be assigned in the same working desktop.
+
+## Future Input Desktop Direction
+
+- current `Desktop_ASSIGN` still reflects donor operator-panel placement
+- the long-term cleanup target is simpler:
+  - output/readback desktops stay paired to display panels
+  - new local input desktop(s) own command entry by domain
+- preferred domain split:
+  - `Vehicle Control`
+  - `Context Injection`
+  - `Scenario`
+- whether those domains are opened as three desktops or one tabbed local input console is a GUI decision
+- the runtime rule stays the same:
+  - one active input domain owns one command family
+  - display desktops do not become alternate command sources
 
 ## Rules
 

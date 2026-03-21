@@ -12,7 +12,7 @@ Current root panel set for `develop`.
   - `canoe/project/sysvars/project.sysvars`
   - `canoe/src/capl`
   - `canoe/cfg/channel_assign`
-- `Diagnostic_Console.xvp` is the only local project-specific panel outside the donor set.
+- `Diagnostic_Console.xvp` and `V2X_Cross.xvp` are local project-specific panels outside the donor set.
 - Detailed frozen contract matrix: `../../AGENT/canoe/docs/operations/panel/DONOR_PANEL_CONTRACT_MATRIX_2026-03-21.md`
 
 ## Current Root Inventory
@@ -29,6 +29,7 @@ Current root panel set for `develop`.
 - `Operator_Input.xvp`
 - `Scenario_Control.xvp`
 - `V2X_Ingress.xvp`
+- `V2X_Cross.xvp`
 - `Vehicle_Dashboard.xvp`
 
 ## Donor Mapping
@@ -46,6 +47,7 @@ Current root panel set for `develop`.
 | `Operator_Input.xvp` | `input.xvp` |
 | `Scenario_Control.xvp` | `scenariocontrol.xvp` |
 | `V2X_Ingress.xvp` | `v2xpanel.xvp` |
+| `V2X_Cross.xvp` | local project panel |
 | `Vehicle_Dashboard.xvp` | `sample_Dashboard.xvp` |
 | `Diagnostic_Console.xvp` | local project panel |
 
@@ -59,6 +61,7 @@ Current root panel set for `develop`.
 | Cruise / vehicle | `Cruise_Pedal.xvp` | `Vehicle_Dashboard.xvp` | `Module/Cruise_Pedal.xvp`, `Cabin/Cruise_Pedal.xvp`, `Cabin/Vehicle_Dashboard.xvp` | `Chassis::*`, `Powertrain::*` |
 | Manual warning | `Operator_Input.xvp` | `Cluster_Alert.xvp`, `Navigation_Alert.xvp`, `Ambient_TopView.xvp` | `Module/Operator_Input.xvp`, `Module/Cluster_Alert.xvp`, `Module/Navigation_Alert.xvp`, `Module/Ambient_TopView.xvp`, `3D/Ambient_TopView.xvp` | `Core::*`, `CoreState::*`, `UiRender::*` |
 | Scenario warning | `Scenario_Control.xvp` | `Cluster_Alert.xvp`, `Navigation_Alert.xvp`, `Ambient_TopView.xvp`, `V2X_Ingress.xvp` | `3D/Scenario_Control.xvp`, `3D/V2X_Ingress.xvp`, `Module/Cluster_Alert.xvp`, `Module/Navigation_Alert.xvp`, `Module/Ambient_TopView.xvp`, `3D/Ambient_TopView.xvp` | `Test::*`, `V2X::*`, `Core::*` |
+| Cross scene | `Scenario_Control.xvp` or future local scenario input | `V2X_Cross.xvp` | `3D/V2X_Cross.xvp` | `V2X::AnimationTrigger`, `MyCarFrame`, `AmbFrame`, `Display::animFrame` |
 | Diagnostic monitor | none | `Diagnostic_Console.xvp` | `Diag/Diagnostic_Console.xvp` | `Diag::*`, domain health mirrors |
 
 ## Runtime Meaning
@@ -77,7 +80,52 @@ Current root panel set for `develop`.
 | `Operator_Input.xvp` | operator scenario/vehicle manual input |
 | `Scenario_Control.xvp` | scenario launch/result control |
 | `V2X_Ingress.xvp` | V2X ingress scene/status view |
+| `V2X_Cross.xvp` | V2X crossing animation observer view |
 | `Vehicle_Dashboard.xvp` | vehicle dashboard state view |
+
+## Active Runtime Focus
+
+- primary active command panels:
+  - `Ambient_Control.xvp`
+  - `Cruise_Pedal.xvp`
+  - `Driver_Control.xvp`
+  - `Operator_Input.xvp`
+  - `Scenario_Control.xvp`
+- current runtime priority is not `driver-view natural HMI`.
+- current runtime priority is:
+  - engineer manual control
+  - scenario / validation injection
+- all other donor panels are treated as observer / readback panels.
+- runtime adaptation rule:
+  - active command panels keep donor writable contract
+  - owner ECU or `VALIDATION_HARNESS(TEST_SCN)` must adapt to that contract
+  - observer panels must not become alternate command owners
+
+## Next Operator Architecture
+
+- donor output/readback panels remain frozen and continue as observer-only surfaces
+- future cleanup should not keep all donor command panels active at once
+- preferred redesign direction is:
+  - local `Vehicle Control` input console
+  - local `Context Injection` input console
+  - local `Scenario Control` input console
+- a single local tabbed input console is also allowed if it keeps the same domain split:
+  - `Vehicle`
+  - `Context`
+  - `Scenario`
+- the important rule is semantic separation, not the number of XVP files
+
+## Single-Source Command Policy
+
+- one operator mode owns one command domain
+- `Vehicle Control`
+  - vehicle/body/manual driving commands only
+- `Context Injection`
+  - warning/context/V2X/environment injection only
+- `Scenario Control`
+  - validation harness lifecycle only
+- no two active operator panels should intentionally write the same command seam
+- product readback seams must not be reused as new input seams in the redesign target
 
 ## Desktop_ASSIGN
 

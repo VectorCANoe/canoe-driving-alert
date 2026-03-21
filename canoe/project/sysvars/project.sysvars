@@ -38,6 +38,10 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="policePos" comment="Manual police proximity slider" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambulancePos" comment="Manual ambulance proximity slider" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="v2xFrame" comment="Compat donor V2X frame index" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="15" maxValuePhys="15"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="AnimationTrigger" comment="Local V2X cross-scene animation trigger" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="MyCarFrame" comment="Local V2X cross-scene ego vehicle frame" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="26" maxValuePhys="26"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="AmbFrame" comment="Local V2X cross-scene ambulance frame" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="31" maxValuePhys="31"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="CrossAnimAlertActive" comment="Local V2X cross-scene alert popup active mirror" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
   </namespace>
 
   <namespace name="Core" comment="" interface="">

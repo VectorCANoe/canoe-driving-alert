@@ -10,6 +10,7 @@ variables
   msTimer tTimeoutClearPulse;
   msTimer tEventTrace100;
   msTimer tTransport100;
+  msTimer tSceneTimer;
   long gEthSocket;
   long gEthTxSocket;
   dword gEthTargetIp;
@@ -43,6 +44,8 @@ variables
   dword gLastAcceptedAlertSrcPort;
   dword gLastRejectedAlertSrcIp;
   dword gLastRejectedAlertSrcPort;
+  int gCrossMyCarEnd;
+  int gCrossAmbEnd;
 }
 
 
@@ -118,6 +121,20 @@ int getCompatV2xFrame(int emergencyType, int etaSec)
     return proximityFrame;
   }
   return 0;
+}
+
+void resetCrossSceneAnimation()
+{
+  @V2X::MyCarFrame = 0;
+  @V2X::AmbFrame = 0;
+  @V2X::CrossAnimAlertActive = 0;
+}
+
+void startCrossSceneAnimation()
+{
+  cancelTimer(tSceneTimer);
+  resetCrossSceneAnimation();
+  setTimer(tSceneTimer, 50);
 }
 
 void bumpIngressHeartbeat()
@@ -572,7 +589,11 @@ on start
   gLastAcceptedAlertSrcPort = 0;
   gLastRejectedAlertSrcIp = 0;
   gLastRejectedAlertSrcPort = 0;
+  gCrossMyCarEnd = 26;
+  gCrossAmbEnd = 31;
   @V2X::ingressHeartbeat = 0;
+  @V2X::AnimationTrigger = 0;
+  resetCrossSceneAnimation();
   if (gEthTxSocket == ethInvalidSocket())
   {
     write("[V2X] tx socket unavailable");
@@ -706,6 +727,71 @@ on timer tTransport100
   setTimer(tTransport100, 100);
 }
 
+on sysvar V2X::AnimationTrigger
+{
+  if (((int)@V2X::AnimationTrigger) == 1)
+  {
+    startCrossSceneAnimation();
+  }
+  else
+  {
+    cancelTimer(tSceneTimer);
+    resetCrossSceneAnimation();
+  }
+}
+
+on timer tSceneTimer
+{
+  int isFinished;
+  int ambFrame;
+  int myCarFrame;
+
+  isFinished = 1;
+  ambFrame = clampRange((int)@V2X::AmbFrame, 0, gCrossAmbEnd);
+  myCarFrame = clampRange((int)@V2X::MyCarFrame, 0, gCrossMyCarEnd);
+
+  if (ambFrame < gCrossAmbEnd)
+  {
+    ambFrame = ambFrame + 1;
+    @V2X::AmbFrame = ambFrame;
+    isFinished = 0;
+
+    if (ambFrame == 7)
+    {
+      @V2X::CrossAnimAlertActive = 1;
+    }
+    if (ambFrame == 25)
+    {
+      @V2X::CrossAnimAlertActive = 0;
+      write("[V2X] cross scene ambulance frame 25: alert clear");
+    }
+  }
+
+  if (ambFrame < 15 || ambFrame >= 25)
+  {
+    if (myCarFrame < gCrossMyCarEnd)
+    {
+      myCarFrame = myCarFrame + 1;
+      @V2X::MyCarFrame = myCarFrame;
+      isFinished = 0;
+    }
+  }
+  else
+  {
+    isFinished = 0;
+  }
+
+  if (isFinished == 0)
+  {
+    setTimer(tSceneTimer, 50);
+  }
+  else
+  {
+    @V2X::AnimationTrigger = 0;
+    write("[V2X] cross scene animation finished and reset");
+  }
+}
+
 on stopMeasurement
 {
   cancelTimer(tRxCycle);
@@ -713,6 +799,9 @@ on stopMeasurement
   cancelTimer(tTimeoutClearPulse);
   cancelTimer(tEventTrace100);
   cancelTimer(tTransport100);
+  cancelTimer(tSceneTimer);
+  @V2X::AnimationTrigger = 0;
+  resetCrossSceneAnimation();
   ethCloseSocket(gEthTxSocket);
   gEthTxSocket = ethInvalidSocket();
   ethCloseSocket(gEthSocket);

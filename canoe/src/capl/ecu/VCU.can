@@ -545,6 +545,13 @@ on timer tVcuCycle
       accelPedal = 70;
       @Chassis::throttlePedalBtn = 0;
     }
+    if (accelPedal > 0 || brakePedal > 0)
+    {
+      /* Direct speed seam is only an idle/manual target aid.
+         Once real pedal input arrives, owner vehicle dynamics must lead and
+         the previously latched panel speed target must be released. */
+      gManualVehicleSpeedTarget = 0;
+    }
     gearState = manualDriveStateCmd;
     engineState = deriveManualPowertrainState(manualIgnitionCmd,
                                               gearState,
@@ -563,6 +570,11 @@ on timer tVcuCycle
     {
       manualCruiseActive = 1;
     }
+    if (manualCruiseActive == 1 || gearState < 3)
+    {
+      gManualVehicleSpeedTarget = 0;
+    }
+    manualVehicleSpeedCmd = clampRange(gManualVehicleSpeedTarget, 0, 255);
   }
   else
   {
@@ -575,7 +587,12 @@ on timer tVcuCycle
   {
     externalSpeedDelta = -externalSpeedDelta;
   }
-  if (manualMode == 1 && manualVehicleSpeedCmd > 0)
+  if (manualMode == 1 &&
+      manualVehicleSpeedCmd > 0 &&
+      accelPedal == 0 &&
+      brakePedal == 0 &&
+      manualCruiseActive == 0 &&
+      gearState >= 3)
   {
     externalSpeedOverride = 1;
   }

@@ -145,15 +145,28 @@ on timer tDoorFrCycle
   int lockState;
   int openState;
   int windowPos;
+  int manualMode;
 
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   doorCtrlInputStale = (ethIsRecentTick(gDoorCtrlRxMs, 300) == 1) ? 0 : 1;
   vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
   dkeyInputStale = (ethIsRecentTick(gDkeyRxMs, 300) == 1) ? 0 : 1;
   immoInputStale = (ethIsRecentTick(gImmoRxMs, 300) == 1) ? 0 : 1;
+  if (manualMode == 1)
+  {
+    vehicleInputStale = 0;
+  }
   traceDoorFrInputHealth(doorCtrlInputStale, vehicleInputStale, dkeyInputStale, immoInputStale);
 
-  driveState = gDriveState;
-  if (vehicleInputStale == 1)
+  if (manualMode == 1)
+  {
+    driveState = clampRange((int)@Chassis::driveState, 0, 3);
+  }
+  else
+  {
+    driveState = gDriveState;
+  }
+  if (manualMode != 1 && vehicleInputStale == 1)
   {
     driveState = 3;
   }

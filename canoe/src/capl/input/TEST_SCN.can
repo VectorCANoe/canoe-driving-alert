@@ -3087,6 +3087,7 @@ on timer tInput100
   int mergeCutInFlag;
   int objectAlertHoldMs;
   int objectRiskClass;
+  int harnessRuntimeActive;
   int alertState;
   int emergencyType;
   int emergencyDirection;
@@ -3159,7 +3160,10 @@ on timer tInput100
                      brakePedal > 0) ? 1 : 0;
     engineState = (ignitionState == 1) ? 2 : 0;
   }
-  @Chassis::steeringInput = clampRange(steeringInput, 0, 1);
+  if (gScenarioInputLock == 1)
+  {
+    @Chassis::steeringInput = clampRange(steeringInput, 0, 1);
+  }
   publishManualPanelCompat(speed, accelPedal, brakePedal);
   if (gScenarioInputLock == 1)
   {
@@ -3182,6 +3186,7 @@ on timer tInput100
     objectAlertHoldMs = clampRange((int)@Core::objectAlertHoldMs, 0, 5000);
   }
   objectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
+  harnessRuntimeActive = ((gScenarioInputLock == 1) || (getEvidenceTierCode() > 0)) ? 1 : 0;
 
   /* A-group 자동 감지: 페달 변화율 기반 급가속/급제동 판정
      100ms 주기당 accelPedal 20% 이상 변화 = 급격한 페달 조작
@@ -3230,169 +3235,172 @@ on timer tInput100
   }
   gPrevSteeringInput = steeringInput;
 
-  mStr.SteeringInput = steeringInput;
-  output(mStr);
-
-  mNav.gRoadZone = roadZone;
-  mNav.gNavDirection = navDirection;
-  mNav.gZoneDistance = zoneDistance;
-  mNav.gSpeedLimit = speedLimit;
-  output(mNav);
-
-  /* Comm_101 baseline powertrain path */
-  mIgn.IgnitionState = ignitionState;
-  mIgn.EngineState = engineState;
-  output(mIgn);
-
-  mGear.GearInput = gearState;
-  mGear.GearState = gearState;
-  output(mGear);
-
-  /* Comm_102 baseline chassis input path */
-  mPedal.AccelPedal = accelPedal;
-  mPedal.BrakePedal = brakePedal;
-  output(mPedal);
-
-  if (gScenarioInputLock == 0 && speedHintCmd > 0)
+  if (harnessRuntimeActive == 1)
   {
-    mWheelSpd.WheelSpdFL = speedHintCmd;
-    mWheelSpd.WheelSpdFR = speedHintCmd;
-    mWheelSpd.WheelSpdRL = speedHintCmd;
-    mWheelSpd.WheelSpdRR = speedHintCmd;
-    output(mWheelSpd);
-  }
+    mStr.SteeringInput = steeringInput;
+    output(mStr);
 
-  mDoorCtrl.DoorControlCmd = clampRange((int)@Body::doorOpenCmd, 0, 1);
-  output(mDoorCtrl);
+    mNav.gRoadZone = roadZone;
+    mNav.gNavDirection = navDirection;
+    mNav.gZoneDistance = zoneDistance;
+    mNav.gSpeedLimit = speedLimit;
+    output(mNav);
 
-  mTurnLampInput.TurnLampState = clampRange((int)@Body::manualTurnCmd, 0, 3);
-  output(mTurnLampInput);
+    /* Comm_101 baseline powertrain path */
+    mIgn.IgnitionState = ignitionState;
+    mIgn.EngineState = engineState;
+    output(mIgn);
 
-  mFcamInput.ObjectTrackValid = objectTrackValid;
-  mFcamInput.Confidence = objectConfidence;
-  output(mFcamInput);
+    mGear.GearInput = gearState;
+    mGear.GearState = gearState;
+    output(mGear);
 
-  mFradarInput.ObjectTrackValid = objectTrackValid;
-  mFradarInput.DistanceBucket = clampRange(objectRange, 0, 255);
-  mFradarInput.RelSpeedBucket = clampRange(objectRelSpeed + 128, 0, 255);
-  mFradarInput.Confidence = objectConfidence;
-  output(mFradarInput);
+    /* Comm_102 baseline chassis input path */
+    mPedal.AccelPedal = accelPedal;
+    mPedal.BrakePedal = brakePedal;
+    output(mPedal);
 
-  mLidarInput.TargetDetected = objectTrackValid;
-  mLidarInput.Confidence = objectConfidence;
-  mLidarInput.RangeBucket = clampRange(objectRange, 0, 255);
-  mLidarInput.EventCode = clampRange((int)@Core::objectEventCode, 0, 255);
-  output(mLidarInput);
+    if (gScenarioInputLock == 0 && speedHintCmd > 0)
+    {
+      mWheelSpd.WheelSpdFL = speedHintCmd;
+      mWheelSpd.WheelSpdFR = speedHintCmd;
+      mWheelSpd.WheelSpdRL = speedHintCmd;
+      mWheelSpd.WheelSpdRR = speedHintCmd;
+      output(mWheelSpd);
+    }
 
-  mSrrFlInput.MergeConflict = mergeCutInFlag;
-  mSrrFlInput.RiskClass = objectRiskClass;
-  output(mSrrFlInput);
-
-  mSrrFrInput.MergeConflict = mergeCutInFlag;
-  mSrrFrInput.RiskClass = objectRiskClass;
-  output(mSrrFrInput);
-
-  mSrrRlInput.MergeConflict = mergeCutInFlag;
-  mSrrRlInput.RiskClass = objectRiskClass;
-  output(mSrrRlInput);
-
-  mSrrRrInput.MergeConflict = mergeCutInFlag;
-  mSrrRrInput.RiskClass = objectRiskClass;
-  output(mSrrRrInput);
-
-  if (gScenarioInputLock == 1 && gCurrentScenarioId == 225)
-  {
-    /* Chassis comfort path is owned by ESC/ASM/CDC. Scenario 225 only
-       supplies upstream driving context so those owners emit the state. */
-  }
-  else if (gScenarioInputLock == 1 && gCurrentScenarioId == 226)
-  {
-    mDkey.VehicleAccessState = 1;
-    mDkey.KeyPresence = 1;
-    output(mDkey);
-
-    mImmo.ImmobilizerState = 1;
-    mImmo.KeyAuthState = 1;
-    output(mImmo);
-
-    mDoorCtrl.DoorControlCmd = 1;
+    mDoorCtrl.DoorControlCmd = clampRange((int)@Body::doorOpenCmd, 0, 1);
     output(mDoorCtrl);
-  }
-  else if (gScenarioInputLock == 1 && gCurrentScenarioId == 227)
-  {
-    mDkey.VehicleAccessState = 1;
-    mDkey.KeyPresence = 1;
-    output(mDkey);
 
-    mTailgateCtrl.TailgateAssistMode = 2;
-    mTailgateCtrl.OpenRequestState = 1;
-    mTailgateCtrl.TailgateActuatorCmd = 0;
-    output(mTailgateCtrl);
-  }
-  else if (gScenarioInputLock == 1 && gCurrentScenarioId == 228)
-  {
-    @Test::driverBeltOff = 1;
-    @Test::passengerBeltOff = 1;
-
-    mSeatState.PassengerSeatPos = 60;
-    output(mSeatState);
-  }
-  else if (gScenarioInputLock == 1 && gCurrentScenarioId == 229)
-  {
-    mConn.ConnectivityType = 1;
-    mConn.ConnectivityState = 1;
-    mConn.SignalBars = 4;
-    output(mConn);
-
-    mIviHealth.IviCpuLoad = 40;
-    mIviHealth.IviMemLoad = 38;
-    output(mIviHealth);
-
-    mCabinAir.CabinTemp = 30;
-    output(mCabinAir);
-  }
-  else if (gScenarioInputLock == 1 && gCurrentScenarioId == 230)
-  {
-    mTurnLampInput.TurnLampState = 2;
+    mTurnLampInput.TurnLampState = clampRange((int)@Body::manualTurnCmd, 0, 3);
     output(mTurnLampInput);
-  }
-  else if (gScenarioInputLock == 1 && gCurrentScenarioId == 239)
-  {
-    mTurnLampInput.TurnLampState = 2;
-    output(mTurnLampInput);
-  }
-  else if (gScenarioInputLock == 1 && gCurrentScenarioId == 231)
-  {
-    mBattery.BatterySoc = 60;
-    mBattery.ChargingState = 1;
-    output(mBattery);
-  }
-  else if (gScenarioInputLock == 1 && gCurrentScenarioId == 232)
-  {
-    mEngineTemp.EngineRpm = 2400;
-    mEngineTemp.OilTemp = 90;
-    output(mEngineTemp);
-  }
-  else if (gScenarioInputLock == 1 && gCurrentScenarioId == 233)
-  {
-    mFcamInput.ObjectTrackValid = 1;
-    mFcamInput.Confidence = 80;
+
+    mFcamInput.ObjectTrackValid = objectTrackValid;
+    mFcamInput.Confidence = objectConfidence;
     output(mFcamInput);
-  }
-  else if (gScenarioInputLock == 1 && gCurrentScenarioId == 234)
-  {
-    mParkUltrasonic.ParkAssistActive = 1;
-    mParkUltrasonic.MinDistanceCm = 28;
-    output(mParkUltrasonic);
 
-    mAvm.AvmActive = 1;
-    mAvm.ViewMode = 3;
-    output(mAvm);
+    mFradarInput.ObjectTrackValid = objectTrackValid;
+    mFradarInput.DistanceBucket = clampRange(objectRange, 0, 255);
+    mFradarInput.RelSpeedBucket = clampRange(objectRelSpeed + 128, 0, 255);
+    mFradarInput.Confidence = objectConfidence;
+    output(mFradarInput);
 
-    mSpas.SpasActive = 1;
-    mSpas.SpasStage = 2;
-    mSpas.SteeringAssistReq = 1;
-    output(mSpas);
+    mLidarInput.TargetDetected = objectTrackValid;
+    mLidarInput.Confidence = objectConfidence;
+    mLidarInput.RangeBucket = clampRange(objectRange, 0, 255);
+    mLidarInput.EventCode = clampRange((int)@Core::objectEventCode, 0, 255);
+    output(mLidarInput);
+
+    mSrrFlInput.MergeConflict = mergeCutInFlag;
+    mSrrFlInput.RiskClass = objectRiskClass;
+    output(mSrrFlInput);
+
+    mSrrFrInput.MergeConflict = mergeCutInFlag;
+    mSrrFrInput.RiskClass = objectRiskClass;
+    output(mSrrFrInput);
+
+    mSrrRlInput.MergeConflict = mergeCutInFlag;
+    mSrrRlInput.RiskClass = objectRiskClass;
+    output(mSrrRlInput);
+
+    mSrrRrInput.MergeConflict = mergeCutInFlag;
+    mSrrRrInput.RiskClass = objectRiskClass;
+    output(mSrrRrInput);
+
+    if (gScenarioInputLock == 1 && gCurrentScenarioId == 225)
+    {
+      /* Chassis comfort path is owned by ESC/ASM/CDC. Scenario 225 only
+         supplies upstream driving context so those owners emit the state. */
+    }
+    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 226)
+    {
+      mDkey.VehicleAccessState = 1;
+      mDkey.KeyPresence = 1;
+      output(mDkey);
+
+      mImmo.ImmobilizerState = 1;
+      mImmo.KeyAuthState = 1;
+      output(mImmo);
+
+      mDoorCtrl.DoorControlCmd = 1;
+      output(mDoorCtrl);
+    }
+    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 227)
+    {
+      mDkey.VehicleAccessState = 1;
+      mDkey.KeyPresence = 1;
+      output(mDkey);
+
+      mTailgateCtrl.TailgateAssistMode = 2;
+      mTailgateCtrl.OpenRequestState = 1;
+      mTailgateCtrl.TailgateActuatorCmd = 0;
+      output(mTailgateCtrl);
+    }
+    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 228)
+    {
+      @Test::driverBeltOff = 1;
+      @Test::passengerBeltOff = 1;
+
+      mSeatState.PassengerSeatPos = 60;
+      output(mSeatState);
+    }
+    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 229)
+    {
+      mConn.ConnectivityType = 1;
+      mConn.ConnectivityState = 1;
+      mConn.SignalBars = 4;
+      output(mConn);
+
+      mIviHealth.IviCpuLoad = 40;
+      mIviHealth.IviMemLoad = 38;
+      output(mIviHealth);
+
+      mCabinAir.CabinTemp = 30;
+      output(mCabinAir);
+    }
+    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 230)
+    {
+      mTurnLampInput.TurnLampState = 2;
+      output(mTurnLampInput);
+    }
+    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 239)
+    {
+      mTurnLampInput.TurnLampState = 2;
+      output(mTurnLampInput);
+    }
+    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 231)
+    {
+      mBattery.BatterySoc = 60;
+      mBattery.ChargingState = 1;
+      output(mBattery);
+    }
+    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 232)
+    {
+      mEngineTemp.EngineRpm = 2400;
+      mEngineTemp.OilTemp = 90;
+      output(mEngineTemp);
+    }
+    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 233)
+    {
+      mFcamInput.ObjectTrackValid = 1;
+      mFcamInput.Confidence = 80;
+      output(mFcamInput);
+    }
+    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 234)
+    {
+      mParkUltrasonic.ParkAssistActive = 1;
+      mParkUltrasonic.MinDistanceCm = 28;
+      output(mParkUltrasonic);
+
+      mAvm.AvmActive = 1;
+      mAvm.ViewMode = 3;
+      output(mAvm);
+
+      mSpas.SpasActive = 1;
+      mSpas.SpasStage = 2;
+      mSpas.SteeringAssistReq = 1;
+      output(mSpas);
+    }
   }
 
   /* Product-side generated frames stay on ECU owners:

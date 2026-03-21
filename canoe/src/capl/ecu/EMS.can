@@ -182,6 +182,15 @@ int deriveManualEmsEngineState(int ignitionState, int driveState, int speed, int
   return 2;
 }
 
+int getCrossSceneAlertOverrideFrame()
+{
+  if (((int)@V2X::CrossAnimAlertActive) == 1)
+  {
+    return 2;
+  }
+  return -1;
+}
+
 void updateWarningFrame()
 {
   int beltWarn;
@@ -192,9 +201,10 @@ void updateWarningFrame()
   int selectedAlertType;
   int compatV2xFrame;
   int compatAlertState;
+  int crossSceneAlertFrame;
   int nextFrame;
 
-  if (gInitDone == 0 || gAnimRunning == 1)
+  if (gInitDone == 0)
   {
     return;
   }
@@ -207,9 +217,18 @@ void updateWarningFrame()
   selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 15);
   compatV2xFrame = clampRange((int)@V2X::v2xFrame, 0, 255);
   compatAlertState = (((int)@V2X::alertState) > 0) ? 1 : 0;
+  crossSceneAlertFrame = getCrossSceneAlertOverrideFrame();
   nextFrame = 0;
 
-  if (compatAlertState == 1 && compatV2xFrame > 0)
+  if (crossSceneAlertFrame >= 0)
+  {
+    nextFrame = crossSceneAlertFrame;
+  }
+  else if (gAnimRunning == 1)
+  {
+    return;
+  }
+  else if (compatAlertState == 1 && compatV2xFrame > 0)
   {
     nextFrame = compatV2xFrame;
   }
@@ -246,7 +265,9 @@ void updateWarningFrame()
     nextFrame = 7;
   }
 
-  if (((int)@Test::scenarioActiveId) == 0 && gEngineState == 0)
+  if (crossSceneAlertFrame < 0 &&
+      ((int)@Test::scenarioActiveId) == 0 &&
+      gEngineState == 0)
   {
     @Display::animFrame = 0;
     return;
@@ -288,6 +309,13 @@ on start
 
 on timer tAnimStep
 {
+  if (getCrossSceneAlertOverrideFrame() >= 0)
+  {
+    @Display::animFrame = getCrossSceneAlertOverrideFrame();
+    setTimer(tAnimStep, gAnimInterval);
+    return;
+  }
+
   if (gAnimRunning == 0)
   {
     return;
@@ -509,6 +537,11 @@ on sysvar V2X::ambulancePos
 {
   /* `v2xFrame` belongs to the V2X owner.
      EMS only refreshes local warning compatibility from panel input. */
+  updateWarningFrame();
+}
+
+on sysvar V2X::CrossAnimAlertActive
+{
   updateWarningFrame();
 }
 
