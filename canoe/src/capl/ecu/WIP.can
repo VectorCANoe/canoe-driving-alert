@@ -138,6 +138,7 @@ void publishWiperState()
   mWiper.WiperInterval = clampRange(wiperInterval, 0, 15);
   output(mWiper);
   @Body::wiperPos = clampRange(gWiperPos, 0, 21);
+  @Body::frontWiperAnimFrame = clampRange(gWiperPos, 0, 21);
 
   if (mWiper.FrontWiperState != gLastFrontWiperState ||
       mWiper.RearWiperState != gLastRearWiperState ||
@@ -167,6 +168,7 @@ on start
   gWiperPos = 0;
   gWiperDir = 1;
   @Body::wiperPos = 0;
+  @Body::frontWiperAnimFrame = 0;
   setTimer(tWiperCycle, 100);
   write("[WIP] start");
 }
