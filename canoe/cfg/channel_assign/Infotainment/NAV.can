@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -16,7 +17,44 @@ variables
   int gLastRouteClass;
   int gLastGuideType;
   int gLastEtaMinutes;
+  
+  //navAnimation
+  msTimer tNavLaneAnim;
+  int gNavAnimFrame;
+  //
 }
+
+//navAnimation
+int GetNavAnimPeriod(int speedKph)
+{
+  if (speedKph <= 0)   return 500;
+  if (speedKph <= 20)  return 350;
+  if (speedKph <= 40)  return 250;
+  if (speedKph <= 70)  return 180;
+  if (speedKph <= 100) return 120;
+  return 80;
+}
+
+void UpdateNavLaneAnimation()
+{
+  int speed;
+  int period;
+
+  speed = (int)@sysvar::Core::vehicleSpeedNorm; 
+
+  if (gNavAnimFrame < 1 || gNavAnimFrame > 5)
+  {
+    gNavAnimFrame = 1;
+  }
+
+  @sysvar::UiRender::navLaneFrame = gNavAnimFrame;
+
+  period = GetNavAnimPeriod(speed);
+  write("[NAV_ANIM] Update: speed=%d period=%d frame=%d", speed, period, gNavAnimFrame);
+  setTimer(tNavLaneAnim, period);
+} 
+//
+
 
 int calcBaseZoneContext(int roadZone, int navDirection)
 {
@@ -68,6 +106,18 @@ void markNavInputDirty()
 {
   gNavInputTouchMs = getSimulationTimeMs();
 }
+
+//add
+void syncNavInputFromSysvar()
+{
+  gRoadZone     = clampRange((int)@sysvar::Infotainment::roadZone, 0, 3);
+  gNavDirection = clampRange((int)@sysvar::Infotainment::navDirection, 0, 3);
+  gZoneDistance = clampRange((int)@sysvar::Infotainment::zoneDistance, 0, 255);
+  gSpeedLimit   = clampRange((int)@sysvar::Infotainment::speedLimit, 0, 255);
+
+  markNavInputDirty();
+}
+//
 
 void traceNavInputHealth(int navInputStale)
 {
@@ -210,6 +260,13 @@ on start
   gLastRouteClass = -1;
   gLastGuideType = -1;
   gLastEtaMinutes = -1;
+  
+  //navAnimation
+  gNavAnimFrame = 1;
+  @sysvar::UiRender::navLaneFrame = 1;
+  setTimer(tNavLaneAnim, 300);
+  //
+  
   markNavInputDirty();
   setTimer(tNavModuleCycle, 100);
   write("[NAV] start");
@@ -221,6 +278,50 @@ on timer tNavModuleCycle
   setTimer(tNavModuleCycle, 100);
 }
 
+
+//navAnimation
+on timer tNavLaneAnim
+{
+  int speed;
+  int period;
+
+  speed = (int)@sysvar::Chassis::vehicleSpeed;
+
+  /* 속도 0이면 정지 */
+  if (speed <= 0)
+  {
+    gNavAnimFrame = 1;
+    @sysvar::UiRender::navLaneFrame = 1;
+
+    write("[NAV_ANIM] stop: speed=%d frame=%d", speed, gNavAnimFrame);
+
+    setTimer(tNavLaneAnim, 300);
+    return;
+  }
+
+  gNavAnimFrame++;
+  if (gNavAnimFrame > 5)
+  {
+    gNavAnimFrame = 1;
+  }
+
+  @sysvar::UiRender::navLaneFrame = gNavAnimFrame;
+
+  period = GetNavAnimPeriod(speed);
+
+  write("[NAV_ANIM] Timer: speed=%d period=%d frame=%d",
+        speed, period, gNavAnimFrame);
+
+  setTimer(tNavLaneAnim, period);
+}
+
+on sysvar_update Core::vehicleSpeedNorm
+{
+  
+}
+//
+
+
 on message frmNavContextCanMsg
 {
   gRoadZone = clampRange((int)this.gRoadZone, 0, 3);
@@ -230,7 +331,30 @@ on message frmNavContextCanMsg
   markNavInputDirty();
 }
 
+//add
+on sysvar_update Infotainment::roadZone
+{
+  syncNavInputFromSysvar();
+}
+
+on sysvar_update Infotainment::navDirection
+{
+  syncNavInputFromSysvar();
+}
+
+on sysvar_update Infotainment::zoneDistance
+{
+  syncNavInputFromSysvar();
+}
+
+on sysvar_update Infotainment::speedLimit
+{
+  syncNavInputFromSysvar();
+}
+//
+
 on stopMeasurement
 {
   cancelTimer(tNavModuleCycle);
+  cancelTimer(tNavLaneAnim); //navAnimation
 }

@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -39,6 +40,12 @@ variables
   int gLastTransportSourceId;
   int gLastTransportDirection;
   int gLastIngressHeartbeatSeen;
+  
+  //add
+  int gPrevPanelPoliceDispatch;
+  int gPrevPanelAmbDispatch;
+  // 
+  
   dword gLastAcceptedAlertSrcIp;
   dword gLastAcceptedAlertSrcPort;
   dword gLastRejectedAlertSrcIp;
@@ -178,6 +185,37 @@ void updateEmergencyContext()
     gLastEmergencyContext = contextValue;
   }
 }
+
+//add
+void updateSelectedAlertFromEmergency()
+{
+  int level;
+  int type;
+
+  level = 0;
+  type = 0;
+
+  if (gActiveEmergencyType > 0)
+  {
+    level = 6;
+
+    if (gActiveEmergencyType == 2)
+    {
+      type = 8;   /* ambulance */
+    }
+    else if (gActiveEmergencyType == 1)
+    {
+      type = 7;   /* police */
+    }
+  }
+
+  @CoreState::selectedAlertEffectiveLevel = level;
+  @CoreState::selectedAlertEffectiveType = type;
+
+  @Core::selectedAlertLevel = level;
+  @Core::selectedAlertType = type;
+}
+//
 
 void clearEmergencyState()
 {
@@ -390,6 +428,53 @@ void syncLegacyDispatchInputs()
   gPrevAmbDispatch = ambulanceDispatch;
 }
 
+//add
+void syncPanelDispatchInputs()
+{
+  int policeDispatch;
+  int ambDispatch;
+  int direction;
+  int eta;
+  int sourceId;
+
+  policeDispatch = (((int)@V2X::policeDispatch) > 0) ? 1 : 0;
+  ambDispatch = (((int)@V2X::ambulanceDispatch) > 0) ? 1 : 0;
+  direction = clampRange((int)@V2X::emergencyDirection, 0, 3);
+  eta = clampRange((int)@V2X::eta, 0, 255);
+  sourceId = clampRange((int)@V2X::sourceId, 0, 255);
+
+  if (eta == 0 || eta == 255)
+  {
+    eta = 20;
+  }
+
+  if (sourceId == 0 || sourceId == 255)
+  {
+    sourceId = 1;
+  }
+
+  if (ambDispatch == 1)
+  {
+    stageEmergencyIngress(2, 1, sourceId, eta, direction);
+  }
+  else if (policeDispatch == 1)
+  {
+    stageEmergencyIngress(1, 1, sourceId, eta, direction);
+  }
+  else if (gPrevPanelAmbDispatch == 1)
+  {
+    stageEmergencyIngress(2, 0, sourceId, 0, direction);
+  }
+  else if (gPrevPanelPoliceDispatch == 1)
+  {
+    stageEmergencyIngress(1, 0, sourceId, 0, direction);
+  }
+
+  gPrevPanelPoliceDispatch = policeDispatch;
+  gPrevPanelAmbDispatch = ambDispatch;
+}
+//
+
 void publishTransportFrames()
 {
   int txStatus;
@@ -506,6 +591,10 @@ on start
   gLastAcceptedAlertSrcPort = 0;
   gLastRejectedAlertSrcIp = 0;
   gLastRejectedAlertSrcPort = 0;
+  //add
+  gPrevPanelPoliceDispatch = 0;
+  gPrevPanelAmbDispatch = 0;
+  //
   @V2X::ingressHeartbeat = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
@@ -513,6 +602,7 @@ on start
   }
   publishActiveEmergencyToV2X();
   updateEmergencyContext();
+  updateSelectedAlertFromEmergency();//add
   setTimeoutClear(0);
   if (gEthSocket != ethInvalidSocket())
   {
@@ -539,6 +629,7 @@ on timer tRxCycle
   int alertState;
 
   syncLegacyDispatchInputs();
+  syncPanelDispatchInputs();//add
   nowMs              = getCurrentTick32();
   accepted           = 0;
   hasIngressEvent    = 0;
@@ -598,10 +689,12 @@ on timer tRxCycle
       bumpIngressHeartbeat();
       publishActiveEmergencyToV2X();
       updateEmergencyContext();
+      updateSelectedAlertFromEmergency();//add
     }
   }
 
   updateEmergencyContext();
+  updateSelectedAlertFromEmergency(); //add
   setTimer(tRxCycle, 10);
 }
 
@@ -616,6 +709,7 @@ on timer tWatchdog
     bumpIngressHeartbeat();
     publishActiveEmergencyToV2X();
     updateEmergencyContext();
+    updateSelectedAlertFromEmergency();//add
     setTimeoutClear(1);
     setTimer(tTimeoutClearPulse, 200);
     write("[V2X] watchdog clear");

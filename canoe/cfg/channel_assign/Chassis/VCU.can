@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -528,8 +529,8 @@ on timer tVcuCycle
   mState.gVehicleSpeed = gSpeed;
   mState.gDriveState = driveState;
   output(mState);
-  @Chassis::vehicleSpeed = gSpeed;
-  @Chassis::driveState = driveState;
+  //@Chassis::vehicleSpeed = gSpeed;
+  //@Chassis::driveState = driveState;
   publishBackboneVehicleState(gSpeed, driveState);
 
   if (driveMode == 0 &&

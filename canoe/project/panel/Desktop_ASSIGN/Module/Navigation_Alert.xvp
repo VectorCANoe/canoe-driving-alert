@@ -1,10 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.4.10.0, Culture=neutral, PublicKeyToken=null">
   <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="NavigationAlert">
+    <Object Type="Vector.CANalyzer.Panels.Design.MediaPlayerControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X8077b26ae0ef6e424be8ef6ef0c39ca4889f" ControlName="Media Player 4">
+      <Property Name="Name">X8077b26ae0ef6e424be8ef6ef0c39ca4889f</Property>
+      <Property Name="Size">63, 53</Property>
+      <Property Name="Location">102, 390</Property>
+      <Property Name="MediaFile">..\..\Bitmaps\beep_midVol.wav</Property>
+      <Property Name="SwitchVTPauseXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;</Property>
+      <Property Name="SwitchVTPause">1;Lower;2</Property>
+      <Property Name="SwitchPause">2</Property>
+      <Property Name="SymbolConfiguration">8;16;UiRender;;;beepPolice;1;;;-1;;;Value;;;0</Property>
+    </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.MediaPlayerControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xdd9aeabae513be42ade8d60e3b8a04e8745d" ControlName="Media Player 3">
       <Property Name="Name">Xdd9aeabae513be42ade8d60e3b8a04e8745d</Property>
-      <Property Name="Size">89, 53</Property>
-      <Property Name="Location">255, 373</Property>
+      <Property Name="Size">66, 53</Property>
+      <Property Name="Location">260, 390</Property>
       <Property Name="MediaFile">Bitmaps\IC.wav</Property>
       <Property Name="SwitchVTPauseXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;</Property>
       <Property Name="SwitchVTPause">1;Lower;2</Property>
@@ -13,8 +23,8 @@
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.MediaPlayerControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X022c62ede3101e48f8e92ebe952e4003516f" ControlName="Media Player 2">
       <Property Name="Name">X022c62ede3101e48f8e92ebe952e4003516f</Property>
-      <Property Name="Size">89, 53</Property>
-      <Property Name="Location">123, 383</Property>
+      <Property Name="Size">52, 53</Property>
+      <Property Name="Location">188, 390</Property>
       <Property Name="MediaFile">Bitmaps\speed.mp3</Property>
       <Property Name="SwitchVTPauseXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;</Property>
       <Property Name="SwitchVTPause">1;Lower;2</Property>
@@ -48,7 +58,7 @@ sound setting</Property>
       <Property Name="ValueDisplay">Decimal</Property>
       <Property Name="UsedValueTable">PhysicalValue</Property>
       <Property Name="DescriptionSize">5, 21</Property>
-      <Property Name="SymbolConfiguration">8;16;CoreState;;;volumeLevel;2;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;16;CoreState;;;baseVolume;1;;;-1;;;Value;;;0</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X4527f6dae507ee4e05e9f8ce2e0740fe5f25" ControlName="LED Control 1">
       <Property Name="Name">X4527f6dae507ee4e05e9f8ce2e0740fe5f25</Property>
@@ -62,13 +72,13 @@ sound setting</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.MediaPlayerControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xde19c1fcef5d0e45a3ea3e3e242c1b9c19b6" ControlName="Media Player 1">
       <Property Name="Name">Xde19c1fcef5d0e45a3ea3e3e242c1b9c19b6</Property>
-      <Property Name="Size">89, 53</Property>
+      <Property Name="Size">67, 53</Property>
       <Property Name="Location">12, 390</Property>
       <Property Name="MediaFile">Bitmaps\beep.wav</Property>
       <Property Name="SwitchVTPauseXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;</Property>
       <Property Name="SwitchVTPause">1;Lower;2</Property>
       <Property Name="SwitchPause">2</Property>
-      <Property Name="SymbolConfiguration">8;16;UiRender;;;beepEmergency;2;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;16;UiRender;;;beepAmbulance;1;;;-1;;;Value;;;0</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X3abc94f3e898be40e1e88bae1466576a699f" ControlName="Input/Output Box 2">
       <Property Name="Name">X3abc94f3e898be40e1e88bae1466576a699f</Property>
@@ -90,7 +100,7 @@ sound setting</Property>
       <Property Name="ValueDisplay">Decimal</Property>
       <Property Name="UsedValueTable">PhysicalValue</Property>
       <Property Name="DescriptionSize">74, 21</Property>
-      <Property Name="SymbolConfiguration">8;16;CoreState;;;volumeLevel;2;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;16;UiRender;;;renderVolumeLevel;1;;;-1;;;Value;;;0</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X508d2bcee22c9e4947e88ece4f64a21e9649" ControlName="Track Bar 1">
       <Property Name="Name">X508d2bcee22c9e4947e88ece4f64a21e9649</Property>
@@ -108,7 +118,7 @@ sound setting</Property>
       <Property Name="Name">X28c6cc57e9d3fe4216e813be4778cb79529b</Property>
       <Property Name="Size">554, 277</Property>
       <Property Name="Location">20, 50</Property>
-      <Property Name="SymbolConfiguration">8;16;UiRender;;;icFlowPhase;2;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;16;UiRender;;;navLaneFrame;1;;;-1;;;Value;;;0</Property>
       <Property Name="ImageFile">Bitmaps\lane.png</Property>
       <Property Name="IsProportional">False</Property>
       <Property Name="ReadOnlyControl">True</Property>

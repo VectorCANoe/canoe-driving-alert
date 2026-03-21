@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -24,7 +25,19 @@ variables
   int gLastAmpMode;
   int gLastAmpMute;
   int gLastAmpDucking;
-  int gLastAmpVolume;
+  int gLastAmpVolume;  
+  
+    /* warning beep */
+  msTimer tWarnBeep;
+  msTimer tNavDirPulseOff;
+  int gWarnBeepOn;
+  int gPrevNavDirection;
+  int gNavDirPulseActive;
+    
+  int gLastRenderTxt;
+  int gLastRenderArrow;
+  //
+  
 }
 
 int ampMediaLeaseWindowMs()
@@ -123,6 +136,308 @@ void traceAmpInputHealth(int mediaInputStale, int audioFocusInputStale,
   }
 }
 
+//add
+int isOverspeedActive()
+{
+  int speedNow;
+  int speedLimit;
+
+  speedNow = (int)@sysvar::Core::vehicleSpeedNorm;
+  speedLimit = (int)@sysvar::Core::speedLimitNorm;
+
+  if (speedLimit <= 0)
+  {
+    return 0;
+  }
+
+  if (speedNow > speedLimit)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
+int isIcNavDirectionEventActive()
+{
+  int roadZone;
+  int navDir;
+
+  roadZone = (int)@sysvar::Infotainment::roadZone;
+  navDir = (int)@sysvar::Infotainment::navDirection;
+
+  if (roadZone != 3)
+  {
+    return 0;
+  }
+
+  if (gNavDirPulseActive == 1 && navDir > 0)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
+int getBeepPriorityType()
+{
+  int alertState;
+  int emergencyType;
+
+  alertState = (int)@sysvar::V2X::alertState;
+  emergencyType = (int)@sysvar::V2X::emergencyType;
+
+  if (alertState == 1 && emergencyType == 2)
+  {
+    return 4;   /* ambulance */
+  }
+
+  if (alertState == 1 && emergencyType == 1)
+  {
+    return 3;   /* police */
+  }
+
+  if (isOverspeedActive() == 1)
+  {
+    return 2;   /* overspeed */
+  }
+
+  if (isIcNavDirectionEventActive() == 1)
+  {
+    return 1;   /* navDirection */
+  }
+
+  return 0;
+}
+
+int getBeepPeriodMs()
+{
+  switch (getBeepPriorityType())
+  {
+    case 4: return 50;
+    case 3: return 900;
+    case 2: return 700;
+    case 1: return 1200;
+    default: return 0;
+  }
+}
+
+
+//add
+void updateClusterRender()
+{
+  int beepType;
+  int emDir;
+  int navDir;
+  
+
+  beepType = getBeepPriorityType();
+  emDir = (int)@sysvar::V2X::emergencyDirection;
+  navDir = (int)@sysvar::Infotainment::navDirection;
+
+  @sysvar::UiRender::renderTxt = 0;
+  @sysvar::UiRender::renderArrow = 0;
+  
+
+  switch (beepType)
+  {
+    case 4:   /* ambulance */
+      switch (emDir)
+      {
+        case 0:
+          @sysvar::UiRender::renderTxt = 5;   /* 구급차 전방 접근 */
+          @sysvar::UiRender::renderArrow = 1; /* front */
+          break;
+        case 1:
+          @sysvar::UiRender::renderTxt = 6;   /* 구급차 좌측 접근 */
+          @sysvar::UiRender::renderArrow = 2; /* left */
+          break;
+        case 2:
+          @sysvar::UiRender::renderTxt = 7;   /* 구급차 우측 접근 */
+          @sysvar::UiRender::renderArrow = 3; /* right */
+          break;
+        case 3:
+          @sysvar::UiRender::renderTxt = 8;   /* 구급차 후방 접근 */
+          @sysvar::UiRender::renderArrow = 4; /* rear */
+          break;
+        default:
+          break;
+      }
+      break;
+
+    case 3:   /* police */
+      switch (emDir)
+      {
+        case 0:
+          @sysvar::UiRender::renderTxt = 1;   /* 경찰차 전방 접근 */
+          @sysvar::UiRender::renderArrow = 1; /* front */
+          break;
+        case 1:
+          @sysvar::UiRender::renderTxt = 2;   /* 경찰차 좌측 접근 */
+          @sysvar::UiRender::renderArrow = 2; /* left */
+          break;
+        case 2:
+          @sysvar::UiRender::renderTxt = 3;   /* 경찰차 우측 접근 */
+          @sysvar::UiRender::renderArrow = 3; /* right */
+          break;
+        case 3:
+          @sysvar::UiRender::renderTxt = 4;   /* 경찰차 후방 접근 */
+          @sysvar::UiRender::renderArrow = 4; /* rear */
+          break;
+        default:
+          break;
+      }
+      break;
+
+    case 2:   /* overspeed */
+      @sysvar::UiRender::renderTxt = 10;      /* 제한속도 초과 */
+      @sysvar::UiRender::renderArrow = 0;
+      break;
+
+    case 1:   /* IC */
+      if (navDir == 1)
+      {
+        @sysvar::UiRender::renderTxt = 11;    /* IC 좌측 */
+        @sysvar::UiRender::renderArrow = 5;   /* ic-left */
+      }
+      else if (navDir == 2)
+      {
+        @sysvar::UiRender::renderTxt = 12;    /* IC 우측 */
+        @sysvar::UiRender::renderArrow = 6;   /* ic-right */
+      }
+      break;
+
+    default:
+      break;
+  }
+
+  if (@sysvar::UiRender::renderTxt != gLastRenderTxt ||
+      @sysvar::UiRender::renderArrow != gLastRenderArrow)
+  {
+    gLastRenderTxt = (int)@sysvar::UiRender::renderTxt;
+    gLastRenderArrow = (int)@sysvar::UiRender::renderArrow;
+
+    write("[RENDER] txt=%d arrow=%d beepType=%d emDir=%d navDir=%d",
+      gLastRenderTxt,
+      gLastRenderArrow,
+      beepType,
+      emDir,
+      navDir);
+  }
+}
+//
+
+int getAlertBaseVolume()
+{
+  int vol;
+
+  vol = (int)@sysvar::Test::alertVolumeSetting;
+
+  if (vol <= 0)
+  {
+    vol = 60;
+  }
+
+  return clampRange(vol, 0, 100);
+}
+
+void stopWarningBeep()
+{
+  cancelTimer(tWarnBeep);
+  gWarnBeepOn = 0;
+
+  @sysvar::UiRender::warningBeepState = 0;
+  @sysvar::UiRender::beepAmbulance = 0;
+  @sysvar::UiRender::beepPolice = 0;
+  @sysvar::UiRender::beepSpeed = 0;
+  @sysvar::UiRender::beepIC = 0;
+  
+  //add
+  @sysvar::UiRender::renderTxt = 0;
+  @sysvar::UiRender::renderArrow = 0;
+  //
+}
+
+void updateBeepOutputs()
+{
+  int beepType;
+  int beepState;
+
+  beepType = getBeepPriorityType();
+  beepState = (int)@sysvar::UiRender::warningBeepState;
+
+  @sysvar::UiRender::beepAmbulance = 0;
+  @sysvar::UiRender::beepPolice = 0;
+  @sysvar::UiRender::beepSpeed = 0;
+  @sysvar::UiRender::beepIC = 0;
+
+  if (gWarnBeepOn == 0)
+  {
+    return;
+  }
+
+  switch (beepType)
+{
+  case 4:
+    @sysvar::UiRender::beepAmbulance = beepState;
+    break;
+
+  case 3:
+    @sysvar::UiRender::beepPolice = beepState;
+    break;
+
+  case 2:
+    @sysvar::UiRender::beepSpeed = beepState;
+    break;
+
+  case 1:
+    @sysvar::UiRender::beepIC = beepState;
+    break;
+}
+  //debug
+  write("[BEEP_OUT] type=%d state=%d amb=%d pol=%d sp=%d ic=%d",
+    beepType,
+    beepState,
+    (int)@sysvar::UiRender::beepAmbulance,
+    (int)@sysvar::UiRender::beepPolice,
+    (int)@sysvar::UiRender::beepSpeed,
+    (int)@sysvar::UiRender::beepIC);
+}
+
+void updateWarningBeep()
+{
+  int period;
+
+  period = getBeepPeriodMs();
+  
+  //debug
+  write("[BEEP_UPDATE] type=%d period=%d alert=%d emType=%d",
+      getBeepPriorityType(),
+      period,
+      (int)@sysvar::V2X::alertState,
+      (int)@sysvar::V2X::emergencyType);
+  //
+
+  if (period <= 0)
+  {
+    stopWarningBeep();
+    return;
+  }
+
+  if (gWarnBeepOn == 0)
+  {
+    gWarnBeepOn = 1;
+    @sysvar::UiRender::warningBeepState = 1;
+  }
+
+  updateBeepOutputs();
+  updateClusterRender();//add
+  cancelTimer(tWarnBeep);
+  setTimer(tWarnBeep, period);
+}
+//
+
+
 void publishAmpState()
 {
   message frmAmpStateMsg mAmp;
@@ -143,6 +458,11 @@ void publishAmpState()
   int ttsState;
   int ampMode;
   int ampDucking;
+  
+  //add
+  int beepType;
+  int baseVol;
+  //
 
   mediaInputStale = (ethIsRecentTick(gMediaRxMs, ampMediaLeaseWindowMs()) == 1) ? 0 : 1;
   audioFocusInputStale = (ethIsRecentTick(gAudioFocusRxMs, ampAudioFocusLeaseWindowMs()) == 1) ? 0 : 1;
@@ -209,7 +529,8 @@ void publishAmpState()
       ampMode = 2;
     }
   }
-  else if (gAudioFocusOwner > 0 || ampDucking > 0)
+  //else if (gAudioFocusOwner > 0 || ampDucking > 0)
+  else if (audioFocusOwner > 0 || ampDucking > 0) //modified
   {
     if (ampDucking < 2)
     {
@@ -221,12 +542,66 @@ void publishAmpState()
     }
   }
 
+//
+  beepType = 0;
+  baseVol = 0;
+
+  if (gWarnBeepOn == 1)
+  {
+    beepType = getBeepPriorityType();
+    baseVol = getAlertBaseVolume();
+
+    @sysvar::CoreState::baseVolume = baseVol;
+    audioFocusOwner = 2;
+
+    switch (beepType)
+    {
+      case 4:
+        volumeLevel = clampRange(baseVol + 20, 0, 100);   /* ambulance */
+        if (ampDucking < 6) ampDucking = 6;
+        break;
+
+      case 3:
+        volumeLevel = clampRange(baseVol + 10, 0, 100);   /* police */
+        if (ampDucking < 5) ampDucking = 5;
+        break;
+
+      case 2:
+        volumeLevel = clampRange(baseVol + 5, 0, 100);    /* overspeed */
+        if (ampDucking < 4) ampDucking = 4;
+        break;
+
+      case 1:
+        volumeLevel = clampRange(baseVol, 0, 100);        /* navDirection */
+        if (ampDucking < 2) ampDucking = 2;
+        break;
+
+      default:
+        volumeLevel = clampRange(baseVol, 0, 100);
+        break;
+    }
+
+    if (ampMode < 2)
+    {
+      ampMode = 2;
+    }
+  }
+  //
+  
+  
+  
   mAmp.AmpMode = clampRange(ampMode, 0, 7);
   mAmp.AmpMute = clampRange(muteState, 0, 1);
   mAmp.AmpDuckingLvl = clampRange(ampDucking, 0, 7);
   mAmp.AmpVolumeLevel = clampRange(volumeLevel, 0, 100);
   output(mAmp);
 
+  //add
+  @sysvar::UiRender::renderVolumeLevel = mAmp.AmpVolumeLevel;
+  write("[AMP_VOL] warnOn=%d beepType=%d baseVol=%d finalVol=%d duck=%d",
+      gWarnBeepOn, beepType, baseVol, mAmp.AmpVolumeLevel, mAmp.AmpDuckingLvl);
+  //
+  
   if (mAmp.AmpMode != gLastAmpMode ||
       mAmp.AmpMute != gLastAmpMute ||
       mAmp.AmpDuckingLvl != gLastAmpDucking ||
@@ -260,6 +635,24 @@ on start
   gLastAmpMute = -1;
   gLastAmpDucking = -1;
   gLastAmpVolume = -1;
+  
+  //add
+  gLastRenderTxt = -1;
+  gLastRenderArrow = -1;
+  @sysvar::UiRender::renderTxt = 0;
+  @sysvar::UiRender::renderArrow = 0;
+  
+  gWarnBeepOn = 0;
+  gNavDirPulseActive = 0;
+  gPrevNavDirection = (int)@sysvar::Infotainment::navDirection;
+  @sysvar::UiRender::warningBeepState = 0;
+  @sysvar::UiRender::beepAmbulance = 0;
+  @sysvar::UiRender::beepPolice = 0;
+  @sysvar::UiRender::beepSpeed = 0;
+  @sysvar::UiRender::beepIC = 0;
+  @sysvar::UiRender::renderVolumeLevel=20;
+  //
+  
   setTimer(tAmpCycle, 50);
   write("[AMP] start");
 }
@@ -269,6 +662,50 @@ on timer tAmpCycle
   publishAmpState();
   setTimer(tAmpCycle, 50);
 }
+
+//add
+on timer tWarnBeep
+{
+  int period;
+
+  if (gWarnBeepOn == 0)
+  {
+    stopWarningBeep();
+    return;
+  }
+
+  period = getBeepPeriodMs();
+  if (period <= 0)
+  {
+    stopWarningBeep();
+    return;
+  }
+
+  if ((int)@sysvar::UiRender::warningBeepState == 1)
+  {
+    @sysvar::UiRender::warningBeepState = 0;
+  }
+  else
+  {
+    @sysvar::UiRender::warningBeepState = 1;
+  }
+  //debug
+  write("[BEEP_TIMER] type=%d period=%d state=%d",
+      getBeepPriorityType(),
+      period,
+      (int)@sysvar::UiRender::warningBeepState);
+//
+
+  updateBeepOutputs();
+  setTimer(tWarnBeep, period);
+}
+
+on timer tNavDirPulseOff
+{
+  gNavDirPulseActive = 0;
+  updateWarningBeep();
+}
+//
 
 on message frmMediaStateMsg
 {
@@ -297,7 +734,71 @@ on message frmSpeechTtsStateMsg
   gTtsRxMs = getSimulationTimeMs();
 }
 
+
+//add
+on sysvar_update V2X::alertState
+{
+  updateWarningBeep();
+}
+
+on sysvar_update V2X::emergencyType
+{
+  updateWarningBeep();
+}
+
+on sysvar_update Core::vehicleSpeedNorm
+{
+  updateWarningBeep();
+}
+
+on sysvar_update Core::speedLimitNorm
+{
+  updateWarningBeep();
+}
+
+on sysvar_update Infotainment::roadZone
+{
+  updateWarningBeep();
+}
+
+on sysvar_update Infotainment::navDirection
+{
+  int nowDir;
+
+  nowDir = (int)@sysvar::Infotainment::navDirection;
+
+  if (nowDir != gPrevNavDirection)
+  {
+    gPrevNavDirection = nowDir;
+
+    if ((int)@sysvar::Infotainment::roadZone == 3 && nowDir > 0)
+    {
+      gNavDirPulseActive = 1;
+      cancelTimer(tNavDirPulseOff);
+      setTimer(tNavDirPulseOff, 4500);
+    }
+
+    updateWarningBeep();
+  }
+}
+//
+
 on stopMeasurement
 {
   cancelTimer(tAmpCycle);
+  
+  //add
+  cancelTimer(tWarnBeep);
+  cancelTimer(tNavDirPulseOff);
+
+  @sysvar::UiRender::warningBeepState = 0;
+  @sysvar::UiRender::beepAmbulance = 0;
+  @sysvar::UiRender::beepPolice = 0;
+  @sysvar::UiRender::beepSpeed = 0;
+  @sysvar::UiRender::beepIC = 0;
+  @sysvar::UiRender::renderVolumeLevel=0;
+  
+  @sysvar::UiRender::renderTxt = 0;
+  @sysvar::UiRender::renderArrow = 0;
+  //
 }
