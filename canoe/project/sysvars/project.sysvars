@@ -219,6 +219,7 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="popupPriority" comment="HMI popup priority mirror" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="popupActive" comment="HMI popup active mirror" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="volumeLevel" comment="Alert volume mirror" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="baseVolume" comment="Compat donor navigation base volume before warning boost" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="audioFocusOwner" comment="Audio focus owner mirror" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="audioDuckingLvl" comment="Audio ducking level mirror" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ttsState" comment="Speech TTS state mirror" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
@@ -257,6 +258,8 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="beepSpeed" comment="Compat donor speed beep state" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="beepEmergency" comment="Compat donor emergency beep state" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="warningBeepState" comment="Compat donor aggregate warning beep state" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="renderVolumLevel" comment="Compat donor navigation rendered warning volume mirror" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="navLaneFrame" comment="Compat donor navigation lane animation frame" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="1" minValuePhys="1" maxValue="5" maxValuePhys="5"/>
   </namespace>
 
   <namespace name="Display" comment="" interface="">

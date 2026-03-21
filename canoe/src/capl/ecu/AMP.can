@@ -67,6 +67,16 @@ int ampTtsHoldWindowMs()
   return 1500;
 }
 
+int deriveBaseVolume(int volumeOverride)
+{
+  volumeOverride = clampRange(volumeOverride, 0, 100);
+  if (volumeOverride <= 0)
+  {
+    return 60;
+  }
+  return volumeOverride;
+}
+
 void traceAmpInputHealth(int mediaInputStale, int audioFocusInputStale,
                          int voiceInputStale, int ttsInputStale)
 {
@@ -143,6 +153,7 @@ void publishAmpState()
   int ttsState;
   int ampMode;
   int ampDucking;
+  int baseVolume;
 
   mediaInputStale = (ethIsRecentTick(gMediaRxMs, ampMediaLeaseWindowMs()) == 1) ? 0 : 1;
   audioFocusInputStale = (ethIsRecentTick(gAudioFocusRxMs, ampAudioFocusLeaseWindowMs()) == 1) ? 0 : 1;
@@ -180,6 +191,9 @@ void publishAmpState()
   {
     ttsState = 0;
   }
+
+  baseVolume = deriveBaseVolume((int)@Test::alertVolumeSetting);
+  @CoreState::baseVolume = baseVolume;
 
   ampMode = 0;
   if (voiceAssistState > 0 || ttsState > 0)
@@ -225,6 +239,7 @@ void publishAmpState()
   mAmp.AmpMute = clampRange(muteState, 0, 1);
   mAmp.AmpDuckingLvl = clampRange(ampDucking, 0, 7);
   mAmp.AmpVolumeLevel = clampRange(volumeLevel, 0, 100);
+  @UiRender::renderVolumLevel = mAmp.AmpVolumeLevel;
   output(mAmp);
 
   if (mAmp.AmpMode != gLastAmpMode ||
@@ -260,6 +275,8 @@ on start
   gLastAmpMute = -1;
   gLastAmpDucking = -1;
   gLastAmpVolume = -1;
+  @CoreState::baseVolume = deriveBaseVolume(0);
+  @UiRender::renderVolumLevel = 20;
   setTimer(tAmpCycle, 50);
   write("[AMP] start");
 }

@@ -6,6 +6,7 @@ includes
 variables
 {
   msTimer tNavModuleCycle;
+  msTimer tNavLaneAnim;
   int gRoadZone;
   int gNavDirection;
   int gZoneDistance;
@@ -16,6 +17,7 @@ variables
   int gLastRouteClass;
   int gLastGuideType;
   int gLastEtaMinutes;
+  int gNavAnimFrame;
 }
 
 int calcBaseZoneContext(int roadZone, int navDirection)
@@ -64,6 +66,16 @@ int navHoldWindowMs()
   return 4500;
 }
 
+int getNavAnimPeriod(int speedKph)
+{
+  if (speedKph <= 0)   return 500;
+  if (speedKph <= 20)  return 350;
+  if (speedKph <= 40)  return 250;
+  if (speedKph <= 70)  return 180;
+  if (speedKph <= 100) return 120;
+  return 80;
+}
+
 void markNavInputDirty()
 {
   gNavInputTouchMs = getSimulationTimeMs();
@@ -83,6 +95,53 @@ void traceNavInputHealth(int navInputStale)
     }
     gLastNavInputStale = navInputStale;
   }
+}
+
+void publishNavLaneFrame()
+{
+  int speed;
+  int roadZone;
+  int navDirection;
+  int manualMode;
+  int period;
+
+  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  if (manualMode == 1)
+  {
+    roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+    navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+  }
+  else
+  {
+    roadZone = clampRange(gRoadZone, 0, 3);
+    navDirection = clampRange(gNavDirection, 0, 3);
+  }
+
+  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  if (roadZone != 3 || navDirection == 0 || speed <= 0)
+  {
+    gNavAnimFrame = 1;
+    @UiRender::navLaneFrame = 1;
+    setTimer(tNavLaneAnim, 300);
+    return;
+  }
+
+  if (gNavAnimFrame < 1 || gNavAnimFrame > 5)
+  {
+    gNavAnimFrame = 1;
+  }
+  else
+  {
+    gNavAnimFrame = gNavAnimFrame + 1;
+    if (gNavAnimFrame > 5)
+    {
+      gNavAnimFrame = 1;
+    }
+  }
+
+  @UiRender::navLaneFrame = gNavAnimFrame;
+  period = getNavAnimPeriod(speed);
+  setTimer(tNavLaneAnim, period);
 }
 
 void publishNavState()
@@ -224,8 +283,11 @@ on start
   gLastRouteClass = -1;
   gLastGuideType = -1;
   gLastEtaMinutes = -1;
+  gNavAnimFrame = 1;
+  @UiRender::navLaneFrame = 1;
   markNavInputDirty();
   setTimer(tNavModuleCycle, 100);
+  setTimer(tNavLaneAnim, 300);
   write("[NAV] start");
 }
 
@@ -233,6 +295,11 @@ on timer tNavModuleCycle
 {
   publishNavState();
   setTimer(tNavModuleCycle, 100);
+}
+
+on timer tNavLaneAnim
+{
+  publishNavLaneFrame();
 }
 
 on message frmNavContextCanMsg
@@ -247,4 +314,5 @@ on message frmNavContextCanMsg
 on stopMeasurement
 {
   cancelTimer(tNavModuleCycle);
+  cancelTimer(tNavLaneAnim);
 }
