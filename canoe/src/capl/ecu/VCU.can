@@ -498,8 +498,8 @@ on timer tVcuCycle
   manualCruiseActive = 0;
   if (manualMode == 1)
   {
-    manualDriveStateCmd = clampRange((int)@Test::manualDriveStateCmd, 0, 3);
-    manualVehicleSpeedCmd = clampRange((int)@Test::manualVehicleSpeedCmd, 0, 255);
+    manualDriveStateCmd = clampRange((int)@Chassis::driveState, 0, 3);
+    manualVehicleSpeedCmd = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
     manualCruiseState = clampRange((int)@Powertrain::cruiseState, 0, 3);
     manualCruiseSetSpeed = clampRange((int)@Powertrain::cruiseSetSpeed, 0, 255);
     accelPedal = clampRange((int)@Chassis::throttlePosition, 0, 100);

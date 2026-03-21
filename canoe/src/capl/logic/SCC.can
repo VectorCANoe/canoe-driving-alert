@@ -16,9 +16,15 @@ variables
   dword gDecelAssistRxMs;
   dword gSelectedAlertRxMs;
   dword gNavStateRxMs;
+  dword gPanelCruiseRxMs;
   int gLastCruiseState;
   int gLastGapLevel;
   int gLastCruiseSetSpeed;
+  int gPanelCruiseStateCmd;
+  int gPanelCruiseSetSpeedCmd;
+  int gLastInternalCruiseState;
+  int gLastInternalCruiseSetSpeed;
+  dword gLastInternalCruiseTxMs;
 }
 
 void publishCruiseState()
@@ -32,8 +38,10 @@ void publishCruiseState()
   int cruiseState;
   int gapLevel;
   int cruiseSetSpeed;
+  int manualMode;
   int manualCruiseStateCmd;
   int manualCruiseSetSpeedCmd;
+  int panelCruiseInputFresh;
 
   if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
   {
@@ -71,8 +79,16 @@ void publishCruiseState()
 
   manualCruiseStateCmd = clampRange((int)@Test::manualCruiseStateCmd, 0, 2);
   manualCruiseSetSpeedCmd = clampRange((int)@Test::manualCruiseSetSpeedCmd, 0, 255);
+  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  panelCruiseInputFresh = (manualMode == 1 && ethIsRecentTick(gPanelCruiseRxMs, 600) == 1) ? 1 : 0;
 
-  if (manualCruiseStateCmd > 0)
+  if (panelCruiseInputFresh == 1)
+  {
+    cruiseState = clampRange(gPanelCruiseStateCmd, 0, 3);
+    gapLevel = (cruiseState >= 2) ? 3 : 2;
+    cruiseSetSpeed = (gPanelCruiseSetSpeedCmd > 0) ? gPanelCruiseSetSpeedCmd : speedLimit;
+  }
+  else if (manualCruiseStateCmd > 0)
   {
     cruiseState = manualCruiseStateCmd;
     gapLevel = (manualCruiseStateCmd >= 2) ? 3 : 2;
@@ -116,6 +132,9 @@ void publishCruiseState()
   mCruise.CruiseState = cruiseState;
   mCruise.GapLevel = gapLevel;
   mCruise.CruiseSetSpeed = cruiseSetSpeed;
+  gLastInternalCruiseState = cruiseState;
+  gLastInternalCruiseSetSpeed = cruiseSetSpeed;
+  gLastInternalCruiseTxMs = getSimulationTimeMs();
   output(mCruise);
   @Powertrain::cruiseState = cruiseState;
   @Powertrain::cruiseSetSpeed = cruiseSetSpeed;
@@ -151,9 +170,15 @@ on start
   gDecelAssistRxMs = 0;
   gSelectedAlertRxMs = 0;
   gNavStateRxMs = 0;
+  gPanelCruiseRxMs = 0;
   gLastCruiseState = -1;
   gLastGapLevel = -1;
   gLastCruiseSetSpeed = -1;
+  gPanelCruiseStateCmd = 0;
+  gPanelCruiseSetSpeedCmd = 0;
+  gLastInternalCruiseState = -1;
+  gLastInternalCruiseSetSpeed = -1;
+  gLastInternalCruiseTxMs = 0;
   @Test::manualCruiseStateCmd = 0;
   @Test::manualCruiseSetSpeedCmd = 0;
   @Powertrain::cruiseState = 0;
@@ -182,6 +207,26 @@ on message frmAdasDomainStateMsg
   gSelectedAlertLevel = clampRange((int)this.SelectedAlertLevel, 0, 7);
   gDecelAssistRxMs = getSimulationTimeMs();
   gSelectedAlertRxMs = gDecelAssistRxMs;
+}
+
+on message frmCruiseStateMsg
+{
+  int cruiseState;
+  int cruiseSetSpeed;
+
+  cruiseState = clampRange((int)this.CruiseState, 0, 3);
+  cruiseSetSpeed = clampRange((int)this.CruiseSetSpeed, 0, 255);
+
+  if (ethIsRecentTick(gLastInternalCruiseTxMs, 100) == 1 &&
+      cruiseState == gLastInternalCruiseState &&
+      cruiseSetSpeed == gLastInternalCruiseSetSpeed)
+  {
+    return;
+  }
+
+  gPanelCruiseStateCmd = cruiseState;
+  gPanelCruiseSetSpeedCmd = cruiseSetSpeed;
+  gPanelCruiseRxMs = getSimulationTimeMs();
 }
 
 on timer tSccCycle

@@ -83,6 +83,16 @@ Use those references to align:
 - If config integrity issue occurs, recover by GUI reload/save path first, then document deltas in text docs (`0304`, panel README, etc.).
 - Detailed operational checklist: `canoe/cfg/GUI_ONLY_OPERATIONS.md`
 
+## Donor Panel Contract Freeze
+- Imported donor panels under `canoe/project/panel/*.xvp` are frozen at donor design and contract level. The current root filenames are normalized project names, but the internal XVP content is donor-canonical.
+- `canoe/project/panel/Desktop_ASSIGN/*/*.xvp` must remain byte-identical mirrors of the corresponding root panel files.
+- Do not change donor panel layout, widget type, label text, root `ControlName`, `SymbolConfiguration` target/direction, or donor image-path contract unless the user explicitly approves a donor-baseline change.
+- Do not convert donor state-oriented gauges/displays into command-oriented widgets from the XVP side.
+- When donor panel behavior is wrong, adapt `canoe/project/sysvars/project.sysvars`, `canoe/src/capl/**`, `canoe/cfg/channel_assign/**`, and only if truly necessary the owner DBC/message path. Treat XVP edits as forbidden unless the user explicitly re-opens panel redesign.
+- For frozen donor command seams, prefer the real feature owner ECU to consume the seam directly.
+- Use `VALIDATION_HARNESS` / `TEST_SCN` only when the donor seam represents exogenous test-world injection such as synthetic emergency ingress or scenario lock input, not normal in-vehicle feature ownership.
+- `Diagnostic_Console.xvp` is the only local project-specific panel outside the frozen donor set.
+
 ## CAPL / Ethernet Guardrails
 - When replacing CAN-stub backbone paths with Ethernet, separate `business semantics` from `transport` first.
   - Do not bind owner logic directly to stub DBC message types if the final target is real Ethernet transport.

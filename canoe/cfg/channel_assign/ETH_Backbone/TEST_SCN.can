@@ -555,6 +555,7 @@ void publishManualPanelCompat(int speed, int accelPedal, int brakePedal)
   int ambulancePos;
   int manualAlertOverride;
   int manualEmergencyAlertCmd;
+  int donorAlertState;
   int emergencyType;
   int emergencyDirection;
   int emergencyEta;
@@ -562,11 +563,11 @@ void publishManualPanelCompat(int speed, int accelPedal, int brakePedal)
   int policeDispatch;
   int ambulanceDispatch;
   int manualDoorLockCmd;
+  int compatV2xFrame;
 
   @Chassis::brakePressure = clampRange(brakePedal, 0, 100);
   @Chassis::throttlePosition = clampRange(accelPedal, 0, 100);
-  @Chassis::brakeLamp = (brakePedal > 0) ? 1 : 0;
-  @Chassis::absActive = (brakePedal >= 70 && speed >= 20) ? 1 : 0;
+  compatV2xFrame = -1;
 
   manualDoorLockCmd = (((int)@Body::doorLockCmd) > 0) ? 1 : 0;
   if (manualDoorLockCmd == 1)
@@ -580,6 +581,7 @@ void publishManualPanelCompat(int speed, int accelPedal, int brakePedal)
     ambulancePos = clampRange((int)@V2X::ambulancePos, 0, 7);
     manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
     manualEmergencyAlertCmd = clampRange((int)@Test::manualEmergencyAlertCmd, 0, 1);
+    donorAlertState = clampRange((int)@V2X::alertState, 0, 1);
     policeDispatch = 0;
     ambulanceDispatch = 0;
     emergencyType = clampRange((int)@Test::manualEmergencyTypeCmd, 0, 2);
@@ -587,7 +589,7 @@ void publishManualPanelCompat(int speed, int accelPedal, int brakePedal)
     emergencyEta = clampRange((int)@Test::manualEmergencyEtaCmd, 0, 255);
     emergencySourceId = 255;
 
-    if (manualEmergencyAlertCmd == 1 || manualAlertOverride > 0)
+    if (manualEmergencyAlertCmd == 1 || donorAlertState == 1 || manualAlertOverride > 0)
     {
       if (emergencyType == 0)
       {
@@ -625,12 +627,14 @@ void publishManualPanelCompat(int speed, int accelPedal, int brakePedal)
         ambulanceDispatch = 1;
         emergencyEta = calcCompatEtaFromPanelPos(ambulancePos);
         emergencySourceId = 2;
+        compatV2xFrame = clampRange(8 + ambulancePos, 0, 15);
       }
       else
       {
         policeDispatch = 1;
         emergencyEta = calcCompatEtaFromPanelPos(policePos);
         emergencySourceId = 1;
+        compatV2xFrame = clampRange(policePos, 0, 15);
       }
     }
 
@@ -646,9 +650,17 @@ void publishManualPanelCompat(int speed, int accelPedal, int brakePedal)
     {
       clearManualDispatchCompat();
     }
-  }
 
-  @Display::animFrame = clampRange((int)@V2X::v2xFrame, 0, 50);
+    if (compatV2xFrame >= 0)
+    {
+      @V2X::v2xFrame = compatV2xFrame;
+      @Display::animFrame = compatV2xFrame;
+    }
+    else if (manualEmergencyAlertCmd == 1 || manualAlertOverride > 0)
+    {
+      @Display::animFrame = clampRange((int)@V2X::v2xFrame, 0, 50);
+    }
+  }
 }
 
 void stopScenarioExecution()
@@ -3100,9 +3112,9 @@ on timer tInput100
   }
   if (gScenarioInputLock == 0)
   {
-    driveState = clampRange((int)@Test::manualDriveStateCmd, 0, 3);
+    driveState = clampRange((int)@Chassis::driveState, 0, 3);
     gearState = calcBaselineGearState(driveState);
-    speedHintCmd = clampRange((int)@Test::manualVehicleSpeedCmd, 0, 255);
+    speedHintCmd = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
     ignitionState = calcBaselineIgnitionState(speed, driveState);
     engineState = (ignitionState == 1) ? 2 : 0;
     manualSteeringAngleCmd = clampRange((int)@Chassis::steeringAngle, 0, 138);

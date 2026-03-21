@@ -78,6 +78,11 @@
   - 패널 적응은 `project.sysvars`, `src/capl`, `cfg/channel_assign` mirror에서만 수행한다.
   - 새 observer/compat 변수 추가는 허용되지만, 기존 donor 패널이 이미 사용 중인 입력/표시 계약은 XVP에서 변경하지 않는다.
   - Diagnostic Console을 제외한 donor 패널은 `display-only 재분류`나 blanket lock을 하지 않는다.
+  - root 파일명은 현재 프로젝트식 정규화 이름을 유지하되, XVP 내부 내용과 contract semantics는 donor 정본을 유지한다.
+  - donor 패널의 state gauge/display를 command widget 의미로 바꾸거나, 반대로 command widget을 display-only로 바꾸지 않는다.
+  - donor 패널이 직접 쓰는 sysvar/message seam은 CAPL과 owner ECU가 따라가며, panel binding rewrite로 우회하지 않는다.
+  - 런타임 적응 우선순위는 `owner ECU -> channel_assign mirror -> sysvar contract -> 필요 시 DBC`이며, XVP 수정은 explicit approval 없이는 금지한다.
+  - 단, donor seam이 `외부 세계 주입` 성격이면 `VALIDATION_HARNESS(TEST_SCN)`가 입력을 transport/message로 주입하고 실제 기능 owner가 그 이후 기능을 수행하도록 유지한다.
 
 ## 4) Current Reset Baseline
 

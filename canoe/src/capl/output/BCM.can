@@ -517,6 +517,7 @@ on timer tBodyBase100
   int hvacBlowerLevel;
   int hvacAcOn;
   int driveState;
+  int manualMode;
   int turnLampInputStale;
   int turnLampState;
   int doorControlCmd;
@@ -543,6 +544,8 @@ on timer tBodyBase100
     hazardActive = 0;
   }
   turnLampInputStale = (ethIsRecentTick(gTurnLampInputRxMs, 300) == 1) ? 0 : 1;
+  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  driveState = gDriveState;
   ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
   routingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);
   warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
@@ -620,6 +623,10 @@ on timer tBodyBase100
   if (hazardActive == 1)
   {
     turnLampState = 3;
+  }
+  else if (manualMode == 1)
+  {
+    turnLampState = clampRange((int)@Body::manualTurnCmd, 0, 3);
   }
   else if (turnLampInputStale == 0)
   {
@@ -716,7 +723,6 @@ on timer tBodyBase100
   hvacCabinSetTemp = gHvacCabinSetTemp;
   hvacBlowerLevel = gHvacBlowerLevel;
   hvacAcOn = gHvacAcOn;
-  driveState = gDriveState;
   if (paakInputStale == 1)
   {
     paakState = 0;

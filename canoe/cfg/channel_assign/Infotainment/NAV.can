@@ -100,36 +100,50 @@ void publishNavState()
   int trafficSeverity;
   int routeVisualActive;
   int speedLimit;
+  int manualMode;
   int roadZone;
   int navDirection;
   int zoneDistance;
 
-  navInputStale = 0;
-  if (hasNavContext(gRoadZone, gNavDirection, gZoneDistance, gSpeedLimit) == 1 &&
-      ethIsRecentTick(gNavInputTouchMs, navLeaseWindowMs()) == 0)
+  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  if (manualMode == 1)
   {
-    navInputStale = 1;
+    navInputStale = 0;
+    navInputExpired = 0;
+    roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+    navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+    zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
+    speedLimit = calcEffectiveSpeedLimit((int)@Infotainment::speedLimit);
+  }
+  else
+  {
+    navInputStale = 0;
+    if (hasNavContext(gRoadZone, gNavDirection, gZoneDistance, gSpeedLimit) == 1 &&
+        ethIsRecentTick(gNavInputTouchMs, navLeaseWindowMs()) == 0)
+    {
+      navInputStale = 1;
+    }
+
+    navInputExpired = 0;
+    if (hasNavContext(gRoadZone, gNavDirection, gZoneDistance, gSpeedLimit) == 1 &&
+        ethIsRecentTick(gNavInputTouchMs, navHoldWindowMs()) == 0)
+    {
+      navInputExpired = 1;
+    }
+
+    roadZone = gRoadZone;
+    navDirection = gNavDirection;
+    zoneDistance = gZoneDistance;
+    speedLimit = calcEffectiveSpeedLimit(gSpeedLimit);
+    if (navInputExpired == 1)
+    {
+      roadZone = 0;
+      navDirection = 0;
+      zoneDistance = 0;
+      speedLimit = 30;
+    }
   }
   traceNavInputHealth(navInputStale);
-
-  navInputExpired = 0;
-  if (hasNavContext(gRoadZone, gNavDirection, gZoneDistance, gSpeedLimit) == 1 &&
-      ethIsRecentTick(gNavInputTouchMs, navHoldWindowMs()) == 0)
-  {
-    navInputExpired = 1;
-  }
-
-  roadZone = gRoadZone;
-  navDirection = gNavDirection;
-  zoneDistance = gZoneDistance;
-  speedLimit = calcEffectiveSpeedLimit(gSpeedLimit);
-  if (navInputExpired == 1)
-  {
-    roadZone = 0;
-    navDirection = 0;
-    zoneDistance = 0;
-    speedLimit = 30;
-  }
 
   navState = (roadZone > 0) ? 1 : 0;
   if (roadZone == 3)
