@@ -32,6 +32,8 @@ void publishCruiseState()
   int cruiseState;
   int gapLevel;
   int cruiseSetSpeed;
+  int manualCruiseStateCmd;
+  int manualCruiseSetSpeedCmd;
 
   if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
   {
@@ -67,25 +69,37 @@ void publishCruiseState()
     speedLimit = 60;
   }
 
-  cruiseState = 0;
-  gapLevel = 2;
-  cruiseSetSpeed = speedLimit;
+  manualCruiseStateCmd = clampRange((int)@Test::manualCruiseStateCmd, 0, 2);
+  manualCruiseSetSpeedCmd = clampRange((int)@Test::manualCruiseSetSpeedCmd, 0, 255);
 
-  if (gDriveState == 3 && failSafeMode == 0)
+  if (manualCruiseStateCmd > 0)
   {
-    cruiseState = 1;
+    cruiseState = manualCruiseStateCmd;
+    gapLevel = (manualCruiseStateCmd >= 2) ? 3 : 2;
+    cruiseSetSpeed = (manualCruiseSetSpeedCmd > 0) ? manualCruiseSetSpeedCmd : speedLimit;
+  }
+  else
+  {
+    cruiseState = 0;
+    gapLevel = 2;
+    cruiseSetSpeed = speedLimit;
 
-    if (riskLevel >= 70 || selectedAlertLevel >= 6 || emergencyContext > 0)
+    if (gDriveState == 3 && failSafeMode == 0)
     {
-      cruiseState = 2;
-      gapLevel = 3;
-      cruiseSetSpeed = gVehicleSpeed - 10;
-    }
-    else if (riskLevel >= 40 || selectedAlertLevel >= 4)
-    {
-      cruiseState = 2;
-      gapLevel = 3;
-      cruiseSetSpeed = gVehicleSpeed - 5;
+      cruiseState = 1;
+
+      if (riskLevel >= 70 || selectedAlertLevel >= 6 || emergencyContext > 0)
+      {
+        cruiseState = 2;
+        gapLevel = 3;
+        cruiseSetSpeed = gVehicleSpeed - 10;
+      }
+      else if (riskLevel >= 40 || selectedAlertLevel >= 4)
+      {
+        cruiseState = 2;
+        gapLevel = 3;
+        cruiseSetSpeed = gVehicleSpeed - 5;
+      }
     }
   }
 
@@ -140,6 +154,8 @@ on start
   gLastCruiseState = -1;
   gLastGapLevel = -1;
   gLastCruiseSetSpeed = -1;
+  @Test::manualCruiseStateCmd = 0;
+  @Test::manualCruiseSetSpeedCmd = 0;
   @Powertrain::cruiseState = 0;
   @Powertrain::cruiseSetSpeed = 0;
   setTimer(tSccCycle, 50);

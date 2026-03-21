@@ -1,22 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.4.10.0, Culture=neutral, PublicKeyToken=null">
   <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel1" ControlName="CruisePedal">
-    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X9e1d4f38ef7f8e48c8ebc1be448bfe0c36e7" ControlName="Button 1">
-      <Property Name="Name">X9e1d4f38ef7f8e48c8ebc1be448bfe0c36e7</Property>
-      <Property Name="Size">75, 23</Property>
-      <Property Name="Location">664, 324</Property>
-      <Property Name="TabIndex">0</Property>
-      <Property Name="Text">Button</Property>
-      <Property Name="SymbolConfiguration"></Property>
-    </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X8b9a4defead8ee4023e8154eb11715cf525e" ControlName="Button 4">
-      <Property Name="Name">X8b9a4defead8ee4023e8154eb11715cf525e</Property>
-      <Property Name="Size">75, 23</Property>
-      <Property Name="Location">687, 334</Property>
-      <Property Name="TabIndex">0</Property>
-      <Property Name="Text">Button</Property>
-      <Property Name="SymbolConfiguration"></Property>
-    </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1537898bec593e4bb4ea8cbe443edd1f5f57" ControlName="Group Box 5">
       <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X285b0436e8782e4e9de9543e26d5410c1a70" ControlName="Group Box 6">
         <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X9b8156c8e65ace49afeaa54e6ed9c0598186" ControlName="Static Text 5">
@@ -33,7 +17,7 @@ on. Click again to turn it off.</Property>
           <Property Name="Name">X8589b9aae4acae48a2e903be723fb1f0e609</Property>
           <Property Name="Size">36, 33</Property>
           <Property Name="Location">52, 14</Property>
-          <Property Name="SymbolConfiguration">8;16;Powertrain;;;cruiseState;1;;;-1;;;Value;;;0</Property>
+          <Property Name="SymbolConfiguration">8;16;Test;;;manualCruiseStateCmd;1;;;-1;;;Value;;;0</Property>
           <Property Name="ImageFile">Bitmaps\CruiseControlIndicator.bmp</Property>
           <Property Name="TransparentColor">Fuchsia</Property>
           <Property Name="TabIndex">3</Property>
@@ -52,7 +36,7 @@ on. Click again to turn it off.</Property>
           <Property Name="Location">25, 53</Property>
           <Property Name="TabIndex">2</Property>
           <Property Name="Text">-</Property>
-          <Property Name="SymbolConfiguration">8;16;Powertrain;;;cruiseState;1;;;-1;;;Value;;;0</Property>
+          <Property Name="SymbolConfiguration">8;16;Test;;;manualCruiseSetSpeedCmd;1;;;-1;;;Value;;;0</Property>
         </Object>
         <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X304d4cf2e0a87e4ee2e9651eab5d0b9562fb" ControlName="Button 3">
           <Property Name="Name">X304d4cf2e0a87e4ee2e9651eab5d0b9562fb</Property>
@@ -60,7 +44,7 @@ on. Click again to turn it off.</Property>
           <Property Name="Location">72, 53</Property>
           <Property Name="TabIndex">1</Property>
           <Property Name="Text">+</Property>
-          <Property Name="SymbolConfiguration">8;16;Powertrain;;;cruiseSetSpeed;1;;;-1;;;Value;;;0</Property>
+          <Property Name="SymbolConfiguration">8;16;Test;;;manualCruiseSetSpeedCmd;1;;;-1;;;Value;;;0</Property>
         </Object>
         <Property Name="Name">X285b0436e8782e4e9de9543e26d5410c1a70</Property>
         <Property Name="Size">138, 121</Property>
@@ -86,7 +70,7 @@ on. Click again to turn it off.</Property>
         <Property Name="ValueDisplay">Double</Property>
         <Property Name="UsedValueTable">RawValue</Property>
         <Property Name="DescriptionSize">5, 21</Property>
-        <Property Name="SymbolConfiguration">8;16;Powertrain;;;cruiseSetSpeed;1;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;manualCruiseSetSpeedCmd;1;;;-1;;;Value;;;0</Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xaa9f2178e3525e40e1eb6bdefdeafada7bc8" ControlName="Static Text 8">
         <Property Name="Name">Xaa9f2178e3525e40e1eb6bdefdeafada7bc8</Property>
@@ -149,50 +133,51 @@ on. Click again to turn it off.</Property>
     <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl2" ControlName="GroupBoxControl2">
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X493c5d39e563de4306eaff0e8faa4e0d91a7" ControlName="Static Text 3">
         <Property Name="Name">X493c5d39e563de4306eaff0e8faa4e0d91a7</Property>
-        <Property Name="Size">51, 27</Property>
-        <Property Name="Location">14, 259</Property>
+        <Property Name="Size">44, 27</Property>
+        <Property Name="Location">10, 259</Property>
         <Property Name="BackColor">White</Property>
         <Property Name="Text">Brake
-pressure</Property>
+Cmd</Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1fc4263fe966ce47bbeb0ecee35aa36d2856" ControlName="Static Text 4">
         <Property Name="Name">X1fc4263fe966ce47bbeb0ecee35aa36d2856</Property>
-        <Property Name="Size">47, 27</Property>
-        <Property Name="Location">60, 259</Property>
+        <Property Name="Size">50, 27</Property>
+        <Property Name="Location">62, 259</Property>
         <Property Name="BackColor">White</Property>
-        <Property Name="Text">Throttle
-position</Property>
+        <Property Name="Text">Accel
+Cmd</Property>
       </Object>
-      <Object Type="Vector.CANalyzer.Panels.Design.ProgressBarControl, Vector.CANalyzer.Panels.CommonControls, Version=19.2.23.0, Culture=neutral, PublicKeyToken=null" Name="X5ba8e38ae0246e439ae9d1ee146b06019feb" ControlName="Progress Bar 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X5ba8e38ae0246e439ae9d1ee146b06019feb" ControlName="Accel Command">
         <Property Name="Name">X5ba8e38ae0246e439ae9d1ee146b06019feb</Property>
         <Property Name="Size">29, 227</Property>
         <Property Name="Location">72, 23</Property>
-        <Property Name="Alignment">RightBottom</Property>
         <Property Name="Orientation">Vertical</Property>
-        <Property Name="ValueBackColor">255, 231, 231, 231</Property>
-        <Property Name="ValueSize">0, 0</Property>
-        <Property Name="OriginValue">0</Property>
+        <Property Name="TabIndex">6</Property>
+        <Property Name="MaximumDouble">100</Property>
+        <Property Name="LargeChangeDouble">10</Property>
+        <Property Name="MaximumSize">29, 100000</Property>
+        <Property Name="Maximum">100</Property>
+        <Property Name="LargeChange">10</Property>
         <Property Name="SymbolConfiguration">8;16;Chassis;;;throttlePosition;1;;;-1;;;Value;;;0</Property>
       </Object>
-      <Object Type="Vector.CANalyzer.Panels.Design.ProgressBarControl, Vector.CANalyzer.Panels.CommonControls, Version=19.2.23.0, Culture=neutral, PublicKeyToken=null" Name="ProgressBarControl1" ControlName="ProgressBarControl1">
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ProgressBarControl1" ControlName="Brake Command">
         <Property Name="Name">ProgressBarControl1</Property>
         <Property Name="Size">28, 227</Property>
         <Property Name="Location">27, 23</Property>
-        <Property Name="UseWindowsStyle">False</Property>
-        <Property Name="WithFrame">False</Property>
-        <Property Name="Alignment">RightBottom</Property>
         <Property Name="Orientation">Vertical</Property>
-        <Property Name="BarForeColor">Red</Property>
-        <Property Name="ValueBackColor">255, 231, 231, 231</Property>
-        <Property Name="ValueSize">0, 0</Property>
-        <Property Name="OriginValue">0</Property>
+        <Property Name="TabIndex">5</Property>
+        <Property Name="MaximumDouble">100</Property>
+        <Property Name="LargeChangeDouble">10</Property>
+        <Property Name="MaximumSize">28, 100000</Property>
+        <Property Name="Maximum">100</Property>
+        <Property Name="LargeChange">10</Property>
         <Property Name="SymbolConfiguration">8;16;Chassis;;;brakePressure;1;;;-1;;;Value;;;0</Property>
       </Object>
       <Property Name="Name">GroupBoxControl2</Property>
       <Property Name="Size">127, 294</Property>
       <Property Name="Location">5, 9</Property>
       <Property Name="BackColor">Window</Property>
-      <Property Name="Text">Acturator setpoints</Property>
+      <Property Name="Text">Actuator commands</Property>
       <Property Name="TabIndex">9</Property>
       <Property Name="UseWindowsStyle">False</Property>
     </Object>

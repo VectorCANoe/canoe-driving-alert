@@ -65,6 +65,38 @@ int deriveDriveMode(int driveState, int speed, int accelPedal, int brakePedal)
   return 0;
 }
 
+int deriveDriveState(int gearState, int currentSpeed)
+{
+  gearState = clampRange(gearState, 0, 7);
+
+  if (gearState == 1)
+  {
+    return 1;
+  }
+  if (gearState == 2)
+  {
+    return 2;
+  }
+  if (gearState >= 3)
+  {
+    return 3;
+  }
+  if (currentSpeed > 0)
+  {
+    return 3;
+  }
+  return 0;
+}
+
+int deriveManualPowertrainState(int ignitionCmd, int gearState, int speed, int accelPedal)
+{
+  if (ignitionCmd > 0 || gearState > 0 || speed > 0 || accelPedal > 0)
+  {
+    return 2;
+  }
+  return 0;
+}
+
 int deriveTorqueRequest(int driveMode, int accelPedal, int speedLimit)
 {
   int torqueRequest;
@@ -414,6 +446,12 @@ on timer tVcuCycle
   int pedalInputStale;
   int ignitionInputStale;
   int gearInputStale;
+  int manualMode;
+  int manualDriveStateCmd;
+  int manualVehicleSpeedCmd;
+  int manualCruiseState;
+  int manualCruiseSetSpeed;
+  int manualCruiseActive;
   int accelStep;
   int accelPedal;
   int brakePedal;
@@ -452,14 +490,62 @@ on timer tVcuCycle
     gearState = 0;
   }
 
+  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualDriveStateCmd = 0;
+  manualVehicleSpeedCmd = 0;
+  manualCruiseState = 0;
+  manualCruiseSetSpeed = 0;
+  manualCruiseActive = 0;
+  if (manualMode == 1)
+  {
+    manualDriveStateCmd = clampRange((int)@Test::manualDriveStateCmd, 0, 3);
+    manualVehicleSpeedCmd = clampRange((int)@Test::manualVehicleSpeedCmd, 0, 255);
+    manualCruiseState = clampRange((int)@Powertrain::cruiseState, 0, 3);
+    manualCruiseSetSpeed = clampRange((int)@Powertrain::cruiseSetSpeed, 0, 255);
+    accelPedal = clampRange((int)@Chassis::throttlePosition, 0, 100);
+    brakePedal = clampRange((int)@Chassis::brakePressure, 0, 100);
+    if (accelPedal == 0 && ((int)@Chassis::throttlePedalBtn) > 0)
+    {
+      accelPedal = 70;
+    }
+    if (brakePedal == 0 && ((int)@Chassis::brakePedalBtn) > 0)
+    {
+      brakePedal = 80;
+    }
+    gearState = manualDriveStateCmd;
+    engineState = deriveManualPowertrainState((((int)@Chassis::ignitionCmd) > 0) ? 1 : 0,
+                                              gearState,
+                                              (manualVehicleSpeedCmd > 0) ? manualVehicleSpeedCmd : gSpeed,
+                                              accelPedal);
+    if (manualVehicleSpeedCmd > 0)
+    {
+      externalSpeedHint = manualVehicleSpeedCmd;
+    }
+    if (gearState >= 3 &&
+        brakePedal == 0 &&
+        accelPedal == 0 &&
+        manualCruiseState > 0 &&
+        manualCruiseSetSpeed > 0)
+    {
+      manualCruiseActive = 1;
+    }
+  }
+
   externalSpeedDelta = externalSpeedHint - gSpeed;
   if (externalSpeedDelta < 0)
   {
     externalSpeedDelta = -externalSpeedDelta;
   }
-  externalSpeedOverride = ((accelPedal == 0) &&
-                           (brakePedal == 0) &&
-                           (externalSpeedDelta >= 3)) ? 1 : 0;
+  if (manualMode == 1 && manualVehicleSpeedCmd > 0)
+  {
+    externalSpeedOverride = 1;
+  }
+  else
+  {
+    externalSpeedOverride = ((accelPedal == 0) &&
+                             (brakePedal == 0) &&
+                             (externalSpeedDelta >= 3)) ? 1 : 0;
+  }
 
   if (externalSpeedOverride == 1)
   {
@@ -467,12 +553,19 @@ on timer tVcuCycle
   }
   else
   {
-    targetSpeed = deriveTargetSpeed(gSpeed,
-                                    gearState,
-                                    accelPedal,
-                                    brakePedal,
-                                    gDriveMode,
-                                    gSpeedLimitNorm);
+    if (manualCruiseActive == 1)
+    {
+      targetSpeed = manualCruiseSetSpeed;
+    }
+    else
+    {
+      targetSpeed = deriveTargetSpeed(gSpeed,
+                                      gearState,
+                                      accelPedal,
+                                      brakePedal,
+                                      gDriveMode,
+                                      gSpeedLimitNorm);
+    }
 
     delta = targetSpeed - gSpeed;
     if (delta > 0)
@@ -490,7 +583,7 @@ on timer tVcuCycle
     if (gSpeed > 255) gSpeed = 255;
   }
 
-  driveState = (gearState > 0 || gSpeed > 0) ? 3 : 0;
+  driveState = deriveDriveState(gearState, gSpeed);
   driveMode = deriveDriveMode(driveState, gSpeed, accelPedal, brakePedal);
   gDriveMode = clampRange(driveMode, 0, 7);
   if (ethIsRecentTick(gNavStateRxMs, 300) == 1)

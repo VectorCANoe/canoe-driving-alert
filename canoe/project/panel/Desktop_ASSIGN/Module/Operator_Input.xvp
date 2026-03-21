@@ -51,7 +51,7 @@
       <Property Name="MaximumSize">30, 100000</Property>
       <Property Name="Maximum">3</Property>
       <Property Name="LargeChange">3</Property>
-      <Property Name="SymbolConfiguration">8;16;Chassis;;;driveState;1;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;16;Test;;;manualDriveStateCmd;1;;;-1;;;Value;;;0</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2cfa6e7be74bce4b2de9c7ae817b0bf3f487" ControlName="Input/Output Box 8">
       <Property Name="Name">X2cfa6e7be74bce4b2de9c7ae817b0bf3f487</Property>
@@ -167,7 +167,7 @@
         <Property Name="MaximumDouble">255</Property>
         <Property Name="MaximumSize">100000, 30</Property>
         <Property Name="Maximum">255</Property>
-        <Property Name="SymbolConfiguration">8;16;Chassis;;;vehicleSpeed;1;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;manualVehicleSpeedCmd;1;;;-1;;;Value;;;0</Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xcdb1c10ce9c0fe4979ea518eee72af42ecf0" ControlName="Static Text 2">
         <Property Name="Name">Xcdb1c10ce9c0fe4979ea518eee72af42ecf0</Property>
@@ -184,7 +184,7 @@
         <Property Name="TabIndex">4</Property>
         <Property Name="DescriptionText">Emergency Type:</Property>
         <Property Name="UsedValueTable">PhysicalValue</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;emergencyType;2;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;16;Test;;;manualEmergencyTypeCmd;2;;;-1;;;Value;;;0</Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X64bdec77ed5bce4ce5e9dbfeee1e5096044b" ControlName="Combo Box 2">
         <Property Name="Name">X64bdec77ed5bce4ce5e9dbfeee1e5096044b</Property>
@@ -195,13 +195,13 @@
         <Property Name="TabIndex">3</Property>
         <Property Name="DescriptionText">Emergency Dir:</Property>
         <Property Name="UsedValueTable">PhysicalValue</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;emergencyDirection;2;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;16;Test;;;manualEmergencyDirectionCmd;2;;;-1;;;Value;;;0</Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe0a2e12ee8b62e4086ebda0e58247df7a1bc" ControlName="alertOn/Off">
         <Property Name="Name">Xe0a2e12ee8b62e4086ebda0e58247df7a1bc</Property>
         <Property Name="Size">23, 30</Property>
         <Property Name="Location">103, 17</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;alertState;2;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;16;Test;;;manualEmergencyAlertCmd;2;;;-1;;;Value;;;0</Property>
         <Property Name="TabIndex">2</Property>
         <Property Name="Activation">Left</Property>
         <Property Name="Epsilon">0</Property>
@@ -229,7 +229,7 @@
         <Property Name="ValueDisplay">Decimal</Property>
         <Property Name="UsedValueTable">PhysicalValue</Property>
         <Property Name="DescriptionSize">30, 21</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;eta;2;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;manualEmergencyEtaCmd;2;;;-1;;;Value;;;0</Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X32bab757eca81e4e91eac7fe19506803659e" ControlName="Static Text 1">
         <Property Name="Name">X32bab757eca81e4e91eac7fe19506803659e</Property>

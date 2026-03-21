@@ -145,6 +145,10 @@ on timer tDoorFlCycle
   int lockState;
   int openState;
   int windowPos;
+  int windowCmd;
+  int manualMode;
+  int manualLockCmd;
+  int manualOpenCmd;
 
   doorCtrlInputStale = (ethIsRecentTick(gDoorCtrlRxMs, 300) == 1) ? 0 : 1;
   vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
@@ -180,23 +184,56 @@ on timer tDoorFlCycle
   {
     openRequest = 1;
   }
+  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualLockCmd = clampRange((int)@Body::doorLockCmd, 0, 1);
+  manualOpenCmd = clampRange((int)@Body::doorOpenCmd, 0, 1);
 
   lockState = 1;
   openState = 0;
-  windowPos = 0;
-  if (accessAuthorized == 1)
+  windowPos = clampRange((int)@Body::windowPos, 0, 90);
+  if (manualMode == 1)
+  {
+    windowCmd = clampRange((int)@Body::windowCmd, 0, 2);
+    if (windowCmd == 1)
+    {
+      windowPos = windowPos - 10;
+      if (windowPos < 0) windowPos = 0;
+    }
+    else if (windowCmd == 2)
+    {
+      windowPos = windowPos + 10;
+      if (windowPos > 90) windowPos = 90;
+    }
+  }
+  if (manualMode == 1)
+  {
+    lockState = (manualLockCmd > 0) ? 1 : 0;
+    if (manualOpenCmd > 0 && driveState == 0 && lockState == 0)
+    {
+      openState = 1;
+      if (windowPos < 20)
+      {
+        windowPos = 20;
+      }
+    }
+  }
+  else if (accessAuthorized == 1)
   {
     lockState = 0;
     if (openRequest == 1)
     {
       openState = 1;
-      windowPos = 20;
+      if (windowPos < 20)
+      {
+        windowPos = 20;
+      }
     }
   }
 
+  @Body::windowPos = clampRange(windowPos, 0, 90);
   mDoor.DoorFlLockState = clampRange(lockState, 0, 3);
   mDoor.DoorFlOpenState = clampRange(openState, 0, 1);
-  mDoor.DoorFlWindowPos = clampRange(windowPos, 0, 100);
+  mDoor.DoorFlWindowPos = clampRange(windowPos, 0, 90);
   output(mDoor);
 
   if (mDoor.DoorFlLockState != gLastLockState ||
@@ -207,7 +244,7 @@ on timer tDoorFlCycle
           mDoor.DoorFlLockState,
           mDoor.DoorFlOpenState,
           mDoor.DoorFlWindowPos,
-          gDoorControlCmd,
+          (manualMode == 1) ? manualOpenCmd : gDoorControlCmd,
           driveState,
           accessAuthorized);
     gLastLockState = mDoor.DoorFlLockState;

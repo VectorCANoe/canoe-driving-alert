@@ -121,6 +121,16 @@ int calcBaselineIgnitionState(int speed, int driveState)
   return 0;
 }
 
+int calcManualSteeringState(int steeringAngleCmd)
+{
+  steeringAngleCmd = clampRange(steeringAngleCmd, 0, 138);
+  if (steeringAngleCmd <= 54 || steeringAngleCmd >= 84)
+  {
+    return 1;
+  }
+  return 0;
+}
+
 int calcObservedBaseZoneContext(int routeClass, int guideType)
 {
   if (routeClass == 1)
@@ -520,6 +530,127 @@ void resetValidationOverrides()
   @Test::compatEmergencySourceId = 255;
 }
 
+int calcCompatEtaFromPanelPos(int pos)
+{
+  pos = clampRange(pos, 0, 7);
+  if (pos <= 0)
+  {
+    return 255;
+  }
+  return clampRange((8 - pos) * 4, 1, 60);
+}
+
+void clearManualDispatchCompat()
+{
+  @Test::compatPoliceDispatch = 0;
+  @Test::compatAmbulanceDispatch = 0;
+  @Test::compatEmergencyDirection = 0;
+  @Test::compatEmergencyEta = 255;
+  @Test::compatEmergencySourceId = 255;
+}
+
+void publishManualPanelCompat(int speed, int accelPedal, int brakePedal)
+{
+  int policePos;
+  int ambulancePos;
+  int manualAlertOverride;
+  int manualEmergencyAlertCmd;
+  int emergencyType;
+  int emergencyDirection;
+  int emergencyEta;
+  int emergencySourceId;
+  int policeDispatch;
+  int ambulanceDispatch;
+  int manualDoorLockCmd;
+
+  @Chassis::brakePressure = clampRange(brakePedal, 0, 100);
+  @Chassis::throttlePosition = clampRange(accelPedal, 0, 100);
+  @Chassis::brakeLamp = (brakePedal > 0) ? 1 : 0;
+  @Chassis::absActive = (brakePedal >= 70 && speed >= 20) ? 1 : 0;
+
+  manualDoorLockCmd = (((int)@Body::doorLockCmd) > 0) ? 1 : 0;
+  if (manualDoorLockCmd == 1)
+  {
+    @Body::doorOpenCmd = 0;
+  }
+
+  if (gScenarioInputLock == 0)
+  {
+    policePos = clampRange((int)@V2X::policePos, 0, 7);
+    ambulancePos = clampRange((int)@V2X::ambulancePos, 0, 7);
+    manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
+    manualEmergencyAlertCmd = clampRange((int)@Test::manualEmergencyAlertCmd, 0, 1);
+    policeDispatch = 0;
+    ambulanceDispatch = 0;
+    emergencyType = clampRange((int)@Test::manualEmergencyTypeCmd, 0, 2);
+    emergencyDirection = clampRange((int)@Test::manualEmergencyDirectionCmd, 0, 3);
+    emergencyEta = clampRange((int)@Test::manualEmergencyEtaCmd, 0, 255);
+    emergencySourceId = 255;
+
+    if (manualEmergencyAlertCmd == 1 || manualAlertOverride > 0)
+    {
+      if (emergencyType == 0)
+      {
+        emergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
+      }
+      if (emergencyType == 0)
+      {
+        emergencyType = 2;
+      }
+      if (emergencyDirection == 0 && manualEmergencyAlertCmd == 0)
+      {
+        emergencyDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
+      }
+      if (emergencyEta == 0 || emergencyEta == 255)
+      {
+        emergencyEta = clampRange((int)@V2X::eta, 0, 255);
+      }
+      if (emergencyEta == 0 || emergencyEta == 255)
+      {
+        emergencyEta = 20;
+      }
+      emergencySourceId = clampRange((int)@V2X::sourceId, 0, 255);
+      if (emergencySourceId == 0 || emergencySourceId == 255)
+      {
+        emergencySourceId = (emergencyType == 1) ? 1 : 2;
+      }
+      policeDispatch = (emergencyType == 1) ? 1 : 0;
+      ambulanceDispatch = (emergencyType == 2) ? 1 : 0;
+    }
+    else if (ambulancePos > 0 || policePos > 0)
+    {
+      emergencyDirection = 0;
+      if (ambulancePos >= policePos)
+      {
+        ambulanceDispatch = 1;
+        emergencyEta = calcCompatEtaFromPanelPos(ambulancePos);
+        emergencySourceId = 2;
+      }
+      else
+      {
+        policeDispatch = 1;
+        emergencyEta = calcCompatEtaFromPanelPos(policePos);
+        emergencySourceId = 1;
+      }
+    }
+
+    if (policeDispatch == 1 || ambulanceDispatch == 1)
+    {
+      @Test::compatPoliceDispatch = policeDispatch;
+      @Test::compatAmbulanceDispatch = ambulanceDispatch;
+      @Test::compatEmergencyDirection = emergencyDirection;
+      @Test::compatEmergencyEta = emergencyEta;
+      @Test::compatEmergencySourceId = emergencySourceId;
+    }
+    else
+    {
+      clearManualDispatchCompat();
+    }
+  }
+
+  @Display::animFrame = clampRange((int)@V2X::v2xFrame, 0, 50);
+}
+
 void stopScenarioExecution()
 {
   gScenarioInputLock = 0;
@@ -540,6 +671,8 @@ void stopScenarioExecution()
   @Test::scenarioCommandAck = 0;
   clearScenarioLifecycleState();
   @Test::scenarioResult = 0;
+  @Test::driverBeltOff = 0;
+  @Test::passengerBeltOff = 0;
   gLockAccelGroupFlag = 0;
   gLockSteerGroupFlag = 0;
   gLockPoliceDispatch = 0;
@@ -2801,6 +2934,24 @@ on start
   @Test::scenarioCommandAck = 0;
   @Test::testScenario = 0;
   @Test::scenarioResult = 0;
+  @Test::manualDriveStateCmd = 0;
+  @Test::manualVehicleSpeedCmd = 0;
+  @Chassis::steeringAngle = 69;
+  @Test::manualCruiseStateCmd = 0;
+  @Test::manualCruiseSetSpeedCmd = 0;
+  @Test::manualEmergencyAlertCmd = 0;
+  @Test::manualEmergencyTypeCmd = 0;
+  @Test::manualEmergencyDirectionCmd = 0;
+  @Test::manualEmergencyEtaCmd = 0;
+  @Chassis::vehicleSpeed = 0;
+  @Chassis::driveState = 0;
+  @Chassis::steeringInput = 0;
+  @Chassis::steeringAngle = 69;
+  @Chassis::ignitionCmd = 0;
+  @Chassis::brakePedalBtn = 0;
+  @Chassis::throttlePedalBtn = 0;
+  @Test::driverBeltOff = 0;
+  @Test::passengerBeltOff = 0;
   clearScenarioLifecycleState();
   resetValidationOverrides();
   gEmergencyIngressHeartbeat = 0;
@@ -2814,6 +2965,20 @@ on start
   gObsEcoMode = -1;
   gObsSportMode = -1;
   gObsBaseZoneContext = -1;
+  @Body::windowCmd = 0;
+  @Body::windowPos = 0;
+  @Body::manualTurnCmd = 0;
+  @Body::wiperPos = 0;
+  @Body::wiperCmd = 0;
+  @Body::blinkLeft = 0;
+  @Body::blinkRight = 0;
+  @Body::doorLockCmd = 0;
+  @Body::doorOpenCmd = 0;
+  @Chassis::brakePressure = 0;
+  @Chassis::throttlePosition = 0;
+  @Chassis::brakeLamp = 0;
+  @Chassis::absActive = 0;
+  @Display::animFrame = 0;
   setTimer(tInput100, 100);
   write("[TEST_SCN] start");
 }
@@ -2832,7 +2997,6 @@ on timer tInput100
   message frmDigitalKeyStateMsg mDkey;
   message frmImmobilizerStateMsg mImmo;
   message frmPowerTailgateCtrlStateMsg mTailgateCtrl;
-  message frmSeatBeltStateMsg mSeatBelt;
   message frmSeatStateMsg mSeatState;
   message frmSuspensionStateMsg mSuspension;
   message frmConnectivityStateMsg mConn;
@@ -2841,6 +3005,7 @@ on timer tInput100
   message frmSteeringAngleMsg mSteerAngle;
   message frmLampControlMsg mLampControl;
   message frmTurnLampInputMsg mTurnLampInput;
+  message frmWheelSpeedMsg mWheelSpd;
   message frmFuelBatteryStateMsg mBattery;
   message frmEngineSpeedTempMsg mEngineTemp;
   message frmVehicleModeMsg mVehicleMode;
@@ -2860,8 +3025,10 @@ on timer tInput100
   char emergencyFrame[8];
   char objectFrame[12];
   int speed;
+  int speedHintCmd;
   int driveState;
   int steeringInput;
+  int manualSteeringAngleCmd;
   int roadZone;
   int navDirection;
   int zoneDistance;
@@ -2884,6 +3051,8 @@ on timer tInput100
   int emergencyDirection;
   int eta;
   int sourceId;
+
+  speedHintCmd = 0;
 
   if (gScenarioInputLock == 1)
   {
@@ -2920,7 +3089,7 @@ on timer tInput100
   engineState = (ignitionState == 1) ? 2 : 0;
   gearState = calcBaselineGearState(driveState);
   accelPedal = clampRange(speed / 2, 0, 100);
-  brakePedal = (driveState == 0) ? 30 : 0;
+  brakePedal = 0;
   if (gLockAccelPedalOverride >= 0)
   {
     accelPedal = clampRange(gLockAccelPedalOverride, 0, 100);
@@ -2929,6 +3098,33 @@ on timer tInput100
   {
     brakePedal = clampRange(gLockBrakePedalOverride, 0, 100);
   }
+  if (gScenarioInputLock == 0)
+  {
+    driveState = clampRange((int)@Test::manualDriveStateCmd, 0, 3);
+    gearState = calcBaselineGearState(driveState);
+    speedHintCmd = clampRange((int)@Test::manualVehicleSpeedCmd, 0, 255);
+    ignitionState = calcBaselineIgnitionState(speed, driveState);
+    engineState = (ignitionState == 1) ? 2 : 0;
+    manualSteeringAngleCmd = clampRange((int)@Chassis::steeringAngle, 0, 138);
+    steeringInput = calcManualSteeringState(manualSteeringAngleCmd);
+    accelPedal = clampRange((int)@Chassis::throttlePosition, 0, 100);
+    brakePedal = clampRange((int)@Chassis::brakePressure, 0, 100);
+    if (((int)@Chassis::ignitionCmd) > 0)
+    {
+      ignitionState = 1;
+      engineState = 2;
+    }
+    if (accelPedal == 0 && ((int)@Chassis::throttlePedalBtn) > 0)
+    {
+      accelPedal = 70;
+    }
+    if (brakePedal == 0 && ((int)@Chassis::brakePedalBtn) > 0)
+    {
+      brakePedal = 80;
+    }
+  }
+  @Chassis::steeringInput = clampRange(steeringInput, 0, 1);
+  publishManualPanelCompat(speed, accelPedal, brakePedal);
   if (gScenarioInputLock == 1)
   {
     objectTrackValid = clampRange(gLockObjectTrackValid, 0, 1);
@@ -3021,6 +3217,21 @@ on timer tInput100
   mPedal.BrakePedal = brakePedal;
   output(mPedal);
 
+  if (gScenarioInputLock == 0 && speedHintCmd > 0)
+  {
+    mWheelSpd.WheelSpdFL = speedHintCmd;
+    mWheelSpd.WheelSpdFR = speedHintCmd;
+    mWheelSpd.WheelSpdRL = speedHintCmd;
+    mWheelSpd.WheelSpdRR = speedHintCmd;
+    output(mWheelSpd);
+  }
+
+  mDoorCtrl.DoorControlCmd = clampRange((int)@Body::doorOpenCmd, 0, 1);
+  output(mDoorCtrl);
+
+  mTurnLampInput.TurnLampState = clampRange((int)@Body::manualTurnCmd, 0, 3);
+  output(mTurnLampInput);
+
   mFcamInput.ObjectTrackValid = objectTrackValid;
   mFcamInput.Confidence = objectConfidence;
   output(mFcamInput);
@@ -3084,10 +3295,8 @@ on timer tInput100
   }
   else if (gCurrentScenarioId == 228)
   {
-    mSeatBelt.DriverSeatBelt = 0;
-    mSeatBelt.PassengerSeatBelt = 0;
-    mSeatBelt.SeatBeltWarnLvl = 3;
-    output(mSeatBelt);
+    @Test::driverBeltOff = 1;
+    @Test::passengerBeltOff = 1;
 
     mSeatState.PassengerSeatPos = 60;
     output(mSeatState);
