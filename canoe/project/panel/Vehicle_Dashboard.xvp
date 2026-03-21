@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.4.10.0, Culture=neutral, PublicKeyToken=null">
-  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="VehicleDashboard">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Dashboard">
     <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X18ccc8cfeebdee488ae84cbe301ce969419b" ControlName="Input/Output Box 1">
       <Property Name="Name">X18ccc8cfeebdee488ae84cbe301ce969419b</Property>
       <Property Name="Size">31, 35</Property>
@@ -28,7 +28,7 @@
       <Property Name="ValueDisplay">Symbolic</Property>
       <Property Name="UsedValueTable">RawValue</Property>
       <Property Name="DescriptionSize">0, 0</Property>
-      <Property Name="SymbolConfiguration">8;16;Chassis;;;driveState;1;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;2;powertrain_can;TEST_SCN;frmGearStateMsg;GearState;1;Powertrain;;-1;;;Value;;;0</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X4db08ac6e60ffe417be9cc4e424787b9f4c2" ControlName="Switch / Indicator 2">
       <Property Name="Name">X4db08ac6e60ffe417be9cc4e424787b9f4c2</Property>
@@ -130,7 +130,7 @@
       <Property Name="Size">32, 27</Property>
       <Property Name="Location">395, 93</Property>
       <Property Name="SymbolConfiguration">8;16;Body;;;blinkRight;1;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">Bitmaps\DashboardFlasherRight.png</Property>
+      <Property Name="ImageFile">..\..\..\..\bootcamp finish\cfg-20260312T173237Z-1-001\CAPL\panel\Bitmaps\DashboardFlasherRight.png</Property>
       <Property Name="TabIndex">19</Property>
       <Property Name="IsButton">True</Property>
       <Property Name="Epsilon">0</Property>
@@ -146,7 +146,7 @@
       <Property Name="Size">23, 17</Property>
       <Property Name="Location">244, 93</Property>
       <Property Name="SymbolConfiguration">8;16;Body;;;blinkLeft;1;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">Bitmaps\DashboardFlasherLeft.png</Property>
+      <Property Name="ImageFile">..\..\..\..\bootcamp finish\cfg-20260312T173237Z-1-001\CAPL\panel\Bitmaps\DashboardFlasherLeft.png</Property>
       <Property Name="TabIndex">17</Property>
       <Property Name="IsButton">True</Property>
       <Property Name="Epsilon">0</Property>
@@ -167,7 +167,7 @@
       <Property Name="Name">MeterControl2</Property>
       <Property Name="Size">158, 154</Property>
       <Property Name="Location">98, 136</Property>
-      <Property Name="SymbolConfiguration">8;16;Powertrain;;;engineRpm;1;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;2;powertrain_can;EMS;frmEngineSpeedTempMsg;EngineRpm;1;Powertrain;;-1;;;Value;;;0</Property>
       <Property Name="PivotDistance">45</Property>
       <Property Name="NeedleShape">TriangleSlimFilled</Property>
       <Property Name="ScaleMax">8000</Property>

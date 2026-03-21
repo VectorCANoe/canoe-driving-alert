@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.4.10.0, Culture=neutral, PublicKeyToken=null">
-  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="BodyStatus">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="windowstate">
     <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X4eb123b4ef1f5e480aeb3eae2cd8fe9deb4c" ControlName="Switch / Indicator 5">
       <Property Name="Name">X4eb123b4ef1f5e480aeb3eae2cd8fe9deb4c</Property>
       <Property Name="Size">229, 272</Property>
@@ -20,7 +20,7 @@
       <Property Name="Name">X1cc69ddceb361e4645e8b33ea5a73ce1b892</Property>
       <Property Name="Size">550, 178</Property>
       <Property Name="Location">0, 272</Property>
-      <Property Name="SymbolConfiguration">8;16;Body;;;wiperPos;1;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;2;body_can;WIP;frmWiperStateMsg;FrontWiperState;1;Body;;-1;;;Value;;;0</Property>
       <Property Name="ImageFile">Bitmaps\wifer.png</Property>
       <Property Name="TabIndex">4</Property>
       <Property Name="Epsilon">0</Property>
@@ -72,7 +72,7 @@
       <Property Name="Name">Xde05df35e4aefe4187e9d1ce0103bd4df027</Property>
       <Property Name="Size">291, 272</Property>
       <Property Name="Location">0, 0</Property>
-      <Property Name="SymbolConfiguration">8;16;Body;;;windowPos;1;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;2;body_can;DOOR_FL;frmDoorFlStateMsg;DoorFlWindowPos;1;Body;;-1;;;Value;;;0</Property>
       <Property Name="ImageFile">Bitmaps\left window.png</Property>
       <Property Name="ReadOnlyControl">True</Property>
       <Property Name="TabIndex">10</Property>

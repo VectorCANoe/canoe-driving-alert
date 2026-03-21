@@ -1,6 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.4.10.0, Culture=neutral, PublicKeyToken=null">
-  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="DriverControl">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="MyDriverPanel">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb1d078dbeda0ce4674e957befae4aa630bd3" ControlName="Static Text 4">
+      <Property Name="Name">Xb1d078dbeda0ce4674e957befae4aa630bd3</Property>
+      <Property Name="Size">66, 15</Property>
+      <Property Name="Location">1281, 584</Property>
+      <Property Name="Text">Description</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa4258faee9aade400de9012e99b49b392d6e" ControlName="Static Text 2">
+      <Property Name="Name">Xa4258faee9aade400de9012e99b49b392d6e</Property>
+      <Property Name="Size">66, 15</Property>
+      <Property Name="Location">1280, 472</Property>
+      <Property Name="Text">Description</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.AnalogGaugeControl, Vector.CANalyzer.Panels.AnalogGauge, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe046a1cbeea65e4f86e916dec0e964b686fe" ControlName="Analog Gauge 1">
+      <Property Name="Name">Xe046a1cbeea65e4f86e916dec0e964b686fe</Property>
+      <Property Name="Size">225, 180</Property>
+      <Property Name="Location">1281, 540</Property>
+      <Property Name="ScaleMin">0</Property>
+      <Property Name="ScaleMax">100</Property>
+      <Property Name="LowerRangeLimit">30</Property>
+      <Property Name="UpperRangeLimit">80</Property>
+      <Property Name="BorderStyle">FixedSingle</Property>
+      <Property Name="BackgroundColor">White</Property>
+      <Property Name="LegendTextFont">Microsoft Sans Serif, 8.25pt</Property>
+      <Property Name="CurrentPosition">0</Property>
+      <Property Name="IsFrame">False</Property>
+      <Property Name="IsMargin">False</Property>
+      <Property Name="ScaleMargin">0</Property>
+      <Property Name="SymbolConfiguration"></Property>
+      <Property Name="CriticalProps" Member="AAEAAAD/////AQAAAAAAAAAEAQAAAC9TeXN0ZW0uUmVmbGVjdGlvbi5NZW1iZXJJbmZvU2VyaWFsaXphdGlvbkhvbGRlcgcAAAAETmFtZQxBc3NlbWJseU5hbWUJQ2xhc3NOYW1lCVNpZ25hdHVyZQpTaWduYXR1cmUyCk1lbWJlclR5cGUQR2VuZXJpY0FyZ3VtZW50cwEBAQEBAAMIDVN5c3RlbS5UeXBlW10GAgAAAAUuY3RvcgYDAAAAXFZlY3Rvci5DQU5hbHl6ZXIuUGFuZWxzLkFuYWxvZ0dhdWdlLCBWZXJzaW9uPTE3LjMuOTEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1udWxsBgQAAAA2VmVjdG9yLkNBTmFseXplci5QYW5lbHMuRGVzaWduLkdhdWdlQ3JpdGljYWxQcm9wZXJ0aWVzBgUAAAAyVm9pZCAuY3RvcihEb3VibGUsIERvdWJsZSwgRG91YmxlLCBEb3VibGUsIERvdWJsZSkGBgAAAFAuY3RvcihTeXN0ZW0uRG91YmxlLCBTeXN0ZW0uRG91YmxlLCBTeXN0ZW0uRG91YmxlLCBTeXN0ZW0uRG91YmxlLCBTeXN0ZW0uRG91YmxlKQEAAAAKCw==">
+        <Argument>0</Argument>
+        <Argument>100</Argument>
+        <Argument>0</Argument>
+        <Argument>30</Argument>
+        <Argument>80</Argument>
+      </Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ClinometerControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xec7fd606ecbd9e44bee8e87e5d369567c38f" ControlName="Clinometer 1">
+      <Property Name="Name">Xec7fd606ecbd9e44bee8e87e5d369567c38f</Property>
+      <Property Name="Size">216, 231</Property>
+      <Property Name="Location">1276, 558</Property>
+      <Property Name="SymbolConfiguration"></Property>
+      <Property Name="ForeColor">Black</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CompassControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa8290ee4e0a77e4b0ae9ac2e6eec3b35978e" ControlName="Compass 1">
+      <Property Name="Name">Xa8290ee4e0a77e4b0ae9ac2e6eec3b35978e</Property>
+      <Property Name="Size">199, 244</Property>
+      <Property Name="Location">1267, 552</Property>
+      <Property Name="ToolTipMode">Automatic</Property>
+      <Property Name="SymbolConfiguration1"></Property>
+      <Property Name="SymbolConfiguration2"></Property>
+      <Property Name="ForeColor">Black</Property>
+      <Property Name="UnitForeColor">Black</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X56ad65c8e1e73e49bce9505e92c0e68c9637" ControlName="Track Bar 2">
+      <Property Name="Name">X56ad65c8e1e73e49bce9505e92c0e68c9637</Property>
+      <Property Name="Size">18, 30</Property>
+      <Property Name="Location">1282, 515</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="MaximumSize">100000, 30</Property>
+      <Property Name="SymbolConfiguration"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X04d1aac1e91cce4610e8009ec8a78ca34753" ControlName="Static Text 1">
+      <Property Name="Name">X04d1aac1e91cce4610e8009ec8a78ca34753</Property>
+      <Property Name="Size">66, 15</Property>
+      <Property Name="Location">1281, 413</Property>
+      <Property Name="Text">Description</Property>
+    </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X47c835c7e7625e4100e9a0fe2ae23ab5fa8a" ControlName="드라이버 컨트롤 패널">
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X9018f557ec1c8e4909e9219e019c26959feb" ControlName="좌측방향지시등 라벨">
         <Property Name="Name">X9018f557ec1c8e4909e9219e019c26959feb</Property>
@@ -85,7 +152,7 @@ P
         <Property Name="MaximumSize">30, 100000</Property>
         <Property Name="Maximum">3</Property>
         <Property Name="LargeChange">1</Property>
-        <Property Name="SymbolConfiguration">8;16;Test;;;manualDriveStateCmd;1;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;Chassis;;;driveState;1;;;-1;;;Value;;;0</Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X92b9388ce5f20e457ae87b9e257b7c17477c" ControlName="엔진시동 스위치">
         <Property Name="Name">X92b9388ce5f20e457ae87b9e257b7c17477c</Property>

@@ -1,7 +1,7 @@
 ﻿# TMP Handoff (Next Codex Session)
 
 ## 0) Freshness Control
-- Last Updated: 2026-03-11
+- Last Updated: 2026-03-21
 - Freshness Status: FRESH
 - Validity Window: 3 days
 - Operational Document SoT:
@@ -73,6 +73,11 @@
 - System-level viewpoint is mandatory:
   - 문서/구현 판단 기준은 `단일 시나리오 최적화`가 아니라 `완성차 시스템 관점`이다.
   - ECU/메시지/흐름은 특정 데모 장면이 아니라 차량 전반 동작(입력->판정->출력->진단/검증)을 기준으로 설계한다.
+- Imported donor panel XVPs are frozen:
+  - 현재 `canoe/project/panel/` 및 `Desktop_ASSIGN/`에 반영된 donor 패널은 레이아웃, 위젯 타입, 라벨, 기존 writable binding을 변경하지 않는다.
+  - 패널 적응은 `project.sysvars`, `src/capl`, `cfg/channel_assign` mirror에서만 수행한다.
+  - 새 observer/compat 변수 추가는 허용되지만, 기존 donor 패널이 이미 사용 중인 입력/표시 계약은 XVP에서 변경하지 않는다.
+  - Diagnostic Console을 제외한 donor 패널은 `display-only 재분류`나 blanket lock을 하지 않는다.
 
 ## 4) Current Reset Baseline
 
@@ -143,6 +148,9 @@
 - deep runtime profile: `98 product + VALIDATION_HARNESS(2 runtime nodes)` 기준으로 운영
 - `00e_ECU_Naming_Standard.md`: active/placeholder 상태를 최신 승격 기준으로 동기화 완료
 - `00f_CAN_ID_Allocation_Standard.md`: placeholder ID 비할당/승격 시 배정 규칙 유지
+- donor panel freeze verification completed:
+  - 2026-03-21 기준 runtime panel names(`Ambient_Control`, `Cruise_Pedal`, `Operator_Input` 등)와 `Desktop_ASSIGN` 미러는 donor baseline `cb539900` 매핑 기준으로 content-equal 상태다.
+  - 이후 패널 작업은 XVP 수정이 아니라 CAPL/sysvar runtime 연결만 수행한다.
 
 ## 7) Immediate Next Steps
 1. Keep `00f` placeholder ID policy as `no allocation until promotion`.
