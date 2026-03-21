@@ -87,52 +87,9 @@ void publishCruiseState()
     gPanelCruiseSetSpeedCmd = 0;
   }
 
-  if (manualMode == 1 && gPanelCruiseSticky == 1)
-  {
-    cruiseState = clampRange(gPanelCruiseStateCmd, 0, 3);
-    gapLevel = (cruiseState >= 2) ? 3 : 2;
-    cruiseSetSpeed = (gPanelCruiseSetSpeedCmd > 0) ? gPanelCruiseSetSpeedCmd : speedLimit;
-  }
-  else if (manualCruiseStateCmd > 0)
-  {
-    cruiseState = manualCruiseStateCmd;
-    gapLevel = (manualCruiseStateCmd >= 2) ? 3 : 2;
-    cruiseSetSpeed = (manualCruiseSetSpeedCmd > 0) ? manualCruiseSetSpeedCmd : speedLimit;
-  }
-  else
-  {
-    cruiseState = 0;
-    gapLevel = 2;
-    cruiseSetSpeed = speedLimit;
-
-    if (gDriveState == 3 && failSafeMode == 0)
-    {
-      cruiseState = 1;
-
-      if (riskLevel >= 70 || selectedAlertLevel >= 6 || emergencyContext > 0)
-      {
-        cruiseState = 2;
-        gapLevel = 3;
-        cruiseSetSpeed = gVehicleSpeed - 10;
-      }
-      else if (riskLevel >= 40 || selectedAlertLevel >= 4)
-      {
-        cruiseState = 2;
-        gapLevel = 3;
-        cruiseSetSpeed = gVehicleSpeed - 5;
-      }
-    }
-  }
-
-  if (cruiseSetSpeed < 30 && cruiseState > 0)
-  {
-    cruiseSetSpeed = 30;
-  }
-  if (cruiseSetSpeed > speedLimit)
-  {
-    cruiseSetSpeed = speedLimit;
-  }
-  cruiseSetSpeed = clampRange(cruiseSetSpeed, 0, 255);
+  cruiseState = 0;
+  gapLevel = 2;
+  cruiseSetSpeed = 0;
 
   mCruise.CruiseState = cruiseState;
   mCruise.GapLevel = gapLevel;
@@ -148,7 +105,7 @@ void publishCruiseState()
       gapLevel != gLastGapLevel ||
       cruiseSetSpeed != gLastCruiseSetSpeed)
   {
-    write("[SCC] cruise=%d gap=%d set=%d risk=%d failSafe=%d alert=%d ems=%d speed=%d",
+    write("[SCC] disabled cruise=%d gap=%d set=%d risk=%d failSafe=%d alert=%d ems=%d speed=%d",
           cruiseState,
           gapLevel,
           cruiseSetSpeed,

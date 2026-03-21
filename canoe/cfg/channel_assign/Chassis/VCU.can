@@ -25,7 +25,7 @@ variables
   int gWheelSpeedHint;
   int gPtAliveCnt;
   int gManualDriveStateTarget;
-  int gManualVehicleSpeedTarget;
+  int gManualThrottlePosition;
   int gLastPublishedDriveState;
   int gLastPublishedVehicleSpeed;
   dword gPedalRxMs;
@@ -111,6 +111,28 @@ int deriveTorqueRequest(int driveMode, int accelPedal, int speedLimit)
     torqueRequest = 120;
   }
   return torqueRequest;
+}
+
+int rampTowardTarget(int currentValue, int targetValue, int riseStep, int fallStep)
+{
+  if (currentValue < targetValue)
+  {
+    currentValue = currentValue + riseStep;
+    if (currentValue > targetValue)
+    {
+      currentValue = targetValue;
+    }
+  }
+  else if (currentValue > targetValue)
+  {
+    currentValue = currentValue - fallStep;
+    if (currentValue < targetValue)
+    {
+      currentValue = targetValue;
+    }
+  }
+
+  return currentValue;
 }
 
 int deriveTargetSpeed(int currentSpeed,
@@ -364,7 +386,7 @@ on start
   gWheelSpeedHint = 0;
   gPtAliveCnt = 0;
   gManualDriveStateTarget = 0;
-  gManualVehicleSpeedTarget = 0;
+  gManualThrottlePosition = 0;
   gLastPublishedDriveState = 0;
   gLastPublishedVehicleSpeed = 0;
   gPedalRxMs = 0;
@@ -399,8 +421,8 @@ on message frmIgnitionEngineMsg
 
 on message frmGearStateMsg
 {
-  gGearInput = clampRange((int)this.GearInput, 0, 7);
-  gGearState = clampRange((int)this.GearState, 0, 7);
+  gGearInput = clampRange((int)this.GearInput, 0, 3);
+  gGearState = clampRange((int)this.GearState, 0, 3);
   gGearRxMs = getSimulationTimeMs();
 }
 
@@ -456,13 +478,12 @@ on timer tVcuCycle
   int gearInputStale;
   int manualMode;
   int manualDriveStateCmd;
-  int manualVehicleSpeedCmd;
   int manualCruiseState;
   int manualCruiseSetSpeed;
   int manualCruiseActive;
   int manualIgnitionCmd;
+  int manualThrottleTarget;
   int panelDriveStateSeam;
-  int panelVehicleSpeedSeam;
   int accelStep;
   int accelPedal;
   int brakePedal;
@@ -503,64 +524,36 @@ on timer tVcuCycle
 
   manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   manualDriveStateCmd = 0;
-  manualVehicleSpeedCmd = 0;
   manualCruiseState = 0;
   manualCruiseSetSpeed = 0;
   manualCruiseActive = 0;
   manualIgnitionCmd = ((((int)@Chassis::ignitionCmd) > 0) ? 1 : 0);
   if (manualMode == 1)
   {
-    panelDriveStateSeam = clampRange((int)@Chassis::driveState, 0, 3);
-    panelVehicleSpeedSeam = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
-    if (manualIgnitionCmd == 1 &&
-        panelDriveStateSeam != gLastPublishedDriveState)
-    {
-      gManualDriveStateTarget = panelDriveStateSeam;
-    }
-    if (manualIgnitionCmd == 1 &&
-        panelVehicleSpeedSeam != gLastPublishedVehicleSpeed)
-    {
-      gManualVehicleSpeedTarget = panelVehicleSpeedSeam;
-    }
-    if (manualIgnitionCmd == 0 && gSpeed <= 0)
-    {
-      gManualDriveStateTarget = 0;
-      gManualVehicleSpeedTarget = 0;
-    }
+    panelDriveStateSeam = clampRange((int)@Chassis::GearState, 0, 3);
+    gManualDriveStateTarget = panelDriveStateSeam;
     manualDriveStateCmd = clampRange(gManualDriveStateTarget, 0, 3);
-    manualVehicleSpeedCmd = clampRange(gManualVehicleSpeedTarget, 0, 255);
-    if (manualIgnitionCmd == 0 && gSpeed <= 0)
-    {
-      manualDriveStateCmd = 0;
-      manualVehicleSpeedCmd = 0;
-    }
     manualCruiseState = clampRange((int)@Powertrain::cruiseState, 0, 3);
     manualCruiseSetSpeed = clampRange((int)@Powertrain::cruiseSetSpeed, 0, 255);
-    accelPedal = 0;
+    manualThrottleTarget = 0;
     brakePedal = clampRange((int)@Chassis::brakePressure, 0, 100);
-    /* Donor pedal panel uses buttons for command and progress bars for owner
-       readback. Avoid feeding the displayed setpoint back into control. */
-    if (((int)@Chassis::throttlePedalBtn) > 0)
+    if (manualIgnitionCmd == 1 &&
+        manualDriveStateCmd >= 3 &&
+        brakePedal < 20 &&
+        ((int)@Chassis::throttlePedalBtn) > 0)
     {
-      accelPedal = 70;
-      @Chassis::throttlePedalBtn = 0;
+      manualThrottleTarget = 100;
     }
-    if (accelPedal > 0 || brakePedal > 0)
-    {
-      /* Direct speed seam is only an idle/manual target aid.
-         Once real pedal input arrives, owner vehicle dynamics must lead and
-         the previously latched panel speed target must be released. */
-      gManualVehicleSpeedTarget = 0;
-    }
+    gManualThrottlePosition = rampTowardTarget(gManualThrottlePosition,
+                                               manualThrottleTarget,
+                                               4,
+                                               6);
+    accelPedal = gManualThrottlePosition;
     gearState = manualDriveStateCmd;
     engineState = deriveManualPowertrainState(manualIgnitionCmd,
                                               gearState,
-                                              (manualVehicleSpeedCmd > 0) ? manualVehicleSpeedCmd : gSpeed,
+                                              gSpeed,
                                               accelPedal);
-    if (manualVehicleSpeedCmd > 0)
-    {
-      externalSpeedHint = manualVehicleSpeedCmd;
-    }
     if (gearState >= 3 &&
         brakePedal == 0 &&
         accelPedal == 0 &&
@@ -570,16 +563,11 @@ on timer tVcuCycle
     {
       manualCruiseActive = 1;
     }
-    if (manualCruiseActive == 1 || gearState < 3)
-    {
-      gManualVehicleSpeedTarget = 0;
-    }
-    manualVehicleSpeedCmd = clampRange(gManualVehicleSpeedTarget, 0, 255);
   }
   else
   {
     gManualDriveStateTarget = 0;
-    gManualVehicleSpeedTarget = 0;
+    gManualThrottlePosition = 0;
   }
 
   externalSpeedDelta = externalSpeedHint - gSpeed;
@@ -587,21 +575,9 @@ on timer tVcuCycle
   {
     externalSpeedDelta = -externalSpeedDelta;
   }
-  if (manualMode == 1 &&
-      manualVehicleSpeedCmd > 0 &&
-      accelPedal == 0 &&
-      brakePedal == 0 &&
-      manualCruiseActive == 0 &&
-      gearState >= 3)
-  {
-    externalSpeedOverride = 1;
-  }
-  else
-  {
-    externalSpeedOverride = ((accelPedal == 0) &&
-                             (brakePedal == 0) &&
-                             (externalSpeedDelta >= 3)) ? 1 : 0;
-  }
+  externalSpeedOverride = ((accelPedal == 0) &&
+                           (brakePedal == 0) &&
+                           (externalSpeedDelta >= 3)) ? 1 : 0;
 
   if (externalSpeedOverride == 1)
   {
@@ -678,7 +654,6 @@ on timer tVcuCycle
   mState.gDriveState = driveState;
   output(mState);
   @Chassis::vehicleSpeed = gSpeed;
-  @Chassis::driveState = driveState;
   gLastPublishedVehicleSpeed = gSpeed;
   gLastPublishedDriveState = driveState;
   @Chassis::throttlePosition = clampRange(accelPedal, 0, 100);
