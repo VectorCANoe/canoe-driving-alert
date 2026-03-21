@@ -653,7 +653,6 @@ void publishManualPanelCompat(int speed, int accelPedal, int brakePedal)
 
     if (compatV2xFrame >= 0)
     {
-      @V2X::v2xFrame = compatV2xFrame;
       @Display::animFrame = compatV2xFrame;
     }
     else if (manualEmergencyAlertCmd == 1 || manualAlertOverride > 0)
@@ -683,6 +682,7 @@ void stopScenarioExecution()
   @Test::scenarioCommandAck = 0;
   clearScenarioLifecycleState();
   @Test::scenarioResult = 0;
+  publishScenarioPanelLamps();
   @Test::driverBeltOff = 0;
   @Test::passengerBeltOff = 0;
   gLockAccelGroupFlag = 0;
@@ -885,6 +885,41 @@ void clearScenarioLifecycleState()
   @Test::scenarioEvaluatedId = 0;
 }
 
+void publishScenarioPanelLamps()
+{
+  int activeScenarioId;
+  int evaluatedScenarioId;
+  int lastAck;
+  int result;
+  int stopLamp;
+  int warnLamp;
+  int runLamp;
+
+  activeScenarioId = clampRange((int)@Test::scenarioActiveId, 0, 255);
+  evaluatedScenarioId = clampRange((int)@Test::scenarioEvaluatedId, 0, 255);
+  lastAck = clampRange((int)@Test::scenarioCommandAck, 0, 255);
+  result = (((int)@Test::scenarioResult) == 1) ? 1 : 0;
+
+  stopLamp = 1;
+  warnLamp = 0;
+  runLamp = 0;
+
+  if (activeScenarioId != 0)
+  {
+    stopLamp = 0;
+    runLamp = 1;
+  }
+  else if (lastAck != 0 && evaluatedScenarioId != 0 && result == 0)
+  {
+    stopLamp = 0;
+    warnLamp = 1;
+  }
+
+  @Test::scenarioLampStop = stopLamp;
+  @Test::scenarioLampWarn = warnLamp;
+  @Test::scenarioLampRun = runLamp;
+}
+
 void publishScenarioResultFrame()
 {
   write("[TEST_SCN] scenario result=%d",
@@ -900,7 +935,69 @@ void beginScenarioExecution(int scenarioId)
   gCurrentScenarioId = scenarioId;
   setScenarioMirror(scenarioId);
   @Test::scenarioActiveId = clampRange(scenarioId, 0, 255);
+  publishScenarioPanelLamps();
   scheduleScenarioEvaluation(scenarioId);
+}
+
+int applyScenarioPanelRequest(int scenarioId, int fromCompatMirror)
+{
+  int acceptedScenarioId;
+
+  acceptedScenarioId = 0;
+
+  if (scenarioId == 0)
+  {
+    stopScenarioExecution();
+    setScenarioMirror(0);
+    if (fromCompatMirror == 1)
+    {
+      write("[TEST_SCN] direct testScenario stop");
+    }
+    else
+    {
+      write("[TEST_SCN] command stop");
+    }
+  }
+  else if (scenarioId >= 1 && scenarioId <= 35)
+  {
+    beginScenarioExecution(scenarioId);
+    acceptedScenarioId = clampRange(scenarioId, 0, 255);
+    if (fromCompatMirror == 1)
+    {
+      write("[TEST_SCN] direct testScenario apply=%d", scenarioId);
+    }
+    else
+    {
+      write("[TEST_SCN] command apply scenario=%d", scenarioId);
+    }
+  }
+  else if (scenarioId >= 200 && scenarioId <= 255)
+  {
+    beginScenarioExecution(scenarioId);
+    acceptedScenarioId = clampRange(scenarioId, 0, 255);
+    if (fromCompatMirror == 1)
+    {
+      write("[TEST_SCN] direct testScenario execute=%d", scenarioId);
+    }
+    else
+    {
+      write("[TEST_SCN] command execute scenario=%d", scenarioId);
+    }
+  }
+  else
+  {
+    if (fromCompatMirror == 1)
+    {
+      write("[TEST_SCN] ignore invalid testScenario=%d", scenarioId);
+    }
+    else
+    {
+      write("[TEST_SCN] command ignore invalid scenario=%d", scenarioId);
+    }
+  }
+
+  @Test::scenarioCommandAck = acceptedScenarioId;
+  return acceptedScenarioId;
 }
 
 void applyScenarioPreset(int scenarioId)
@@ -2965,6 +3062,7 @@ on start
   @Test::driverBeltOff = 0;
   @Test::passengerBeltOff = 0;
   clearScenarioLifecycleState();
+  publishScenarioPanelLamps();
   resetValidationOverrides();
   gEmergencyIngressHeartbeat = 0;
   @Core::accelGroupFlag = 0;
@@ -3414,6 +3512,12 @@ on timer tInput100
 on sysvar Test::scenarioResult
 {
   publishScenarioResultFrame();
+  publishScenarioPanelLamps();
+}
+
+on sysvar Test::scenarioActiveId
+{
+  publishScenarioPanelLamps();
 }
 
 on message frmVehicleStateCanMsg
@@ -3502,9 +3606,7 @@ on message frmPowerTailgateCtrlStateMsg
 on sysvar Test::scenarioCommand
 {
   int scenarioId;
-  int acceptedScenarioId;
   scenarioId = (int)@Test::scenarioCommand;
-  acceptedScenarioId = 0;
 
   if (gScenarioCmdInternalClear == 1)
   {
@@ -3512,30 +3614,7 @@ on sysvar Test::scenarioCommand
     return;
   }
 
-  if (scenarioId == 0)
-  {
-    stopScenarioExecution();
-    setScenarioMirror(0);
-    write("[TEST_SCN] command stop");
-  }
-  else if (scenarioId >= 1 && scenarioId <= 35)
-  {
-    beginScenarioExecution(scenarioId);
-    acceptedScenarioId = clampRange(scenarioId, 0, 255);
-    write("[TEST_SCN] command apply scenario=%d", scenarioId);
-  }
-  else if (scenarioId >= 200 && scenarioId <= 255)
-  {
-    beginScenarioExecution(scenarioId);
-    acceptedScenarioId = clampRange(scenarioId, 0, 255);
-    write("[TEST_SCN] command execute scenario=%d", scenarioId);
-  }
-  else
-  {
-    write("[TEST_SCN] command ignore invalid scenario=%d", scenarioId);
-  }
-
-  @Test::scenarioCommandAck = acceptedScenarioId;
+  applyScenarioPanelRequest(scenarioId, 0);
   gScenarioCmdInternalClear = 1;
   @Test::scenarioCommand = 0;
 }
@@ -3554,14 +3633,24 @@ on sysvar Test::testScenario
   scenarioId = clampRange((int)@Test::testScenario, 0, 255);
   mirrorScenarioId = clampRange(gCurrentScenarioId, 0, 255);
 
-  if (scenarioId != mirrorScenarioId)
+  if (scenarioId == mirrorScenarioId)
   {
-    /* `testScenario` is now a status mirror only.
-       Official execution must enter through `scenarioCommand`. */
-    setScenarioMirror(mirrorScenarioId);
-    write("[TEST_SCN] ignore direct testScenario write: req=%d keep=%d",
-          scenarioId, mirrorScenarioId);
+    return;
   }
+
+  if (scenarioId == 0 ||
+      (scenarioId >= 1 && scenarioId <= 35) ||
+      (scenarioId >= 200 && scenarioId <= 255))
+  {
+    /* Donor panel contract still writes `testScenario` directly.
+       Accept it as a compatibility request on the validation harness. */
+    applyScenarioPanelRequest(scenarioId, 1);
+    return;
+  }
+
+  setScenarioMirror(mirrorScenarioId);
+  write("[TEST_SCN] ignore direct testScenario write: req=%d keep=%d",
+        scenarioId, mirrorScenarioId);
 }
 
 on timer tScenarioEval

@@ -558,10 +558,16 @@ void runArbiter()
   int selectedAlertDecisionType;
   int selectedAlertLevel;
   int selectedAlertType;
+  int directBaseZoneContextHint;
+  int directSelectedAlertLevelHint;
+  int directSelectedAlertTypeHint;
 
   manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
   manualAlertMode = (manualMode == 1 && manualAlertOverride > 0) ? 1 : 0;
+  directBaseZoneContextHint = clampRange((int)@Core::baseZoneContext, 0, 4);
+  directSelectedAlertLevelHint = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  directSelectedAlertTypeHint = clampRange((int)@Core::selectedAlertType, 0, 15);
   emergencyContext = clampRange((int)@Core::emergencyContext, 0, 2);
   warningState = clampRange((int)@Core::warningState, 0, 2);
   if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
@@ -577,6 +583,10 @@ void runArbiter()
     manualRoadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
     manualNavDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
     baseZoneContext = deriveBaseZoneContextFromNavState(manualRoadZone, manualNavDirection);
+    if (baseZoneContext == 0 && directBaseZoneContextHint > 0)
+    {
+      baseZoneContext = directBaseZoneContextHint;
+    }
   }
   proximityRiskLevel = clampRange((int)@Core::proximityRiskLevel, 0, 100);
   failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
@@ -792,6 +802,18 @@ void runArbiter()
     }
   }
 
+  if (manualAlertMode == 1)
+  {
+    if (directSelectedAlertLevelHint > 0)
+    {
+      selectedAlertLevel = directSelectedAlertLevelHint;
+    }
+    if (directSelectedAlertTypeHint > 0)
+    {
+      selectedAlertType = directSelectedAlertTypeHint;
+    }
+  }
+
   selectedAlertDecisionLevel = selectedAlertLevel;
   selectedAlertDecisionType = selectedAlertType;
 
@@ -986,6 +1008,9 @@ void updateWarningState()
   int steerGroupFlag;
   int accelGroupActive;
   int steerGroupActive;
+  int directVehicleSpeedHint;
+  int directSpeedLimitHint;
+  int directBaseZoneContextHint;
   dword nowMs;
 
   if (ethIsRecentTick(gVehicleStateRxMs, 300) == 1)
@@ -1019,6 +1044,9 @@ void updateWarningState()
   manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
   manualAlertMode = (manualMode == 1 && manualAlertOverride > 0) ? 1 : 0;
+  directVehicleSpeedHint = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  directSpeedLimitHint = clampRange((int)@Core::speedLimitNorm, 0, 255);
+  directBaseZoneContextHint = clampRange((int)@Core::baseZoneContext, 0, 4);
   if (manualAlertMode == 1)
   {
     manualRoadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
@@ -1027,6 +1055,18 @@ void updateWarningState()
     driveState = clampRange((int)@Chassis::driveState, 0, 3);
     speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
     baseZoneContext = deriveBaseZoneContextFromNavState(manualRoadZone, manualNavDirection);
+    if (speed == 0 && directVehicleSpeedHint > 0)
+    {
+      speed = directVehicleSpeedHint;
+    }
+    if (speedLimit <= 0 && directSpeedLimitHint > 0)
+    {
+      speedLimit = directSpeedLimitHint;
+    }
+    if (baseZoneContext == 0 && directBaseZoneContextHint > 0)
+    {
+      baseZoneContext = directBaseZoneContextHint;
+    }
     if (speedLimit <= 0)
     {
       speedLimit = 30;

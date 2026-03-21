@@ -196,8 +196,43 @@ position</Property>
       <Property Name="TabIndex">9</Property>
       <Property Name="UseWindowsStyle">False</Property>
     </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CruiseOperatorStatusGroup" ControlName="CruiseOperatorStatusGroup">
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CruiseOperatorActiveIdBox" ControlName="CruiseOperatorActiveIdBox">
+        <Property Name="Name">CruiseOperatorActiveIdBox</Property>
+        <Property Name="Size">141, 21</Property>
+        <Property Name="Location">8, 7</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">20</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">Active Id</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">58, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioActiveId;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CruiseOperatorHintLabel" ControlName="CruiseOperatorHintLabel">
+        <Property Name="Name">CruiseOperatorHintLabel</Property>
+        <Property Name="Size">142, 15</Property>
+        <Property Name="Location">164, 12</Property>
+        <Property Name="Text">0=Manual, &gt;0=Scenario</Property>
+      </Object>
+      <Property Name="Name">CruiseOperatorStatusGroup</Property>
+      <Property Name="Size">313, 34</Property>
+      <Property Name="Location">5, 307</Property>
+      <Property Name="Text">Operator Status</Property>
+      <Property Name="TabIndex">21</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
     <Property Name="Name">Panel1</Property>
-    <Property Name="Size">323, 306</Property>
+    <Property Name="Size">323, 346</Property>
     <Property Name="Location">0, 0</Property>
     <Property Name="BackColor">Window</Property>
   </Object>

@@ -1,0 +1,956 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.4.10.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="DiagnosticConsole">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X477348d5e2c14e494fea950e9f3c70517fb0" ControlName="Static Text 1">
+      <Property Name="Name">X477348d5e2c14e494fea950e9f3c70517fb0</Property>
+      <Property Name="Size">33, 15</Property>
+      <Property Name="Location">418, 46</Property>
+      <Property Name="Text">Fault</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xcdf263e7e5ec5e42d3e92e4ecf39d9cefb80" ControlName="LED Control 2">
+      <Property Name="Name">Xcdf263e7e5ec5e42d3e92e4ecf39d9cefb80</Property>
+      <Property Name="Size">13, 13</Property>
+      <Property Name="Location">403, 45</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">8</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;</Property>
+      <Property Name="UsedLEDColorOff">Red</Property>
+      <Property Name="SymbolConfiguration"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa79ab74ce14dde403eeb694ebda64428ab18" ControlName="labelN">
+      <Property Name="Name">Xa79ab74ce14dde403eeb694ebda64428ab18</Property>
+      <Property Name="Size">49, 15</Property>
+      <Property Name="Location">418, 25</Property>
+      <Property Name="Text">Nominal</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb58d8fa4e2d1ee453ae9992e984bdca550ce" ControlName="LED Control 1">
+      <Property Name="Name">Xb58d8fa4e2d1ee453ae9992e984bdca550ce</Property>
+      <Property Name="Size">13, 13</Property>
+      <Property Name="Location">403, 26</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">7</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Green&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Green&lt;/Color&gt;</Property>
+      <Property Name="UsedLEDColorOff">Green</Property>
+      <Property Name="UsedLEDColorOn">Green</Property>
+      <Property Name="SymbolConfiguration"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DiagTitle" ControlName="DiagTitle">
+      <Property Name="Name">DiagTitle</Property>
+      <Property Name="Size">430, 24</Property>
+      <Property Name="Location">12, 10</Property>
+      <Property Name="Font">Microsoft Sans Serif, 11pt, style=Bold</Property>
+      <Property Name="Text">External Diagnostic Console</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DiagSubtitle" ControlName="DiagSubtitle">
+      <Property Name="Name">DiagSubtitle</Property>
+      <Property Name="Size">980, 18</Property>
+      <Property Name="Location">12, 34</Property>
+      <Property Name="Text">Use the tab headers below to switch pages inside this panel.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.VectorTabControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DiagTabs" ControlName="DiagTabs">
+      <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="OverviewPage" ControlName="OverviewPage">
+        <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X4f157578ee35ce4a64e9e1de801df4a336ff" ControlName="LEDSecurityState">
+          <Property Name="Name">X4f157578ee35ce4a64e9e1de801df4a336ff</Property>
+          <Property Name="Size">14, 14</Property>
+          <Property Name="Location">391, 165</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">6</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Green&lt;/Color&gt;</Property>
+          <Property Name="UsedLEDColorOff">Red</Property>
+          <Property Name="UsedLEDColorOn">Green</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;SecurityState;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe360270ce28a4e4499eaeb1e5385631d3fb5" ControlName="LEDServiceState">
+          <Property Name="Name">Xe360270ce28a4e4499eaeb1e5385631d3fb5</Property>
+          <Property Name="Size">14, 14</Property>
+          <Property Name="Location">391, 136</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">5</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Green&lt;/Color&gt;</Property>
+          <Property Name="UsedLEDColorOff">Red</Property>
+          <Property Name="UsedLEDColorOn">Green</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;ServiceState;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X8c9cc2e8ec915e4066eb084e93844cf8d3b7" ControlName="LEDRouteOwner">
+          <Property Name="Name">X8c9cc2e8ec915e4066eb084e93844cf8d3b7</Property>
+          <Property Name="Size">14, 14</Property>
+          <Property Name="Location">391, 107</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">4</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;&lt;RxValue&gt;3&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;3&lt;/TxValue&gt;&lt;Color&gt;Green&lt;/Color&gt;</Property>
+          <Property Name="UsedLEDColorOff">Red</Property>
+          <Property Name="UsedLEDColorOn">Green</Property>
+          <Property Name="SwitchValueVTOnXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;3&lt;/RxValue&gt;</Property>
+          <Property Name="SwitchValueVTOn">1;Lower;3</Property>
+          <Property Name="SwitchValueOn">3</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;RouteOwner;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xfd3d672de9cb1e40d2e8834e801f1b53d2f8" ControlName="LEDGatewayOpen">
+          <Property Name="Name">Xfd3d672de9cb1e40d2e8834e801f1b53d2f8</Property>
+          <Property Name="Size">14, 14</Property>
+          <Property Name="Location">391, 80</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">3</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Green&lt;/Color&gt;</Property>
+          <Property Name="UsedLEDColorOff">Red</Property>
+          <Property Name="UsedLEDColorOn">Green</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;GatewayOpen;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6f14454eee613e4edee86ede26198cbb90b9" ControlName="LEDTesterPresent">
+          <Property Name="Name">X6f14454eee613e4edee86ede26198cbb90b9</Property>
+          <Property Name="Size">14, 14</Property>
+          <Property Name="Location">391, 52</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">2</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Green&lt;/Color&gt;</Property>
+          <Property Name="UsedLEDColorOff">Red</Property>
+          <Property Name="UsedLEDColorOn">Green</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;TesterPresentActive;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X69f24333e40c1e4e05e8cfaec0a5e9e5ebdd" ControlName="LEDSessionState">
+          <Property Name="Name">X69f24333e40c1e4e05e8cfaec0a5e9e5ebdd</Property>
+          <Property Name="Size">14, 14</Property>
+          <Property Name="Location">391, 23</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">1</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Green&lt;/Color&gt;</Property>
+          <Property Name="UsedLEDColorOff">Red</Property>
+          <Property Name="UsedLEDColorOn">Green</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;SessionState;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SessionStateBox" ControlName="SessionStateBox">
+          <Property Name="Name">SessionStateBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 20</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">SessionState</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;SessionState;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TesterPresentBox" ControlName="TesterPresentBox">
+          <Property Name="Name">TesterPresentBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 48</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">TesterPresentActive</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;TesterPresentActive;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GatewayOpenBox" ControlName="GatewayOpenBox">
+          <Property Name="Name">GatewayOpenBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 76</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">GatewayOpen</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;GatewayOpen;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RouteOwnerBox" ControlName="RouteOwnerBox">
+          <Property Name="Name">RouteOwnerBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 104</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">RouteOwner</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;RouteOwner;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="OverviewServiceStateBox" ControlName="OverviewServiceStateBox">
+          <Property Name="Name">OverviewServiceStateBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 132</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">ServiceState</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;ServiceState;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="OverviewSecurityStateBox" ControlName="OverviewSecurityStateBox">
+          <Property Name="Name">OverviewSecurityStateBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 160</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">SecurityState</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;SecurityState;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Property Name="Name">OverviewPage</Property>
+        <Property Name="Size">1080, 300</Property>
+        <Property Name="Location">1, 20</Property>
+        <Property Name="Text">Overview</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SecurityPage" ControlName="SecurityPage">
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SecuritySessionStateBox" ControlName="SecuritySessionStateBox">
+          <Property Name="Name">SecuritySessionStateBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 20</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">SessionState</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;SessionState;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SecurityStateBox" ControlName="SecurityStateBox">
+          <Property Name="Name">SecurityStateBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 48</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">SecurityState</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;SecurityState;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AuthStateBox" ControlName="AuthStateBox">
+          <Property Name="Name">AuthStateBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 76</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">AuthState</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;AuthState;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SecurityGatewayOpenBox" ControlName="SecurityGatewayOpenBox">
+          <Property Name="Name">SecurityGatewayOpenBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 104</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">GatewayOpen</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;GatewayOpen;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PolicyBox" ControlName="PolicyBox">
+          <Property Name="Name">PolicyBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 132</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">SecurityPolicy</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;SecurityPolicy;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="FaultBox" ControlName="FaultBox">
+          <Property Name="Name">FaultBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 160</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">SecurityFault</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;SecurityFault;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Property Name="Name">SecurityPage</Property>
+        <Property Name="Size">0, 0</Property>
+        <Property Name="Location">0, 0</Property>
+        <Property Name="Text">Security</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ReqRespPage" ControlName="ReqRespPage">
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LastRequestTargetBox" ControlName="LastRequestTargetBox">
+          <Property Name="Name">LastRequestTargetBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 20</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">LastRequestTarget</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;LastRequestTarget;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ReqSidBox" ControlName="ReqSidBox">
+          <Property Name="Name">ReqSidBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 48</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">LastRequestSid</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;LastRequestSid;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ReqTimeBox" ControlName="ReqTimeBox">
+          <Property Name="Name">ReqTimeBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 76</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">LastRequestTimeMs</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;LastRequestTimeMs;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LastResponseTargetBox" ControlName="LastResponseTargetBox">
+          <Property Name="Name">LastResponseTargetBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 104</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">LastResponseTarget</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;LastResponseTarget;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RespCodeBox" ControlName="RespCodeBox">
+          <Property Name="Name">RespCodeBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 132</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">LastResponseCode</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;LastResponseCode;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RespTimeBox" ControlName="RespTimeBox">
+          <Property Name="Name">RespTimeBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 160</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">LastResponseTimeMs</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;LastResponseTimeMs;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ResponseKindBox" ControlName="ResponseKindBox">
+          <Property Name="Name">ResponseKindBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 188</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">ResponseKind</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;ResponseKind;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ReasonCodeBox" ControlName="ReasonCodeBox">
+          <Property Name="Name">ReasonCodeBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 216</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">ReasonCode</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;ReasonCode;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RequestCounterBox" ControlName="RequestCounterBox">
+          <Property Name="Name">RequestCounterBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 244</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">RequestCounter</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;RequestCounter;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ResponseCounterBox" ControlName="ResponseCounterBox">
+          <Property Name="Name">ResponseCounterBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 272</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">ResponseCounter</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;ResponseCounter;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Property Name="Name">ReqRespPage</Property>
+        <Property Name="Size">0, 0</Property>
+        <Property Name="Location">0, 0</Property>
+        <Property Name="Text">ReqResp</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="HealthPage" ControlName="HealthPage">
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AdasHealthBox" ControlName="AdasHealthBox">
+          <Property Name="Name">AdasHealthBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 20</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">AdasHealthLevel</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;AdasHealthLevel;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BodyDiagBox" ControlName="BodyDiagBox">
+          <Property Name="Name">BodyDiagBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 48</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">BodyDiagState</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;BodyDiagState;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ChassisDiagBox" ControlName="ChassisDiagBox">
+          <Property Name="Name">ChassisDiagBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 76</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">ChassisDiagState</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;ChassisDiagState;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="InfoDiagBox" ControlName="InfoDiagBox">
+          <Property Name="Name">InfoDiagBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 104</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">InfoDiagState</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;InfoDiagState;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PtDiagBox" ControlName="PtDiagBox">
+          <Property Name="Name">PtDiagBox</Property>
+          <Property Name="Size">360, 21</Property>
+          <Property Name="Location">20, 132</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">PtDiagState</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">160, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Diag;;;PtDiagState;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Property Name="Name">HealthPage</Property>
+        <Property Name="Size">0, 0</Property>
+        <Property Name="Location">0, 0</Property>
+        <Property Name="Text">Health</Property>
+      </Object>
+      <Property Name="Name">DiagTabs</Property>
+      <Property Name="Size">1080, 320</Property>
+      <Property Name="Location">12, 58</Property>
+      <Property Name="FlatStyle">True</Property>
+      <Property Name="ActiveBackColor">White</Property>
+      <Property Name="ActiveTextColor">MidnightBlue</Property>
+      <Property Name="InactiveBackColor">Gainsboro</Property>
+      <Property Name="InactiveTextColor">DimGray</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="SymbolConfiguration"></Property>
+      <Property Name="SelectedTabHeader">Overview</Property>
+      <Property Name="SelectedTabPageName">OverviewPage</Property>
+      <Property Name="SendByChangingTab">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TraceGroup" ControlName="TraceGroup">
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TraceRequestTargetBox" ControlName="TraceRequestTargetBox">
+        <Property Name="Name">TraceRequestTargetBox</Property>
+        <Property Name="Size">250, 21</Property>
+        <Property Name="Location">16, 24</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">LastRequestTarget</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">120, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Diag;;;LastRequestTarget;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TraceRequestSidBox" ControlName="TraceRequestSidBox">
+        <Property Name="Name">TraceRequestSidBox</Property>
+        <Property Name="Size">250, 21</Property>
+        <Property Name="Location">280, 24</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">LastRequestSid</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">120, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Diag;;;LastRequestSid;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TraceRequestTimeBox" ControlName="TraceRequestTimeBox">
+        <Property Name="Name">TraceRequestTimeBox</Property>
+        <Property Name="Size">250, 21</Property>
+        <Property Name="Location">544, 24</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">LastRequestTimeMs</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">120, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Diag;;;LastRequestTimeMs;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TraceRequestCounterBox" ControlName="TraceRequestCounterBox">
+        <Property Name="Name">TraceRequestCounterBox</Property>
+        <Property Name="Size">250, 21</Property>
+        <Property Name="Location">808, 24</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">RequestCounter</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">120, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Diag;;;RequestCounter;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TraceResponseTargetBox" ControlName="TraceResponseTargetBox">
+        <Property Name="Name">TraceResponseTargetBox</Property>
+        <Property Name="Size">250, 21</Property>
+        <Property Name="Location">16, 54</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">LastResponseTarget</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">120, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Diag;;;LastResponseTarget;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TraceResponseCodeBox" ControlName="TraceResponseCodeBox">
+        <Property Name="Name">TraceResponseCodeBox</Property>
+        <Property Name="Size">250, 21</Property>
+        <Property Name="Location">280, 54</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">LastResponseCode</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">120, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Diag;;;LastResponseCode;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TraceResponseTimeBox" ControlName="TraceResponseTimeBox">
+        <Property Name="Name">TraceResponseTimeBox</Property>
+        <Property Name="Size">250, 21</Property>
+        <Property Name="Location">544, 54</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">LastResponseTimeMs</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">120, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Diag;;;LastResponseTimeMs;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TraceResponseCounterBox" ControlName="TraceResponseCounterBox">
+        <Property Name="Name">TraceResponseCounterBox</Property>
+        <Property Name="Size">250, 21</Property>
+        <Property Name="Location">808, 54</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">ResponseCounter</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">120, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Diag;;;ResponseCounter;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TraceResponseKindBox" ControlName="TraceResponseKindBox">
+        <Property Name="Name">TraceResponseKindBox</Property>
+        <Property Name="Size">250, 21</Property>
+        <Property Name="Location">16, 84</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">ResponseKind</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">120, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Diag;;;ResponseKind;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TraceReasonCodeBox" ControlName="TraceReasonCodeBox">
+        <Property Name="Name">TraceReasonCodeBox</Property>
+        <Property Name="Size">250, 21</Property>
+        <Property Name="Location">280, 84</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">ReasonCode</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">120, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Diag;;;ReasonCode;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">TraceGroup</Property>
+      <Property Name="Size">1080, 118</Property>
+      <Property Name="Location">12, 386</Property>
+      <Property Name="Text">Recent Log</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">1120, 520</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">WhiteSmoke</Property>
+  </Object>
+</Panel>

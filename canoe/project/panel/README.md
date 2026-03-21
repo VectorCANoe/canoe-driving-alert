@@ -59,7 +59,7 @@ Current root panel set for `develop`.
 | Cruise / vehicle | `Cruise_Pedal.xvp` | `Vehicle_Dashboard.xvp` | `Module/Cruise_Pedal.xvp`, `Cabin/Cruise_Pedal.xvp`, `Cabin/Vehicle_Dashboard.xvp` | `Chassis::*`, `Powertrain::*` |
 | Manual warning | `Operator_Input.xvp` | `Cluster_Alert.xvp`, `Navigation_Alert.xvp`, `Ambient_TopView.xvp` | `Module/Operator_Input.xvp`, `Module/Cluster_Alert.xvp`, `Module/Navigation_Alert.xvp`, `Module/Ambient_TopView.xvp`, `3D/Ambient_TopView.xvp` | `Core::*`, `CoreState::*`, `UiRender::*` |
 | Scenario warning | `Scenario_Control.xvp` | `Cluster_Alert.xvp`, `Navigation_Alert.xvp`, `Ambient_TopView.xvp`, `V2X_Ingress.xvp` | `3D/Scenario_Control.xvp`, `3D/V2X_Ingress.xvp`, `Module/Cluster_Alert.xvp`, `Module/Navigation_Alert.xvp`, `Module/Ambient_TopView.xvp`, `3D/Ambient_TopView.xvp` | `Test::*`, `V2X::*`, `Core::*` |
-| Diagnostic monitor | none | `Diagnostic_Console.xvp` | `3D/Diagnostic_Console.xvp` | `Diag::*`, domain health mirrors |
+| Diagnostic monitor | none | `Diagnostic_Console.xvp` | `Diag/Diagnostic_Console.xvp` | `Diag::*`, domain health mirrors |
 
 ## Runtime Meaning
 
@@ -87,3 +87,4 @@ Grouped desktop copies live under [Desktop_ASSIGN](./Desktop_ASSIGN/README.md).
 - Desktop grouping is for GUI composition only.
 - Pairing rules and current GUI-saved grouping are documented again in `Desktop_ASSIGN/README.md`.
 - Current `Desktop_ASSIGN` file placement reflects the latest GUI save. If GUI composition changes again, update the folder copies and both README tables together.
+- Diagnostic observer layout now targets `Desktop_ASSIGN/Diag/Diagnostic_Console.xvp`; `3D/Diagnostic_Console.xvp` may remain temporarily for legacy GUI path compatibility until the next GUI save.

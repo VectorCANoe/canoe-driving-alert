@@ -289,7 +289,7 @@
       <Property Name="Name">X180000000000000000000000000000000000</Property>
       <Property Name="Size">22, 22</Property>
       <Property Name="Location">485, 94</Property>
-      <Property Name="SymbolConfiguration">8;16;Test;;;testScenario;1;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
       <Property Name="TabIndex">12</Property>
       <Property Name="Epsilon">0</Property>
       <Property Name="Increment">1</Property>
@@ -310,35 +310,6 @@
     </Object>
 
     <!-- ================================================================ -->
-    <!-- ROW 4: 수동 조작 모드 버튼 (기어/벨트/도어 직접 제어)           -->
-    <!-- ================================================================ -->
-
-    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="XmanualModeBtn001" ControlName="수동모드버튼">
-      <Property Name="Name">XmanualModeBtn001</Property>
-      <Property Name="Size">290, 26</Property>
-      <Property Name="Location">5, 124</Property>
-      <Property Name="SymbolConfiguration">8;16;Test;;;testScenario;1;;;-1;;;Value;;;0</Property>
-      <Property Name="IsButton">True</Property>
-      <Property Name="TabIndex">15</Property>
-      <Property Name="Epsilon">0</Property>
-      <Property Name="Increment">1</Property>
-      <Property Name="StartValue">0</Property>
-      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;</Property>
-      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/0</Property>
-      <Property Name="SwitchValues">1;2;0;0</Property>
-      <Property Name="SwitchValuesRx">1;2;0;1</Property>
-      <Property Name="Text">🔓 수동 조작 모드 ON  (기어·벨트·도어 직접 제어)</Property>
-    </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="XmanualModeHint001" ControlName="수동모드안내">
-      <Property Name="Name">XmanualModeHint001</Property>
-      <Property Name="Size">320, 26</Property>
-      <Property Name="Location">300, 124</Property>
-      <Property Name="ForeColor">Gray</Property>
-      <Property Name="Font">Microsoft Sans Serif, 7.5pt</Property>
-      <Property Name="Text">← 버튼 클릭 시 시나리오 해제 → MyDriverPanel 기어레버 활성화</Property>
-    </Object>
-
-    <!-- ================================================================ -->
     <!-- SEPARATOR + STATUS ROW                                            -->
     <!-- ================================================================ -->
 
@@ -352,15 +323,15 @@
 
     <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1b0000000000000000000000000000000000" ControlName="Label_CurScn">
       <Property Name="Name">X1b0000000000000000000000000000000000</Property>
-      <Property Name="Size">80, 22</Property>
-      <Property Name="Location">5, 162</Property>
+      <Property Name="Size">66, 22</Property>
+      <Property Name="Location">8, 162</Property>
       <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
-      <Property Name="Text">현재 시나리오 :</Property>
+      <Property Name="Text">현재 SCN :</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1c0000000000000000000000000000000000" ControlName="Display_CurScn">
       <Property Name="Name">X1c0000000000000000000000000000000000</Property>
       <Property Name="Size">44, 22</Property>
-      <Property Name="Location">88, 162</Property>
+      <Property Name="Location">78, 162</Property>
       <Property Name="AlarmGeneralSettings">0;0;0;25</Property>
       <Property Name="AlarmLowerBkgColor">Salmon</Property>
       <Property Name="AlarmLowerTextColor">Black</Property>
@@ -368,26 +339,27 @@
       <Property Name="AlarmUpperTextColor">Black</Property>
       <Property Name="BoxBorderStyle">FixedSingle</Property>
       <Property Name="DisplayLabel">None</Property>
+      <Property Name="ReadOnlyControl">True</Property>
       <Property Name="TabIndex">13</Property>
       <Property Name="DescriptionText"></Property>
       <Property Name="ValueDecimalPlaces">0</Property>
       <Property Name="ValueDisplay">Decimal</Property>
       <Property Name="UsedValueTable">PhysicalValue</Property>
       <Property Name="DescriptionSize">5, 22</Property>
-      <Property Name="SymbolConfiguration">8;16;Test;;;testScenario;1;;;-1;;;Value;;;0</Property>
+      <Property Name="SymbolConfiguration">8;16;Test;;;scenarioActiveId;2;;;-1;;;Value;;;0</Property>
     </Object>
 
     <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1d0000000000000000000000000000000000" ControlName="Label_Result">
       <Property Name="Name">X1d0000000000000000000000000000000000</Property>
-      <Property Name="Size">38, 22</Property>
-      <Property Name="Location">145, 162</Property>
+      <Property Name="Size">40, 22</Property>
+      <Property Name="Location">136, 162</Property>
       <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
       <Property Name="Text">결과 :</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1e0000000000000000000000000000000000" ControlName="Display_Result">
       <Property Name="Name">X1e0000000000000000000000000000000000</Property>
       <Property Name="Size">44, 22</Property>
-      <Property Name="Location">186, 162</Property>
+      <Property Name="Location">178, 162</Property>
       <Property Name="AlarmGeneralSettings">1;1;0.5;1.5</Property>
       <Property Name="AlarmLowerBkgColor">Salmon</Property>
       <Property Name="AlarmLowerTextColor">Black</Property>
@@ -404,22 +376,101 @@
       <Property Name="SymbolConfiguration">8;16;Test;;;scenarioResult;1;;;-1;;;Value;;;0</Property>
     </Object>
 
-    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1f0000000000000000000000000000000000" ControlName="Label_Hint">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1f0000000000000000000000000000000000" ControlName="Label_Status">
       <Property Name="Name">X1f0000000000000000000000000000000000</Property>
-      <Property Name="Size">108, 22</Property>
-      <Property Name="Location">238, 162</Property>
-      <Property Name="ForeColor">Gray</Property>
-      <Property Name="Font">Microsoft Sans Serif, 7.5pt</Property>
-      <Property Name="Text">결과: 0=FAIL  1=PASS</Property>
-    </Object>
-
-    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X200000000000000000000000000000000000" ControlName="Label_ColorHint">
-      <Property Name="Name">X200000000000000000000000000000000000</Property>
-      <Property Name="Size">210, 22</Property>
+      <Property Name="Size">36, 22</Property>
       <Property Name="Location">360, 162</Property>
       <Property Name="ForeColor">Gray</Property>
       <Property Name="Font">Microsoft Sans Serif, 7.5pt</Property>
-      <Property Name="Text">■녹=정상  ■노=도로경고  ■주=긴급  ■청=안내  ■적=충돌</Property>
+      <Property Name="Text">시나리오 동작 상태 :</Property>
+    </Object>
+
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X230000000000000000000000000000000000" ControlName="Label_Ack">
+      <Property Name="Name">X230000000000000000000000000000000000</Property>
+      <Property Name="Size">58, 22</Property>
+      <Property Name="Location">236, 162</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
+      <Property Name="Text">마지막 Ack :</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X240000000000000000000000000000000000" ControlName="Display_Ack">
+      <Property Name="Name">X240000000000000000000000000000000000</Property>
+      <Property Name="Size">44, 22</Property>
+      <Property Name="Location">298, 162</Property>
+      <Property Name="AlarmGeneralSettings">0;0;0;25</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">None</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">18</Property>
+      <Property Name="DescriptionText"></Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Decimal</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">5, 22</Property>
+      <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommandAck;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X250000000000000000000000000000000000" ControlName="Led_Stop">
+      <Property Name="Name">X250000000000000000000000000000000000</Property>
+      <Property Name="Size">14, 14</Property>
+      <Property Name="Location">402, 166</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">19</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Silver&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Crimson&lt;/Color&gt;</Property>
+      <Property Name="UsedLEDColorOff">Silver</Property>
+      <Property Name="UsedLEDColorOn">Crimson</Property>
+      <Property Name="SymbolConfiguration">8;16;Test;;;scenarioLampStop;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X260000000000000000000000000000000000" ControlName="Label_Stop">
+      <Property Name="Name">X260000000000000000000000000000000000</Property>
+      <Property Name="Size">28, 18</Property>
+      <Property Name="Location">420, 163</Property>
+      <Property Name="Font">Microsoft Sans Serif, 7.5pt, style=Bold</Property>
+      <Property Name="ForeColor">Gray</Property>
+      <Property Name="Text">STOP</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X270000000000000000000000000000000000" ControlName="Led_Warn">
+      <Property Name="Name">X270000000000000000000000000000000000</Property>
+      <Property Name="Size">14, 14</Property>
+      <Property Name="Location">472, 166</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">20</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Silver&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Gold&lt;/Color&gt;</Property>
+      <Property Name="UsedLEDColorOff">Silver</Property>
+      <Property Name="UsedLEDColorOn">Gold</Property>
+      <Property Name="SymbolConfiguration">8;16;Test;;;scenarioLampWarn;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X280000000000000000000000000000000000" ControlName="Label_Warn">
+      <Property Name="Name">X280000000000000000000000000000000000</Property>
+      <Property Name="Size">30, 18</Property>
+      <Property Name="Location">490, 163</Property>
+      <Property Name="Font">Microsoft Sans Serif, 7.5pt, style=Bold</Property>
+      <Property Name="ForeColor">Gray</Property>
+      <Property Name="Text">WARN</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X290000000000000000000000000000000000" ControlName="Led_Run">
+      <Property Name="Name">X290000000000000000000000000000000000</Property>
+      <Property Name="Size">14, 14</Property>
+      <Property Name="Location">542, 166</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">21</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Silver&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;LimeGreen&lt;/Color&gt;</Property>
+      <Property Name="UsedLEDColorOff">Silver</Property>
+      <Property Name="UsedLEDColorOn">LimeGreen</Property>
+      <Property Name="SymbolConfiguration">8;16;Test;;;scenarioLampRun;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2a0000000000000000000000000000000000" ControlName="Label_Run">
+      <Property Name="Name">X2a0000000000000000000000000000000000</Property>
+      <Property Name="Size">24, 18</Property>
+      <Property Name="Location">560, 163</Property>
+      <Property Name="Font">Microsoft Sans Serif, 7.5pt, style=Bold</Property>
+      <Property Name="ForeColor">Gray</Property>
+      <Property Name="Text">RUN</Property>
     </Object>
 
     <!-- ================================================================ -->

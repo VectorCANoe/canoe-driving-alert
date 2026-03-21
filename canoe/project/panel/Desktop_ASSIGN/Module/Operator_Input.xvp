@@ -314,8 +314,43 @@
       <Property Name="TabIndex">13</Property>
       <Property Name="UseWindowsStyle">False</Property>
     </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="OperatorInputStatusGroup" ControlName="OperatorInputStatusGroup">
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="OperatorInputActiveIdBox" ControlName="OperatorInputActiveIdBox">
+        <Property Name="Name">OperatorInputActiveIdBox</Property>
+        <Property Name="Size">198, 21</Property>
+        <Property Name="Location">8, 7</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">24</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">Active Id</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">64, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioActiveId;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="OperatorInputHintLabel" ControlName="OperatorInputHintLabel">
+        <Property Name="Name">OperatorInputHintLabel</Property>
+        <Property Name="Size">170, 15</Property>
+        <Property Name="Location">220, 12</Property>
+        <Property Name="Text">0=Manual, &gt;0=Scenario Lock</Property>
+      </Object>
+      <Property Name="Name">OperatorInputStatusGroup</Property>
+      <Property Name="Size">466, 34</Property>
+      <Property Name="Location">10, 459</Property>
+      <Property Name="Text">Operator Status</Property>
+      <Property Name="TabIndex">25</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
     <Property Name="Name">Panel</Property>
-    <Property Name="Size">486, 459</Property>
+    <Property Name="Size">486, 499</Property>
     <Property Name="Location">0, 0</Property>
     <Property Name="BackColor">White</Property>
   </Object>

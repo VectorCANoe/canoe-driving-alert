@@ -83,6 +83,7 @@
   - donor 패널이 직접 쓰는 sysvar/message seam은 CAPL과 owner ECU가 따라가며, panel binding rewrite로 우회하지 않는다.
   - 런타임 적응 우선순위는 `owner ECU -> channel_assign mirror -> sysvar contract -> 필요 시 DBC`이며, XVP 수정은 explicit approval 없이는 금지한다.
   - 단, donor seam이 `외부 세계 주입` 성격이면 `VALIDATION_HARNESS(TEST_SCN)`가 입력을 transport/message로 주입하고 실제 기능 owner가 그 이후 기능을 수행하도록 유지한다.
+  - 예외적으로 `Scenario_Control`, `Driver_Control`, `Cruise_Pedal`, `Operator_Input`에는 기존 donor 입력 의미를 바꾸지 않는 범위에서 `scenario/manual mode` 상태 리본을 추가할 수 있다.
 
 ## 4) Current Reset Baseline
 

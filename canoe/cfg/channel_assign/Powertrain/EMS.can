@@ -225,7 +225,7 @@ void updateWarningFrame()
     nextFrame = 7;
   }
 
-  if (((int)@Test::testScenario) == 0 && gEngineState == 0)
+  if (((int)@Test::scenarioActiveId) == 0 && gEngineState == 0)
   {
     @Display::animFrame = 0;
     return;
@@ -291,7 +291,7 @@ on timer tHighwayEntry
   {
     return;
   }
-  if (((int)@Test::testScenario) > 0)
+  if (((int)@Test::scenarioActiveId) > 0)
   {
     return;
   }
@@ -471,19 +471,15 @@ on sysvar Body::doorLockCmd
 
 on sysvar V2X::policePos
 {
-  if (((int)@Test::testScenario) == 0)
-  {
-    @V2X::v2xFrame = clampRange((int)@V2X::policePos, 0, 15);
-  }
+  /* `v2xFrame` belongs to the V2X owner.
+     EMS only refreshes local warning compatibility from panel input. */
   updateWarningFrame();
 }
 
 on sysvar V2X::ambulancePos
 {
-  if (((int)@Test::testScenario) == 0)
-  {
-    @V2X::v2xFrame = clampRange(8 + (int)@V2X::ambulancePos, 0, 15);
-  }
+  /* `v2xFrame` belongs to the V2X owner.
+     EMS only refreshes local warning compatibility from panel input. */
   updateWarningFrame();
 }
 
@@ -496,7 +492,7 @@ on sysvar Infotainment::roadZone
     return;
   }
   zone = clampRange((int)@Infotainment::roadZone, 0, 3);
-  if (((int)@Test::testScenario) > 0)
+  if (((int)@Test::scenarioActiveId) > 0)
   {
     gLastRoadZone = zone;
     return;
