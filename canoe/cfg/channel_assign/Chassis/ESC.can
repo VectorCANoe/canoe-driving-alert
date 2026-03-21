@@ -14,6 +14,7 @@ variables
   int gAebStopReq;
   int gAebDecelProfile;
   int gAebDomainHealth;
+  int gManualBrakePressure;
   dword gVehicleStateRxMs;
   dword gSteeringRxMs;
   dword gPedalRxMs;
@@ -116,6 +117,28 @@ int deriveEscAssistPressureFloor(int aebStopReq, int aebDecelProfile, int aebDom
   return 0;
 }
 
+int rampTowardTarget(int currentValue, int targetValue, int riseStep, int fallStep)
+{
+  if (currentValue < targetValue)
+  {
+    currentValue = currentValue + riseStep;
+    if (currentValue > targetValue)
+    {
+      currentValue = targetValue;
+    }
+  }
+  else if (currentValue > targetValue)
+  {
+    currentValue = currentValue - fallStep;
+    if (currentValue < targetValue)
+    {
+      currentValue = targetValue;
+    }
+  }
+
+  return currentValue;
+}
+
 on start
 {
   gBrakePedal = 0;
@@ -126,6 +149,7 @@ on start
   gAebStopReq = 0;
   gAebDecelProfile = 0;
   gAebDomainHealth = 0;
+  gManualBrakePressure = 0;
   gVehicleStateRxMs = 0;
   gSteeringRxMs = 0;
   gPedalRxMs = 0;
@@ -199,6 +223,7 @@ on timer tEscCycle
   int yawRate;
   int latAccel;
   int manualBrakeButtonBrake;
+  int manualBrakeTarget;
 
   vehicleStateInputStale = (ethIsRecentTick(gVehicleStateRxMs, 300) == 1) ? 0 : 1;
   steeringInputStale = (ethIsRecentTick(gSteeringRxMs, 300) == 1) ? 0 : 1;
@@ -238,18 +263,24 @@ on timer tEscCycle
   if (manualMode == 1)
   {
     steeringInput = deriveManualSteeringInputFromAngle((int)@Chassis::steeringAngle);
-    manualBrakeButtonBrake = (((int)@Chassis::brakePedalBtn) == 1) ? 80 : 0;
+    manualBrakeTarget = 0;
+    if (((int)@Chassis::brakePedalBtn) == 1)
+    {
+      manualBrakeTarget = 100;
+    }
+    gManualBrakePressure = rampTowardTarget(gManualBrakePressure,
+                                            manualBrakeTarget,
+                                            6,
+                                            8);
+    manualBrakeButtonBrake = gManualBrakePressure;
     /* Donor pedal panel exposes brakePressure as display-only progress.
        The owner consumes the button and publishes the resulting pressure. */
     appliedBrakePedal = manualBrakeButtonBrake;
-    if (manualBrakeButtonBrake > 0)
-    {
-      @Chassis::brakePedalBtn = 0;
-    }
     @Chassis::brakePressure = appliedBrakePedal;
   }
   else
   {
+    gManualBrakePressure = 0;
     @Chassis::brakePressure = clampRange(appliedBrakePedal, 0, 100);
   }
   if (assistPressureFloor > 0 && appliedBrakePedal < assistPressureFloor)
