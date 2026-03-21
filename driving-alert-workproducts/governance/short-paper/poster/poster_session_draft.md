@@ -12,7 +12,7 @@
 
 [이미지 삽입 위치]
 - 권장 이미지: 프로젝트 범위 인포그래픽
-- 들어갈 내용: Hyundai-style ECU baseline, CAN/Ethernet, CANoe SIL, CAPL, UT/IT/ST
+- 들어갈 내용: Hyundai-style ECU baseline, CAN/Ethernet, CANoe SIL, CAPL, 단위시험·통합시험·시스템시험
 - 캡션 예시: `프로젝트 구현 및 시험 범위`
 
 ## 3. 시스템 구조
@@ -31,7 +31,7 @@
 - 캡션 예시: `V2X 정규화와 ADAS 경고 중재를 중심으로 구성된 핵심 기능`
 
 ## 5. 구현 및 구축 성과
-요구사항, HARA, 기능 정의를 기준으로 검증 계약, Test Oracle, Master Test Matrix, UT/IT/ST 시험 자산을 구성하였다. 이를 통해 ISO 26262 추적성과 V-cycle 기반 검증 구조를 유지하고, 구간 경고 반영, 긴급차량 우선순위 판단, timeout clear, 교차로·합류구간 위험 경고를 핵심 검증 시나리오로 구성하였다.
+요구사항, HARA, 기능 정의를 기준으로 검증 계약, Test Oracle, Test Matrix와 단위시험 77건, 통합시험 45건, 시스템시험 46건의 시험 자산을 구성하였다. 이를 통해 ISO 26262 추적성과 V-cycle 기반 검증 구조를 유지하고, 구간 경고 반영, 긴급차량 우선순위 판단, timeout clear, 교차로·합류구간 위험 경고를 핵심 검증 시나리오로 고정하였다.
 
 [이미지 삽입 위치]
 - 권장 이미지: CANoe Test Unit 실행 화면
@@ -46,6 +46,6 @@
 - 캡션 예시: `설계 고도화, 시험 안정화, 정량 평가로 이어지는 후속 계획`
 
 ## 작성 메모
-- `05/06/07`, `00g_Master_Test_Matrix`의 상단 표는 현재 `Ready` 기준이므로 포스터에서 직접 `PASS`로 표기하지 않는다.
+- `05/06/07`, `Test Matrix(00g_Master_Test_Matrix)`의 상단 표는 현재 `Ready` 기준이므로 포스터에서 직접 `PASS`로 표기하지 않는다.
 - 정량 결과 대신 `대표 시험 항목 확정`, `실행 구조 확보`, `COM 자동화 기반 운영 콘솔 연계`를 성과로 제시한다.
 - COM 기반 XML/JSON 로그 수집과 MCP-CLI AI 분석 체계는 향후 계획으로만 표기한다.

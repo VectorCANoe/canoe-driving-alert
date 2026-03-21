@@ -1,0 +1,158 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{kotex}
+\setmainhangulfont{AppleMyungjo}
+\setsanshangulfont{Apple SD Gothic Neo}
+\setmonofont{Apple SD Gothic Neo}
+\usepackage[margin=24mm]{geometry}
+\usepackage{longtable,booktabs,array,tabularx}
+\usepackage{hyperref}
+\usepackage{xurl}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\setlength{\headheight}{14pt}
+\setlist[itemize]{leftmargin=1.5em}
+\setlist[enumerate]{leftmargin=1.8em}
+\newcounter{none}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\sloppy
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  pdftitle={주행 상황 실시간 경고 시스템 별첨 문서집},
+  pdfauthor={Mobis PBL Team}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{별첨 문서집}
+\fancyhead[R]{Driving Alert Project}
+\fancyfoot[C]{\thepage}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+{\Large 주행 상황 실시간 경고 시스템 \par}
+\vspace{0.5em}
+{\LARGE 별첨 문서집 \par}
+\vspace{0.8em}
+{\large Supplementary Appendix Bundle \par}
+\vspace{1.6em}
+{\normalsize 본 문서집은 소논문 본문을 보강하기 위한 안전, 계약, 검증, 진단 문서를 묶어 정리한 reviewer-facing 별첨 자료이다. \par}
+\vspace{1.2em}
+\begin{tabular}{ll}
+Project & Driving Alert Project \\
+Bundle Scope & Governance / Runtime Contracts / Verification / Diagnostic \\
+Language & Korean reviewer-facing edition \\
+Source Rule & Canonical source paths are preserved in each supplementary note \\
+\end{tabular}
+\vfill
+{\normalsize Workspace: \texttt{driving-alert-workproducts/governance/short-paper/appendix} \par}
+\vspace{0.4em}
+{\normalsize Generated from local source copies under \texttt{appendix/source/} \par}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\section*{S1. 안전 및 추적성 기준}
+\addcontentsline{toc}{section}{S1. 안전 및 추적성 기준}
+본 별첨은 안전 목표, 위험 사건, ECU naming, CAN ID allocation, Test Matrix를 함께 제시하여 프로젝트의 안전성과 검증 추적성을 보강한다.
+
+\subsection*{원문 기준 경로}
+\begin{itemize}
+\item \texttt{driving-alert-workproducts/governance/00d\_HARA\_Worksheet.md}
+\item \texttt{driving-alert-workproducts/governance/00e\_ECU\_Naming\_Standard.md}
+\item \texttt{driving-alert-workproducts/governance/00f\_CAN\_ID\_Allocation\_Standard.md}
+\item \texttt{driving-alert-workproducts/governance/00g\_Master\_Test\_Matrix.md}
+\end{itemize}
+
+\input{generated/00d_HARA_Worksheet.tex}
+\clearpage
+\input{generated/00e_ECU_Naming_Standard.tex}
+\clearpage
+\input{generated/00f_CAN_ID_Allocation_Standard.tex}
+\clearpage
+\input{generated/00g_Master_Test_Matrix.tex}
+\clearpage
+
+\section*{S2. 런타임 계약 세트}
+\addcontentsline{toc}{section}{S2. 런타임 계약 세트}
+본 별첨은 V2X, ADAS, CGW, 출력 계층의 ownership 경계와 CAN/Ethernet runtime contract를 보강한다.
+
+\subsection*{원문 기준 경로}
+\begin{itemize}
+\item \texttt{canoe/docs/Kor/contracts/communication-matrix.md}
+\item \texttt{canoe/docs/Kor/contracts/owner-route.md}
+\item \texttt{canoe/docs/Kor/contracts/layer-separation-policy.md}
+\item \texttt{canoe/docs/Kor/contracts/ethernet-interface.md}
+\item \texttt{canoe/docs/Kor/contracts/multibus-policy.md}
+\item \texttt{canoe/docs/Kor/contracts/panel-sysvar-contract.md}
+\item \texttt{canoe/docs/Kor/contracts/ethernet-backbone.md}
+\end{itemize}
+
+\input{generated/communication-matrix.tex}
+\clearpage
+\input{generated/owner-route.tex}
+\clearpage
+\input{generated/layer-separation-policy.tex}
+\clearpage
+\input{generated/ethernet-interface.tex}
+\clearpage
+\input{generated/multibus-policy.tex}
+\clearpage
+\input{generated/panel-sysvar-contract.tex}
+\clearpage
+\input{generated/ethernet-backbone.tex}
+\clearpage
+
+\section*{S3. 검증 계약 세트}
+\addcontentsline{toc}{section}{S3. 검증 계약 세트}
+본 별첨은 시험 판정 기준, acceptance criteria, executable asset mapping, execution guide를 제시하여 논문의 검증 구조를 보강한다.
+
+\subsection*{원문 기준 경로}
+\begin{itemize}
+\item \texttt{canoe/docs/Kor/verification/oracle.md}
+\item \texttt{canoe/docs/Kor/verification/acceptance-criteria.md}
+\item \texttt{canoe/docs/Kor/verification/test-asset-mapping.md}
+\item \texttt{canoe/docs/Kor/verification/execution-guide.md}
+\item \texttt{canoe/docs/Kor/verification/evidence-policy.md}
+\end{itemize}
+
+\input{generated/oracle.tex}
+\clearpage
+\input{generated/acceptance-criteria.tex}
+\clearpage
+\input{generated/test-asset-mapping.tex}
+\clearpage
+\input{generated/execution-guide.tex}
+\clearpage
+\input{generated/evidence-policy.tex}
+\clearpage
+
+\section*{S4. 진단 및 관측성 세트}
+\addcontentsline{toc}{section}{S4. 진단 및 관측성 세트}
+본 별첨은 서비스 상태와 경계 조건을 독립적으로 관측하는 진단·관측 구조를 보강한다.
+
+\subsection*{원문 기준 경로}
+\begin{itemize}
+\item \texttt{canoe/docs/Kor/contracts/diagnostic-matrix.md}
+\item \texttt{canoe/docs/Kor/contracts/diagnostic-sysvar-contract.md}
+\item \texttt{canoe/docs/Kor/verification/diagnostic-seam-design.md}
+\end{itemize}
+
+\input{generated/diagnostic-matrix.tex}
+\clearpage
+\input{generated/diagnostic-sysvar-contract.tex}
+\clearpage
+\input{generated/diagnostic-seam-design.tex}
+
+\end{document}

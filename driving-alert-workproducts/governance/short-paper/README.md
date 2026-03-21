@@ -4,6 +4,11 @@
 
 ## Structure
 
+- `appendix/`
+  - `README.md`
+  - `appendix_bundle_plan.md`
+  - `source/`
+  - `tex/`
 - `paper/`
   - `short_paper_draft.md`
   - `short_paper_working.md`
@@ -18,4 +23,9 @@
 ```bash
 cd driving-alert-workproducts/governance/short-paper/paper
 tectonic short_paper_twocolumn.tex
+```
+
+```bash
+cd driving-alert-workproducts/governance/short-paper/appendix/tex
+./build_appendix_bundle.sh
 ```
