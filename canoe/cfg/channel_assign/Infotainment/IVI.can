@@ -23,6 +23,7 @@ variables
   dword gBackboneAlertTsMs;
   int gCanVehicleSpeed;
   int gCanDriveState;
+  int gCanGearState;
   int gCanNavSessionState;
   int gCanNavRouteClass;
   int gCanNavGuideType;
@@ -31,6 +32,7 @@ variables
   int gCanRouteEtaMinutes;
   int gCanRouteProgress;
   dword gVehicleStateRxMs;
+  dword gGearStateRxMs;
   dword gNavStateRxMs;
   dword gRouteRxMs;
 }
@@ -482,6 +484,12 @@ on message frmVehicleStateCanMsg
   gVehicleStateRxMs = getSimulationTimeMs();
 }
 
+on message frmGearStateMsg
+{
+  gCanGearState = clampRange((int)this.GearState, 0, 3);
+  gGearStateRxMs = getSimulationTimeMs();
+}
+
 on message frmNavModuleStateMsg
 {
   gCanNavSessionState = clampRange((int)this.NavSessionState, 0, 3);
@@ -637,6 +645,7 @@ on timer tIviBase50
   message frmInfotainmentHealthMsg mHealth;
   int speed;
   int driveState;
+  int gearState;
   int alertLevel;
   int alertType;
   int emergencyDirection;
@@ -672,11 +681,15 @@ on timer tIviBase50
   {
     speed = clampRange(gCanVehicleSpeed, 0, 255);
     driveState = clampRange(gCanDriveState, 0, 3);
+    gearState = (ethIsRecentTick(gGearStateRxMs, 300) == 1) ?
+                clampRange(gCanGearState, 0, 3) : 0;
   }
   else
   {
     speed = 0;
     driveState = 0;
+    gearState = (ethIsRecentTick(gGearStateRxMs, 300) == 1) ?
+                clampRange(gCanGearState, 0, 3) : 0;
   }
   manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
@@ -684,7 +697,9 @@ on timer tIviBase50
   if (manualAlertMode == 1)
   {
     speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
-    driveState = clampRange((int)@Chassis::driveState, 0, 3);
+    gearState = (ethIsRecentTick(gGearStateRxMs, 300) == 1) ?
+                clampRange(gCanGearState, 0, 3) : 0;
+    driveState = gearState;
   }
   useEffective = useEffectiveAlertState();
   useDecision = useDecisionAlertState();
@@ -754,7 +769,7 @@ on timer tIviBase50
   /* CLU owns the mirrored display state after consuming these frames. */
 
   mBase.ClusterSpeed = speed;
-  mBase.ClusterGear = driveState;
+  mBase.ClusterGear = gearState;
   mBase.ClusterStatus = alertLevel;
   output(mBase);
 

@@ -9,12 +9,14 @@ variables
   int gDoorControlCmd;
   int gChildLockCmd;
   int gDriveState;
+  int gGearState;
   int gDkeyAccessState;
   int gKeyPresence;
   int gImmobilizerState;
   int gKeyAuthState;
   dword gDoorCtrlRxMs;
   dword gVehicleRxMs;
+  dword gGearRxMs;
   dword gDkeyRxMs;
   dword gImmoRxMs;
   int gLastDoorCtrlInputStale;
@@ -121,6 +123,12 @@ on message frmVehicleStateCanMsg
   gVehicleRxMs = getSimulationTimeMs();
 }
 
+on message frmGearStateMsg
+{
+  gGearState = clampRange((int)this.GearState, 0, 3);
+  gGearRxMs = getSimulationTimeMs();
+}
+
 on message frmDigitalKeyStateMsg
 {
   gDkeyAccessState = clampRange((int)this.VehicleAccessState, 0, 7);
@@ -164,7 +172,8 @@ on timer tDoorRlCycle
 
   if (manualMode == 1)
   {
-    driveState = clampRange((int)@Chassis::driveState, 0, 3);
+    driveState = (ethIsRecentTick(gGearRxMs, 300) == 1) ?
+                 clampRange(gGearState, 0, 3) : 0;
   }
   else
   {

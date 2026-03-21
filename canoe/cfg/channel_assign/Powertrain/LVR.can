@@ -18,24 +18,6 @@ variables
   int gLastParkLock;
 }
 
-int deriveManualGearStateFromDriveState(int driveState)
-{
-  driveState = clampRange(driveState, 0, 3);
-  if (driveState == 1)
-  {
-    return 1;
-  }
-  if (driveState == 2)
-  {
-    return 2;
-  }
-  if (driveState >= 3)
-  {
-    return 3;
-  }
-  return 0;
-}
-
 void traceLvrInputHealth(int gearInputStale, int ignitionInputStale)
 {
   if (gearInputStale != gLastGearInputStale)
@@ -83,8 +65,8 @@ on start
 
 on message frmGearStateMsg
 {
-  gGearInput = clampRange((int)this.GearInput, 0, 7);
-  gGearState = clampRange((int)this.GearState, 0, 7);
+  gGearInput = clampRange((int)this.GearInput, 0, 3);
+  gGearState = clampRange((int)this.GearState, 0, 3);
   gGearRxMs = getSimulationTimeMs();
 }
 
@@ -126,7 +108,7 @@ on timer tLvrCycle
 
   if (manualMode == 1)
   {
-    gearInput = deriveManualGearStateFromDriveState((int)@Chassis::driveState);
+    gearInput = (gearInputStale == 0) ? clampRange(gGearState, 0, 3) : 0;
     gearState = gearInput;
     ignitionState = ((((int)@Chassis::ignitionCmd) > 0) ||
                      gearState > 0 ||

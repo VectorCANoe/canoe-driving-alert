@@ -92,6 +92,8 @@ variables
   int gObsEcoMode;
   int gObsSportMode;
   int gObsBaseZoneContext;
+  int gCanGearState;
+  dword gGearRxMs;
 }
 
 
@@ -3115,7 +3117,8 @@ on timer tInput100
   else
   {
     speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
-    driveState = clampRange((int)@Chassis::driveState, 0, 3);
+    driveState = (ethIsRecentTick(gGearRxMs, 300) == 1) ?
+                 clampRange(gCanGearState, 0, 3) : 0;
     steeringInput = clampRange((int)@Chassis::steeringInput, 0, 1);
     roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
     navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
@@ -3142,8 +3145,9 @@ on timer tInput100
   }
   if (gScenarioInputLock == 0)
   {
-    driveState = clampRange((int)@Chassis::driveState, 0, 3);
-    gearState = calcBaselineGearState(driveState);
+    gearState = (ethIsRecentTick(gGearRxMs, 300) == 1) ?
+                clampRange(gCanGearState, 0, 3) : 0;
+    driveState = gearState;
     speedHintCmd = 0;
     manualSteeringAngleCmd = clampRange((int)@Chassis::steeringAngle, 0, 138);
     steeringInput = calcManualSteeringState(manualSteeringAngleCmd);
@@ -3235,6 +3239,13 @@ on timer tInput100
   }
   gPrevSteeringInput = steeringInput;
 
+  if (harnessRuntimeActive == 1 || gScenarioInputLock == 0)
+  {
+    mGear.GearInput = gearState;
+    mGear.GearState = gearState;
+    output(mGear);
+  }
+
   if (harnessRuntimeActive == 1)
   {
     mStr.SteeringInput = steeringInput;
@@ -3250,10 +3261,6 @@ on timer tInput100
     mIgn.IgnitionState = ignitionState;
     mIgn.EngineState = engineState;
     output(mIgn);
-
-    mGear.GearInput = gearState;
-    mGear.GearState = gearState;
-    output(mGear);
 
     /* Comm_102 baseline chassis input path */
     mPedal.AccelPedal = accelPedal;
@@ -3458,6 +3465,12 @@ on message frmVehicleStateCanMsg
 {
   gObsVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
   gObsDriveState = clampRange((int)this.gDriveState, 0, 3);
+}
+
+on message frmGearStateMsg
+{
+  gCanGearState = clampRange((int)this.GearState, 0, 3);
+  gGearRxMs = getSimulationTimeMs();
 }
 
 on message frmSteeringStateCanMsg
