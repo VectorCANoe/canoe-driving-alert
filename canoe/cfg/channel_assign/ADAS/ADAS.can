@@ -510,7 +510,8 @@ void runArbiter()
   int manualMode;
   int manualAlertOverride;
   int manualAlertMode;
-  int manualBaseZoneContext;
+  int manualRoadZone;
+  int manualNavDirection;
   int emergencyContext;
   int warningState;
   int baseZoneContext;
@@ -573,11 +574,9 @@ void runArbiter()
   }
   if (manualAlertMode == 1)
   {
-    manualBaseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
-    if (manualBaseZoneContext > 0)
-    {
-      baseZoneContext = manualBaseZoneContext;
-    }
+    manualRoadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+    manualNavDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+    baseZoneContext = deriveBaseZoneContextFromNavState(manualRoadZone, manualNavDirection);
   }
   proximityRiskLevel = clampRange((int)@Core::proximityRiskLevel, 0, 100);
   failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
@@ -885,10 +884,6 @@ void runArbiter()
 
   if (manualAlertMode == 1)
   {
-    selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-    selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 15);
-    selectedAlertDecisionLevel = selectedAlertLevel;
-    selectedAlertDecisionType = selectedAlertType;
     staleInput = 0;
     fallbackApplied = 0;
     gStableAlertLevel = selectedAlertLevel;
@@ -963,6 +958,8 @@ void updateWarningState()
   int manualMode;
   int manualAlertOverride;
   int manualAlertMode;
+  int manualRoadZone;
+  int manualNavDirection;
   int speed;
   int driveState;
   int steeringInput;
@@ -1024,10 +1021,12 @@ void updateWarningState()
   manualAlertMode = (manualMode == 1 && manualAlertOverride > 0) ? 1 : 0;
   if (manualAlertMode == 1)
   {
-    speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-    driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-    speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
-    baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
+    manualRoadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+    manualNavDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+    speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+    driveState = clampRange((int)@Chassis::driveState, 0, 3);
+    speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
+    baseZoneContext = deriveBaseZoneContextFromNavState(manualRoadZone, manualNavDirection);
     if (speedLimit <= 0)
     {
       speedLimit = 30;

@@ -59,9 +59,41 @@ void mirrorLastEmergencyRx(dword tickValue)
 
 void publishNormalizedEmergencyIngress()
 {
-  @CoreState::emergencyIngressDirection = clampRange(gActiveEmergencyDirection, 0, 3);
-  @CoreState::emergencyIngressEtaSec = clampRange(gActiveEta, 0, 255);
-  @CoreState::emergencyIngressSourceId = clampRange(gActiveSourceId, 0, 255);
+  int manualAlertOverride;
+  int compatEmergencyType;
+  int compatAlertState;
+  int compatDirection;
+  int compatEta;
+  int compatSourceId;
+
+  manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
+  compatEmergencyType = clampRange(gActiveEmergencyType, 0, 2);
+  compatAlertState = (compatEmergencyType > 0) ? 1 : 0;
+  compatDirection = clampRange(gActiveEmergencyDirection, 0, 3);
+  compatEta = clampRange(gActiveEta, 0, 255);
+  compatSourceId = clampRange(gActiveSourceId, 0, 255);
+
+  if (manualAlertOverride > 0)
+  {
+    compatEmergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
+    compatAlertState = ((((int)@V2X::alertState) > 0) && compatEmergencyType > 0) ? 1 : 0;
+    if (compatAlertState == 1)
+    {
+      compatDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
+      compatEta = clampRange((int)@V2X::eta, 0, 255);
+      compatSourceId = clampRange((int)@V2X::sourceId, 0, 255);
+    }
+    else
+    {
+      compatDirection = 0;
+      compatEta = 255;
+      compatSourceId = 255;
+    }
+  }
+
+  @CoreState::emergencyIngressDirection = compatDirection;
+  @CoreState::emergencyIngressEtaSec = compatEta;
+  @CoreState::emergencyIngressSourceId = compatSourceId;
 }
 
 int getCompatV2xFrame(int emergencyType, int etaSec)
@@ -164,9 +196,19 @@ void setTimeoutClear(int value)
 
 void updateEmergencyContext()
 {
+  int manualAlertOverride;
+  int donorEmergencyType;
+  int donorAlertState;
   int contextValue;
 
   contextValue = gActiveEmergencyType;
+  manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
+  if (manualAlertOverride > 0)
+  {
+    donorEmergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
+    donorAlertState = (((int)@V2X::alertState) > 0) ? 1 : 0;
+    contextValue = (donorAlertState == 1) ? donorEmergencyType : 0;
+  }
   if (contextValue < 0 || contextValue > 2)
   {
     contextValue = 0;
@@ -309,13 +351,37 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
 
 void publishActiveEmergencyToV2X()
 {
-  @V2X::emergencyType = gActiveEmergencyType;
-  @V2X::emergencyDirection = gActiveEmergencyDirection;
-  @V2X::eta = gActiveEta;
-  @V2X::sourceId = gActiveSourceId;
-  @V2X::alertState = (gActiveEmergencyType > 0) ? 1 : 0;
-  @V2X::v2xFrame = getCompatV2xFrame(gActiveEmergencyType, gActiveEta);
-  @Infotainment::emergencySound = (gActiveEmergencyType > 0) ? 1 : 0;
+  int manualAlertOverride;
+  int compatEmergencyType;
+  int compatEmergencyDirection;
+  int compatEta;
+  int compatSourceId;
+  int compatAlertState;
+
+  manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
+  if (manualAlertOverride == 0)
+  {
+    compatEmergencyType = gActiveEmergencyType;
+    compatEmergencyDirection = gActiveEmergencyDirection;
+    compatEta = gActiveEta;
+    compatSourceId = gActiveSourceId;
+    compatAlertState = (gActiveEmergencyType > 0) ? 1 : 0;
+    @V2X::emergencyType = compatEmergencyType;
+    @V2X::emergencyDirection = compatEmergencyDirection;
+    @V2X::eta = compatEta;
+    @V2X::sourceId = compatSourceId;
+    @V2X::alertState = compatAlertState;
+  }
+  else
+  {
+    compatEmergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
+    compatEmergencyDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
+    compatEta = clampRange((int)@V2X::eta, 0, 255);
+    compatSourceId = clampRange((int)@V2X::sourceId, 0, 255);
+    compatAlertState = ((((int)@V2X::alertState) > 0) && compatEmergencyType > 0) ? 1 : 0;
+  }
+  @V2X::v2xFrame = (compatAlertState == 1) ? getCompatV2xFrame(compatEmergencyType, compatEta) : 0;
+  @Infotainment::emergencySound = (compatAlertState == 1 && compatEmergencyType > 0) ? 1 : 0;
   publishNormalizedEmergencyIngress();
 }
 
