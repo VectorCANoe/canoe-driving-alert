@@ -450,6 +450,9 @@ on message frmAdasDomainStateMsg
 
 on timer tIviCycle
 {
+  int manualMode;
+  int manualAlertOverride;
+  int manualAlertMode;
   int alertLevel;
   int alertType;
   int timeoutClear;
@@ -493,6 +496,15 @@ on timer tIviCycle
     alertType = 0;
     timeoutClear = 0;
   }
+  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
+  manualAlertMode = (manualMode == 1 && manualAlertOverride > 0) ? 1 : 0;
+  if (manualAlertMode == 1)
+  {
+    alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+    alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+    timeoutClear = 0;
+  }
   emergencyType = (int)@Core::emergencyContext;
   emergencyDirection = (int)@CoreState::emergencyIngressDirection;
   if (ethIsRecentTick(gVehicleStateRxMs, 300) == 1)
@@ -502,6 +514,10 @@ on timer tIviCycle
   else
   {
     speed = 0;
+  }
+  if (manualAlertMode == 1)
+  {
+    speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   }
   if (alertLevel < 0 || alertLevel > 7)
   {
@@ -587,6 +603,9 @@ on timer tIviBase50
   int useBackbone;
   int useDecision;
   int useEffective;
+  int manualMode;
+  int manualAlertOverride;
+  int manualAlertMode;
 
   if (ethIsRecentTick(gVehicleStateRxMs, 300) == 1)
   {
@@ -597,6 +616,14 @@ on timer tIviBase50
   {
     speed = 0;
     driveState = 0;
+  }
+  manualMode = (((int)@Test::testScenario) == 0) ? 1 : 0;
+  manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
+  manualAlertMode = (manualMode == 1 && manualAlertOverride > 0) ? 1 : 0;
+  if (manualAlertMode == 1)
+  {
+    speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+    driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
   }
   useEffective = useEffectiveAlertState();
   useDecision = useDecisionAlertState();
@@ -623,6 +650,11 @@ on timer tIviBase50
     alertLevel = 0;
     alertType = 0;
   }
+  if (manualAlertMode == 1)
+  {
+    alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+    alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+  }
   emergencyType = clampRange((int)@Core::emergencyContext, 0, 2);
   emergencyDirection = clampRange((int)@CoreState::emergencyIngressDirection, 0, 3);
   emergencyEta = clampRange((int)@CoreState::emergencyIngressEtaSec, 0, 255);
@@ -633,6 +665,10 @@ on timer tIviBase50
   else
   {
     baseZoneContext = 0;
+  }
+  if (manualAlertMode == 1)
+  {
+    baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
   }
   renderMode = clampRange((int)@Body::ambientMode, 0, 7);
   renderColor = clampRange((int)@Body::ambientColor, 0, 15);
