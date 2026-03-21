@@ -6,12 +6,14 @@ Current root panel set for `develop`.
 
 - Root `canoe/project/panel/*.xvp` is the panel source of truth.
 - Imported donor panels are frozen at donor design/binding level.
-- Do not change donor panel layout, widget type, label, or existing writable binding.
+- Current root filenames are project-normalized names, but internal XVP content and contract semantics are donor-canonical.
+- Do not change donor panel layout, widget type, label, root `ControlName`, or existing donor binding contract.
 - Runtime adaptation must be done in:
   - `canoe/project/sysvars/project.sysvars`
   - `canoe/src/capl`
   - `canoe/cfg/channel_assign`
 - `Diagnostic_Console.xvp` is the only local project-specific panel outside the donor set.
+- Detailed frozen contract matrix: `../../AGENT/canoe/docs/operations/panel/DONOR_PANEL_CONTRACT_MATRIX_2026-03-21.md`
 
 ## Current Root Inventory
 
@@ -49,14 +51,15 @@ Current root panel set for `develop`.
 
 ## Input / Output Pairing
 
-| Pair set | Input / control panel | Output / display panel | Main runtime seam |
-| --- | --- | --- | --- |
-| Ambient | `Ambient_Control.xvp` | `Ambient_TopView.xvp` | `Body::*`, `Infotainment::*`, `UiRender::*` |
-| Driver / cabin | `Driver_Control.xvp` | `Cabin_Cockpit.xvp`, `Body_Status.xvp` | `Body::*`, `Chassis::*`, `Display::*` |
-| Cruise / vehicle | `Cruise_Pedal.xvp` | `Vehicle_Dashboard.xvp` | `Chassis::*`, `Powertrain::*` |
-| Alert / operator | `Operator_Input.xvp` | `Cluster_Alert.xvp`, `Navigation_Alert.xvp` | `Core::*`, `CoreState::*`, `UiRender::*` |
-| Scenario / V2X | `Scenario_Control.xvp` | `V2X_Ingress.xvp`, `Cluster_Alert.xvp`, `Navigation_Alert.xvp` | `Test::*`, `V2X::*`, `Core::*` |
-| Diagnostic monitor | none | `Diagnostic_Console.xvp` | `Diag::*`, domain health mirrors |
+| Pair set | Input / control panel | Output / display panel | Current Desktop_ASSIGN copies | Main runtime seam |
+| --- | --- | --- | --- | --- |
+| Ambient | `Ambient_Control.xvp` | `Ambient_TopView.xvp` | `Module/Ambient_Control.xvp`, `Module/Ambient_TopView.xvp`, `3D/Ambient_TopView.xvp` | `Body::*`, `Infotainment::*`, `UiRender::*` |
+| Driver / body | `Driver_Control.xvp` | `Body_Status.xvp` | `Module/Driver_Control.xvp`, `3D/Driver_Control.xvp`, `3D/Body_Status.xvp` | `Body::*`, `Chassis::*` |
+| Driver / cabin | `Driver_Control.xvp` | `Cabin_Cockpit.xvp` | `Module/Driver_Control.xvp`, `3D/Driver_Control.xvp`, `Cabin/Cabin_Cockpit.xvp` | `Body::*`, `Display::*`, `Powertrain::*` |
+| Cruise / vehicle | `Cruise_Pedal.xvp` | `Vehicle_Dashboard.xvp` | `Module/Cruise_Pedal.xvp`, `Cabin/Cruise_Pedal.xvp`, `Cabin/Vehicle_Dashboard.xvp` | `Chassis::*`, `Powertrain::*` |
+| Manual warning | `Operator_Input.xvp` | `Cluster_Alert.xvp`, `Navigation_Alert.xvp`, `Ambient_TopView.xvp` | `Module/Operator_Input.xvp`, `Module/Cluster_Alert.xvp`, `Module/Navigation_Alert.xvp`, `Module/Ambient_TopView.xvp`, `3D/Ambient_TopView.xvp` | `Core::*`, `CoreState::*`, `UiRender::*` |
+| Scenario warning | `Scenario_Control.xvp` | `Cluster_Alert.xvp`, `Navigation_Alert.xvp`, `Ambient_TopView.xvp`, `V2X_Ingress.xvp` | `3D/Scenario_Control.xvp`, `3D/V2X_Ingress.xvp`, `Module/Cluster_Alert.xvp`, `Module/Navigation_Alert.xvp`, `Module/Ambient_TopView.xvp`, `3D/Ambient_TopView.xvp` | `Test::*`, `V2X::*`, `Core::*` |
+| Diagnostic monitor | none | `Diagnostic_Console.xvp` | `3D/Diagnostic_Console.xvp` | `Diag::*`, domain health mirrors |
 
 ## Runtime Meaning
 
@@ -78,8 +81,9 @@ Current root panel set for `develop`.
 
 ## Desktop_ASSIGN
 
-Grouped desktop copies live under [Desktop_ASSIGN](C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Desktop_ASSIGN).
+Grouped desktop copies live under [Desktop_ASSIGN](./Desktop_ASSIGN/README.md).
 
 - `Desktop_ASSIGN/*/*.xvp` must stay byte-equal to the root file with the same runtime name.
 - Desktop grouping is for GUI composition only.
-- Pairing rules are documented again in `Desktop_ASSIGN/README.md`.
+- Pairing rules and current GUI-saved grouping are documented again in `Desktop_ASSIGN/README.md`.
+- Current `Desktop_ASSIGN` file placement reflects the latest GUI save. If GUI composition changes again, update the folder copies and both README tables together.
