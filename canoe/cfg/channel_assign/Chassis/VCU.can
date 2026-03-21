@@ -24,6 +24,10 @@ variables
   int gNavSpeedLimit;
   int gWheelSpeedHint;
   int gPtAliveCnt;
+  int gManualDriveStateTarget;
+  int gManualVehicleSpeedTarget;
+  int gLastPublishedDriveState;
+  int gLastPublishedVehicleSpeed;
   dword gPedalRxMs;
   dword gIgnitionRxMs;
   dword gGearRxMs;
@@ -359,6 +363,10 @@ on start
   gNavSpeedLimit = 30;
   gWheelSpeedHint = 0;
   gPtAliveCnt = 0;
+  gManualDriveStateTarget = 0;
+  gManualVehicleSpeedTarget = 0;
+  gLastPublishedDriveState = 0;
+  gLastPublishedVehicleSpeed = 0;
   gPedalRxMs = 0;
   gIgnitionRxMs = 0;
   gGearRxMs = 0;
@@ -452,6 +460,9 @@ on timer tVcuCycle
   int manualCruiseState;
   int manualCruiseSetSpeed;
   int manualCruiseActive;
+  int manualIgnitionCmd;
+  int panelDriveStateSeam;
+  int panelVehicleSpeedSeam;
   int accelStep;
   int accelPedal;
   int brakePedal;
@@ -496,24 +507,46 @@ on timer tVcuCycle
   manualCruiseState = 0;
   manualCruiseSetSpeed = 0;
   manualCruiseActive = 0;
+  manualIgnitionCmd = ((((int)@Chassis::ignitionCmd) > 0) ? 1 : 0);
   if (manualMode == 1)
   {
-    manualDriveStateCmd = clampRange((int)@Chassis::driveState, 0, 3);
-    manualVehicleSpeedCmd = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+    panelDriveStateSeam = clampRange((int)@Chassis::driveState, 0, 3);
+    panelVehicleSpeedSeam = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+    if (manualIgnitionCmd == 1 &&
+        panelDriveStateSeam != gLastPublishedDriveState)
+    {
+      gManualDriveStateTarget = panelDriveStateSeam;
+    }
+    if (manualIgnitionCmd == 1 &&
+        panelVehicleSpeedSeam != gLastPublishedVehicleSpeed)
+    {
+      gManualVehicleSpeedTarget = panelVehicleSpeedSeam;
+    }
+    if (manualIgnitionCmd == 0 && gSpeed <= 0)
+    {
+      gManualDriveStateTarget = 0;
+      gManualVehicleSpeedTarget = 0;
+    }
+    manualDriveStateCmd = clampRange(gManualDriveStateTarget, 0, 3);
+    manualVehicleSpeedCmd = clampRange(gManualVehicleSpeedTarget, 0, 255);
+    if (manualIgnitionCmd == 0 && gSpeed <= 0)
+    {
+      manualDriveStateCmd = 0;
+      manualVehicleSpeedCmd = 0;
+    }
     manualCruiseState = clampRange((int)@Powertrain::cruiseState, 0, 3);
     manualCruiseSetSpeed = clampRange((int)@Powertrain::cruiseSetSpeed, 0, 255);
-    accelPedal = clampRange((int)@Chassis::throttlePosition, 0, 100);
+    accelPedal = 0;
     brakePedal = clampRange((int)@Chassis::brakePressure, 0, 100);
-    if (accelPedal == 0 && ((int)@Chassis::throttlePedalBtn) > 0)
+    /* Donor pedal panel uses buttons for command and progress bars for owner
+       readback. Avoid feeding the displayed setpoint back into control. */
+    if (((int)@Chassis::throttlePedalBtn) > 0)
     {
       accelPedal = 70;
-    }
-    if (brakePedal == 0 && ((int)@Chassis::brakePedalBtn) > 0)
-    {
-      brakePedal = 80;
+      @Chassis::throttlePedalBtn = 0;
     }
     gearState = manualDriveStateCmd;
-    engineState = deriveManualPowertrainState((((int)@Chassis::ignitionCmd) > 0) ? 1 : 0,
+    engineState = deriveManualPowertrainState(manualIgnitionCmd,
                                               gearState,
                                               (manualVehicleSpeedCmd > 0) ? manualVehicleSpeedCmd : gSpeed,
                                               accelPedal);
@@ -524,11 +557,17 @@ on timer tVcuCycle
     if (gearState >= 3 &&
         brakePedal == 0 &&
         accelPedal == 0 &&
+        manualIgnitionCmd == 1 &&
         manualCruiseState > 0 &&
         manualCruiseSetSpeed > 0)
     {
       manualCruiseActive = 1;
     }
+  }
+  else
+  {
+    gManualDriveStateTarget = 0;
+    gManualVehicleSpeedTarget = 0;
   }
 
   externalSpeedDelta = externalSpeedHint - gSpeed;
@@ -623,6 +662,9 @@ on timer tVcuCycle
   output(mState);
   @Chassis::vehicleSpeed = gSpeed;
   @Chassis::driveState = driveState;
+  gLastPublishedVehicleSpeed = gSpeed;
+  gLastPublishedDriveState = driveState;
+  @Chassis::throttlePosition = clampRange(accelPedal, 0, 100);
   publishBackboneVehicleState(gSpeed, driveState);
 
   if (driveMode == 0 &&

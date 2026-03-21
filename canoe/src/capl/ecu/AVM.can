@@ -97,7 +97,11 @@ void publishAvmState()
     brakePedal = 0;
   }
 
-  active = (vehicleInputStale == 0 && vehicleSpeed <= 20) ? 1 : 0;
+  /* Do not auto-open surround view at idle just because speed is low.
+     Require an actual parking interaction input. */
+  active = (vehicleInputStale == 0 &&
+            vehicleSpeed <= 20 &&
+            (brakePedal == 1 || steeringInput == 1)) ? 1 : 0;
   viewMode = 0;
   overlay = 0;
 

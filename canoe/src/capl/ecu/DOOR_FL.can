@@ -198,11 +198,13 @@ on timer tDoorFlCycle
     {
       windowPos = windowPos - 10;
       if (windowPos < 0) windowPos = 0;
+      @Body::windowCmd = 0;
     }
     else if (windowCmd == 2)
     {
       windowPos = windowPos + 10;
       if (windowPos > 90) windowPos = 90;
+      @Body::windowCmd = 0;
     }
   }
   if (manualMode == 1)

@@ -77,7 +77,8 @@ void publishSpasState()
   stage = 0;
   assistReq = 0;
 
-  if (vehicleInputStale == 0 && vehicleSpeed <= 15)
+  /* Do not arm parking steer assist at idle without steering intent. */
+  if (vehicleInputStale == 0 && vehicleSpeed <= 15 && steeringInput == 1)
   {
     active = 1;
     stage = 1;

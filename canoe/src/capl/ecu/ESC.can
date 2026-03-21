@@ -26,6 +26,16 @@ variables
   int gLastAssistReq;
 }
 
+int deriveManualSteeringInputFromAngle(int steeringAngle)
+{
+  steeringAngle = clampRange(steeringAngle, 0, 138);
+  if (steeringAngle <= 54 || steeringAngle >= 84)
+  {
+    return 1;
+  }
+  return 0;
+}
+
 void traceEscInputHealth(int vehicleStateInputStale, int steeringInputStale, int pedalInputStale, int aebInputStale)
 {
   if (vehicleStateInputStale != gLastVehicleStateInputStale)
@@ -179,6 +189,7 @@ on timer tEscCycle
   int assistPressureFloor;
   int speedNorm;
   int driveState;
+  int manualMode;
   int steeringInput;
   int appliedBrakePedal;
   int brakePressure;
@@ -187,7 +198,6 @@ on timer tEscCycle
   int absSlip;
   int yawRate;
   int latAccel;
-  int manualBrakePressure;
   int manualBrakeButtonBrake;
 
   vehicleStateInputStale = (ethIsRecentTick(gVehicleStateRxMs, 300) == 1) ? 0 : 1;
@@ -211,6 +221,7 @@ on timer tEscCycle
   driveState = gDriveState;
   steeringInput = gSteeringInput;
   appliedBrakePedal = gBrakePedal;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   if (vehicleStateInputStale == 1)
   {
     speedNorm = 0;
@@ -224,14 +235,16 @@ on timer tEscCycle
   {
     appliedBrakePedal = 0;
   }
-  if ((int)@Test::scenarioActiveId == 0)
+  if (manualMode == 1)
   {
-    manualBrakePressure = clampRange((int)@Chassis::brakePressure, 0, 100);
+    steeringInput = deriveManualSteeringInputFromAngle((int)@Chassis::steeringAngle);
     manualBrakeButtonBrake = (((int)@Chassis::brakePedalBtn) == 1) ? 80 : 0;
-    appliedBrakePedal = manualBrakePressure;
-    if (manualBrakeButtonBrake > appliedBrakePedal)
+    /* Donor pedal panel exposes brakePressure as display-only progress.
+       The owner consumes the button and publishes the resulting pressure. */
+    appliedBrakePedal = manualBrakeButtonBrake;
+    if (manualBrakeButtonBrake > 0)
     {
-      appliedBrakePedal = manualBrakeButtonBrake;
+      @Chassis::brakePedalBtn = 0;
     }
     @Chassis::brakePressure = appliedBrakePedal;
   }

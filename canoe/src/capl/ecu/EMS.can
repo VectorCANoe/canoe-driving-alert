@@ -169,6 +169,19 @@ int deriveEngineTorque(int engineState, int engineLoad, int rpm)
   return clampRange(torque, 0, 300);
 }
 
+int deriveManualEmsEngineState(int ignitionState, int driveState, int speed, int accelPedal)
+{
+  if (ignitionState == 0)
+  {
+    return 0;
+  }
+  if (driveState > 0 || speed > 0 || accelPedal > 0)
+  {
+    return 3;
+  }
+  return 2;
+}
+
 void updateWarningFrame()
 {
   int beltWarn;
@@ -177,6 +190,8 @@ void updateWarningFrame()
   int ambulancePos;
   int selectedAlertLevel;
   int selectedAlertType;
+  int compatV2xFrame;
+  int compatAlertState;
   int nextFrame;
 
   if (gInitDone == 0 || gAnimRunning == 1)
@@ -190,9 +205,15 @@ void updateWarningFrame()
   ambulancePos = clampRange((int)@V2X::ambulancePos, 0, 7);
   selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+  compatV2xFrame = clampRange((int)@V2X::v2xFrame, 0, 255);
+  compatAlertState = (((int)@V2X::alertState) > 0) ? 1 : 0;
   nextFrame = 0;
 
-  if (policePos >= 6 || (selectedAlertLevel >= 6 && selectedAlertType == 1))
+  if (compatAlertState == 1 && compatV2xFrame > 0)
+  {
+    nextFrame = compatV2xFrame;
+  }
+  else if (policePos >= 6 || (selectedAlertLevel >= 6 && selectedAlertType == 1))
   {
     nextFrame = 1;
   }
@@ -336,6 +357,8 @@ on timer tEngineCycle
   int engineState;
   int accelPedal;
   int brakePedal;
+  int manualMode;
+  int driveState;
   int rpm;
   int throttlePos;
   int engineLoad;
@@ -355,6 +378,7 @@ on timer tEngineCycle
   accelPedal = gAccelPedal;
   brakePedal = gBrakePedal;
   speed = gVehicleSpeed;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   if (ignitionInputStale == 1)
   {
     ignitionState = 0;
@@ -368,6 +392,20 @@ on timer tEngineCycle
   if (vehicleInputStale == 1)
   {
     speed = 0;
+  }
+
+  if (manualMode == 1)
+  {
+    driveState = clampRange((int)@Chassis::driveState, 0, 3);
+    speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+    accelPedal = clampRange((int)@Chassis::throttlePosition, 0, 100);
+    brakePedal = clampRange((int)@Chassis::brakePressure, 0, 100);
+    ignitionState = ((((int)@Chassis::ignitionCmd) > 0) ||
+                     driveState > 0 ||
+                     speed > 0 ||
+                     accelPedal > 0 ||
+                     brakePedal > 0) ? 1 : 0;
+    engineState = deriveManualEmsEngineState(ignitionState, driveState, speed, accelPedal);
   }
 
   gInitDone = 1;
@@ -452,20 +490,11 @@ on sysvar CoreState::seatBeltWarnLvl
 
 on sysvar Body::doorOpenCmd
 {
-  if ((int)@Body::doorLockCmd == 1 && (int)@Body::doorOpenCmd == 1)
-  {
-    @Body::doorOpenCmd = 0;
-    return;
-  }
   updateWarningFrame();
 }
 
 on sysvar Body::doorLockCmd
 {
-  if ((int)@Body::doorLockCmd == 1)
-  {
-    @Body::doorOpenCmd = 0;
-  }
   updateWarningFrame();
 }
 

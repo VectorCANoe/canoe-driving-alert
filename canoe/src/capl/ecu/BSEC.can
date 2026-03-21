@@ -79,6 +79,7 @@ void publishSecurityState()
   int vehicleInputStale;
   int immoInputStale;
   int driveState;
+  int manualMode;
   int allClosed;
   int anyOpen;
   int authorizedAccess;
@@ -100,6 +101,7 @@ void publishSecurityState()
   traceBsecInputHealth(apertureInputStale, vehicleInputStale, immoInputStale);
 
   driveState = gDriveState;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   if (vehicleInputStale == 1)
   {
     driveState = 3;
@@ -130,7 +132,8 @@ void publishSecurityState()
   }
 
   canArm = 0;
-  if (apertureInputStale == 0 &&
+  if (manualMode == 0 &&
+      apertureInputStale == 0 &&
       vehicleInputStale == 0 &&
       driveState == 0 &&
       authorizedAccess == 0 &&
@@ -142,7 +145,12 @@ void publishSecurityState()
   alarmArmState = gAlarmArmState;
   intrusionDetect = gIntrusionDetect;
 
-  if (authorizedAccess == 1 || driveState > 0)
+  if (manualMode == 1)
+  {
+    alarmArmState = 0;
+    intrusionDetect = 0;
+  }
+  else if (authorizedAccess == 1 || driveState > 0)
   {
     alarmArmState = 0;
     intrusionDetect = 0;

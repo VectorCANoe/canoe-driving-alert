@@ -17,6 +17,16 @@ variables
   int gPrevSteering;
 }
 
+int deriveManualSteeringInputFromAngle(int steeringAngle)
+{
+  steeringAngle = clampRange(steeringAngle, 0, 138);
+  if (steeringAngle <= 54 || steeringAngle >= 84)
+  {
+    return 1;
+  }
+  return 0;
+}
+
 int getMdpsTxPort()
 {
   return ethBackbonePort() + 3;
@@ -111,6 +121,7 @@ on timer tMdpsCycle
   int steeringInputStale;
   int vehicleInputStale;
   int steeringInput;
+  int manualMode;
   int speedNorm;
   int steeringAngleRaw;
   int assistLevel;
@@ -122,6 +133,7 @@ on timer tMdpsCycle
 
   steeringInput = gSteeringInput;
   speedNorm = gSpeedNorm;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   if (steeringInputStale == 1)
   {
     steeringInput = 0;
@@ -129,6 +141,12 @@ on timer tMdpsCycle
   if (vehicleInputStale == 1)
   {
     speedNorm = 0;
+  }
+
+  if (manualMode == 1)
+  {
+    steeringInput = deriveManualSteeringInputFromAngle((int)@Chassis::steeringAngle);
+    speedNorm = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
   }
 
   steeringAngleRaw = steeringInput * 30;

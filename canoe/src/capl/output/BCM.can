@@ -746,21 +746,24 @@ on timer tBodyBase100
   }
 
   doorControlCmd = 0;
-  if (driveState == 0 &&
+  if (manualMode == 0 &&
+      driveState == 0 &&
       paakAuthLevel >= 1 &&
       paakProximityState >= 2 &&
       paakState >= 1)
   {
     doorControlCmd = 1;
   }
-  childLockState = (driveState > 0) ? 1 : 0;
+  childLockState = ((manualMode == 0) && (driveState > 0)) ? 1 : 0;
 
   seatHeatLevel = 0;
   seatVentLevel = 0;
   sunroofPositionCmd = 0;
   sunroofTiltCmd = 0;
   sunshadeCmd = 0;
-  if (tmuRemoteClimateReq == 1 && tmuServiceMode >= 1)
+  if (manualMode == 0 &&
+      tmuRemoteClimateReq == 1 &&
+      tmuServiceMode >= 1)
   {
     if (hvacAcOn == 1)
     {
@@ -830,12 +833,13 @@ on timer tBodyBase100
   {
     comfortProfile = 0;
   }
-  else if (tmuRemoteClimateReq == 1 || seatHeatLevel > 0 || seatVentLevel > 0)
+  else if (manualMode == 0 &&
+           (tmuRemoteClimateReq == 1 || seatHeatLevel > 0 || seatVentLevel > 0))
   {
     comfortProfile = 3;
   }
   else if (doorControlCmd > 0 || doorStateMask != 0 || doorLockState == 0 ||
-           paakAuthLevel >= 1 || paakProximityState >= 2)
+           (manualMode == 0 && (paakAuthLevel >= 1 || paakProximityState >= 2)))
   {
     comfortProfile = 2;
   }

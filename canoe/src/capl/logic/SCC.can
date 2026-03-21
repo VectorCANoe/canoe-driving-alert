@@ -185,8 +185,8 @@ on start
   gLastInternalCruiseState = -1;
   gLastInternalCruiseSetSpeed = -1;
   gLastInternalCruiseTxMs = 0;
-  @Test::manualCruiseStateCmd = 0;
-  @Test::manualCruiseSetSpeedCmd = 0;
+  /* Preserve donor pedal-panel command seams across measurement start.
+     SCC owns cruise state/readback, not the panel command values themselves. */
   @Powertrain::cruiseState = 0;
   @Powertrain::cruiseSetSpeed = 0;
   setTimer(tSccCycle, 50);
@@ -248,8 +248,6 @@ on message frmCruiseStateMsg
   }
 
   gPanelCruiseRxMs = getSimulationTimeMs();
-  @Powertrain::cruiseState = clampRange(gPanelCruiseStateCmd, 0, 3);
-  @Powertrain::cruiseSetSpeed = clampRange(gPanelCruiseSetSpeedCmd, 0, 255);
 }
 
 on timer tSccCycle

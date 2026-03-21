@@ -21,6 +21,24 @@ variables
   int gShiftTargetGear;
 }
 
+int deriveManualGearStateFromDriveState(int driveState)
+{
+  driveState = clampRange(driveState, 0, 3);
+  if (driveState == 1)
+  {
+    return 1;
+  }
+  if (driveState == 2)
+  {
+    return 2;
+  }
+  if (driveState >= 3)
+  {
+    return 3;
+  }
+  return 0;
+}
+
 void traceTcuInputHealth(int gearInputStale, int driveModeInputStale, int vehicleInputStale)
 {
   if (gearInputStale != gLastGearInputStale)
@@ -110,6 +128,7 @@ on timer tTransCycle
   int vehicleInputStale;
   int gearState;
   int driveMode;
+  int manualMode;
   int transOilTemp;
   int clutchTemp;
   int shiftState;
@@ -123,6 +142,7 @@ on timer tTransCycle
 
   gearState = gGearState;
   driveMode = gDriveMode;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   if (gearInputStale == 1)
   {
     gearState = 0;
@@ -136,6 +156,11 @@ on timer tTransCycle
   if (vehicleInputStale == 1)
   {
     speed = 0;
+  }
+
+  if (manualMode == 1)
+  {
+    gearState = deriveManualGearStateFromDriveState((int)@Chassis::driveState);
   }
 
   /* Oil temp: warm when gear engaged, higher under sport mode */

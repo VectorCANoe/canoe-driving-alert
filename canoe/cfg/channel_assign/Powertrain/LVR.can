@@ -18,6 +18,24 @@ variables
   int gLastParkLock;
 }
 
+int deriveManualGearStateFromDriveState(int driveState)
+{
+  driveState = clampRange(driveState, 0, 3);
+  if (driveState == 1)
+  {
+    return 1;
+  }
+  if (driveState == 2)
+  {
+    return 2;
+  }
+  if (driveState >= 3)
+  {
+    return 3;
+  }
+  return 0;
+}
+
 void traceLvrInputHealth(int gearInputStale, int ignitionInputStale)
 {
   if (gearInputStale != gLastGearInputStale)
@@ -84,6 +102,7 @@ on timer tLvrCycle
   int gearInput;
   int gearState;
   int ignitionState;
+  int manualMode;
   int leverValid;
   int parkLockCmd;
 
@@ -94,6 +113,7 @@ on timer tLvrCycle
   gearInput = gGearInput;
   gearState = gGearState;
   ignitionState = gIgnitionState;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   if (gearInputStale == 1)
   {
     gearInput = 0;
@@ -102,6 +122,15 @@ on timer tLvrCycle
   if (ignitionInputStale == 1)
   {
     ignitionState = 0;
+  }
+
+  if (manualMode == 1)
+  {
+    gearInput = deriveManualGearStateFromDriveState((int)@Chassis::driveState);
+    gearState = gearInput;
+    ignitionState = ((((int)@Chassis::ignitionCmd) > 0) ||
+                     gearState > 0 ||
+                     ((int)@Chassis::vehicleSpeed > 0)) ? 1 : 0;
   }
 
   leverValid = (ignitionState == 1) ? 1 : 0;

@@ -116,6 +116,7 @@ on timer tTailgateCycle
   int ctrlInputStale;
   int dkeyInputStale;
   int driveState;
+  int manualMode;
   int accessAuthorized;
   int lockState;
   int openState;
@@ -128,13 +129,15 @@ on timer tTailgateCycle
   traceTgmInputHealth(vehicleInputStale, ctrlInputStale, dkeyInputStale);
 
   driveState = gDriveState;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   if (vehicleInputStale == 1)
   {
     driveState = 3;
   }
 
   accessAuthorized = 0;
-  if (driveState == 0 &&
+  if (manualMode == 0 &&
+      driveState == 0 &&
       dkeyInputStale == 0 &&
       gKeyPresence == 1 &&
       gDkeyAccessState >= 1)
