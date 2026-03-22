@@ -17,6 +17,9 @@
 - `poster/`
   - `poster_session_draft.md`
   - `post.png`
+- `ppt/`
+  - `README.md`
+  - `ppt_storyboard.md`
 
 ## Build
 
@@ -28,4 +31,9 @@ tectonic short_paper_twocolumn.tex
 ```bash
 cd driving-alert-workproducts/governance/short-paper/appendix/tex
 ./build_appendix_bundle.sh
+```
+
+```bash
+cd driving-alert-workproducts/governance/short-paper/ppt
+./build_presentation.sh
 ```

@@ -152,6 +152,21 @@ u_{t-1}, & T_{off} < R_t < T_{on}
 
 이와 같은 구조는 V2X 통신과 차량 내 센서 기반 위험 판단을 함께 사용하여 경고를 구성하는 선행연구와 통합 차량 경고 시스템 사례의 일반 구조와도 부합한다[17][18]. 동시에 본 프로젝트의 네트워크 플로우와 통신 명세는 경고 정보 전달 정책과 경계 상태를 별도 관리하도록 되어 있어[7][13], 혼합 네트워크를 단순 메시지 채널이 아니라 경고 컨셉의 기능 경계로 해석할 수 있다.
 
+### 3.4 핵심 seam 권한 구조
+
+혼합 네트워크 구조가 설명 가능하려면 메시지 자체보다 먼저 “어떤 seam을 누가 소유하는가”가 정리되어야 한다. 본 연구에서는 owner, primary bus, timeout authority, route authority를 분리하여 정의함으로써, 기능 의미와 경계 정책을 transport와 독립적으로 설명할 수 있도록 하였다. 특히 긴급 경고와 감속 보조는 ADAS가 판단하되, 최종 effective result와 fail-safe shaping은 CGW가 담당하도록 하여, 기능 판단과 경계 적용이 섞이지 않도록 구성하였다[7][22].
+
+| 기능 seam | Owner | Primary bus | Timeout authority | Route authority | 대표 의미 |
+|---|---|---|---|---|---|
+| Navigation context | IVI | Infotainment CAN | IVI | CGW | 구간 타입, 방향, 거리, 제한속도 |
+| Emergency context | V2X | Ethernet backbone + normalized CoreState seam | CGW | CGW | 긴급차량 유형, 방향, ETA, SourceID |
+| Arbitration decision | ADAS | local runtime + decision seam | ADAS | CGW | selected alert 결정 전 상태 |
+| Arbitration effective result | CGW | effective result seam + published output seam | CGW | CGW | selected alert 경계 적용 후 상태 |
+| Decel decision | ADAS | local runtime + decision seam | ADAS | CGW | 감속 보조 판단과 driver release reason |
+| Decel effective result | CGW | effective decel seam | CGW | CGW | fail-safe 적용 후 최종 감속 보조 |
+
+이와 같이 seam 단위 권한을 먼저 고정하면, CAN 경로는 상태 수집의 의미를, Ethernet 경로는 정규화된 이벤트와 결과 전달의 의미를 담당하게 된다. 결과적으로 동일한 경고 컨셉을 문서, 코드, 시험 자산에서 같은 구조로 설명할 수 있는 기반이 마련된다.
+
 ---
 [편집 메모 시작: 그림 3 삽입 지시]
 제목: CAN/Ethernet 혼합 경고 전달 구조도
@@ -225,6 +240,14 @@ u_{t-1}, & T_{off} < R_t < T_{on}
 대표적으로 통합시험은 IT_006에서 우선순위와 ETA/SourceID 규칙을, IT_009에서 timeout clear와 150ms 이내 복귀를, IT_018에서 긴급 경고와 TTC 기반 위험의 동시 상황을 다루고 있으며[6], 시스템시험은 ST_016, ST_017에서 동률 해소 규칙을, ST_018, ST_019에서 외부 송신 100ms 주기를, ST_020, ST_021에서 무갱신 이후 안전 해제와 이전 유효 경고 복귀를, ST_045, ST_046에서 연속 시나리오와 fail-safe 복귀를 각각 다루고 있다[10]. 이처럼 동일한 경고 컨셉이 기능 정의, 통신 경계, 통합시험, 시스템시험에서 반복적으로 대응된다는 점이 본 연구의 구축 성과라고 볼 수 있다.
 
 정량 결과는 세 가지 핵심 지표를 중심으로 정리하였다. 첫째, `V2X 긴급 이벤트 선택 정확도 [N1]\%`는 IT_006, ST_016, ST_017을 기준으로 유형, ETA, SourceID 규칙이 올바르게 적용되었는지를 보여준다[6][10]. 둘째, `교차로·합류구간 통합 경고 성공률 [N2]\%`는 IT_018, ST_022, ST_023을 기준으로 긴급 접근 정보와 TTC 기반 위험이 단일 경고 및 감속 보조 요청으로 수렴하는지를 보여준다[6][10]. 셋째, `복귀 안정성 준수율 [N3]\%`은 IT_009, ST_035, ST_036, ST_045, ST_046을 기준으로 timeout clear, fail-safe, 정상 복귀가 기준 시간과 상태 일관성을 만족하는지를 보여준다[6][9][10]. 각 지표는 각각 `N1=(S_sel/T_v2x)×100`, `N2=(S_int/T_int)×100`, `N3=(S_rec/T_rec)×100`으로 정의하였다. 여기서 `S_sel`은 정상 선택 시나리오 수, `T_v2x`는 전체 V2X 선택 시나리오 수, `S_int`는 정상 통합 경고 시나리오 수, `T_int`는 전체 교차로·합류 시나리오 수, `S_rec`는 정상 복귀 시나리오 수, `T_rec`는 전체 복귀 시나리오 수를 의미한다.
+
+정량 지표의 집계 단위는 개별 신호나 개별 테스트 코드가 아니라 “시나리오 단위 verdict”로 두었다. 이는 동일 경고 컨셉이 단위시험, 통합시험, 시스템시험에서 반복적으로 등장하더라도, 최종 해석은 기능 의미 단위로 수행해야 한다는 판단에 따른 것이다. 또한 각 지표는 owner-published seam과 시험 verdict를 함께 사용하도록 정의함으로써, 단순 PASS 수보다 기능 의미와 경계 조건을 동시에 읽을 수 있도록 하였다[7][9][10][22][24].
+
+| 지표 | 집계식 | 판정 단위 | 주요 데이터 출처 | 대표 시험 | 결과값 |
+|---|---|---|---|---|---|
+| V2X 긴급 이벤트 선택 정확도 | `N1=(S_sel/T_v2x)×100` | 긴급 이벤트 선택 시나리오 | `emergencyType`, `EtaSeconds`, `SourceId`, selected alert verdict | IT_006, ST_016, ST_017 | [N1]% |
+| 교차로·합류구간 통합 경고 성공률 | `N2=(S_int/T_int)×100` | 복합 경고 시나리오 | `objectTtcMin`, `objectRiskClass`, `decelAssistReq`, selected alert verdict | IT_018, ST_022, ST_023 | [N2]% |
+| 복귀 안정성 준수율 | `N3=(S_rec/T_rec)×100` | timeout/fail-safe 복귀 시나리오 | `timeoutClear`, `warningPathStatus`, effective alert state, baseline verdict | IT_009, ST_035, ST_036, ST_045, ST_046 | [N3]% |
 
 ---
 [편집 메모 시작: 표 3 삽입 지시]
