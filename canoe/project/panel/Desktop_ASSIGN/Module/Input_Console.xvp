@@ -960,13 +960,13 @@
             <Property Name="Size">170, 30</Property>
             <Property Name="Location">108, 90</Property>
             <Property Name="TabIndex">1</Property>
-            <Property Name="MaximumDouble">200</Property>
-            <Property Name="LargeChangeDouble">10</Property>
-            <Property Name="TickFrequencyDouble">NaN</Property>
+            <Property Name="MaximumDouble">4</Property>
+            <Property Name="LargeChangeDouble">1</Property>
+            <Property Name="TickFrequencyDouble">1</Property>
             <Property Name="MaximumSize">100000, 30</Property>
-            <Property Name="Maximum">200</Property>
-            <Property Name="LargeChange">10</Property>
-            <Property Name="SymbolConfiguration">8;16;Inject;;;zoneDistance;1;;;-1;;;Value;;;0</Property>
+            <Property Name="Maximum">4</Property>
+            <Property Name="LargeChange">1</Property>
+            <Property Name="SymbolConfiguration">8;16;Inject;;;zoneDistancePresetIdx;1;;;-1;;;Value;;;0</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DistanceInjectBox" ControlName="DistanceInjectBox">
             <Property Name="Name">DistanceInjectBox</Property>
@@ -1001,13 +1001,13 @@
             <Property Name="Size">170, 30</Property>
             <Property Name="Location">108, 126</Property>
             <Property Name="TabIndex">2</Property>
-            <Property Name="MaximumDouble">120</Property>
-            <Property Name="LargeChangeDouble">10</Property>
-            <Property Name="TickFrequencyDouble">NaN</Property>
+            <Property Name="MaximumDouble">4</Property>
+            <Property Name="LargeChangeDouble">1</Property>
+            <Property Name="TickFrequencyDouble">1</Property>
             <Property Name="MaximumSize">100000, 30</Property>
-            <Property Name="Maximum">120</Property>
-            <Property Name="LargeChange">10</Property>
-            <Property Name="SymbolConfiguration">8;16;Inject;;;speedLimit;1;;;-1;;;Value;;;0</Property>
+            <Property Name="Maximum">4</Property>
+            <Property Name="LargeChange">1</Property>
+            <Property Name="SymbolConfiguration">8;16;Inject;;;speedLimitPresetIdx;1;;;-1;;;Value;;;0</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LimitInjectBox" ControlName="LimitInjectBox">
             <Property Name="Name">LimitInjectBox</Property>
@@ -1162,14 +1162,14 @@
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="EmergencyEtaTrack" ControlName="EmergencyEtaTrack">
             <Property Name="Name">EmergencyEtaTrack</Property>
-            <Property Name="Size">150, 30</Property>
+            <Property Name="Size">148, 30</Property>
             <Property Name="Location">88, 118</Property>
             <Property Name="TabIndex">3</Property>
-            <Property Name="MaximumDouble">20</Property>
+            <Property Name="MaximumDouble">30</Property>
             <Property Name="LargeChangeDouble">1</Property>
-            <Property Name="TickFrequencyDouble">NaN</Property>
+            <Property Name="TickFrequencyDouble">1</Property>
             <Property Name="MaximumSize">100000, 30</Property>
-            <Property Name="Maximum">20</Property>
+            <Property Name="Maximum">30</Property>
             <Property Name="LargeChange">1</Property>
             <Property Name="SymbolConfiguration">8;16;Inject;;;emergencyEtaSec;1;;;-1;;;Value;;;0</Property>
           </Object>
@@ -1243,9 +1243,9 @@
             <Property Name="Location">280, 24</Property>
             <Property Name="ForeColor">DimGray</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
-            <Property Name="Text">manual override,
-audio base, cross,
-and positions below</Property>
+            <Property Name="Text">eta uses dense step
+slider for fine timing,
+source below</Property>
           </Object>
           <Property Name="Name">EmergencyGroup</Property>
           <Property Name="Size">406, 196</Property>
@@ -1389,7 +1389,7 @@ and positions below</Property>
             <Property Name="TabIndex">5</Property>
             <Property Name="MaximumDouble">7</Property>
             <Property Name="LargeChangeDouble">1</Property>
-            <Property Name="TickFrequencyDouble">NaN</Property>
+            <Property Name="TickFrequencyDouble">1</Property>
             <Property Name="MaximumSize">100000, 30</Property>
             <Property Name="Maximum">7</Property>
             <Property Name="LargeChange">1</Property>
@@ -1430,7 +1430,7 @@ and positions below</Property>
             <Property Name="TabIndex">6</Property>
             <Property Name="MaximumDouble">7</Property>
             <Property Name="LargeChangeDouble">1</Property>
-            <Property Name="TickFrequencyDouble">NaN</Property>
+            <Property Name="TickFrequencyDouble">1</Property>
             <Property Name="MaximumSize">100000, 30</Property>
             <Property Name="Maximum">7</Property>
             <Property Name="LargeChange">1</Property>

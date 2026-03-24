@@ -534,6 +534,32 @@ int calcCompatEtaFromPanelPos(int pos)
   return clampRange((8 - pos) * 4, 1, 60);
 }
 
+int mapZoneDistancePresetIdx(int idx)
+{
+  idx = clampRange(idx, 0, 4);
+  switch (idx)
+  {
+    case 0: return 0;
+    case 1: return 30;
+    case 2: return 60;
+    case 3: return 120;
+    default: return 200;
+  }
+}
+
+int mapSpeedLimitPresetIdx(int idx)
+{
+  idx = clampRange(idx, 0, 4);
+  switch (idx)
+  {
+    case 0: return 30;
+    case 1: return 50;
+    case 2: return 80;
+    case 3: return 100;
+    default: return 120;
+  }
+}
+
 void clearManualDispatchCompat()
 {
   @Test::compatPoliceDispatch = 0;
@@ -3599,6 +3625,16 @@ on sysvar Test::scenarioStopReq
 
   @Test::scenarioStopReq = 0;
   applyScenarioPanelRequest(0, 1);
+}
+
+on sysvar Inject::zoneDistancePresetIdx
+{
+  @Inject::zoneDistance = mapZoneDistancePresetIdx((int)@Inject::zoneDistancePresetIdx);
+}
+
+on sysvar Inject::speedLimitPresetIdx
+{
+  @Inject::speedLimit = mapSpeedLimitPresetIdx((int)@Inject::speedLimitPresetIdx);
 }
 
 on sysvar Test::testScenario
