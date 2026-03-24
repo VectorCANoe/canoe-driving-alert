@@ -210,7 +210,8 @@ void updateWarningFrame()
   }
 
   beltWarn = clampRange((int)@CoreState::seatBeltWarnLvl, 0, 3);
-  doorOpen = clampRange((int)@Body::doorOpenCmd, 0, 1);
+  doorOpen = (clampRange((int)@Cmd::doorOpenCmd, 0, 2) == 1) ? 1
+             : clampRange((int)@Body::doorOpenCmd, 0, 1);
   policePos = clampRange((int)@V2X::policePos, 0, 7);
   ambulancePos = clampRange((int)@V2X::ambulancePos, 0, 7);
   selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
@@ -428,7 +429,7 @@ on timer tEngineCycle
     speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
     accelPedal = clampRange((int)@Chassis::throttlePosition, 0, 100);
     brakePedal = clampRange((int)@Chassis::brakePressure, 0, 100);
-    ignitionState = ((((int)@Chassis::ignitionCmd) > 0) ||
+    ignitionState = ((((int)@Cmd::ignitionCmd) > 0) ||
                      driveState > 0 ||
                      speed > 0 ||
                      accelPedal > 0 ||
@@ -521,7 +522,17 @@ on sysvar Body::doorOpenCmd
   updateWarningFrame();
 }
 
+on sysvar Cmd::doorOpenCmd
+{
+  updateWarningFrame();
+}
+
 on sysvar Body::doorLockCmd
+{
+  updateWarningFrame();
+}
+
+on sysvar Cmd::doorLockCmd
 {
   updateWarningFrame();
 }
@@ -553,7 +564,36 @@ on sysvar Infotainment::roadZone
   {
     return;
   }
+  if (clampRange((int)@Inject::roadZone, 0, 3) > 0)
+  {
+    return;
+  }
   zone = clampRange((int)@Infotainment::roadZone, 0, 3);
+  if (((int)@Test::scenarioActiveId) > 0)
+  {
+    gLastRoadZone = zone;
+    return;
+  }
+  if (zone == 2 &&
+      gLastRoadZone != 2 &&
+      ((int)@Core::selectedAlertLevel) == 0 &&
+      gEngineState > 0)
+  {
+    @Display::animFrame = 4;
+    setTimer(tHighwayEntry, 3000);
+  }
+  gLastRoadZone = zone;
+}
+
+on sysvar Inject::roadZone
+{
+  int zone;
+
+  if (gAnimRunning == 1)
+  {
+    return;
+  }
+  zone = clampRange((int)@Inject::roadZone, 0, 3);
   if (((int)@Test::scenarioActiveId) > 0)
   {
     gLastRoadZone = zone;

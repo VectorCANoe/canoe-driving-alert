@@ -196,27 +196,32 @@ on timer tDoorFlCycle
   {
     openRequest = 1;
   }
-  manualLockCmd = clampRange((int)@Body::doorLockCmd, 0, 1);
-  manualOpenCmd = clampRange((int)@Body::doorOpenCmd, 0, 1);
+  manualLockCmd = 0;
+  manualOpenCmd = 0;
 
   lockState = 1;
   openState = 0;
   windowPos = clampRange((int)@Body::windowPos, 0, 90);
   if (manualMode == 1)
   {
-    windowCmd = clampRange((int)@Body::windowCmd, 0, 2);
+    manualLockCmd = (clampRange((int)@Cmd::doorLockCmd, 0, 2) == 1) ? 0 : 1;
+    manualOpenCmd = (clampRange((int)@Cmd::doorOpenCmd, 0, 2) == 1) ? 1 : 0;
+    windowCmd = clampRange((int)@Cmd::windowCmd, 0, 2);
     if (windowCmd == 1)
     {
       windowPos = windowPos - 10;
       if (windowPos < 0) windowPos = 0;
-      @Body::windowCmd = 0;
     }
     else if (windowCmd == 2)
     {
       windowPos = windowPos + 10;
       if (windowPos > 90) windowPos = 90;
-      @Body::windowCmd = 0;
     }
+  }
+  else
+  {
+    manualLockCmd = clampRange((int)@Body::doorLockCmd, 0, 1);
+    manualOpenCmd = clampRange((int)@Body::doorOpenCmd, 0, 1);
   }
   if (manualMode == 1)
   {

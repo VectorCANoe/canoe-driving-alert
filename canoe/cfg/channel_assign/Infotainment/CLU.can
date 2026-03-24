@@ -236,8 +236,22 @@ void publishCompatSteeringFrame()
 {
   int angle;
   int frame;
+  int manualMode;
 
-  angle = clampRange((int)@Chassis::steeringAngle, 0, 138);
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+
+  if (manualMode == 1)
+  {
+    angle = clampRange(
+      (int)((((long)clampRange((int)@Cmd::steeringAngleCmd, -540, 540)) + 540) * 138 / 1080),
+      0,
+      138
+    );
+  }
+  else
+  {
+    angle = clampRange((int)@Chassis::steeringAngle, 0, 138);
+  }
   frame = (angle * 69 + 69) / 138;
 
   @Display::steeringFrame = clampRange(frame, 0, 69);

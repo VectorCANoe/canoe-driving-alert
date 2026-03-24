@@ -398,7 +398,7 @@ on timer tBodyCycle
   manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   if (manualMode == 1)
   {
-    ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
+    ambientMode = clampRange((int)@Cmd::ambientModeCmd, 0, 7);
     ambientColor = deriveAmbientColorFromMode(ambientMode);
     ambientPattern = deriveAmbientPatternFromMode(ambientMode);
   }
@@ -546,7 +546,9 @@ on timer tBodyBase100
   turnLampInputStale = (ethIsRecentTick(gTurnLampInputRxMs, 300) == 1) ? 0 : 1;
   manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   driveState = gDriveState;
-  ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
+  ambientMode = (manualMode == 1)
+                ? clampRange((int)@Cmd::ambientModeCmd, 0, 7)
+                : clampRange((int)@Body::ambientMode, 0, 7);
   routingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);
   warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
   boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
@@ -626,7 +628,7 @@ on timer tBodyBase100
   }
   else if (manualMode == 1)
   {
-    turnLampState = clampRange((int)@Body::manualTurnCmd, 0, 3);
+    turnLampState = clampRange((int)@Cmd::turnSignalCmd, 0, 3);
   }
   else if (turnLampInputStale == 0)
   {

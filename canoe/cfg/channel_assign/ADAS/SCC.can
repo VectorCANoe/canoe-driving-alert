@@ -77,8 +77,8 @@ void publishCruiseState()
     speedLimit = 60;
   }
 
-  manualCruiseStateCmd = clampRange((int)@Test::manualCruiseStateCmd, 0, 2);
-  manualCruiseSetSpeedCmd = clampRange((int)@Test::manualCruiseSetSpeedCmd, 0, 255);
+  manualCruiseStateCmd = clampRange((int)@Cmd::cruiseStateCmd, 0, 2);
+  manualCruiseSetSpeedCmd = clampRange((int)@Cmd::cruiseSetSpeedCmd, 0, 255);
   manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
   if (manualMode == 0)
   {

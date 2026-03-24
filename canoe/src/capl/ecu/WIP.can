@@ -62,7 +62,7 @@ void publishWiperState()
   manualWiperCmd = 0;
   if ((int)@Test::scenarioActiveId == 0)
   {
-    manualWiperCmd = clampRange((int)@Body::wiperCmd, 0, 2);
+    manualWiperCmd = clampRange((int)@Cmd::wiperCmd, 0, 2);
   }
 
   if (manualWiperCmd == 2)

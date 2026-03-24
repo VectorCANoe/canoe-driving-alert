@@ -69,7 +69,11 @@ void publishNormalizedEmergencyIngress()
   int compatEta;
   int compatSourceId;
 
-  manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
+  manualAlertOverride = clampRange((int)@Inject::manualAlertOverrideCmd, 0, 255);
+  if (manualAlertOverride == 0 && (((int)@Inject::emergencyActiveCmd) > 0))
+  {
+    manualAlertOverride = 1;
+  }
   compatEmergencyType = clampRange(gActiveEmergencyType, 0, 2);
   compatAlertState = (compatEmergencyType > 0) ? 1 : 0;
   compatDirection = clampRange(gActiveEmergencyDirection, 0, 3);
@@ -78,13 +82,29 @@ void publishNormalizedEmergencyIngress()
 
   if (manualAlertOverride > 0)
   {
-    compatEmergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
-    compatAlertState = ((((int)@V2X::alertState) > 0) && compatEmergencyType > 0) ? 1 : 0;
+    compatEmergencyType = clampRange((int)@Inject::emergencyType, 0, 2);
+    if (compatEmergencyType == 0)
+    {
+      compatEmergencyType = clampRange(gActiveEmergencyType, 0, 2);
+    }
+    compatAlertState = ((((int)@Inject::emergencyActiveCmd) > 0) && compatEmergencyType > 0) ? 1 : 0;
+    if (compatAlertState == 0)
+    {
+      compatAlertState = (compatEmergencyType > 0) ? 1 : 0;
+    }
     if (compatAlertState == 1)
     {
-      compatDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
-      compatEta = clampRange((int)@V2X::eta, 0, 255);
-      compatSourceId = clampRange((int)@V2X::sourceId, 0, 255);
+      compatDirection = clampRange((int)@Inject::emergencyDirection, 0, 3);
+      compatEta = clampRange((int)@Inject::emergencyEtaSec, 0, 255);
+      compatSourceId = clampRange((int)@Inject::emergencySourceId, 0, 255);
+      if (compatEta == 0)
+      {
+        compatEta = clampRange(gActiveEta, 0, 255);
+      }
+      if (compatSourceId == 0)
+      {
+        compatSourceId = clampRange(gActiveSourceId, 0, 255);
+      }
     }
     else
     {
@@ -219,11 +239,23 @@ void updateEmergencyContext()
   int contextValue;
 
   contextValue = gActiveEmergencyType;
-  manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
+  manualAlertOverride = clampRange((int)@Inject::manualAlertOverrideCmd, 0, 255);
+  if (manualAlertOverride == 0 && (((int)@Inject::emergencyActiveCmd) > 0))
+  {
+    manualAlertOverride = 1;
+  }
   if (manualAlertOverride > 0)
   {
-    donorEmergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
-    donorAlertState = (((int)@V2X::alertState) > 0) ? 1 : 0;
+    donorEmergencyType = clampRange((int)@Inject::emergencyType, 0, 2);
+    if (donorEmergencyType == 0)
+    {
+      donorEmergencyType = clampRange(gActiveEmergencyType, 0, 2);
+    }
+    donorAlertState = (((int)@Inject::emergencyActiveCmd) > 0) ? 1 : 0;
+    if (donorAlertState == 0)
+    {
+      donorAlertState = (donorEmergencyType > 0) ? 1 : 0;
+    }
     contextValue = (donorAlertState == 1) ? donorEmergencyType : 0;
   }
   if (contextValue < 0 || contextValue > 2)
@@ -375,7 +407,11 @@ void publishActiveEmergencyToV2X()
   int compatSourceId;
   int compatAlertState;
 
-  manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
+  manualAlertOverride = clampRange((int)@Inject::manualAlertOverrideCmd, 0, 255);
+  if (manualAlertOverride == 0 && (((int)@Inject::emergencyActiveCmd) > 0))
+  {
+    manualAlertOverride = 1;
+  }
   if (manualAlertOverride == 0)
   {
     compatEmergencyType = gActiveEmergencyType;
@@ -391,11 +427,27 @@ void publishActiveEmergencyToV2X()
   }
   else
   {
-    compatEmergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
-    compatEmergencyDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
-    compatEta = clampRange((int)@V2X::eta, 0, 255);
-    compatSourceId = clampRange((int)@V2X::sourceId, 0, 255);
-    compatAlertState = ((((int)@V2X::alertState) > 0) && compatEmergencyType > 0) ? 1 : 0;
+    compatEmergencyType = clampRange((int)@Inject::emergencyType, 0, 2);
+    if (compatEmergencyType == 0)
+    {
+      compatEmergencyType = clampRange(gActiveEmergencyType, 0, 2);
+    }
+    compatEmergencyDirection = clampRange((int)@Inject::emergencyDirection, 0, 3);
+    compatEta = clampRange((int)@Inject::emergencyEtaSec, 0, 255);
+    compatSourceId = clampRange((int)@Inject::emergencySourceId, 0, 255);
+    compatAlertState = ((((int)@Inject::emergencyActiveCmd) > 0) && compatEmergencyType > 0) ? 1 : 0;
+    if (compatEta == 0)
+    {
+      compatEta = clampRange(gActiveEta, 0, 255);
+    }
+    if (compatSourceId == 0)
+    {
+      compatSourceId = clampRange(gActiveSourceId, 0, 255);
+    }
+    if (compatAlertState == 0)
+    {
+      compatAlertState = (compatEmergencyType > 0) ? 1 : 0;
+    }
   }
   @V2X::v2xFrame = (compatAlertState == 1) ? getCompatV2xFrame(compatEmergencyType, compatEta) : 0;
   @Infotainment::emergencySound = (compatAlertState == 1 && compatEmergencyType > 0) ? 1 : 0;

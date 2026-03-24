@@ -1,173 +1,298 @@
 # Panel and SysVar Binding Contract
 
 > [!IMPORTANT]
-> This document reflects the current development baseline and the planned target architecture.
-> Some runtime, diagnostic, and verification details are still under implementation and may change.
+> This document reflects the current runtime baseline.
+> The active operator/input model is now `Input_Console -> Cmd::* / Inject::* / Test::* -> owner ECU -> state/readback`.
+> Older donor input panels remain only as transitional compatibility assets and must not be treated as the long-term command source.
 
 ## 1. Purpose
 
-This document defines the stable binding contract between:
+This document defines the current stable contract between:
 
-- CANoe panel inputs
+- CANoe operator/input panels
 - system-variable namespaces
-- runtime-visible output monitors
+- owner ECU runtime seams
+- observer/readback panels
 
-It describes what the panel is allowed to write and what it should read for observation.
+It answers three questions:
 
-It does not describe panel editor click steps.
+1. which namespaces an input panel is allowed to write
+2. which namespaces observer panels are expected to read
+3. which legacy seams still exist only for compatibility and must not be used for new widgets
 
-## 2. Active binding principle
+It does not describe Panel Designer click steps.
 
-The panel must bind to stable system-variable names, not to temporary aliases or transport-specific internals.
+## 2. Current Panel Model
 
-Primary rules:
+### 2.1 Active command source
 
-- write to approved input namespaces only
-- read product and verification outputs from approved monitor namespaces
-- do not bind new widgets directly to temporary `g*` aliases
-- do not treat `cfg/channel_assign/**` as the panel source of truth
+The target active command source is:
 
-## 3. Write surface
+- [Input_Console.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Input_Console.xvp)
 
-The panel write surface is limited to controlled input namespaces.
+Its pages are:
 
-### 3.1 Chassis input bindings
+- `Vehicle`
+- `Context`
+- `Scenario`
 
-| SysVar | Meaning | Direction |
+This local panel is allowed to write only:
+
+- `Cmd::*`
+- `Inject::*`
+- `Test::*`
+
+### 2.2 Observer/readback panels
+
+The following panels are observer/readback surfaces by runtime contract:
+
+- [Cluster_Alert.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Cluster_Alert.xvp)
+- [Navigation_Alert.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Navigation_Alert.xvp)
+- [Cabin_Cockpit.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Cabin_Cockpit.xvp)
+- [Vehicle_Dashboard.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Vehicle_Dashboard.xvp)
+- [Body_Status.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Body_Status.xvp)
+- [Ambient_TopView.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Ambient_TopView.xvp)
+- [V2X_Ingress.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/V2X_Ingress.xvp)
+- [V2X_Cross.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/V2X_Cross.xvp)
+- [Diagnostic_Console.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Diagnostic_Console.xvp)
+
+### 2.3 Transitional donor input panels
+
+The following donor panels still exist but are transitional compatibility assets only:
+
+- [Ambient_Control.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Ambient_Control.xvp)
+- [Cruise_Pedal.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Cruise_Pedal.xvp)
+- [Driver_Control.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Driver_Control.xvp)
+- [Operator_Input.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Operator_Input.xvp)
+- [Scenario_Control.xvp](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/panel/Scenario_Control.xvp)
+
+They must not remain co-open as active command sources beside `Input_Console` after cutover.
+
+## 3. Active Write Surface
+
+## 3.1 Vehicle command namespace
+
+| SysVar | Meaning | Writer |
 |---|---|---|
-| `Chassis::vehicleSpeed` | panel input speed | panel writes |
-| `Chassis::driveState` | drive selector state | panel writes |
-| `Chassis::steeringInput` | steering activity flag | panel writes |
+| `Cmd::ignitionCmd` | ignition request | input panel |
+| `Cmd::driveStateCmd` | gear selector request | input panel |
+| `Cmd::vehicleSpeedCmd` | vehicle speed request | input panel |
+| `Cmd::steeringAngleCmd` | steering request | input panel |
+| `Cmd::throttlePedalPct` | accelerator pedal request | input panel |
+| `Cmd::brakePedalPct` | brake pedal request | input panel |
+| `Cmd::cruiseStateCmd` | cruise mode request | input panel |
+| `Cmd::cruiseSetSpeedCmd` | cruise set-speed request | input panel |
+| `Cmd::doorLockCmd` | door lock request | input panel |
+| `Cmd::doorOpenCmd` | door open/close request | input panel |
+| `Cmd::windowCmd` | window request | input panel |
+| `Cmd::wiperCmd` | wiper level request | input panel |
+| `Cmd::turnSignalCmd` | turn/hazard request | input panel |
+| `Cmd::ambientModeCmd` | ambient mode request | input panel |
 
-### 3.2 Infotainment input bindings
+## 3.2 Context / injection namespace
 
-| SysVar | Meaning | Direction |
+| SysVar | Meaning | Writer |
 |---|---|---|
-| `Infotainment::roadZone` | road-zone context | panel writes |
-| `Infotainment::navDirection` | navigation direction | panel writes |
-| `Infotainment::zoneDistance` | distance to zone boundary | panel writes |
-| `Infotainment::speedLimit` | speed-limit context when needed | panel writes or scripted input |
+| `Inject::roadZone` | road-zone context injection | input panel or harness |
+| `Inject::navDirection` | navigation direction injection | input panel or harness |
+| `Inject::zoneDistance` | distance-to-zone injection | input panel or harness |
+| `Inject::speedLimit` | speed-limit injection | input panel or harness |
+| `Inject::emergencyActiveCmd` | emergency ingress enable | input panel or harness |
+| `Inject::emergencyType` | emergency type injection | input panel or harness |
+| `Inject::emergencyDirection` | emergency direction injection | input panel or harness |
+| `Inject::emergencyEtaSec` | emergency ETA injection | input panel or harness |
+| `Inject::emergencySourceId` | emergency source-id injection | input panel or harness |
+| `Inject::manualAlertOverrideCmd` | manual alert override request | input panel or harness |
+| `Inject::alertVolumeCmd` | alert-volume request | input panel |
 
-### 3.3 V2X input bindings
+## 3.3 Scenario / validation namespace
 
-| SysVar | Meaning | Direction |
+| SysVar | Meaning | Writer |
 |---|---|---|
-| `V2X::emergencyType` | emergency vehicle type | panel reads |
-| `Test::compatEmergencyDirection` | dispatch-only compatibility direction input | panel writes |
-| `Test::compatEmergencyEta` | dispatch-only compatibility ETA input | panel writes |
-| `Test::compatEmergencySourceId` | dispatch-only compatibility source identifier input | panel writes when source tie-break is relevant |
-| `V2X::alertState` | emergency active/clear state | panel reads |
-| `Test::compatPoliceDispatch` | police dispatch compatibility toggle | panel writes when dispatch flow is tested |
-| `Test::compatAmbulanceDispatch` | ambulance dispatch compatibility toggle | panel writes when dispatch flow is tested |
+| `Test::scenarioCommand` | scenario launch command | input panel or automation |
+| `Test::testScenario` | selected scenario / compat stop control | input panel or automation |
+| `Test::scenarioStopReq` | explicit scenario stop request | input panel or automation |
+| `Test::forceFailSafe` | validation-only fail-safe override | input panel or automation |
+| `Test::displayModeSetting` | validation-only display mode override | input panel or automation |
 
-### 3.4 Test control bindings
+## 3.4 Transitional exceptions
 
-| SysVar | Meaning | Direction |
+These seams still exist and may appear in transitional panels or helper scenes.
+Do not use them for new widgets unless the user explicitly approves the exception.
+
+| SysVar | Reason |
+|---|---|
+| `V2X::AnimationTrigger` | local `V2X_Cross` scene trigger |
+| `V2X::policePos` | temporary proximity preset compatibility |
+| `V2X::ambulancePos` | temporary proximity preset compatibility |
+| `Test::driverBeltOff` | temporary belt toggle compatibility |
+| `Test::passengerBeltOff` | temporary belt toggle compatibility |
+
+## 4. Observer / Readback Surface
+
+Observer panels must prefer owner-state seams.
+
+## 4.1 Vehicle / body readback
+
+| SysVar / signal | Meaning | Primary owner |
 |---|---|---|
-| `Test::testScenario` | selected SIL scenario id | panel or automation writes |
-| `Test::scenarioCommand` | execute command | panel or automation writes |
-| `Test::forceFailSafe` | validation override | panel or automation writes |
-| `Test::displayModeSetting` | test-only HMI mode override | panel or automation writes |
-| `Test::alertVolumeSetting` | test-only audio override | panel or automation writes |
-| `Test::compatPoliceDispatch` | dispatch-only compatibility stimulus | panel or automation writes |
-| `Test::compatAmbulanceDispatch` | dispatch-only compatibility stimulus | panel or automation writes |
-| `Test::compatEmergencyDirection` | dispatch-only compatibility direction | panel or automation writes |
-| `Test::compatEmergencyEta` | dispatch-only compatibility ETA | panel or automation writes |
-| `Test::compatEmergencySourceId` | dispatch-only compatibility source id | panel or automation writes |
+| `Chassis::vehicleSpeed` | vehicle speed readback | `VCU` |
+| `Chassis::driveState` | drive state readback | `VCU` |
+| `Display::steeringFrame` | steering animation/readback | `CLU` |
+| `Chassis::brakeLamp` | brake lamp state | `ESC` |
+| `Body::frontWiperAnimFrame` | wiper animation frame | `WIP` |
+| `Body::blinkLeft` | left turn state | `BCM` |
+| `Body::blinkRight` | right turn state | `BCM` |
+| `Powertrain::coolantTemp` | coolant temperature | `EMS` or powertrain owner |
+| `Powertrain::fuelLevel` | fuel level | powertrain owner |
+| `Powertrain::cruiseState` | cruise state readback | `SCC` |
+| `Powertrain::cruiseSetSpeed` | cruise set-speed readback | `SCC` |
+| `Display::animFrame` | main animation frame | `EMS` |
+| `Infotainment::cabinAmbientAnimFrame` | cabin ambient frame | infotainment owner |
+| `powertrain_can::frmGearStateMsg.GearState` | donor gear readback signal | `VCU` path |
+| `powertrain_can::frmEngineSpeedTempMsg.EngineRpm` | engine speed signal | `EMS` |
+| `body_can::frmDoorFlStateMsg.DoorFlWindowPos` | window state signal | `DOOR_FL` |
 
-## 4. Read surface
+## 4.2 Alert / context readback
 
-The panel monitor surface should prefer stable, reviewer-readable variables.
-
-### 4.1 Primary product-visible outputs
-
-| SysVar | Meaning | Direction |
+| SysVar | Meaning | Primary owner |
 |---|---|---|
-| `Body::ambientMode` | ambient output mode | panel reads |
-| `Body::ambientColor` | ambient output color | panel reads |
-| `Body::ambientPattern` | ambient output pattern | panel reads |
-| `Cluster::warningTextCode` | cluster warning result | panel reads |
+| `Core::selectedAlertLevel` | final alert level | `ADAS` |
+| `Core::selectedAlertType` | final alert type | `ADAS` |
+| `Core::timeoutClear` | timeout clear state | `ADAS` / runtime |
+| `Core::proximityRiskLevel` | proximity risk | `ADAS` |
+| `Core::decelAssistReq` | decel assist request | `ADAS` |
+| `Core::failSafeMode` | fail-safe state | runtime owner |
+| `Core::vehicleSpeedNorm` | normalized speed | `ADAS` / integration path |
+| `Core::speedLimitNorm` | normalized speed limit | `IVI` / integration path |
+| `CoreState::baseVolume` | audio base volume | `AMP` |
+| `Cluster::warningTextCode` | cluster warning text | `CLU` |
+| `UiRender::roadZoneColorCode` | road-zone render color | `IVI` |
+| `UiRender::navLaneFrame` | nav lane frame | `NAV` |
+| `UiRender::renderVolumLevel` | rendered volume level | `AMP` |
+| `UiRender::warningBeepState` | warning beep state | `IVI` / `AMP` path |
+| `UiRender::beepEmergency` | emergency audio state | `IVI` / `AMP` path |
+| `UiRender::beepSpeed` | speed audio state | `IVI` / `AMP` path |
+| `UiRender::beepIC` | intersection/crossing audio state | `IVI` / `AMP` path |
+| `UiRender::roadFlowDirection` | road-flow direction render | `IVI` |
+| `Infotainment::emergencySound` | emergency sound mirror | `V2X` |
+| `V2X::v2xFrame` | ingress scene frame | `V2X` |
+| `V2X::MyCarFrame` | cross-scene ego frame | `V2X` |
+| `V2X::AmbFrame` | cross-scene ambulance frame | `V2X` |
+| `V2X::CrossAnimAlertActive` | cross-scene popup active mirror | `V2X` |
 
-### 4.2 Runtime status mirrors
+## 4.3 Scenario / harness readback
 
-| SysVar | Meaning | Direction |
+| SysVar | Meaning | Primary owner |
 |---|---|---|
-| `Core::selectedAlertLevel` | selected alert level | panel reads |
-| `Core::selectedAlertType` | selected alert type | panel reads |
-| `Core::timeoutClear` | timeout clear state | panel reads |
-| `Core::proximityRiskLevel` | emergency proximity risk | panel reads |
-| `Core::decelAssistReq` | deceleration assist request | panel reads |
-| `Core::failSafeMode` | fail-safe mode | panel reads |
+| `Test::scenarioActiveId` | active scenario id | `TEST_SCN` |
+| `Test::scenarioResult` | scenario result | `TEST_SCN` |
+| `Test::scenarioCommandAck` | last scenario ack | `TEST_SCN` |
+| `Test::scenarioLampStop` | stop lamp state | `TEST_SCN` |
+| `Test::scenarioLampWarn` | warn lamp state | `TEST_SCN` |
+| `Test::scenarioLampRun` | run lamp state | `TEST_SCN` |
 
-### 4.3 Health and traceability mirrors
+## 4.4 Diagnostic readback
 
-| SysVar | Meaning | Direction |
-|---|---|---|
-| `CoreState::warningPathStatus` | warning-path health state | panel reads |
-| `CoreState::e2eHealthState` | end-to-end health state | panel reads |
-| `CoreState::domainBoundaryStatus` | boundary alive summary | panel reads |
-| `CoreState::lastEmergencyRxMs` | emergency receive timestamp mirror | panel reads |
-| `CoreState::alertHistoryCount` | alert history accumulation | panel reads |
+| SysVar | Meaning |
+|---|---|
+| `Diag::*` | diagnostic observer surface |
 
-### 4.4 Verification and render mirrors
+## 5. Binding Rules
 
-| SysVar | Meaning | Direction |
-|---|---|---|
-| `Test::scenarioResult` | per-scenario PASS/FAIL summary | panel reads |
-| `Test::baseScenarioResult` | baseline aggregate PASS/FAIL | panel reads |
-| `Diag::*` | diagnostic observation seam | panel or tools read |
-| `UiRender::*` | presentation-only derived render state | panel reads when demo rendering is used |
+## 5.1 New input widgets must not write product readback seams
 
-## 5. Binding rules
+Do not bind new input widgets directly to:
 
-### 5.1 Input widgets write only to input namespaces
-
-The panel must not write directly to:
-
+- `Chassis::*`
+- `Body::*`
+- `Powertrain::*`
 - `Core::*`
 - `CoreState::*`
-- `Body::*`
 - `Cluster::*`
 - `UiRender::*`
+- `Diag::*`
+- legacy `Infotainment::roadZone`
+- legacy `Infotainment::navDirection`
+- legacy `Infotainment::zoneDistance`
+- legacy `Infotainment::speedLimit`
+- legacy `Test::manualAlertOverride`
+- legacy `Test::alertVolumeSetting`
 
-unless a widget is explicitly documented as a verification-only override.
+## 5.2 Observer semantics are runtime-defined, not `ReadOnlyControl`-defined
 
-### 5.2 Runtime mirrors are not command inputs
+Some frozen donor display widgets do not explicitly serialize `ReadOnlyControl=True`.
+That does **not** make them valid command widgets.
 
-`Core::*` and `CoreState::*` are for observation, normalization, and evidence.
+Ownership is decided by:
 
-Do not treat them as the first input seam for new panel controls.
+- runtime seam SoT
+- panel role
+- owner ECU writer map
 
-### 5.3 Keep panel bindings name-stable
+not by the presence or absence of one XVP property.
 
-If implementation aliases or transport handlers change, preserve the public panel/sysvar binding names whenever possible.
+## 5.3 One command domain, one active source
 
-The panel should not churn because an internal CAPL refactor happened.
+At runtime:
 
-### 5.4 Verification-only controls must stay labeled
+- `Vehicle` commands must come from one active operator surface
+- `Context` injections must come from one active operator surface
+- `Scenario` lifecycle must come from one active operator surface
 
-Any panel control that writes `Test::*` or similar harness-only variables must be visibly marked as:
+Do not intentionally keep multiple input panels active on the same command domain.
 
-- validation-only
-- non-product behavior
+## 5.4 `TEST_SCN` is harness-only
 
-## 6. Recommended page grouping
+`TEST_SCN` may write:
 
-The current binding model is stable when panel pages are grouped like this:
+- `Test::*` lifecycle/evidence seams
+- approved `Inject::*` scenario lock seams
 
-| Page | Primary namespaces |
-|---|---|
-| Drive input | `Chassis::*` |
-| Navigation input | `Infotainment::*` |
-| Emergency input | `V2X::*` |
-| Output monitor | `Body::*`, `Cluster::*`, `Core::*`, `CoreState::*` |
-| Verification / diagnostics | `Test::*`, `Diag::*`, optional `UiRender::*` |
+`TEST_SCN` must not become the normal feature owner for:
 
-## 7. Update rule
+- manual vehicle control
+- body comfort control
+- legacy context state seams
 
-When the panel surface changes:
+## 5.5 `Navigation_Alert.xvp` is observer-audit-hold
 
-1. update `project/sysvars/project.sysvars` if the public sysvar surface changes
-2. update the panel assets under `project/panel/*`
+The frozen donor XVP still contains writable `Test::alertVolumeSetting`.
+Until that path is fully retired from operation:
+
+- treat `Navigation_Alert.xvp` as `display-first / observer-audit-hold`
+- do not describe it as a fully clean observer panel in closeout evidence
+
+## 6. Recommended Operator / Observer Grouping
+
+| Group | Purpose | Primary namespaces |
+|---|---|---|
+| `Vehicle` | manual driving and body control | `Cmd::*` |
+| `Context` | warning, road, nav, emergency, V2X injection | `Inject::*` |
+| `Scenario` | validation harness lifecycle | `Test::*` |
+| Vehicle/body observers | cockpit, dashboard, body status | `Chassis::*`, `Body::*`, `Powertrain::*`, `Display::*` |
+| Alert/context observers | cluster, navigation, ambient, V2X | `Core::*`, `CoreState::*`, `Cluster::*`, `UiRender::*`, `V2X::*`, `Infotainment::*` |
+| Diagnostic observer | external diagnostic monitor | `Diag::*` |
+
+## 7. Evidence Note
+
+For verification and closeout:
+
+- output/readback evidence must use observer panels, not retired donor input panels
+- panel capture should be tied to:
+  - test ID
+  - scenario ID
+  - exact panel name
+  - evidence path
+- if a panel is transitional or mixed, call that out explicitly in the evidence note
+
+## 8. Update Rule
+
+When the panel/runtime surface changes:
+
+1. update [project.sysvars](/C:/Users/이준영/CANoe-IVI-OTA/canoe/project/sysvars/project.sysvars) if the public surface changes
+2. update CAPL owner/runtime behavior under:
+   - [canoe/src/capl](/C:/Users/이준영/CANoe-IVI-OTA/canoe/src/capl)
+   - [canoe/cfg/channel_assign](/C:/Users/이준영/CANoe-IVI-OTA/canoe/cfg/channel_assign)
 3. update this contract document
-4. update verification documents if scenario execution or evidence interpretation changed
+4. update verification/evidence documents if panel role, scenario interpretation, or observer evidence meaning changed

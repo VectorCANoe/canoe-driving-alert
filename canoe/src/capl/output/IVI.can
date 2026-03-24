@@ -555,8 +555,14 @@ on timer tIviCycle
     timeoutClear = 0;
   }
   manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
-  manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
-  manualAlertMode = (manualMode == 1 && manualAlertOverride > 0) ? 1 : 0;
+  manualAlertOverride = clampRange((int)@Inject::manualAlertOverrideCmd, 0, 255);
+  manualAlertMode = (manualMode == 1 &&
+                     (manualAlertOverride > 0 ||
+                      ((int)@Inject::roadZone) > 0 ||
+                      ((int)@Inject::navDirection) > 0 ||
+                      ((int)@Inject::zoneDistance) > 0 ||
+                      ((int)@Inject::speedLimit) > 0 ||
+                      ((int)@Inject::emergencyActiveCmd) > 0)) ? 1 : 0;
   if (manualAlertMode == 1)
   {
     alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
@@ -679,8 +685,18 @@ on timer tIviBase50
     driveState = 0;
   }
   manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
-  manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
-  manualAlertMode = (manualMode == 1 && manualAlertOverride > 0) ? 1 : 0;
+  manualAlertOverride = clampRange((int)@Inject::manualAlertOverrideCmd, 0, 255);
+  if (manualAlertOverride == 0 && (((int)@Inject::emergencyActiveCmd) > 0))
+  {
+    manualAlertOverride = 1;
+  }
+  manualAlertMode = (manualMode == 1 &&
+                     (manualAlertOverride > 0 ||
+                      ((int)@Inject::roadZone) > 0 ||
+                      ((int)@Inject::navDirection) > 0 ||
+                      ((int)@Inject::zoneDistance) > 0 ||
+                      ((int)@Inject::speedLimit) > 0 ||
+                      ((int)@Inject::emergencyActiveCmd) > 0)) ? 1 : 0;
   if (manualAlertMode == 1)
   {
     speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
@@ -729,8 +745,8 @@ on timer tIviBase50
   }
   if (manualAlertMode == 1)
   {
-    manualRoadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
-    manualNavDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+    manualRoadZone = clampRange((int)@Inject::roadZone, 0, 3);
+    manualNavDirection = clampRange((int)@Inject::navDirection, 0, 3);
     baseZoneContext = deriveBaseZoneContextFromNavState(manualRoadZone, manualNavDirection);
   }
   renderMode = clampRange((int)@Body::ambientMode, 0, 7);
@@ -745,7 +761,7 @@ on timer tIviBase50
     presentationMode = displayModeOverride;
     effectiveVolume = deriveAlertVolume(alertLevel, presentationMode);
   }
-  volumeOverride = clampRange((int)@Test::alertVolumeSetting, 0, 100);
+  volumeOverride = clampRange((int)@Inject::alertVolumeCmd, 0, 100);
   if (alertLevel > 0 && volumeOverride > 0)
   {
     effectiveVolume = volumeOverride;

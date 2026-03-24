@@ -192,7 +192,7 @@ void publishAmpState()
     ttsState = 0;
   }
 
-  baseVolume = deriveBaseVolume((int)@Test::alertVolumeSetting);
+  baseVolume = deriveBaseVolume((int)@Inject::alertVolumeCmd);
   @CoreState::baseVolume = baseVolume;
 
   ampMode = 0;

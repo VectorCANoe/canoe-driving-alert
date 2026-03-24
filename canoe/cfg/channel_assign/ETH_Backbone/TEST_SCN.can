@@ -398,6 +398,7 @@ void writeEvidenceOutLine(int scenarioId,
 void pushLockedScenarioInputs()
 {
   int compatDispatchActive;
+  int injectEmergencyActive;
 
   if (gScenarioInputLock != 1)
   {
@@ -405,10 +406,16 @@ void pushLockedScenarioInputs()
   }
 
   @Chassis::steeringInput = clampRange(gLockSteeringInput, 0, 1);
-  @Infotainment::roadZone = clampRange(gLockRoadZone, 0, 3);
-  @Infotainment::navDirection = clampRange(gLockNavDirection, 0, 3);
-  @Infotainment::zoneDistance = clampRange(gLockZoneDistance, 0, 255);
-  @Infotainment::speedLimit = clampRange(gLockSpeedLimit, 0, 255);
+  @Inject::roadZone = clampRange(gLockRoadZone, 0, 3);
+  @Inject::navDirection = clampRange(gLockNavDirection, 0, 3);
+  @Inject::zoneDistance = clampRange(gLockZoneDistance, 0, 255);
+  @Inject::speedLimit = clampRange(gLockSpeedLimit, 0, 255);
+  injectEmergencyActive = clampRange(gLockAlertState, 0, 1);
+  @Inject::emergencyActiveCmd = injectEmergencyActive;
+  @Inject::emergencyType = clampRange(gLockEmergencyType, 0, 2);
+  @Inject::emergencyDirection = clampRange(gLockEmergencyDirection, 0, 3);
+  @Inject::emergencyEtaSec = clampRange(gLockEta, 0, 255);
+  @Inject::emergencySourceId = clampRange(gLockSourceId, 0, 255);
   compatDispatchActive = 0;
   if (clampRange(gLockPoliceDispatch, 0, 1) == 1 ||
       clampRange(gLockAmbulanceDispatch, 0, 1) == 1)
@@ -542,7 +549,6 @@ void publishManualPanelCompat(int speed, int accelPedal, int brakePedal)
   int ambulancePos;
   int manualAlertOverride;
   int manualEmergencyAlertCmd;
-  int donorAlertState;
   int emergencyType;
   int emergencyDirection;
   int emergencyEta;
@@ -554,39 +560,33 @@ void publishManualPanelCompat(int speed, int accelPedal, int brakePedal)
   {
     policePos = clampRange((int)@V2X::policePos, 0, 7);
     ambulancePos = clampRange((int)@V2X::ambulancePos, 0, 7);
-    manualAlertOverride = clampRange((int)@Test::manualAlertOverride, 0, 255);
-    manualEmergencyAlertCmd = clampRange((int)@Test::manualEmergencyAlertCmd, 0, 1);
-    donorAlertState = clampRange((int)@V2X::alertState, 0, 1);
+    manualAlertOverride = clampRange((int)@Inject::manualAlertOverrideCmd, 0, 255);
+    if (manualAlertOverride == 0 && (((int)@Inject::emergencyActiveCmd) > 0))
+    {
+      manualAlertOverride = 1;
+    }
+    manualEmergencyAlertCmd = clampRange((int)@Inject::emergencyActiveCmd, 0, 1);
     policeDispatch = 0;
     ambulanceDispatch = 0;
-    emergencyType = clampRange((int)@Test::manualEmergencyTypeCmd, 0, 2);
-    emergencyDirection = clampRange((int)@Test::manualEmergencyDirectionCmd, 0, 3);
-    emergencyEta = clampRange((int)@Test::manualEmergencyEtaCmd, 0, 255);
-    emergencySourceId = 255;
+    emergencyType = clampRange((int)@Inject::emergencyType, 0, 2);
+    emergencyDirection = clampRange((int)@Inject::emergencyDirection, 0, 3);
+    emergencyEta = clampRange((int)@Inject::emergencyEtaSec, 0, 255);
+    emergencySourceId = clampRange((int)@Inject::emergencySourceId, 0, 255);
+    if (emergencySourceId == 0)
+    {
+      emergencySourceId = 255;
+    }
 
-    if (manualEmergencyAlertCmd == 1 || donorAlertState == 1 || manualAlertOverride > 0)
+    if (manualEmergencyAlertCmd == 1 || manualAlertOverride > 0)
     {
       if (emergencyType == 0)
       {
-        emergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
-      }
-      if (emergencyType == 0)
-      {
         emergencyType = 2;
-      }
-      if (emergencyDirection == 0 && manualEmergencyAlertCmd == 0)
-      {
-        emergencyDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
-      }
-      if (emergencyEta == 0 || emergencyEta == 255)
-      {
-        emergencyEta = clampRange((int)@V2X::eta, 0, 255);
       }
       if (emergencyEta == 0 || emergencyEta == 255)
       {
         emergencyEta = 20;
       }
-      emergencySourceId = clampRange((int)@V2X::sourceId, 0, 255);
       if (emergencySourceId == 0 || emergencySourceId == 255)
       {
         emergencySourceId = (emergencyType == 1) ? 1 : 2;
@@ -3093,6 +3093,11 @@ on timer tInput100
   int emergencyDirection;
   int eta;
   int sourceId;
+  int useInjectContext;
+  int injectRoadZone;
+  int injectNavDirection;
+  int injectZoneDistance;
+  int injectSpeedLimit;
 
   speedHintCmd = 0;
 
@@ -3114,13 +3119,38 @@ on timer tInput100
   }
   else
   {
+    injectRoadZone = clampRange((int)@Inject::roadZone, 0, 3);
+    injectNavDirection = clampRange((int)@Inject::navDirection, 0, 3);
+    injectZoneDistance = clampRange((int)@Inject::zoneDistance, 0, 255);
+    injectSpeedLimit = clampRange((int)@Inject::speedLimit, 0, 255);
+    useInjectContext =
+      (injectRoadZone > 0 ||
+       injectNavDirection > 0 ||
+       injectZoneDistance > 0 ||
+       injectSpeedLimit > 0 ||
+       clampRange((int)@Inject::manualAlertOverrideCmd, 0, 255) > 0 ||
+       clampRange((int)@Inject::emergencyActiveCmd, 0, 1) > 0 ||
+       clampRange((int)@Inject::emergencyType, 0, 2) > 0 ||
+       clampRange((int)@Inject::emergencyDirection, 0, 3) > 0 ||
+       clampRange((int)@Inject::emergencyEtaSec, 0, 255) > 0 ||
+       clampRange((int)@Inject::emergencySourceId, 0, 255) > 0) ? 1 : 0;
     speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
     driveState = clampRange((int)@Chassis::driveState, 0, 3);
     steeringInput = clampRange((int)@Chassis::steeringInput, 0, 1);
-    roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
-    navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
-    zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
-    speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
+    if (useInjectContext == 1)
+    {
+      roadZone = injectRoadZone;
+      navDirection = injectNavDirection;
+      zoneDistance = injectZoneDistance;
+      speedLimit = injectSpeedLimit;
+    }
+    else
+    {
+      roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+      navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+      zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
+      speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
+    }
     alertState = 0;
     emergencyType = 0;
     emergencyDirection = 0;
@@ -3269,10 +3299,17 @@ on timer tInput100
       output(mWheelSpd);
     }
 
-    mDoorCtrl.DoorControlCmd = clampRange((int)@Body::doorOpenCmd, 0, 1);
+    mDoorCtrl.DoorControlCmd =
+      (clampRange((int)@Cmd::doorOpenCmd, 0, 2) == 1) ? 1
+      : clampRange((int)@Body::doorOpenCmd, 0, 1);
     output(mDoorCtrl);
 
-    mTurnLampInput.TurnLampState = clampRange((int)@Body::manualTurnCmd, 0, 3);
+    mTurnLampInput.TurnLampState =
+      clampRange((int)@Cmd::turnSignalCmd, 0, 3);
+    if (mTurnLampInput.TurnLampState == 0)
+    {
+      mTurnLampInput.TurnLampState = clampRange((int)@Body::manualTurnCmd, 0, 3);
+    }
     output(mTurnLampInput);
 
     mFcamInput.ObjectTrackValid = objectTrackValid;
@@ -3551,6 +3588,17 @@ on sysvar Test::scenarioCommand
   applyScenarioPanelRequest(scenarioId, 0);
   gScenarioCmdInternalClear = 1;
   @Test::scenarioCommand = 0;
+}
+
+on sysvar Test::scenarioStopReq
+{
+  if (((int)@Test::scenarioStopReq) <= 0)
+  {
+    return;
+  }
+
+  @Test::scenarioStopReq = 0;
+  applyScenarioPanelRequest(0, 1);
 }
 
 on sysvar Test::testScenario

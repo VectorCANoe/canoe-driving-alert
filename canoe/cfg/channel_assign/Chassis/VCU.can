@@ -463,6 +463,10 @@ on timer tVcuCycle
   int manualIgnitionCmd;
   int panelDriveStateSeam;
   int panelVehicleSpeedSeam;
+  int cmdIgnitionCmd;
+  int cmdDriveStateCmd;
+  int cmdVehicleSpeedCmd;
+  int cmdThrottlePct;
   int accelStep;
   int accelPedal;
   int brakePedal;
@@ -507,11 +511,15 @@ on timer tVcuCycle
   manualCruiseState = 0;
   manualCruiseSetSpeed = 0;
   manualCruiseActive = 0;
-  manualIgnitionCmd = ((((int)@Chassis::ignitionCmd) > 0) ? 1 : 0);
+  cmdIgnitionCmd = ((((int)@Cmd::ignitionCmd) > 0) ? 1 : 0);
+  cmdDriveStateCmd = clampRange((int)@Cmd::driveStateCmd, 0, 3);
+  cmdVehicleSpeedCmd = clampRange((int)@Cmd::vehicleSpeedCmd, 0, 255);
+  cmdThrottlePct = clampRange((int)@Cmd::throttlePedalPct, 0, 100);
+  manualIgnitionCmd = cmdIgnitionCmd;
   if (manualMode == 1)
   {
-    panelDriveStateSeam = clampRange((int)@Chassis::driveState, 0, 3);
-    panelVehicleSpeedSeam = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+    panelDriveStateSeam = cmdDriveStateCmd;
+    panelVehicleSpeedSeam = cmdVehicleSpeedCmd;
     if (manualIgnitionCmd == 1 &&
         panelDriveStateSeam != gLastPublishedDriveState)
     {
@@ -536,15 +544,8 @@ on timer tVcuCycle
     }
     manualCruiseState = clampRange((int)@Powertrain::cruiseState, 0, 3);
     manualCruiseSetSpeed = clampRange((int)@Powertrain::cruiseSetSpeed, 0, 255);
-    accelPedal = 0;
+    accelPedal = cmdThrottlePct;
     brakePedal = clampRange((int)@Chassis::brakePressure, 0, 100);
-    /* Donor pedal panel uses buttons for command and progress bars for owner
-       readback. Avoid feeding the displayed setpoint back into control. */
-    if (((int)@Chassis::throttlePedalBtn) > 0)
-    {
-      accelPedal = 70;
-      @Chassis::throttlePedalBtn = 0;
-    }
     if (accelPedal > 0 || brakePedal > 0)
     {
       /* Direct speed seam is only an idle/manual target aid.
