@@ -975,7 +975,7 @@ and positions below</Property>
         </Object>
         <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ContextAuxGroup" ControlName="ContextAuxGroup">
           <Property Name="Name">ContextAuxGroup</Property>
-          <Property Name="Size">390, 212</Property>
+          <Property Name="Size">390, 236</Property>
           <Property Name="Location">10, 216</Property>
           <Property Name="Text">Inject / Override + Scene</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ContextAuxInfo" ControlName="ContextAuxInfo">
@@ -1157,14 +1157,14 @@ and positions below</Property>
         </Object>
         <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ContextPathGroup" ControlName="ContextPathGroup">
           <Property Name="Name">ContextPathGroup</Property>
-          <Property Name="Size">406, 212</Property>
+          <Property Name="Size">406, 236</Property>
           <Property Name="Location">410, 216</Property>
-          <Property Name="Text">Owner / Decision / Render Readback</Property>
+          <Property Name="Text">Runtime Readback</Property>
           <Property Name="UseWindowsStyle">False</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="OwnerSectionHeader" ControlName="OwnerSectionHeader">
             <Property Name="Name">OwnerSectionHeader</Property>
-            <Property Name="Size">382, 14</Property>
-            <Property Name="Location">12, 8</Property>
+            <Property Name="Size">382, 12</Property>
+            <Property Name="Location">12, 18</Property>
             <Property Name="TextAlign">MiddleCenter</Property>
             <Property Name="BackColor">Gainsboro</Property>
             <Property Name="BorderStyle">FixedSingle</Property>
@@ -1174,8 +1174,8 @@ and positions below</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DecisionSectionHeader" ControlName="DecisionSectionHeader">
             <Property Name="Name">DecisionSectionHeader</Property>
-            <Property Name="Size">382, 14</Property>
-            <Property Name="Location">12, 77</Property>
+            <Property Name="Size">382, 12</Property>
+            <Property Name="Location">12, 96</Property>
             <Property Name="TextAlign">MiddleCenter</Property>
             <Property Name="BackColor">Gainsboro</Property>
             <Property Name="BorderStyle">FixedSingle</Property>
@@ -1185,8 +1185,8 @@ and positions below</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RenderSectionHeader" ControlName="RenderSectionHeader">
             <Property Name="Name">RenderSectionHeader</Property>
-            <Property Name="Size">382, 14</Property>
-            <Property Name="Location">12, 146</Property>
+            <Property Name="Size">382, 12</Property>
+            <Property Name="Location">12, 174</Property>
             <Property Name="TextAlign">MiddleCenter</Property>
             <Property Name="BackColor">Gainsboro</Property>
             <Property Name="BorderStyle">FixedSingle</Property>
@@ -1197,7 +1197,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="OwnerZoneBox" ControlName="OwnerZoneBox">
             <Property Name="Name">OwnerZoneBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">12, 24</Property>
+            <Property Name="Location">12, 32</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1211,7 +1211,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="IngressDirBox" ControlName="IngressDirBox">
             <Property Name="Name">IngressDirBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">210, 24</Property>
+            <Property Name="Location">210, 32</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1225,7 +1225,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="OwnerDirBox" ControlName="OwnerDirBox">
             <Property Name="Name">OwnerDirBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">12, 47</Property>
+            <Property Name="Location">12, 52</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1239,7 +1239,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="IngressEtaReadBox" ControlName="IngressEtaReadBox">
             <Property Name="Name">IngressEtaReadBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">210, 47</Property>
+            <Property Name="Location">210, 52</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1253,7 +1253,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="OwnerDistBox" ControlName="OwnerDistBox">
             <Property Name="Name">OwnerDistBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">12, 70</Property>
+            <Property Name="Location">12, 72</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1267,7 +1267,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="EmergencyContextReadBox" ControlName="EmergencyContextReadBox">
             <Property Name="Name">EmergencyContextReadBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">210, 70</Property>
+            <Property Name="Location">210, 72</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1281,7 +1281,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BaseZoneReadBox" ControlName="BaseZoneReadBox">
             <Property Name="Name">BaseZoneReadBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">12, 93</Property>
+            <Property Name="Location">12, 110</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1295,7 +1295,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AlertTypeReadBox" ControlName="AlertTypeReadBox">
             <Property Name="Name">AlertTypeReadBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">210, 93</Property>
+            <Property Name="Location">210, 110</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1309,7 +1309,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LimitNormReadBox" ControlName="LimitNormReadBox">
             <Property Name="Name">LimitNormReadBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">12, 116</Property>
+            <Property Name="Location">12, 130</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1323,7 +1323,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AlertLevelReadBox" ControlName="AlertLevelReadBox">
             <Property Name="Name">AlertLevelReadBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">210, 116</Property>
+            <Property Name="Location">210, 130</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1337,7 +1337,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="EffectiveLevelReadBox" ControlName="EffectiveLevelReadBox">
             <Property Name="Name">EffectiveLevelReadBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">12, 139</Property>
+            <Property Name="Location">12, 150</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1351,7 +1351,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GateReasonReadBox" ControlName="GateReasonReadBox">
             <Property Name="Name">GateReasonReadBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">210, 139</Property>
+            <Property Name="Location">210, 150</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1365,7 +1365,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="WarningCodeReadBox" ControlName="WarningCodeReadBox">
             <Property Name="Name">WarningCodeReadBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">12, 162</Property>
+            <Property Name="Location">12, 188</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1379,7 +1379,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ZoneColorReadBox" ControlName="ZoneColorReadBox">
             <Property Name="Name">ZoneColorReadBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">210, 162</Property>
+            <Property Name="Location">210, 188</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1393,7 +1393,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BaseVolumeReadBox" ControlName="BaseVolumeReadBox">
             <Property Name="Name">BaseVolumeReadBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">12, 185</Property>
+            <Property Name="Location">12, 208</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
@@ -1407,7 +1407,7 @@ and positions below</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RenderVolumeReadBox" ControlName="RenderVolumeReadBox">
             <Property Name="Name">RenderVolumeReadBox</Property>
             <Property Name="Size">184, 21</Property>
-            <Property Name="Location">210, 185</Property>
+            <Property Name="Location">210, 208</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="ReadOnlyControl">True</Property>
