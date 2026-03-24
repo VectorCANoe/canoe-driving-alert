@@ -186,63 +186,68 @@
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteerLabel" ControlName="SteerLabel">
             <Property Name="Name">SteerLabel</Property>
             <Property Name="Size">92, 16</Property>
-            <Property Name="Location">16, 144</Property>
+            <Property Name="Location">16, 130</Property>
             <Property Name="Font">Microsoft Sans Serif, 8.25pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">STEER STEP</Property>
+            <Property Name="Text">STEERING</Property>
           </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteerHardLeftButton" ControlName="SteerHardLeftButton">
-            <Property Name="Name">SteerHardLeftButton</Property>
-            <Property Name="Size">36, 24</Property>
-            <Property Name="Location">128, 140</Property>
-            <Property Name="Text">L2</Property>
-            <Property Name="SymbolConfiguration">8;16;Cmd;;;steeringAngleCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
+          <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteeringWheelArt" ControlName="SteeringWheelArt">
+            <Property Name="Name">SteeringWheelArt</Property>
+            <Property Name="Size">56, 56</Property>
+            <Property Name="Location">18, 128</Property>
+            <Property Name="IsProportional">False</Property>
+            <Property Name="ImageFile">Bitmaps\InputConsoleSteeringWheel.png</Property>
           </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteerLeftButton" ControlName="SteerLeftButton">
-            <Property Name="Name">SteerLeftButton</Property>
-            <Property Name="Size">36, 24</Property>
-            <Property Name="Location">170, 140</Property>
-            <Property Name="Text">L1</Property>
+          <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteeringAngleTrack" ControlName="SteeringAngleTrack">
+            <Property Name="Name">SteeringAngleTrack</Property>
+            <Property Name="Size">206, 30</Property>
+            <Property Name="Location">86, 136</Property>
+            <Property Name="TabIndex">5</Property>
+            <Property Name="MinimumDouble">-540</Property>
+            <Property Name="MaximumDouble">540</Property>
+            <Property Name="LargeChangeDouble">45</Property>
+            <Property Name="MaximumSize">100000, 30</Property>
+            <Property Name="Minimum">-540</Property>
+            <Property Name="Maximum">540</Property>
+            <Property Name="LargeChange">45</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;steeringAngleCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
           </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteerCenterButton" ControlName="SteerCenterButton">
-            <Property Name="Name">SteerCenterButton</Property>
-            <Property Name="Size">36, 24</Property>
-            <Property Name="Location">212, 140</Property>
-            <Property Name="Text">CTR</Property>
-            <Property Name="SymbolConfiguration">8;16;Cmd;;;steeringAngleCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteerLeftGuide" ControlName="SteerLeftGuide">
+            <Property Name="Name">SteerLeftGuide</Property>
+            <Property Name="Size">28, 12</Property>
+            <Property Name="Location">88, 164</Property>
+            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="ForeColor">DimGray</Property>
+            <Property Name="Text">-540</Property>
           </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteerRightButton" ControlName="SteerRightButton">
-            <Property Name="Name">SteerRightButton</Property>
-            <Property Name="Size">36, 24</Property>
-            <Property Name="Location">254, 140</Property>
-            <Property Name="Text">R1</Property>
-            <Property Name="SymbolConfiguration">8;16;Cmd;;;steeringAngleCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteerCenterGuide" ControlName="SteerCenterGuide">
+            <Property Name="Name">SteerCenterGuide</Property>
+            <Property Name="Size">16, 12</Property>
+            <Property Name="Location">178, 164</Property>
+            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="ForeColor">DimGray</Property>
+            <Property Name="Text">0</Property>
           </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteerHardRightButton" ControlName="SteerHardRightButton">
-            <Property Name="Name">SteerHardRightButton</Property>
-            <Property Name="Size">40, 24</Property>
-            <Property Name="Location">296, 140</Property>
-            <Property Name="Text">R2</Property>
-            <Property Name="SymbolConfiguration">8;16;Cmd;;;steeringAngleCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteerRightGuide" ControlName="SteerRightGuide">
+            <Property Name="Name">SteerRightGuide</Property>
+            <Property Name="Size">30, 12</Property>
+            <Property Name="Location">254, 164</Property>
+            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="ForeColor">DimGray</Property>
+            <Property Name="Text">+540</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteerStateLabel" ControlName="SteerStateLabel">
             <Property Name="Name">SteerStateLabel</Property>
-            <Property Name="Size">44, 14</Property>
-            <Property Name="Location">290, 130</Property>
+            <Property Name="Size">58, 14</Property>
+            <Property Name="Location">304, 120</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">STR</Property>
+            <Property Name="Text">LIVE deg</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteerStateBox" ControlName="SteerStateBox">
             <Property Name="Name">SteerStateBox</Property>
-            <Property Name="Size">44, 21</Property>
-            <Property Name="Location">338, 144</Property>
+            <Property Name="Size">70, 21</Property>
+            <Property Name="Location">304, 136</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="ReadOnlyControl">True</Property>
             <Property Name="ValueDecimalPlaces">0</Property>
@@ -254,11 +259,11 @@
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DriveHintLabel" ControlName="DriveHintLabel">
             <Property Name="Name">DriveHintLabel</Property>
-            <Property Name="Size">236, 14</Property>
-            <Property Name="Location">16, 166</Property>
+            <Property Name="Size">244, 14</Property>
+            <Property Name="Location">16, 174</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">Cmd seam -> owner -> live readback</Property>
+            <Property Name="Text">drag wheel angle -> owner steering live</Property>
           </Object>
           <Property Name="UseWindowsStyle">False</Property>
         </Object>
@@ -557,66 +562,114 @@
           <Property Name="Location">418, 10</Property>
           <Property Name="BackColor">White</Property>
           <Property Name="Text">Cmd / Pedal + Cruise</Property>
-          <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakeActButton" ControlName="BrakeActButton">
-            <Property Name="Name">BrakeActButton</Property>
-            <Property Name="Size">62, 24</Property>
-            <Property Name="Location">16, 56</Property>
-            <Property Name="Text">BRAKE</Property>
-            <Property Name="SymbolConfiguration">8;16;Cmd;;;brakePedalPct;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakePedalLabel" ControlName="BrakePedalLabel">
+            <Property Name="Name">BrakePedalLabel</Property>
+            <Property Name="Size">62, 14</Property>
+            <Property Name="Location">16, 18</Property>
+            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="ForeColor">DimGray</Property>
+            <Property Name="Text">brake pedal</Property>
           </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AccelActButton" ControlName="AccelActButton">
-            <Property Name="Name">AccelActButton</Property>
-            <Property Name="Size">62, 24</Property>
-            <Property Name="Location">84, 56</Property>
-            <Property Name="Text">ACCEL</Property>
-            <Property Name="SymbolConfiguration">8;16;Cmd;;;throttlePedalPct;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
+          <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakePedalArt" ControlName="BrakePedalArt">
+            <Property Name="Name">BrakePedalArt</Property>
+            <Property Name="Size">72, 112</Property>
+            <Property Name="Location">12, 28</Property>
+            <Property Name="IsProportional">False</Property>
+            <Property Name="ImageFile">Bitmaps\InputConsoleBrakePedalArt.png</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakeCmdTrack" ControlName="BrakeCmdTrack">
+            <Property Name="Name">BrakeCmdTrack</Property>
+            <Property Name="Size">24, 86</Property>
+            <Property Name="Location">30, 40</Property>
+            <Property Name="Orientation">Vertical</Property>
+            <Property Name="TabIndex">6</Property>
+            <Property Name="MinimumDouble">0</Property>
+            <Property Name="MaximumDouble">100</Property>
+            <Property Name="LargeChangeDouble">10</Property>
+            <Property Name="MaximumSize">30, 100000</Property>
+            <Property Name="Minimum">0</Property>
+            <Property Name="Maximum">100</Property>
+            <Property Name="LargeChange">10</Property>
+            <Property Name="SymbolConfiguration">8;16;Cmd;;;brakePedalPct;1;;;-1;;;Value;;;0</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ProgressBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakeBar" ControlName="BrakeBar">
             <Property Name="Name">BrakeBar</Property>
-            <Property Name="Size">16, 74</Property>
-            <Property Name="Location">28, 88</Property>
+            <Property Name="Size">10, 86</Property>
+            <Property Name="Location">68, 40</Property>
             <Property Name="Maximum">100</Property>
             <Property Name="UseWindowsStyle">False</Property>
             <Property Name="WithFrame">False</Property>
             <Property Name="Alignment">RightBottom</Property>
             <Property Name="Orientation">Vertical</Property>
-            <Property Name="BarForeColor">Red</Property>
+            <Property Name="BarForeColor">IndianRed</Property>
             <Property Name="ValueBackColor">255, 231, 231, 231</Property>
             <Property Name="OriginValue">0</Property>
             <Property Name="SymbolConfiguration">8;16;Chassis;;;brakePressure;2;;;-1;;;Value;;;0</Property>
           </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AccelPedalLabel" ControlName="AccelPedalLabel">
+            <Property Name="Name">AccelPedalLabel</Property>
+            <Property Name="Size">62, 14</Property>
+            <Property Name="Location">92, 18</Property>
+            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="ForeColor">DimGray</Property>
+            <Property Name="Text">accel pedal</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AccelPedalArt" ControlName="AccelPedalArt">
+            <Property Name="Name">AccelPedalArt</Property>
+            <Property Name="Size">72, 112</Property>
+            <Property Name="Location">88, 28</Property>
+            <Property Name="IsProportional">False</Property>
+            <Property Name="ImageFile">Bitmaps\InputConsoleAccelPedalArt.png</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ThrottleCmdTrack" ControlName="ThrottleCmdTrack">
+            <Property Name="Name">ThrottleCmdTrack</Property>
+            <Property Name="Size">24, 90</Property>
+            <Property Name="Location">106, 38</Property>
+            <Property Name="Orientation">Vertical</Property>
+            <Property Name="TabIndex">7</Property>
+            <Property Name="MinimumDouble">0</Property>
+            <Property Name="MaximumDouble">100</Property>
+            <Property Name="LargeChangeDouble">10</Property>
+            <Property Name="MaximumSize">30, 100000</Property>
+            <Property Name="Minimum">0</Property>
+            <Property Name="Maximum">100</Property>
+            <Property Name="LargeChange">10</Property>
+            <Property Name="SymbolConfiguration">8;16;Cmd;;;throttlePedalPct;1;;;-1;;;Value;;;0</Property>
+          </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ProgressBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ThrottleBar" ControlName="ThrottleBar">
             <Property Name="Name">ThrottleBar</Property>
-            <Property Name="Size">16, 74</Property>
-            <Property Name="Location">58, 88</Property>
+            <Property Name="Size">10, 90</Property>
+            <Property Name="Location">144, 38</Property>
             <Property Name="Maximum">100</Property>
             <Property Name="UseWindowsStyle">False</Property>
             <Property Name="WithFrame">False</Property>
             <Property Name="Alignment">RightBottom</Property>
             <Property Name="Orientation">Vertical</Property>
-            <Property Name="BarForeColor">Green</Property>
+            <Property Name="BarForeColor">SteelBlue</Property>
             <Property Name="ValueBackColor">255, 231, 231, 231</Property>
             <Property Name="OriginValue">0</Property>
             <Property Name="SymbolConfiguration">8;16;Chassis;;;throttlePosition;2;;;-1;;;Value;;;0</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakeBarLabel" ControlName="BrakeBarLabel">
             <Property Name="Name">BrakeBarLabel</Property>
-            <Property Name="Size">26, 14</Property>
-            <Property Name="Location">22, 164</Property>
-            <Property Name="Text">BRK</Property>
+            <Property Name="Size">28, 12</Property>
+            <Property Name="Location">20, 128</Property>
+            <Property Name="Font">Microsoft Sans Serif, 6.75pt</Property>
+            <Property Name="ForeColor">DimGray</Property>
+            <Property Name="Text">cmd</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ThrottleBarLabel" ControlName="ThrottleBarLabel">
             <Property Name="Name">ThrottleBarLabel</Property>
-            <Property Name="Size">28, 14</Property>
-            <Property Name="Location">50, 164</Property>
-            <Property Name="Text">THR</Property>
+            <Property Name="Size">28, 12</Property>
+            <Property Name="Location">60, 128</Property>
+            <Property Name="Font">Microsoft Sans Serif, 6.75pt</Property>
+            <Property Name="ForeColor">DimGray</Property>
+            <Property Name="Text">live</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakeBox" ControlName="BrakeBox">
             <Property Name="Name">BrakeBox</Property>
             <Property Name="Size">44, 21</Property>
-            <Property Name="Location">120, 92</Property>
+            <Property Name="Location">34, 146</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="ReadOnlyControl">True</Property>
             <Property Name="ValueDecimalPlaces">0</Property>
@@ -629,7 +682,7 @@
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ThrottleBox" ControlName="ThrottleBox">
             <Property Name="Name">ThrottleBox</Property>
             <Property Name="Size">44, 21</Property>
-            <Property Name="Location">120, 122</Property>
+            <Property Name="Location">110, 146</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="ReadOnlyControl">True</Property>
             <Property Name="ValueDecimalPlaces">0</Property>
@@ -641,19 +694,19 @@
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakeBoxLabel" ControlName="BrakeBoxLabel">
             <Property Name="Name">BrakeBoxLabel</Property>
-            <Property Name="Size">34, 14</Property>
-            <Property Name="Location">120, 76</Property>
-            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="Size">44, 12</Property>
+            <Property Name="Location">34, 132</Property>
+            <Property Name="Font">Microsoft Sans Serif, 6.75pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">BRK %</Property>
+            <Property Name="Text">live %</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ThrottleBoxLabel" ControlName="ThrottleBoxLabel">
             <Property Name="Name">ThrottleBoxLabel</Property>
-            <Property Name="Size">34, 14</Property>
-            <Property Name="Location">120, 106</Property>
-            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="Size">44, 12</Property>
+            <Property Name="Location">110, 132</Property>
+            <Property Name="Font">Microsoft Sans Serif, 6.75pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">THR %</Property>
+            <Property Name="Text">live %</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CruiseModeLabel" ControlName="CruiseModeLabel">
             <Property Name="Name">CruiseModeLabel</Property>
@@ -731,11 +784,11 @@
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CruiseStateReadLabel" ControlName="CruiseStateReadLabel">
             <Property Name="Name">CruiseStateReadLabel</Property>
-            <Property Name="Size">38, 14</Property>
+            <Property Name="Size">44, 14</Property>
             <Property Name="Location">344, 92</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">SET %</Property>
+            <Property Name="Text">LIVE set</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CruiseSpeedBox" ControlName="CruiseSpeedBox">
             <Property Name="Name">CruiseSpeedBox</Property>
@@ -752,11 +805,11 @@
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PedalHintLabel" ControlName="PedalHintLabel">
             <Property Name="Name">PedalHintLabel</Property>
-            <Property Name="Size">220, 14</Property>
-            <Property Name="Location">16, 170</Property>
+            <Property Name="Size">230, 14</Property>
+            <Property Name="Location">12, 170</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">left: cmd / right: live</Property>
+            <Property Name="Text">pedal drag = cmd / slim bar = live</Property>
           </Object>
           <Property Name="UseWindowsStyle">False</Property>
         </Object>
