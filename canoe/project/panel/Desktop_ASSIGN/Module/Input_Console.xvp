@@ -21,30 +21,8 @@
           <Property Name="Name">DriveGroup</Property>
           <Property Name="Size">398, 190</Property>
           <Property Name="Location">10, 10</Property>
-          <Property Name="BackColor">AliceBlue</Property>
-          <Property Name="Text">Drive / Cockpit</Property>
-          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DriveBanner" ControlName="DriveBanner">
-            <Property Name="Name">DriveBanner</Property>
-            <Property Name="Size">344, 18</Property>
-            <Property Name="Location">36, 18</Property>
-            <Property Name="BackColor">SteelBlue</Property>
-            <Property Name="ForeColor">White</Property>
-            <Property Name="TextAlign">MiddleCenter</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="Text">POWERTRAIN / CHASSIS</Property>
-          </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DriveBadgeIcon" ControlName="DriveBadgeIcon">
-            <Property Name="Name">DriveBadgeIcon</Property>
-            <Property Name="Size">20, 20</Property>
-            <Property Name="Location">14, 17</Property>
-            <Property Name="ImageFile">Bitmaps\InputConsoleDriveBadge.png</Property>
-          </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SpeedMeterVisual" ControlName="SpeedMeterVisual">
-            <Property Name="Name">SpeedMeterVisual</Property>
-            <Property Name="Size">42, 42</Property>
-            <Property Name="Location">336, 36</Property>
-            <Property Name="ImageFile">Bitmaps\SpeedMeter.bmp</Property>
-          </Object>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">Cmd / Drive</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="IgnitionLabel" ControlName="IgnitionLabel">
             <Property Name="Name">IgnitionLabel</Property>
             <Property Name="Size">92, 16</Property>
@@ -69,9 +47,7 @@
             <Property Name="Location">176, 42</Property>
             <Property Name="Text">ON</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;ignitionCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">ForestGreen</Property>
-            <Property Name="ForeColor">White</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GearLabel" ControlName="GearLabel">
             <Property Name="Name">GearLabel</Property>
@@ -165,13 +141,35 @@
             <Property Name="SymbolConfiguration">8;16;Cmd;;;vehicleSpeedCmd;1;;;-1;;;Value;;;0</Property>
             <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
           </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DriveStateLabel" ControlName="DriveStateLabel">
+            <Property Name="Name">DriveStateLabel</Property>
+            <Property Name="Size">44, 14</Property>
+            <Property Name="Location">288, 46</Property>
+            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="ForeColor">DimGray</Property>
+            <Property Name="Text">LIVE gear</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DriveStateBox" ControlName="DriveStateBox">
+            <Property Name="Name">DriveStateBox</Property>
+            <Property Name="Size">44, 20</Property>
+            <Property Name="Location">338, 42</Property>
+            <Property Name="BackColor">255, 44, 44, 44</Property>
+            <Property Name="ColorOff">255, 44, 44, 44</Property>
+            <Property Name="ColorOn">Black</Property>
+            <Property Name="DecimalPlaces">0</Property>
+            <Property Name="NumberIntDigits">1</Property>
+            <Property Name="SymbolConfiguration">8;16;Chassis;;;driveState;2;;;-1;;;Value;;;0</Property>
+            <Property Name="DescriptionSize">0, 0</Property>
+            <Property Name="DisplayLabel">Left</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
+          </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SpeedStateLabel" ControlName="SpeedStateLabel">
             <Property Name="Name">SpeedStateLabel</Property>
             <Property Name="Size">44, 14</Property>
             <Property Name="Location">288, 80</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">LIVE km/h</Property>
+            <Property Name="Text">LIVE spd</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SpeedStateBox" ControlName="SpeedStateBox">
             <Property Name="Name">SpeedStateBox</Property>
@@ -241,7 +239,7 @@
             <Property Name="Location">288, 162</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">LIVE deg</Property>
+            <Property Name="Text">LIVE str</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteerStateBox" ControlName="SteerStateBox">
             <Property Name="Name">SteerStateBox</Property>
@@ -259,11 +257,11 @@
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DriveHintLabel" ControlName="DriveHintLabel">
             <Property Name="Name">DriveHintLabel</Property>
-            <Property Name="Size">214, 14</Property>
+            <Property Name="Size">260, 14</Property>
             <Property Name="Location">16, 166</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">Preset -> owner ECU / LCD -> live</Property>
+            <Property Name="Text">Cmd seam -> owner powertrain -> live readback</Property>
           </Object>
           <Property Name="UseWindowsStyle">False</Property>
         </Object>
@@ -271,40 +269,8 @@
           <Property Name="Name">BodyGroup</Property>
           <Property Name="Size">806, 210</Property>
           <Property Name="Location">10, 208</Property>
-          <Property Name="BackColor">WhiteSmoke</Property>
-          <Property Name="Text">Body / Signals</Property>
-          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CabinBanner" ControlName="CabinBanner">
-            <Property Name="Name">CabinBanner</Property>
-            <Property Name="Size">350, 18</Property>
-            <Property Name="Location">36, 20</Property>
-            <Property Name="BackColor">SlateGray</Property>
-            <Property Name="ForeColor">White</Property>
-            <Property Name="TextAlign">MiddleCenter</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="Text">CABIN ACCESS</Property>
-          </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CabinBadgeIcon" ControlName="CabinBadgeIcon">
-            <Property Name="Name">CabinBadgeIcon</Property>
-            <Property Name="Size">20, 20</Property>
-            <Property Name="Location">14, 19</Property>
-            <Property Name="ImageFile">Bitmaps\InputConsoleCabinBadge.png</Property>
-          </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SignalBanner" ControlName="SignalBanner">
-            <Property Name="Name">SignalBanner</Property>
-            <Property Name="Size">350, 18</Property>
-            <Property Name="Location">442, 20</Property>
-            <Property Name="BackColor">SteelBlue</Property>
-            <Property Name="ForeColor">White</Property>
-            <Property Name="TextAlign">MiddleCenter</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="Text">SIGNALS / SAFETY</Property>
-          </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SignalsBadgeIcon" ControlName="SignalsBadgeIcon">
-            <Property Name="Name">SignalsBadgeIcon</Property>
-            <Property Name="Size">20, 20</Property>
-            <Property Name="Location">420, 19</Property>
-            <Property Name="ImageFile">Bitmaps\InputConsoleSignalsBadge.png</Property>
-          </Object>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">Cmd / Body + Signals</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DoorLockLabel" ControlName="DoorLockLabel">
             <Property Name="Name">DoorLockLabel</Property>
             <Property Name="Size">88, 16</Property>
@@ -329,8 +295,7 @@
             <Property Name="Location">164, 42</Property>
             <Property Name="Text">UNLOCK</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;doorLockCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">LightSteelBlue</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DoorLockButton" ControlName="DoorLockButton">
             <Property Name="Name">DoorLockButton</Property>
@@ -338,9 +303,7 @@
             <Property Name="Location">236, 42</Property>
             <Property Name="Text">LOCK</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;doorLockCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">SteelBlue</Property>
-            <Property Name="ForeColor">White</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DoorOpenLabel" ControlName="DoorOpenLabel">
             <Property Name="Name">DoorOpenLabel</Property>
@@ -366,8 +329,7 @@
             <Property Name="Location">164, 76</Property>
             <Property Name="Text">OPEN</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;doorOpenCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">Moccasin</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DoorOpenCloseButton" ControlName="DoorOpenCloseButton">
             <Property Name="Name">DoorOpenCloseButton</Property>
@@ -375,9 +337,7 @@
             <Property Name="Location">224, 76</Property>
             <Property Name="Text">CLOSE</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;doorOpenCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">SlateGray</Property>
-            <Property Name="ForeColor">White</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="WindowLabel" ControlName="WindowLabel">
             <Property Name="Name">WindowLabel</Property>
@@ -403,8 +363,7 @@
             <Property Name="Location">164, 110</Property>
             <Property Name="Text">UP</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;windowCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">Honeydew</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="WindowDownButton" ControlName="WindowDownButton">
             <Property Name="Name">WindowDownButton</Property>
@@ -412,8 +371,28 @@
             <Property Name="Location">224, 110</Property>
             <Property Name="Text">DOWN</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;windowCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">AliceBlue</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="WindowStateLabel" ControlName="WindowStateLabel">
+            <Property Name="Name">WindowStateLabel</Property>
+            <Property Name="Size">42, 14</Property>
+            <Property Name="Location">300, 114</Property>
+            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="ForeColor">DimGray</Property>
+            <Property Name="Text">LIVE %</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="WindowStateBox" ControlName="WindowStateBox">
+            <Property Name="Name">WindowStateBox</Property>
+            <Property Name="Size">44, 20</Property>
+            <Property Name="Location">346, 110</Property>
+            <Property Name="BackColor">255, 44, 44, 44</Property>
+            <Property Name="ColorOff">255, 44, 44, 44</Property>
+            <Property Name="ColorOn">Black</Property>
+            <Property Name="DecimalPlaces">0</Property>
+            <Property Name="NumberIntDigits">3</Property>
+            <Property Name="SymbolConfiguration">8;16;Body;;;windowPos;2;;;-1;;;Value;;;0</Property>
+            <Property Name="DescriptionSize">0, 0</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="WiperLabel" ControlName="WiperLabel">
             <Property Name="Name">WiperLabel</Property>
@@ -439,8 +418,7 @@
             <Property Name="Location">568, 42</Property>
             <Property Name="Text">INT</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;wiperCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">Khaki</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="WiperHighButton" ControlName="WiperHighButton">
             <Property Name="Name">WiperHighButton</Property>
@@ -448,9 +426,28 @@
             <Property Name="Location">628, 42</Property>
             <Property Name="Text">HIGH</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;wiperCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">SteelBlue</Property>
-            <Property Name="ForeColor">White</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="WiperStateLabel" ControlName="WiperStateLabel">
+            <Property Name="Name">WiperStateLabel</Property>
+            <Property Name="Size">38, 14</Property>
+            <Property Name="Location">690, 46</Property>
+            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="ForeColor">DimGray</Property>
+            <Property Name="Text">LIVE</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="WiperStateBox" ControlName="WiperStateBox">
+            <Property Name="Name">WiperStateBox</Property>
+            <Property Name="Size">42, 20</Property>
+            <Property Name="Location">736, 42</Property>
+            <Property Name="BackColor">255, 44, 44, 44</Property>
+            <Property Name="ColorOff">255, 44, 44, 44</Property>
+            <Property Name="ColorOn">Black</Property>
+            <Property Name="DecimalPlaces">0</Property>
+            <Property Name="NumberIntDigits">2</Property>
+            <Property Name="SymbolConfiguration">8;16;Body;;;frontWiperAnimFrame;2;;;-1;;;Value;;;0</Property>
+            <Property Name="DescriptionSize">0, 0</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TurnLabel" ControlName="TurnLabel">
             <Property Name="Name">TurnLabel</Property>
@@ -476,8 +473,7 @@
             <Property Name="Location">564, 76</Property>
             <Property Name="Text">LEFT</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;turnSignalCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">AliceBlue</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TurnRightButton" ControlName="TurnRightButton">
             <Property Name="Name">TurnRightButton</Property>
@@ -485,8 +481,7 @@
             <Property Name="Location">620, 76</Property>
             <Property Name="Text">RIGHT</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;turnSignalCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">AliceBlue</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TurnHazardButton" ControlName="TurnHazardButton">
             <Property Name="Name">TurnHazardButton</Property>
@@ -494,9 +489,28 @@
             <Property Name="Location">680, 76</Property>
             <Property Name="Text">HAZ</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;turnSignalCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">DarkOrange</Property>
-            <Property Name="ForeColor">White</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TurnStateLabel" ControlName="TurnStateLabel">
+            <Property Name="Name">TurnStateLabel</Property>
+            <Property Name="Size">38, 14</Property>
+            <Property Name="Location">690, 80</Property>
+            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="ForeColor">DimGray</Property>
+            <Property Name="Text">LAMP</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TurnStateBox" ControlName="TurnStateBox">
+            <Property Name="Name">TurnStateBox</Property>
+            <Property Name="Size">42, 20</Property>
+            <Property Name="Location">736, 76</Property>
+            <Property Name="BackColor">255, 44, 44, 44</Property>
+            <Property Name="ColorOff">255, 44, 44, 44</Property>
+            <Property Name="ColorOn">Black</Property>
+            <Property Name="DecimalPlaces">0</Property>
+            <Property Name="NumberIntDigits">1</Property>
+            <Property Name="SymbolConfiguration">8;16;CoreState;;;turnLampState;2;;;-1;;;Value;;;0</Property>
+            <Property Name="DescriptionSize">0, 0</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BeltLabel" ControlName="BeltLabel">
             <Property Name="Name">BeltLabel</Property>
@@ -512,8 +526,7 @@
             <Property Name="Location">508, 110</Property>
             <Property Name="Text">DRV</Property>
             <Property Name="SymbolConfiguration">8;16;Test;;;driverBeltOff;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">SandyBrown</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PassengerBeltButton" ControlName="PassengerBeltButton">
             <Property Name="Name">PassengerBeltButton</Property>
@@ -521,8 +534,7 @@
             <Property Name="Location">576, 110</Property>
             <Property Name="Text">PASS</Property>
             <Property Name="SymbolConfiguration">8;16;Test;;;passengerBeltOff;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">LightSteelBlue</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CabinHintLabel" ControlName="CabinHintLabel">
             <Property Name="Name">CabinHintLabel</Property>
@@ -530,7 +542,7 @@
             <Property Name="Location">16, 156</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">Door / window -> body owner path</Property>
+            <Property Name="Text">Cmd seam -> DOOR/BCM owner path</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SignalHintLabel" ControlName="SignalHintLabel">
             <Property Name="Name">SignalHintLabel</Property>
@@ -538,7 +550,7 @@
             <Property Name="Location">420, 156</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">Wiper / turn / belt -> signal path</Property>
+            <Property Name="Text">Cmd/Test seam -> WIP/BCM live readback</Property>
           </Object>
           <Property Name="UseWindowsStyle">False</Property>
         </Object>
@@ -546,40 +558,8 @@
           <Property Name="Name">PedalCruiseGroup</Property>
           <Property Name="Size">408, 190</Property>
           <Property Name="Location">418, 10</Property>
-          <Property Name="BackColor">Seashell</Property>
-          <Property Name="Text">Pedals / Cruise</Property>
-          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PedalBanner" ControlName="PedalBanner">
-            <Property Name="Name">PedalBanner</Property>
-            <Property Name="Size">192, 18</Property>
-            <Property Name="Location">38, 20</Property>
-            <Property Name="BackColor">SlateGray</Property>
-            <Property Name="ForeColor">White</Property>
-            <Property Name="TextAlign">MiddleCenter</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="Text">PEDALS / LIVE ACTUATION</Property>
-          </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PedalBadgeIcon" ControlName="PedalBadgeIcon">
-            <Property Name="Name">PedalBadgeIcon</Property>
-            <Property Name="Size">20, 20</Property>
-            <Property Name="Location">16, 19</Property>
-            <Property Name="ImageFile">Bitmaps\InputConsolePedalBadge.png</Property>
-          </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CruiseBanner" ControlName="CruiseBanner">
-            <Property Name="Name">CruiseBanner</Property>
-            <Property Name="Size">124, 18</Property>
-            <Property Name="Location">268, 20</Property>
-            <Property Name="BackColor">SteelBlue</Property>
-            <Property Name="ForeColor">White</Property>
-            <Property Name="TextAlign">MiddleCenter</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="Text">CRUISE COMMAND</Property>
-          </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CruiseBadgeIcon" ControlName="CruiseBadgeIcon">
-            <Property Name="Name">CruiseBadgeIcon</Property>
-            <Property Name="Size">20, 20</Property>
-            <Property Name="Location">246, 19</Property>
-            <Property Name="ImageFile">Bitmaps\InputConsoleCruiseBadge.png</Property>
-          </Object>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">Cmd / Pedal + Cruise</Property>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PedalLabel" ControlName="PedalLabel">
             <Property Name="Name">PedalLabel</Property>
             <Property Name="Size">150, 14</Property>
@@ -606,9 +586,7 @@
             <Property Name="Location">16, 146</Property>
             <Property Name="Text">BRAKE</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;brakePedalPct;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">Tomato</Property>
-            <Property Name="ForeColor">White</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AccelActButton" ControlName="AccelActButton">
             <Property Name="Name">AccelActButton</Property>
@@ -616,9 +594,7 @@
             <Property Name="Location">92, 146</Property>
             <Property Name="Text">ACCEL</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;throttlePedalPct;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">MediumSeaGreen</Property>
-            <Property Name="ForeColor">White</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ProgressBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakeBar" ControlName="BrakeBar">
             <Property Name="Name">BrakeBar</Property>
@@ -710,9 +686,7 @@
             <Property Name="Location">294, 60</Property>
             <Property Name="Text">ON</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;cruiseStateCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">ForestGreen</Property>
-            <Property Name="ForeColor">White</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CruiseDecelButton" ControlName="CruiseDecelButton">
             <Property Name="Name">CruiseDecelButton</Property>
@@ -720,8 +694,7 @@
             <Property Name="Location">340, 60</Property>
             <Property Name="Text">DECEL</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;cruiseStateCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-            <Property Name="BackColor">LightSteelBlue</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CruiseSetLabel" ControlName="CruiseSetLabel">
             <Property Name="Name">CruiseSetLabel</Property>
@@ -786,11 +759,11 @@
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PedalHintLabel" ControlName="PedalHintLabel">
             <Property Name="Name">PedalHintLabel</Property>
-            <Property Name="Size">216, 14</Property>
+            <Property Name="Size">250, 14</Property>
             <Property Name="Location">16, 170</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">Bars = live brake / throttle</Property>
+            <Property Name="Text">Cmd seam + live brakePressure / throttlePosition</Property>
           </Object>
           <Property Name="UseWindowsStyle">False</Property>
         </Object>
