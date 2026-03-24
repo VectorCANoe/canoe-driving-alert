@@ -186,15 +186,15 @@
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteerLabel" ControlName="SteerLabel">
             <Property Name="Name">SteerLabel</Property>
             <Property Name="Size">92, 16</Property>
-            <Property Name="Location">16, 130</Property>
+            <Property Name="Location">16, 118</Property>
             <Property Name="Font">Microsoft Sans Serif, 8.25pt</Property>
             <Property Name="ForeColor">DimGray</Property>
             <Property Name="Text">STEERING</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SteeringWheelIndicator" ControlName="SteeringWheelIndicator">
             <Property Name="Name">SteeringWheelIndicator</Property>
-            <Property Name="Size">58, 58</Property>
-            <Property Name="Location">16, 126</Property>
+            <Property Name="Size">50, 50</Property>
+            <Property Name="Location">18, 132</Property>
             <Property Name="SymbolConfiguration">8;16;Display;;;steeringFrame;1;;;-1;;;Value;;;0</Property>
             <Property Name="ImageFile">Bitmaps\handel.png</Property>
             <Property Name="TabIndex">4</Property>
@@ -441,11 +441,11 @@
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="WiperStateLabel" ControlName="WiperStateLabel">
             <Property Name="Name">WiperStateLabel</Property>
-            <Property Name="Size">38, 14</Property>
-            <Property Name="Location">690, 46</Property>
+            <Property Name="Size">26, 14</Property>
+            <Property Name="Location">700, 46</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">FRAME</Property>
+            <Property Name="Text">FRM</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="WiperStateBox" ControlName="WiperStateBox">
             <Property Name="Name">WiperStateBox</Property>
@@ -504,8 +504,8 @@
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TurnStateLabel" ControlName="TurnStateLabel">
             <Property Name="Name">TurnStateLabel</Property>
-            <Property Name="Size">38, 14</Property>
-            <Property Name="Location">690, 80</Property>
+            <Property Name="Size">30, 14</Property>
+            <Property Name="Location">698, 80</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
             <Property Name="Text">LAMP</Property>
@@ -575,7 +575,7 @@
             <Property Name="Name">ActuatorSetpointsGroup</Property>
             <Property Name="Size">88, 156</Property>
             <Property Name="Location">8, 20</Property>
-            <Property Name="Text">Actuator setpoints</Property>
+            <Property Name="Text">Actuator</Property>
             <Object Type="Vector.CANalyzer.Panels.Design.ProgressBarControl, Vector.CANalyzer.Panels.CommonControls, Version=19.2.23.0, Culture=neutral, PublicKeyToken=null" Name="BrakeBar" ControlName="BrakeBar">
               <Property Name="Name">BrakeBar</Property>
               <Property Name="Size">16, 108</Property>
@@ -602,21 +602,19 @@
             </Object>
             <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakeBoxLabel" ControlName="BrakeBoxLabel">
               <Property Name="Name">BrakeBoxLabel</Property>
-              <Property Name="Size">26, 24</Property>
+              <Property Name="Size">26, 12</Property>
               <Property Name="Location">9, 126</Property>
               <Property Name="Font">Microsoft Sans Serif, 6.75pt</Property>
               <Property Name="ForeColor">DimGray</Property>
-              <Property Name="Text">Brake
-press</Property>
+              <Property Name="Text">Brake</Property>
             </Object>
             <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ThrottleBoxLabel" ControlName="ThrottleBoxLabel">
               <Property Name="Name">ThrottleBoxLabel</Property>
-              <Property Name="Size">30, 24</Property>
-              <Property Name="Location">43, 126</Property>
+              <Property Name="Size">36, 12</Property>
+              <Property Name="Location">39, 126</Property>
               <Property Name="Font">Microsoft Sans Serif, 6.75pt</Property>
               <Property Name="ForeColor">DimGray</Property>
-              <Property Name="Text">Throttle
-pos</Property>
+              <Property Name="Text">Throttle</Property>
             </Object>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PedalsVisualGroup" ControlName="PedalsVisualGroup">
