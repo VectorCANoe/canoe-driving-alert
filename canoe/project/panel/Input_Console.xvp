@@ -579,32 +579,27 @@
             <Property Name="ForeColor">DimGray</Property>
             <Property Name="Text">brake pedal</Property>
           </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakePedalArt" ControlName="BrakePedalArt">
-            <Property Name="Name">BrakePedalArt</Property>
-            <Property Name="Size">72, 112</Property>
-            <Property Name="Location">12, 28</Property>
-            <Property Name="IsProportional">False</Property>
-            <Property Name="ImageFile">Bitmaps\InputConsoleBrakePedalArt.png</Property>
-          </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakeCmdTrack" ControlName="BrakeCmdTrack">
-            <Property Name="Name">BrakeCmdTrack</Property>
-            <Property Name="Size">24, 86</Property>
-            <Property Name="Location">30, 40</Property>
-            <Property Name="Orientation">Vertical</Property>
-            <Property Name="TabIndex">6</Property>
-            <Property Name="MinimumDouble">0</Property>
-            <Property Name="MaximumDouble">100</Property>
-            <Property Name="LargeChangeDouble">10</Property>
-            <Property Name="MaximumSize">30, 100000</Property>
-            <Property Name="Minimum">0</Property>
-            <Property Name="Maximum">100</Property>
-            <Property Name="LargeChange">10</Property>
+          <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakePedalSwitch" ControlName="BrakePedalSwitch">
+            <Property Name="Name">BrakePedalSwitch</Property>
+            <Property Name="Size">59, 80</Property>
+            <Property Name="Location">18, 34</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;brakePedalPct;1;;;-1;;;Value;;;0</Property>
+            <Property Name="ImageFile">Bitmaps\brake.bmp</Property>
+            <Property Name="TransparentColor">Fuchsia</Property>
+            <Property Name="TabIndex">6</Property>
+            <Property Name="IsButton">True</Property>
+            <Property Name="Epsilon">0</Property>
+            <Property Name="Increment">100</Property>
+            <Property Name="StartValue">0</Property>
+            <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;100&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;100&lt;/TxValue&gt;</Property>
+            <Property Name="SwitchValuesVT">1;2;0/Lower/0;100/Lower/100</Property>
+            <Property Name="SwitchValues">1;2;0;100</Property>
+            <Property Name="SwitchValuesRx">1;2;0;100</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ProgressBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakeBar" ControlName="BrakeBar">
             <Property Name="Name">BrakeBar</Property>
             <Property Name="Size">10, 86</Property>
-            <Property Name="Location">68, 40</Property>
+            <Property Name="Location">82, 34</Property>
             <Property Name="Maximum">100</Property>
             <Property Name="UseWindowsStyle">False</Property>
             <Property Name="WithFrame">False</Property>
@@ -618,37 +613,32 @@
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AccelPedalLabel" ControlName="AccelPedalLabel">
             <Property Name="Name">AccelPedalLabel</Property>
             <Property Name="Size">62, 14</Property>
-            <Property Name="Location">92, 18</Property>
+            <Property Name="Location">112, 18</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
             <Property Name="Text">accel pedal</Property>
           </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AccelPedalArt" ControlName="AccelPedalArt">
-            <Property Name="Name">AccelPedalArt</Property>
-            <Property Name="Size">72, 112</Property>
-            <Property Name="Location">88, 28</Property>
-            <Property Name="IsProportional">False</Property>
-            <Property Name="ImageFile">Bitmaps\InputConsoleAccelPedalArt.png</Property>
-          </Object>
-          <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ThrottleCmdTrack" ControlName="ThrottleCmdTrack">
-            <Property Name="Name">ThrottleCmdTrack</Property>
-            <Property Name="Size">24, 90</Property>
-            <Property Name="Location">106, 38</Property>
-            <Property Name="Orientation">Vertical</Property>
-            <Property Name="TabIndex">7</Property>
-            <Property Name="MinimumDouble">0</Property>
-            <Property Name="MaximumDouble">100</Property>
-            <Property Name="LargeChangeDouble">10</Property>
-            <Property Name="MaximumSize">30, 100000</Property>
-            <Property Name="Minimum">0</Property>
-            <Property Name="Maximum">100</Property>
-            <Property Name="LargeChange">10</Property>
+          <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ThrottlePedalSwitch" ControlName="ThrottlePedalSwitch">
+            <Property Name="Name">ThrottlePedalSwitch</Property>
+            <Property Name="Size">110, 88</Property>
+            <Property Name="Location">104, 28</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;throttlePedalPct;1;;;-1;;;Value;;;0</Property>
+            <Property Name="ImageFile">Bitmaps\pedal.bmp</Property>
+            <Property Name="TabIndex">7</Property>
+            <Property Name="IsButton">True</Property>
+            <Property Name="Activation">Left</Property>
+            <Property Name="Epsilon">0</Property>
+            <Property Name="Increment">100</Property>
+            <Property Name="StartValue">0</Property>
+            <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;100&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;100&lt;/TxValue&gt;</Property>
+            <Property Name="SwitchValuesVT">1;2;0/Lower/0;100/Lower/100</Property>
+            <Property Name="SwitchValues">1;2;0;100</Property>
+            <Property Name="SwitchValuesRx">1;2;0;100</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ProgressBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ThrottleBar" ControlName="ThrottleBar">
             <Property Name="Name">ThrottleBar</Property>
             <Property Name="Size">10, 90</Property>
-            <Property Name="Location">144, 38</Property>
+            <Property Name="Location">220, 32</Property>
             <Property Name="Maximum">100</Property>
             <Property Name="UseWindowsStyle">False</Property>
             <Property Name="WithFrame">False</Property>
@@ -662,15 +652,15 @@
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakeBarLabel" ControlName="BrakeBarLabel">
             <Property Name="Name">BrakeBarLabel</Property>
             <Property Name="Size">28, 12</Property>
-            <Property Name="Location">20, 128</Property>
+            <Property Name="Location">78, 122</Property>
             <Property Name="Font">Microsoft Sans Serif, 6.75pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">cmd</Property>
+            <Property Name="Text">live</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ThrottleBarLabel" ControlName="ThrottleBarLabel">
             <Property Name="Name">ThrottleBarLabel</Property>
             <Property Name="Size">28, 12</Property>
-            <Property Name="Location">60, 128</Property>
+            <Property Name="Location">214, 122</Property>
             <Property Name="Font">Microsoft Sans Serif, 6.75pt</Property>
             <Property Name="ForeColor">DimGray</Property>
             <Property Name="Text">live</Property>
@@ -678,7 +668,7 @@
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakeBox" ControlName="BrakeBox">
             <Property Name="Name">BrakeBox</Property>
             <Property Name="Size">44, 21</Property>
-            <Property Name="Location">34, 146</Property>
+            <Property Name="Location">50, 140</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="ReadOnlyControl">True</Property>
             <Property Name="ValueDecimalPlaces">0</Property>
@@ -691,7 +681,7 @@
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ThrottleBox" ControlName="ThrottleBox">
             <Property Name="Name">ThrottleBox</Property>
             <Property Name="Size">44, 21</Property>
-            <Property Name="Location">110, 146</Property>
+            <Property Name="Location">188, 140</Property>
             <Property Name="BoxBorderStyle">FixedSingle</Property>
             <Property Name="ReadOnlyControl">True</Property>
             <Property Name="ValueDecimalPlaces">0</Property>
@@ -704,7 +694,7 @@
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BrakeBoxLabel" ControlName="BrakeBoxLabel">
             <Property Name="Name">BrakeBoxLabel</Property>
             <Property Name="Size">44, 12</Property>
-            <Property Name="Location">34, 132</Property>
+            <Property Name="Location">50, 126</Property>
             <Property Name="Font">Microsoft Sans Serif, 6.75pt</Property>
             <Property Name="ForeColor">DimGray</Property>
             <Property Name="Text">live %</Property>
@@ -712,7 +702,7 @@
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ThrottleBoxLabel" ControlName="ThrottleBoxLabel">
             <Property Name="Name">ThrottleBoxLabel</Property>
             <Property Name="Size">44, 12</Property>
-            <Property Name="Location">110, 132</Property>
+            <Property Name="Location">188, 126</Property>
             <Property Name="Font">Microsoft Sans Serif, 6.75pt</Property>
             <Property Name="ForeColor">DimGray</Property>
             <Property Name="Text">live %</Property>
@@ -818,7 +808,7 @@
             <Property Name="Location">12, 170</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
             <Property Name="ForeColor">DimGray</Property>
-            <Property Name="Text">pedal drag = cmd / slim bar = live</Property>
+            <Property Name="Text">pedal press = 0/100 cmd / slim bar = live</Property>
           </Object>
           <Property Name="UseWindowsStyle">False</Property>
         </Object>
