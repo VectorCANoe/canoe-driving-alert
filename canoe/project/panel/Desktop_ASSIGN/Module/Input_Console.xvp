@@ -1161,6 +1161,39 @@ and positions below</Property>
           <Property Name="Location">410, 216</Property>
           <Property Name="Text">Owner / Decision / Render Readback</Property>
           <Property Name="UseWindowsStyle">False</Property>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="OwnerSectionHeader" ControlName="OwnerSectionHeader">
+            <Property Name="Name">OwnerSectionHeader</Property>
+            <Property Name="Size">382, 14</Property>
+            <Property Name="Location">12, 8</Property>
+            <Property Name="TextAlign">MiddleCenter</Property>
+            <Property Name="BackColor">Gainsboro</Property>
+            <Property Name="BorderStyle">FixedSingle</Property>
+            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="Text">OWNER / NORMALIZE</Property>
+            <Property Name="ForeColor">DimGray</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DecisionSectionHeader" ControlName="DecisionSectionHeader">
+            <Property Name="Name">DecisionSectionHeader</Property>
+            <Property Name="Size">382, 14</Property>
+            <Property Name="Location">12, 77</Property>
+            <Property Name="TextAlign">MiddleCenter</Property>
+            <Property Name="BackColor">Gainsboro</Property>
+            <Property Name="BorderStyle">FixedSingle</Property>
+            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="Text">DECISION / GATE</Property>
+            <Property Name="ForeColor">DimGray</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RenderSectionHeader" ControlName="RenderSectionHeader">
+            <Property Name="Name">RenderSectionHeader</Property>
+            <Property Name="Size">382, 14</Property>
+            <Property Name="Location">12, 146</Property>
+            <Property Name="TextAlign">MiddleCenter</Property>
+            <Property Name="BackColor">Gainsboro</Property>
+            <Property Name="BorderStyle">FixedSingle</Property>
+            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="Text">RENDER / OUTPUT</Property>
+            <Property Name="ForeColor">DimGray</Property>
+          </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="OwnerZoneBox" ControlName="OwnerZoneBox">
             <Property Name="Name">OwnerZoneBox</Property>
             <Property Name="Size">184, 21</Property>
