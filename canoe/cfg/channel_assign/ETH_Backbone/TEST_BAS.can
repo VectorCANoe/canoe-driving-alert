@@ -643,6 +643,7 @@ on sysvar Test::testScenario
 {
   /* `testScenario` is a mirror-only seam.
      TEST_BAS should not treat it as a lifecycle trigger. */
+  publishInputConsoleManualCompat();
 }
 
 on sysvar Test::scenarioCommand
@@ -655,6 +656,7 @@ on sysvar Test::scenarioCommand
     {
       maybeClearBaseStateOnHarnessIdle();
     }
+    publishInputConsoleManualCompat();
     return;
   }
 
@@ -664,6 +666,7 @@ on sysvar Test::scenarioCommand
     ensureObserverArmed();
     publishPendingBaseScenarioContext();
   }
+  publishInputConsoleManualCompat();
 }
 
 on sysvar Test::scenarioCommandAck
@@ -677,6 +680,7 @@ on sysvar Test::scenarioCommandAck
     gScenarioAckActive = 0;
     maybeClearBaseStateOnHarnessIdle();
   }
+  publishInputConsoleManualCompat();
 }
 
 on sysvar Test::scenarioActiveId
@@ -689,6 +693,7 @@ on sysvar Test::scenarioActiveId
   {
     maybeClearBaseStateOnHarnessIdle();
   }
+  publishInputConsoleManualCompat();
 }
 
 on sysvar Test::scenarioSettledId
@@ -701,6 +706,7 @@ on sysvar Test::scenarioSettledId
   {
     maybeClearBaseStateOnHarnessIdle();
   }
+  publishInputConsoleManualCompat();
 }
 
 on sysvar Test::scenarioEvaluatedId
@@ -713,6 +719,7 @@ on sysvar Test::scenarioEvaluatedId
   {
     maybeClearBaseStateOnHarnessIdle();
   }
+  publishInputConsoleManualCompat();
 }
 
 on timer tObserverPoll50
