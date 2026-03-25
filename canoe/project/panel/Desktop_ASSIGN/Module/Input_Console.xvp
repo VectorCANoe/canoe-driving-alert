@@ -298,13 +298,46 @@
           <Property Name="UseWindowsStyle">False</Property>
         </Object>
         <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BodyGroup" ControlName="BodyGroup">
-          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SignalHintLabel" ControlName="SignalHintLabel">
-            <Property Name="Name">SignalHintLabel</Property>
-            <Property Name="Size">360, 14</Property>
-            <Property Name="Location">420, 156</Property>
+          <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AmbientModeCombo" ControlName="AmbientModeCombo">
+            <Property Name="Name">AmbientModeCombo</Property>
+            <Property Name="Size">252, 21</Property>
+            <Property Name="Location">420, 146</Property>
+            <Property Name="DisplayLabel">Left</Property>
+            <Property Name="DescriptionSize">82, 21</Property>
+            <Property Name="TabIndex">0</Property>
+            <Property Name="DescriptionText">AMBIENT</Property>
+            <Property Name="UsedValueTable">PhysicalValue</Property>
+            <Property Name="SymbolConfiguration">8;16;Cmd;;;ambientModeCmd;1;;;-1;;;Value;;;0</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AmbientStateLabel" ControlName="AmbientStateLabel">
+            <Property Name="Name">AmbientStateLabel</Property>
+            <Property Name="Size">32, 14</Property>
+            <Property Name="Location">710, 149</Property>
             <Property Name="ForeColor">DimGray</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
-            <Property Name="Text">Cmd/Test seam -&gt; WIP/BCM live readback</Property>
+            <Property Name="Text">LIVE</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AmbientStateBox" ControlName="AmbientStateBox">
+            <Property Name="Name">AmbientStateBox</Property>
+            <Property Name="Size">42, 21</Property>
+            <Property Name="Location">748, 145</Property>
+            <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+            <Property Name="AlarmLowerBkgColor">Salmon</Property>
+            <Property Name="AlarmLowerTextColor">Black</Property>
+            <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+            <Property Name="AlarmUpperTextColor">Black</Property>
+            <Property Name="BoxBorderStyle">FixedSingle</Property>
+            <Property Name="DisplayLabel">Left</Property>
+            <Property Name="ReadOnlyControl">True</Property>
+            <Property Name="TabIndex">0</Property>
+            <Property Name="TabStopActive">False</Property>
+            <Property Name="ValueDecimalPlaces">0</Property>
+            <Property Name="ValueDisplay">Decimal</Property>
+            <Property Name="UsedValueTable">PhysicalValue</Property>
+            <Property Name="DescriptionSize">0, 21</Property>
+            <Property Name="SymbolConfiguration">8;16;Body;;;ambientMode;2;;;-1;;;Value;;;0</Property>
+            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="DoorLockLabel" ControlName="DoorLockLabel">
             <Property Name="Name">DoorLockLabel</Property>
