@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 # canoe-driving-alert
 
@@ -124,10 +124,12 @@ python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2
 
 아키텍처가 왜 이렇게 나뉘었는지, ECU별 역할과 런타임 소유권이 어떻게 정리되어 있는지, 검증 체계가 어떤 기준으로 묶여 있는지 보려면 아래 문서부터 읽는 것이 가장 빠릅니다.
 
-- [Surface Map](canoe/docs/architecture/11_SURFACE_RUNTIME_VERIFICATION_MAP.md)
-- [ECU Ownership](canoe/docs/contracts/11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md)
-- [Multibus Policy](canoe/docs/contracts/12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md)
-- [Ethernet Contract](canoe/docs/contracts/13_ETH_INTERFACE_CONTRACT.md)
-- [Panel and SysVar Binding](canoe/docs/contracts/17_PANEL_SYSVAR_BINDING_CONTRACT.md)
-- [Verification Evidence](canoe/docs/verification/23_VERIFICATION_EVIDENCE_LOG_STANDARD.md)
-
+- [ECU Classification](canoe/docs/architecture/ecu-classification.md)
+- [Surface Map](canoe/docs/architecture/surface-runtime-verification-map.md)
+- [Skeleton](canoe/docs/architecture/skeleton.md)
+- [Communication Matrix](canoe/docs/contracts/communication-matrix.md)
+- [Owner / Route](canoe/docs/contracts/owner-route.md)
+- [Diagnostic Description](canoe/docs/contracts/diagnostic-description.md)
+- [Panel and SysVar Contract](canoe/docs/contracts/panel-sysvar-contract.md)
+- [Oracle](canoe/docs/verification/oracle.md)
+- [Evidence Policy](canoe/docs/verification/evidence-policy.md)
