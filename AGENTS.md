@@ -47,6 +47,16 @@ Use those references to align:
 - Keep 01 (Requirements) as `What`, keep 03+ as `How`.
 - Maintain 1:1 traceability chain:
   - `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`
+- Treat `canoe/docs/**` as an official reviewer-facing publication surface, not as an internal scratch space.
+- Do **not** place internal implementation memos, temporary UI notes, trial-and-error records, local guardrails, or path-based developer reminders under `canoe/docs/**`.
+- Only put documents under `canoe/docs/**` when they are ready to stand alone as official contract / operation / verification / appendix content in reviewer-facing form.
+- If a note contains internal execution guidance, informal options, temporary widget rules, “do this for now” logic, developer path references, or implementation churn history, it must go under:
+  - `canoe/AGENT/**`
+  - `driving-alert-workproducts/ops/**`
+  - `driving-alert-workproducts/ops/handoff/**`
+- Never add references inside official docs to internal memo paths such as `canoe/AGENT/**`, local scratch notes, or developer-only markdown files.
+- If appendix-style content is not yet finalized as official supplementary material, do **not** place it under `canoe/docs/**`; keep it internal until it is rewritten into official form.
+- When in doubt, do **not** create a new file under `canoe/docs/**`. Default to `canoe/AGENT/**` first, then promote only finalized content.
 - Do not remove existing template columns in requirement/function tables.
 - Do not change the column/header structure of any top-level `공식 표준 양식` table unless the user explicitly requests a template change.
 - When more detail is needed, keep the official table format and enrich the cell content instead of adding/replacing columns ad hoc.

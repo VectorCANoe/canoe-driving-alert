@@ -13,7 +13,7 @@
 
 > 경고: `canoe/src/capl` 구현이 추가 개발 또는 업데이트되면, 같은 변경 범위의 `Master Test Matrix`, `05/06/07`, oracle/evidence 정의, executable TEST 자산도 동일 기준선으로 즉시 동기화해야 한다. CAPL과 TEST 기준선 불일치는 그대로 추적성 실패로 간주한다.
 >
-> 참고: 본 문서는 active executable baseline만 유지한다. retired umbrella row 이력은 [00g_Master_Test_Matrix_retired.md](C:/Users/이준영/CANoe-IVI-OTA/driving-alert-workproducts/governance/00g_Master_Test_Matrix_retired.md)에서 별도로 관리한다.
+> 참고: 본 문서는 active executable baseline만 유지한다. retired umbrella row 이력은 `driving-alert-workproducts/governance/00g_Master_Test_Matrix_retired.md`에서 별도로 관리한다.
 
 ## 1. 목적
 

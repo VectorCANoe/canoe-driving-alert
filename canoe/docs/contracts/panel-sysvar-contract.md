@@ -140,7 +140,7 @@ It fixes the command/readback meaning so donor widgets can be retired without se
 | Ignition | `Cmd::ignitionCmd` | `0=off, 1=on` | `Chassis::ignitionCmd` or owner-equivalent state | `EMS` / `VCU` path | two-state explicit mapping widget | replaces legacy chassis/manual ignition input |
 | Gear select | `Cmd::driveStateCmd` | `0=P, 1=R, 2=N, 3=D` | `Chassis::driveState` | `VCU` | explicit discrete value widget | replaces donor gear command path |
 | Speed preset | `Cmd::vehicleSpeedCmd` | `0..255 km/h`; current presets may be `0/30/50/80/100` | `Chassis::vehicleSpeed` | `VCU` | explicit discrete-value widget; button bank or button-style `SwitchControl` both allowed if Tx values are fixed in XVP | replaces manual speed input donor path |
-| Steering | `Cmd::steeringAngleCmd` | `-540..+540 deg`; local UI uses fixed preset commands | `Chassis::steeringAngle`, `Display::steeringFrame` | `MDPS` / `CLU` | explicit discrete-value widget for command, observer indicator for frame | replaces legacy `manualSteeringAngleCmd` style path |
+| Steering | `Cmd::steeringAngleCmd` | `-540..+540 deg`; local UI may use stepped trackbar or fixed presets | `Chassis::steeringAngle`, `Display::steeringFrame` | `MDPS` / `CLU` | stepped `TrackBarControl` or explicit preset widget allowed; observer indicator for frame | replaces legacy `manualSteeringAngleCmd` style path |
 | Brake pedal | `Cmd::brakePedalPct` | `0..100 %` | `Chassis::brakePressure` | `ESC` | bounded actuation widget; donor pedal art may be reused as visual only | do not write legacy `Chassis::brakePedalBtn` from new widgets |
 | Throttle pedal | `Cmd::throttlePedalPct` | `0..100 %` | `Chassis::throttlePosition` | `VCU` / `EMS` | bounded actuation widget; donor pedal art may be reused as visual only | do not write legacy `Chassis::throttlePedalBtn` from new widgets |
 | Cruise mode | `Cmd::cruiseStateCmd` | `0=off, 1=on, 2=decel-assist` | `Powertrain::cruiseState` | `SCC` | explicit discrete-value widget; button bank or button-style `SwitchControl` both allowed if Tx values are fixed in XVP | replaces donor CAN signal write path |
@@ -161,18 +161,18 @@ It fixes the command/readback meaning so donor widgets can be retired without se
 |---|---|---|---|---|---|---|
 | Road zone | `Inject::roadZone` | `0=normal, 1=school, 2=highway, 3=guide` | `Infotainment::roadZone`, `Core::baseZoneContext` | `IVI` / `NAV` | explicit discrete-value widget; button bank or button-style `SwitchControl` both allowed if Tx values are fixed in XVP | replaces legacy `Infotainment::roadZone` write path |
 | Navigation direction | `Inject::navDirection` | `0=none, 1=left, 2=right, 3=other/straight` | `Infotainment::navDirection` | `IVI` / `NAV` | explicit discrete-value widget; button bank or button-style `SwitchControl` both allowed if Tx values are fixed in XVP | replaces legacy `Infotainment::navDirection` write path |
-| Zone distance | `Inject::zoneDistance` | `0..255 m`; local UI exposes fixed representative presets | `Infotainment::zoneDistance` | `NAV` | explicit discrete-value widget; button bank or button-style `SwitchControl` both allowed if Tx values are fixed in XVP | replaces legacy `Infotainment::zoneDistance` write path |
-| Speed limit | `Inject::speedLimit` | `0..255 km/h`; local UI exposes fixed representative presets | `Core::speedLimitNorm` | `NAV` / `ADAS` | explicit discrete-value widget; button bank or button-style `SwitchControl` both allowed if Tx values are fixed in XVP | replaces legacy `Infotainment::speedLimit` write path |
+| Zone distance | `Inject::zoneDistance` | `0..255 m`; local UI may use stepped trackbar or representative presets | `Infotainment::zoneDistance` | `NAV` | stepped `TrackBarControl` or explicit preset widget allowed as long as Tx seam/range stay fixed | replaces legacy `Infotainment::zoneDistance` write path |
+| Speed limit | `Inject::speedLimit` | `0..255 km/h`; local UI may use stepped trackbar or representative presets | `Core::speedLimitNorm` | `NAV` / `ADAS` | stepped `TrackBarControl` or explicit preset widget allowed as long as Tx seam/range stay fixed | replaces legacy `Infotainment::speedLimit` write path |
 | Emergency active | `Inject::emergencyActiveCmd` | `0=clear, 1=active` | `Core::emergencyContext` and ingress mirrors | `V2X` | explicit discrete-value widget; button bank or button-style `SwitchControl` both allowed if Tx values are fixed in XVP | replaces legacy alert on/off path |
 | Emergency type | `Inject::emergencyType` | `0=none, 1=police, 2=ambulance` | `Core::emergencyContext`, `V2X::emergencyType` compat mirror | `V2X` | explicit discrete-value widget; button bank or button-style `SwitchControl` both allowed if Tx values are fixed in XVP | replaces legacy `V2X::emergencyType` write path |
 | Emergency direction | `Inject::emergencyDirection` | `0=front, 1=left, 2=right, 3=rear` | `CoreState::emergencyIngressDirection`, `V2X::emergencyDirection` compat mirror | `V2X` | explicit discrete-value widget; button bank or button-style `SwitchControl` both allowed if Tx values are fixed in XVP | replaces legacy `V2X::emergencyDirection` write path |
 | Emergency ETA | `Inject::emergencyEtaSec` | `0..255 s`; local UI uses dense stepped slider for fine adjustment | `CoreState::emergencyIngressEtaSec`, `V2X::eta` compat mirror | `V2X` | stepped `TrackBarControl` allowed for continuous time-domain injection | replaces legacy `V2X::eta` write path |
 | Emergency source ID | `Inject::emergencySourceId` | `0..255` | `CoreState::emergencyIngressSourceId` if exposed | `V2X` | explicit discrete-value widget; button bank or button-style `SwitchControl` both allowed if Tx values are fixed in XVP | replaces legacy `V2X::sourceId` write path |
 | Manual alert override | `Inject::manualAlertOverrideCmd` | `0..255`; local presets may expose representative levels only | `Core::selectedAlertLevel`, `Core::selectedAlertType` | `ADAS` | explicit discrete-value widget; button bank or button-style `SwitchControl` both allowed if Tx values are fixed in XVP | replaces legacy `Test::manualAlertOverride` write path |
-| Audio base / alert volume | `Inject::alertVolumeCmd` | `0=default, 1..100=explicit`; local UI exposes fixed representative presets | `CoreState::baseVolume`, `UiRender::renderVolumLevel` | `AMP` | explicit discrete-value widget; button bank or button-style `SwitchControl` both allowed if Tx values are fixed in XVP | replaces legacy `Test::alertVolumeSetting` write path |
+| Audio base / alert volume | `Inject::alertVolumeCmd` | `0=default, 1..100=explicit`; local UI may use a stepped range control or representative presets | `CoreState::baseVolume`, `UiRender::renderVolumLevel` | `AMP` | stepped `TrackBarControl` or explicit preset widget allowed as long as Tx seam/range stay fixed | replaces legacy `Test::alertVolumeSetting` write path |
 | Cross trigger | `V2X::AnimationTrigger` | `0=off, 1=on` | `V2X::CrossAnimAlertActive` | local V2X scene compat | explicit two-state widget only if cross scene remains in local console | transitional exception only |
-| Police proximity | `V2X::policePos` | `0..7`; local UI exposes fixed representative presets | `V2X` compat scene frame path | local V2X scene compat | discrete preset button bank | transitional exception only |
-| Ambulance proximity | `V2X::ambulancePos` | `0..7`; local UI exposes fixed representative presets | `V2X` compat scene frame path | local V2X scene compat | discrete preset button bank | transitional exception only |
+| Police proximity | `V2X::policePos` | `0..7`; local UI may use stepped trackbar or representative presets | `V2X` compat scene frame path | local V2X scene compat | stepped `TrackBarControl` or explicit preset widget allowed | transitional exception only |
+| Ambulance proximity | `V2X::ambulancePos` | `0..7`; local UI may use stepped trackbar or representative presets | `V2X` compat scene frame path | local V2X scene compat | stepped `TrackBarControl` or explicit preset widget allowed | transitional exception only |
 
 ### 3.5.3 Scenario page
 
@@ -323,39 +323,18 @@ Until that path is fully retired from operation:
 
 ## 5.6 Interactive widget rule
 
-For `Input_Console`, the authoritative command meaning is fixed by the detailed contract table in section `3.5`.
-Widget choice must follow that contract, not redefine it.
+For `Input_Console`, section `3.5` is the canonical contract.
+This official contract fixes:
 
-Preferred final command widgets:
+- active write seam
+- value map / range
+- readback seam
+- owner
+- donor compatibility status
 
-- explicit discrete-value widgets for enumerated commands
-- `Check Box` only for simple two-state toggles such as transitional belt simulation
-- `Picture Box` only as visual accompaniment
-- `LED`, `LCD`, `Input/Output Box`, `Progress Bar`, `Meter` only as readback surfaces
-
-Preferred explicit-value patterns:
-
-- `ButtonControl` only when the per-button Tx value is actually serialized or otherwise guaranteed by the XVP contract
-- button-style `SwitchControl` with `SwitchValuesVT` / `SwitchValuesVTXml` when per-button Tx values must be encoded explicitly
-
-Transitional allowance:
-
-- donor-like `SwitchControl` remains acceptable for `Scenario` launch and for any discrete command where it is the only proven explicit Tx-value carrier in current XVP practice
-
-Not acceptable for the final local console:
-
-- `TrackBarControl`
-- `RadioButtonControl`
-- `ComboBoxControl` as the primary command selector
-- a `ButtonControl` bank whose per-button value contract is not explicitly defined in section `3.5` and not explicitly serialized in XVP
-- donor visual assets reused while still writing legacy owner/readback seams directly
-
-If donor visuals are reused, only the image contract may be borrowed.
-The authoritative write seam must still remain:
-
-- `Cmd::*`
-- `Inject::*`
-- `Test::*`
+Widget choice itself is not a contract violation.
+If the same seam, value map, owner, and readback rule are preserved, compact buttons, stepped `TrackBarControl`, meter-style controls, or equivalent GUI-native controls may be used.
+Supplementary widget/layout guidance, if separately published, must be maintained outside this contract table.
 
 ## 6. Recommended Operator / Observer Grouping
 

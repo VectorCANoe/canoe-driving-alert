@@ -84,6 +84,10 @@
   - 런타임 적응 우선순위는 `owner ECU -> channel_assign mirror -> sysvar contract -> 필요 시 DBC`이며, XVP 수정은 explicit approval 없이는 금지한다.
   - 단, donor seam이 `외부 세계 주입` 성격이면 `VALIDATION_HARNESS(TEST_SCN)`가 입력을 transport/message로 주입하고 실제 기능 owner가 그 이후 기능을 수행하도록 유지한다.
   - 예외적으로 `Scenario_Control`, `Driver_Control`, `Cruise_Pedal`, `Operator_Input`에는 기존 donor 입력 의미를 바꾸지 않는 범위에서 `scenario/manual mode` 상태 리본을 추가할 수 있다.
+- `Input_Console`의 UI/UX 작업 메모, 위젯 선택 기준, 임시 구현 가드레일은 공식 문서나 공식 appendix가 아니라 내부 작업 메모로만 유지한다.
+  - 유지 위치: `canoe/AGENT/**` 또는 handoff/ops 메모
+  - 금지 위치: `canoe/docs/**`, 제출 appendix source, reviewer-facing 공식 문서
+  - 공식 문서에는 seam/value/owner/readback 계약만 남기고, UI 시행착오 메모나 내부 경로 참조는 넣지 않는다.
 
 ## 4) Current Reset Baseline
 
