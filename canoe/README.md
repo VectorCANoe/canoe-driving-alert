@@ -11,7 +11,7 @@ It is the external entrypoint for readers who want to understand:
 
 ## Start Here
 
-1. `cfg/CAN_v2_topology_wip.cfg`
+1. `cfg/CAN_v2_topology.cfg`
 2. `docs/README.md`
 3. `FILE_INDEX.md`
 
