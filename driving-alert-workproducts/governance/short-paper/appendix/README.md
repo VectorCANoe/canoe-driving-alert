@@ -27,6 +27,8 @@
   - `verification/`
   - `diagnostic/`
   - 별첨에 들어갈 원문 복제본
+  - `governance/project_v_model_traceability_map.*`
+  - 프로젝트 V-모델 reviewer-facing 요약본과 figure source
 - `tex/`
   - `supplementary_appendix_bundle.tex`
   - `build_appendix_bundle.sh`

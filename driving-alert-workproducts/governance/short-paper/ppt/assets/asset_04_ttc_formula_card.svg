@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620">
+  <rect width="1000" height="620" fill="#ffffff"/>
+  <text x="500" y="60" text-anchor="middle" font-family="Arial" font-size="30" font-weight="700">TTC Calculation Card</text>
+  <rect x="120" y="120" width="760" height="180" rx="14" fill="#fcfcfc" stroke="#777" stroke-width="2"/>
+  <text x="500" y="205" text-anchor="middle" font-family="Courier New" font-size="34" font-weight="700">TTC = 3600 · d / |v_rel|</text>
+  <text x="500" y="245" text-anchor="middle" font-family="Arial" font-size="18" fill="#444">d: relative distance [m], v_rel: relative speed [km/h], TTC: time to collision [ms]</text>
+
+  <rect x="120" y="350" width="220" height="120" rx="12" fill="#fafafa" stroke="#777" stroke-width="2"/>
+  <text x="230" y="400" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Low TTC</text>
+  <text x="230" y="435" text-anchor="middle" font-family="Arial" font-size="18">High warning priority</text>
+
+  <rect x="390" y="350" width="220" height="120" rx="12" fill="#fafafa" stroke="#777" stroke-width="2"/>
+  <text x="500" y="400" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Mid TTC</text>
+  <text x="500" y="435" text-anchor="middle" font-family="Arial" font-size="18">Context-dependent class</text>
+
+  <rect x="660" y="350" width="220" height="120" rx="12" fill="#fafafa" stroke="#777" stroke-width="2"/>
+  <text x="770" y="400" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">High TTC</text>
+  <text x="770" y="435" text-anchor="middle" font-family="Arial" font-size="18">Low warning priority</text>
+</svg>

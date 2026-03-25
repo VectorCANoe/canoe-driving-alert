@@ -1,0 +1,130 @@
+@startuml network_architecture_driving_alert_active_baseline
+!theme plain
+top to bottom direction
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam componentStyle rectangle
+skinparam ArrowColor #4D4D4D
+skinparam PackageBorderColor #808080
+skinparam ComponentBorderColor #808080
+skinparam NoteBorderColor #808080
+skinparam NoteBackgroundColor #FAFAFA
+
+title Level 2: Integrated Warning Network Topology\n(Domain CAN + ETH Backbone + Gateway Boundary)
+
+rectangle "Context Owner Domain" as DOMAIN_CONTEXT #F7F7F7 {
+  component "VCU" as VCU #FFFFFF
+  component "MDPS" as MDPS #FFFFFF
+  component "NAV / IVI" as IVI #FFFFFF
+}
+
+rectangle "Decision / Boundary Domain" as DOMAIN_CORE #F2F2F2 {
+  component "V2X\nEmergency Context Owner" as V2X #FFFFFF
+  component "ADAS\nWarning / Risk Decision Owner" as ADAS #FFFFFF
+  component "CGW\nBoundary / Fail-Safe Authority" as CGW #FFFFFF
+}
+
+rectangle "Render / Output Domain" as DOMAIN_RENDER #F7F7F7 {
+  component "BCM" as BCM #FFFFFF
+  component "CLU" as CLU #FFFFFF
+  component "HUD" as HUD #FFFFFF
+  component "AMP" as AMP #FFFFFF
+}
+
+rectangle "Validation / Diagnostic Domain" as DOMAIN_VALID #F7F7F7 {
+  component "TEST_SCN\nValidation Stimulus" as TESTSCN #FFFFFF
+  component "TEST_BAS\nBaseline Observer" as TESTBAS #FFFFFF
+  component "SGW / DCM / EXT_DIAG" as DIAG #FFFFFF
+}
+
+queue "Chassis CAN\n0x100 ~ 0x13F" as CAN_CHASSIS #FFFFFF
+queue "Infotainment CAN\n0x280 ~ 0x29F" as CAN_INFO #FFFFFF
+queue "Body CAN\n0x260 ~ 0x27F" as CAN_BODY #FFFFFF
+cloud "ETH Backbone\nUDP Multicast 239.0.2.1:5000" as ETHB #FFFFFF
+
+VCU -- CAN_CHASSIS
+MDPS -- CAN_CHASSIS
+IVI -- CAN_INFO
+BCM -- CAN_BODY
+CLU -- CAN_INFO
+HUD -- CAN_INFO
+AMP -- CAN_INFO
+
+CAN_CHASSIS --> CGW : vehicle / steering context
+CAN_INFO --> CGW : route / zone / speed-limit context
+
+V2X -- ETHB
+ADAS -- ETHB
+CGW -- ETHB
+TESTSCN -- ETHB
+TESTBAS -- ETHB
+
+ETHB --> V2X : ETH_EmergencyAlert (0xE100)
+V2X --> ADAS : CoreState::emergencyIngress*
+ADAS --> CGW : selectedAlertDecision*\ndecelAssistDecisionReq
+CGW --> DOMAIN_RENDER : selectedAlertEffective*\nwarningPathStatus
+ETHB ..> TESTBAS : monitor / result observation
+DIAG ..> CGW : boundary observation
+DIAG ..> ADAS : decision observation
+DIAG ..> V2X : ingress observation
+
+note top of ETHB
+  **Backbone Contract**
+  • Active transport: UDP multicast
+  • Runtime identifiers:
+    - 0x510 ~ 0x512 context ingress
+    - 0xE100 emergency ingress
+    - 0x1C2 emergency monitor
+    - 0xE200 decision result
+    - 0xE210 ~ 0xE216 risk / fail-safe
+end note
+
+note left of DOMAIN_CONTEXT
+  **Context Publication**
+  • Chassis CAN
+    - frmVehicleStateCanMsg (0x2A0)
+    - frmSteeringStateCanMsg (0x100)
+  • Infotainment CAN
+    - frmNavigationRouteMsg (0x285)
+  • UDP context
+    - 0x510 / 0x511 / 0x512
+end note
+
+note right of CGW
+  **Boundary Rule B01**
+  • warningPathStatus
+  • e2eHealthState
+  • failSafeMode
+  • selectedAlertEffective*
+  • decelAssistReq effective gate
+end note
+
+note right of DOMAIN_RENDER
+  **Render Consumption**
+  • BCM: ambient / hazard output
+  • CLU: cluster warning
+  • HUD: front display warning
+  • AMP: audio guidance / ducking
+end note
+
+note bottom of TESTSCN
+  **Validation Rule V01**
+  • may inject emergency or object stimulus
+  • may not become product owner
+  • final meaning remains in V2X / ADAS / CGW
+end note
+
+legend right
+  1. Domain CAN = local ECU context
+  2. ETH Backbone = cross-domain warning meaning
+  3. V2X = emergency normalization owner
+  4. ADAS = warning / risk decision owner
+  5. CGW = timeout clear / fail-safe boundary authority
+  6. Render + validation + diagnostic stay separated
+endlegend
+
+@enduml

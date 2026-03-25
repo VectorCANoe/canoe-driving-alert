@@ -1,0 +1,74 @@
+@startdot
+digraph G {
+  graph [
+    layout=neato,
+    overlap=false,
+    splines=true,
+    outputorder=edgesfirst,
+    bgcolor="white",
+    pad="0.15",
+    label="Project V-Model and Traceability Map\n(Driving Alert Active Baseline)",
+    labelloc="t",
+    fontsize=18,
+    fontname="Arial Bold"
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#FAFAFA",
+    color="#7A7A7A",
+    penwidth=1.1,
+    fontname="Arial",
+    fontsize=10,
+    margin="0.10,0.07",
+    pin=true
+  ];
+
+  edge [
+    color="#666666",
+    fontname="Arial",
+    fontsize=8,
+    arrowsize=0.7
+  ];
+
+  GOVLBL [shape=plaintext, fontname="Arial Bold", fontsize=14, label="Cross-Cutting Governance", pos="5.0,7.8!"];
+  HARA   [label="00d_HARA_Worksheet\nSafety Basis\nHazard Context", fillcolor="#F2F2F2", pos="4.1,6.9!"];
+  TMX    [label="00g_Master_Test_Matrix\nProject Test Matrix\nTraceability", fillcolor="#F2F2F2", pos="5.9,6.9!"];
+
+  DEVLBL [shape=plaintext, fontname="Arial Bold", fontsize=12, label="Development Side", pos="3.2,6.1!"];
+  VERLBL [shape=plaintext, fontname="Arial Bold", fontsize=12, label="Verification Side", pos="6.8,6.1!"];
+
+  REQ        [label="SYS.2\n01_Requirements\nSystem Requirements", pos="4.15,5.0!"];
+  SYSDES     [label="SYS.3\n03 / 0301 / 0302\nFunction / Analysis\nFlow", pos="4.45,3.9!"];
+  SWCONTRACT [label="SWE.2 / SWE.3\n0303 / 0304\nCommunication\nVariables", pos="4.75,2.8!"];
+
+  ST [label="SYS.5\n07_System_Test\nSystem Verification", pos="5.85,5.0!"];
+  IT [label="SWE.5\n06_Integration_Test\nIntegration Verification", pos="5.55,3.9!"];
+  UT [label="SWE.4\n05_Unit_Test\nUnit Verification", pos="5.25,2.8!"];
+
+  IMPL  [label="SWE.3\n04_SW_Implementation\nCAPL / Panel / SysVar", fillcolor="#FFFFFF", pos="5.0,1.55!"];
+  CHAIN [shape=note, style="filled", fillcolor="#FCFCFC", color="#8A8A8A",
+         label="Project Traceability Chain\nReq -> Func -> Flow\nComm -> Var -> Code\nUT -> IT -> ST",
+         pos="5.0,0.2!"];
+
+  REQ -> SYSDES     [color="#707070"];
+  SYSDES -> SWCONTRACT [color="#707070"];
+  SWCONTRACT -> IMPL   [color="#707070"];
+
+  ST -> IT [color="#707070"];
+  IT -> UT [color="#707070"];
+  UT -> IMPL [color="#707070"];
+
+  HARA -> REQ [style=dashed, label="safety basis"];
+  HARA -> ST  [style=dashed, label="safety validation"];
+  TMX  -> REQ [style=dashed, label="left-side traceability"];
+  TMX  -> ST  [style=dashed, label="right-side traceability"];
+
+  REQ        -> ST [style=dashed, constraint=false, label="requirement verification"];
+  SYSDES     -> IT [style=dashed, constraint=false, label="design / flow verification"];
+  SWCONTRACT -> UT [style=dashed, constraint=false, label="comm / variable verification"];
+
+  IMPL -> CHAIN [arrowhead=none, color="#8A8A8A"];
+}
+@enddot

@@ -1,8 +1,8 @@
 # Doc-Code Sync Report
 
-- Generated At: 2026-03-17 18:07:54 UTC
+- Generated At: 2026-03-23 04:13:57 UTC
 - Branch: develop
-- Commit: 759b3c2c
+- Commit: d78174c5
 - Gate Result: FAIL
 
 ## Req Coverage

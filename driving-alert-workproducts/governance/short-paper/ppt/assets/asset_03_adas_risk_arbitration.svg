@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#555"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="760" fill="#ffffff"/>
+  <text x="600" y="60" text-anchor="middle" font-family="Arial" font-size="30" font-weight="700">ADAS Risk Calculation and Arbitration</text>
+  <text x="600" y="95" text-anchor="middle" font-family="Arial" font-size="16" fill="#555">Emergency context and object risk are merged into one selected alert and decel assist request.</text>
+
+  <rect x="90" y="170" width="220" height="140" rx="12" fill="#fafafa" stroke="#777" stroke-width="2"/>
+  <text x="200" y="215" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Input A</text>
+  <text x="200" y="250" text-anchor="middle" font-family="Arial" font-size="20">Emergency Ingress</text>
+  <text x="200" y="280" text-anchor="middle" font-family="Arial" font-size="18" fill="#444">type / ETA / direction</text>
+
+  <rect x="90" y="410" width="220" height="140" rx="12" fill="#fafafa" stroke="#777" stroke-width="2"/>
+  <text x="200" y="455" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Input B</text>
+  <text x="200" y="490" text-anchor="middle" font-family="Arial" font-size="20">Object Context</text>
+  <text x="200" y="520" text-anchor="middle" font-family="Arial" font-size="18" fill="#444">distance / relative speed / scenario</text>
+
+  <rect x="430" y="170" width="320" height="160" rx="12" fill="#fcfcfc" stroke="#777" stroke-width="2"/>
+  <text x="590" y="215" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Emergency Risk</text>
+  <text x="590" y="255" text-anchor="middle" font-family="Courier New" font-size="22" font-weight="700">R_emg = 0.55·etaScore + ...</text>
+  <text x="590" y="292" text-anchor="middle" font-family="Arial" font-size="18" fill="#444">speedScore + directionScore + typeBias</text>
+
+  <rect x="430" y="410" width="320" height="160" rx="12" fill="#fcfcfc" stroke="#777" stroke-width="2"/>
+  <text x="590" y="455" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Object Risk</text>
+  <text x="590" y="495" text-anchor="middle" font-family="Courier New" font-size="22" font-weight="700">R_obj = f(TTC, range, confidence)</text>
+  <text x="590" y="532" text-anchor="middle" font-family="Arial" font-size="18" fill="#444">TTC band + scenario / range / confidence bias</text>
+
+  <rect x="860" y="250" width="230" height="220" rx="12" fill="#ffffff" stroke="#777" stroke-width="2"/>
+  <text x="975" y="295" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Arbitration</text>
+  <text x="975" y="340" text-anchor="middle" font-family="Arial" font-size="18">selectedAlert</text>
+  <text x="975" y="372" text-anchor="middle" font-family="Arial" font-size="18">decelAssistReq</text>
+  <text x="975" y="404" text-anchor="middle" font-family="Arial" font-size="18">fail-safe / recovery</text>
+  <text x="975" y="442" text-anchor="middle" font-family="Courier New" font-size="20" font-weight="700">R = max(R_emg, R_obj)</text>
+
+  <line x1="310" y1="240" x2="430" y2="240" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="310" y1="480" x2="430" y2="480" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="750" y1="250" x2="860" y2="310" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="750" y1="490" x2="860" y2="410" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+</svg>

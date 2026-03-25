@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+
+  <text x="640" y="52" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222">긴급 접근 위험도 산정 흐름</text>
+  <text x="640" y="84" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#555">ETA, 자차 속도, 접근 방향, 긴급차량 유형을 순차적으로 반영하여 최종 위험도를 산정</text>
+
+  <rect x="74" y="150" width="216" height="92" rx="10" fill="#fafafa" stroke="#666" stroke-width="2"/>
+  <text x="182" y="184" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">ETA</text>
+  <text x="182" y="212" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#444">짧을수록 높은 점수</text>
+
+  <rect x="74" y="280" width="216" height="92" rx="10" fill="#fafafa" stroke="#666" stroke-width="2"/>
+  <text x="182" y="314" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">자차 속도</text>
+  <text x="182" y="342" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#444">고속일수록 높은 점수</text>
+
+  <rect x="74" y="410" width="216" height="92" rx="10" fill="#fafafa" stroke="#666" stroke-width="2"/>
+  <text x="182" y="444" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">접근 방향</text>
+  <text x="182" y="472" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#444">전방 접근일수록 높은 점수</text>
+
+  <rect x="74" y="540" width="216" height="92" rx="10" fill="#fafafa" stroke="#666" stroke-width="2"/>
+  <text x="182" y="574" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">긴급차량 유형</text>
+  <text x="182" y="602" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#444">구급차가 더 높은 보정값</text>
+
+  <rect x="390" y="138" width="250" height="110" rx="12" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="515" y="174" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">etaScore</text>
+  <text x="515" y="204" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">시간적 근접도 점수</text>
+  <text x="515" y="226" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#666">ETA가 짧을수록 증가</text>
+
+  <rect x="390" y="268" width="250" height="110" rx="12" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="515" y="304" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">speedScore</text>
+  <text x="515" y="334" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">주행 속도 점수</text>
+  <text x="515" y="356" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#666">상대적 제동 여유를 반영</text>
+
+  <rect x="390" y="398" width="250" height="110" rx="12" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="515" y="434" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">directionScore</text>
+  <text x="515" y="464" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">접근 방향 점수</text>
+  <text x="515" y="486" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#666">자차 전방 접근에 더 높은 가중</text>
+
+  <rect x="390" y="528" width="250" height="110" rx="12" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="515" y="564" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">typeBias</text>
+  <text x="515" y="594" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">차종 보정항</text>
+  <text x="515" y="616" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#666">구급차 &gt; 경찰차</text>
+
+  <line x1="290" y1="196" x2="390" y2="196" stroke="#444" stroke-width="2.2"/>
+  <polygon points="390,196 380,191 380,201" fill="#444"/>
+  <line x1="290" y1="326" x2="390" y2="326" stroke="#444" stroke-width="2.2"/>
+  <polygon points="390,326 380,321 380,331" fill="#444"/>
+  <line x1="290" y1="456" x2="390" y2="456" stroke="#444" stroke-width="2.2"/>
+  <polygon points="390,456 380,451 380,461" fill="#444"/>
+  <line x1="290" y1="586" x2="390" y2="586" stroke="#444" stroke-width="2.2"/>
+  <polygon points="390,586 380,581 380,591" fill="#444"/>
+
+  <rect x="772" y="224" width="376" height="268" rx="14" fill="#fcfcfc" stroke="#555" stroke-width="2.5"/>
+  <text x="960" y="266" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#222">R<tspan baseline-shift="sub" font-size="16">emg</tspan></text>
+  <text x="960" y="304" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#333">긴급 접근 위험도</text>
+
+  <rect x="832" y="340" width="256" height="52" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.8"/>
+  <text x="960" y="371" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#333">시간적 근접도 + 주행 맥락 + 방향 + 차종</text>
+
+  <rect x="832" y="410" width="256" height="52" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.8"/>
+  <text x="960" y="441" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#333">경고 우선순위와 감속 보조 판단의 입력</text>
+
+  <line x1="640" y1="193" x2="772" y2="285" stroke="#666" stroke-width="2"/>
+  <polygon points="772,285 761,284 766,275" fill="#666"/>
+  <line x1="640" y1="323" x2="772" y2="323" stroke="#666" stroke-width="2"/>
+  <polygon points="772,323 761,328 761,318" fill="#666"/>
+  <line x1="640" y1="453" x2="772" y2="361" stroke="#666" stroke-width="2"/>
+  <polygon points="772,361 766,371 761,362" fill="#666"/>
+  <line x1="640" y1="583" x2="772" y2="399" stroke="#666" stroke-width="2"/>
+  <polygon points="772,399 769,410 761,404" fill="#666"/>
+
+  <rect x="144" y="662" width="992" height="30" rx="8" fill="#f7f7f7" stroke="#888" stroke-width="1.2"/>
+  <text x="640" y="682" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#444">긴급 접근 위험도는 절대 모델이라기보다, 시간적 근접도와 상대 주행 맥락을 함께 반영하기 위한 프로젝트형 위험도 함수로 해석한다.</text>
+</svg>

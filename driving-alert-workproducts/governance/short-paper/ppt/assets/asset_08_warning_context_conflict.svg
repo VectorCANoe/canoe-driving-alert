@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#555"/></marker></defs>
+  <rect width="1280" height="720" fill="#fff"/>
+  <text x="640" y="58" text-anchor="middle" font-family="Arial" font-size="30" font-weight="700">Why Warning Conflict Happens</text>
+  <text x="640" y="92" text-anchor="middle" font-family="Arial" font-size="16" fill="#555">Different contexts arrive at the same time, but the driver experiences only one final warning state.</text>
+  <rect x="110" y="200" width="230" height="130" rx="12" fill="#fafafa" stroke="#777" stroke-width="2"/>
+  <text x="225" y="252" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Zone Context</text>
+  <text x="225" y="286" text-anchor="middle" font-family="Arial" font-size="18">School zone</text>
+  <text x="225" y="314" text-anchor="middle" font-family="Arial" font-size="18">Highway / guide lane</text>
+  <rect x="525" y="120" width="230" height="130" rx="12" fill="#fafafa" stroke="#777" stroke-width="2"/>
+  <text x="640" y="172" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Emergency Context</text>
+  <text x="640" y="206" text-anchor="middle" font-family="Arial" font-size="18">Police / ambulance</text>
+  <text x="640" y="234" text-anchor="middle" font-family="Arial" font-size="18">ETA / direction / source</text>
+  <rect x="940" y="200" width="230" height="130" rx="12" fill="#fafafa" stroke="#777" stroke-width="2"/>
+  <text x="1055" y="252" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Object Context</text>
+  <text x="1055" y="286" text-anchor="middle" font-family="Arial" font-size="18">Intersection risk</text>
+  <text x="1055" y="314" text-anchor="middle" font-family="Arial" font-size="18">Merge / TTC risk</text>
+  <rect x="410" y="460" width="460" height="140" rx="14" fill="#fcfcfc" stroke="#777" stroke-width="2"/>
+  <text x="640" y="518" text-anchor="middle" font-family="Arial" font-size="24" font-weight="700">Driver-facing final warning must be one coherent state</text>
+  <text x="640" y="558" text-anchor="middle" font-family="Arial" font-size="18">The project starts from this conflict and recovery problem.</text>
+  <line x1="270" y1="330" x2="500" y2="460" stroke="#666" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="640" y1="250" x2="640" y2="460" stroke="#666" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="1010" y1="330" x2="780" y2="460" stroke="#666" stroke-width="3" marker-end="url(#a)"/>
+</svg>

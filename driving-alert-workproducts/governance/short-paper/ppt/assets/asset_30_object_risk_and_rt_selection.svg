@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+
+  <text x="640" y="52" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222">객체 위험도 구성과 최종 위험도 선택</text>
+  <text x="640" y="84" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#555">TTC 기반 기본 위험도에 편향 항을 더해 Robj를 만들고, 최종 위험도 Rt는 Remg와 Robj 중 큰 값을 선택</text>
+
+  <rect x="86" y="138" width="478" height="472" rx="14" fill="#fcfcfc" stroke="#666" stroke-width="2"/>
+  <text x="325" y="172" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#222">1. 객체 위험도 Robj</text>
+
+  <rect x="126" y="226" width="160" height="76" rx="10" fill="#ffffff" stroke="#666" stroke-width="1.8"/>
+  <text x="206" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222">baseRisk</text>
+  <text x="206" y="279" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">TTC 구간별 기본 위험도</text>
+
+  <rect x="126" y="332" width="160" height="76" rx="10" fill="#ffffff" stroke="#666" stroke-width="1.8"/>
+  <text x="206" y="361" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222">rangeBias</text>
+  <text x="206" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">거리 편향</text>
+
+  <rect x="126" y="438" width="160" height="76" rx="10" fill="#ffffff" stroke="#666" stroke-width="1.8"/>
+  <text x="206" y="467" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222">confidenceBias</text>
+  <text x="206" y="491" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">신뢰도 편향</text>
+
+  <rect x="126" y="544" width="160" height="76" rx="10" fill="#ffffff" stroke="#666" stroke-width="1.8"/>
+  <text x="206" y="573" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222">scenarioBias</text>
+  <text x="206" y="597" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">교차 충돌 / 끼어들기 편향</text>
+
+  <rect x="354" y="338" width="164" height="170" rx="12" fill="#ffffff" stroke="#555" stroke-width="2.1"/>
+  <text x="436" y="372" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#222">R<tspan baseline-shift="sub" font-size="13">obj</tspan></text>
+  <text x="436" y="406" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#333">객체 위험도</text>
+  <text x="436" y="438" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">baseRisk</text>
+  <text x="436" y="460" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">+ rangeBias</text>
+  <text x="436" y="482" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">+ confidenceBias</text>
+  <text x="436" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">+ scenarioBias</text>
+
+  <line x1="286" y1="264" x2="354" y2="376" stroke="#444" stroke-width="2"/>
+  <polygon points="354,376 345,369 354,364" fill="#444"/>
+  <line x1="286" y1="370" x2="354" y2="414" stroke="#444" stroke-width="2"/>
+  <polygon points="354,414 343,413 348,405" fill="#444"/>
+  <line x1="286" y1="476" x2="354" y2="452" stroke="#444" stroke-width="2"/>
+  <polygon points="354,452 344,459 341,450" fill="#444"/>
+  <line x1="286" y1="582" x2="354" y2="490" stroke="#444" stroke-width="2"/>
+  <polygon points="354,490 351,501 343,495" fill="#444"/>
+
+  <rect x="620" y="138" width="574" height="472" rx="14" fill="#fcfcfc" stroke="#666" stroke-width="2"/>
+  <text x="907" y="172" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#222">2. 최종 위험도 R<tspan baseline-shift="sub" font-size="13">t</tspan></text>
+
+  <rect x="688" y="250" width="182" height="86" rx="10" fill="#ffffff" stroke="#666" stroke-width="1.8"/>
+  <text x="779" y="283" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">R<tspan baseline-shift="sub" font-size="12">emg</tspan></text>
+  <text x="779" y="311" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">긴급 접근 위험도</text>
+
+  <rect x="944" y="250" width="182" height="86" rx="10" fill="#ffffff" stroke="#666" stroke-width="1.8"/>
+  <text x="1035" y="283" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">R<tspan baseline-shift="sub" font-size="12">obj</tspan></text>
+  <text x="1035" y="311" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">객체 위험도</text>
+
+  <rect x="778" y="402" width="258" height="136" rx="12" fill="#ffffff" stroke="#555" stroke-width="2.1"/>
+  <text x="907" y="438" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#222">R<tspan baseline-shift="sub" font-size="13">t</tspan> = max(R<tspan baseline-shift="sub" font-size="13">emg</tspan>, R<tspan baseline-shift="sub" font-size="13">obj</tspan>)</text>
+  <text x="907" y="476" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#333">긴급 접근 위험과 객체 위험 중</text>
+  <text x="907" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#333">더 높은 쪽을 최종 위험도로 선택</text>
+
+  <line x1="870" y1="336" x2="870" y2="402" stroke="#444" stroke-width="2"/>
+  <polygon points="870,402 864,392 876,392" fill="#444"/>
+  <line x1="944" y1="336" x2="944" y2="402" stroke="#444" stroke-width="2"/>
+  <polygon points="944,402 938,392 950,392" fill="#444"/>
+
+  <rect x="778" y="566" width="258" height="54" rx="10" fill="#f7f7f7" stroke="#888" stroke-width="1.3"/>
+  <text x="907" y="598" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">R<tspan baseline-shift="sub" font-size="10">t</tspan>는 이후 경고 선택과 감속 보조 판단의 입력이 된다.</text>
+
+  <rect x="122" y="646" width="1036" height="30" rx="8" fill="#f7f7f7" stroke="#888" stroke-width="1.1"/>
+  <text x="640" y="666" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" fill="#444">객체 위험도 구성과 최종 위험도 선택은 분리된 단계이며, R<tspan baseline-shift="sub" font-size="10">t</tspan>에서 긴급 접근과 객체 위험이 하나의 판단 축으로 합쳐진다.</text>
+</svg>

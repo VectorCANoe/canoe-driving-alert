@@ -66,6 +66,7 @@
 
 논문 본문의 안전성과 검증 추적성을 직접 받치는 문서만 포함한다.
 
+- `project_v_model_traceability_map` (appendix reviewer-facing summary)
 - [00d_HARA_Worksheet.md](/Users/juns/code/work/mobis/PBL/driving-alert-workproducts/governance/00d_HARA_Worksheet.md)
 - [00g_Master_Test_Matrix.md](/Users/juns/code/work/mobis/PBL/driving-alert-workproducts/governance/00g_Master_Test_Matrix.md)
 
@@ -76,6 +77,7 @@
 
 선정 이유:
 
+- V-모델 overview는 현재 active baseline 기준으로 `00/01/03/030x/04/05/06/07` 문서 체인을 한 장에서 설명한다.
 - HARA는 위험 시나리오와 안전 목표의 출발점이다.
 - `00g_Master_Test_Matrix`는 프로젝트의 Test Matrix 역할을 수행하며, 요구사항에서 단위시험·통합시험·시스템시험으로 이어지는 추적성을 보여준다.
 - ECU naming과 CAN ID allocation은 PPT 부록과 별첨에서 아키텍처와 인터페이스 설명을 보강하는 표준 문서로 사용한다.

@@ -1,0 +1,186 @@
+@startuml signal_flow_integrated_warning_network
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam ParticipantPadding 18
+skinparam BoxPadding 12
+skinparam NoteBorderColor #808080
+skinparam NoteBackgroundColor #FAFAFA
+
+title Level 3: Integrated Warning Signal Flow\n(Domain Context → V2X → ADAS → CGW → Render / Verification)
+
+box "Ingress Source" #F7F7F7
+participant "Emergency Source /\nValidation Stimulus" as SRC #FFFFFF
+end box
+
+box "Domain Context" #F7F7F7
+participant "Context Owners\nVCU / MDPS / NAV-IVI" as CTX #FFFFFF
+end box
+
+box "Backbone / Decision / Boundary" #F2F2F2
+participant "ETH Backbone" as ETHB #FFFFFF
+participant "V2X" as V2X #FFFFFF
+participant "ADAS" as ADAS #FFFFFF
+participant "CGW" as CGW #FFFFFF
+end box
+
+box "Render / Observation" #F7F7F7
+participant "BCM / CLU /\nHUD / AMP" as RENDER #FFFFFF
+participant "TEST_BAS /\nSGW / DCM / EXT_DIAG" as OBS #FFFFFF
+end box
+
+== 1. Domain context publication ==
+
+CTX -> CGW : frmVehicleStateCanMsg (0x2A0)\nfrmSteeringStateCanMsg (0x100)\nfrmNavigationRouteMsg (0x285)
+
+note right of CGW
+    **Local CAN Context**
+    • Chassis / powertrain state
+    • Steering activity
+    • Zone / route / speed-limit context
+    **Cycle**: 100ms
+    **Network**: 11-bit CAN
+end note
+
+CTX -> ETHB : ethVehicleStateMsg (0x510)\nethSteeringMsg (0x511)\nethNavContextMsg (0x512)
+ETHB -> CGW : backbone context delivery
+
+note right of ETHB
+    **Backbone Context Publication**
+    • 0x510 ~ 0x512
+    • cross-domain shared context
+    **Cycle**: 100ms
+    **Network**: UDP multicast
+end note
+
+== 2. Emergency ingress and acceptance ==
+
+SRC -> ETHB : ETH_EmergencyAlert (0xE100)\nemergencyType / direction / ETA / sourceId / alertState
+ETHB -> V2X : emergency ingress delivery
+
+note right of V2X
+    **Message**: ETH_EmergencyAlert (0xE100)
+    **Signals**:
+    • emergencyType
+    • emergencyDirection
+    • eta
+    • sourceId
+    • alertState
+    **Cycle**: 100ms
+    **Network**: UDP multicast
+end note
+
+note left of SRC
+    **Ingress Interpretation**
+    • product meaning owner = V2X
+    • TEST_SCN may emit the same frame
+      as validation stimulus only
+end note
+
+== 3. Emergency normalization by V2X ==
+
+activate V2X
+V2X -> V2X : Compare active candidates\npriority = emergencyType > ETA > sourceId
+V2X -> V2X : Update Core::emergencyContext\nand CoreState::emergencyIngress*
+V2X -> ETHB : ETH_EmergencyMonitor (0x1C2)\nemergencyContext / timeoutClear
+ETHB -> OBS : emergency monitor observation
+V2X -> ADAS : CoreState::emergencyIngress*
+deactivate V2X
+
+note right of V2X
+    **V2X Owner Rule**
+    • normalize emergency ingress
+    • own timeout clear heartbeat
+    • publish ingress metadata for product consumers
+end note
+
+== 4. Risk calculation and arbitration by ADAS ==
+
+activate ADAS
+ADAS -> ADAS : Compute R_emg\n0.55*etaScore + speedScore + directionScore + typeBias
+ADAS -> ADAS : Compute TTC and R_obj\nfrom object range / relative speed / confidence
+ADAS -> ADAS : Select selectedAlertDecision*\nand decelAssistDecisionReq
+ADAS -> CGW : selectedAlertDecision*\ndecelAssistDecisionReq
+ADAS -> ETHB : ethSelectedAlertMsg (0xE200)\nethEmergencyRiskMsg (0xE210)\nethDecelAssistReqMsg (0xE211)
+ETHB -> OBS : selected alert / risk / decel observation
+deactivate ADAS
+
+note right of ADAS
+    **Decision Contract**
+    • emergency risk + object risk
+    • selected alert before gateway shaping
+    • decel assist decision request
+    **Trigger**: Event + 50ms / 100ms
+    **Network**: local runtime + UDP evidence seam
+end note
+
+== 5. Boundary shaping by CGW ==
+
+activate CGW
+CGW -> CGW : Evaluate boundaryAlive\nwarningPathStatus / e2eHealthState / failSafeMode
+CGW -> CGW : Apply timeout clear and fallback alert\nshape selectedAlertEffective*
+CGW -> RENDER : selectedAlertEffective*\nwarningPathStatus / failSafeMode
+CGW -> ETHB : ethFailSafeStateMsg (0xE212)\nethObjectSafetyStateMsg (0xE216)
+ETHB -> OBS : fail-safe / object-safety observation
+deactivate CGW
+
+note right of CGW
+    **Boundary Rule B01**
+    • stale / timeout clear authority
+    • fail-safe authority
+    • effective warning state publication
+    **Cycle**: 100ms + Event
+    **Network**: local seam + UDP monitor
+end note
+
+== 6. Render feedback and observer aggregation ==
+
+activate RENDER
+RENDER -> RENDER : Update ambient / cluster /\nHUD / audio output state
+deactivate RENDER
+
+activate OBS
+OBS -> OBS : Aggregate Test::base*\nand observe Diag::* semantic state
+deactivate OBS
+
+note over V2X, OBS
+    **Review Points**
+    1. Domain CAN keeps local context ownership
+    2. V2X owns emergency normalization
+    3. ADAS owns warning / risk arbitration
+    4. CGW owns timeout clear and fail-safe shaping
+    5. TEST_BAS / DIAG observe after product meaning is published
+end note
+
+== 7. Continuous monitoring and timeout clear ==
+
+loop Every 100ms
+    CTX -> ETHB : context refresh
+    ETHB -> CGW : context delivery
+    SRC -> ETHB : emergency refresh if active
+    ETHB -> V2X : emergency delivery
+    V2X -> ETHB : emergency monitor refresh
+end
+
+SRC -> ETHB : Emergency refresh stops
+activate V2X
+V2X -> V2X : 1000ms watchdog expiry\nset timeoutClear = 1
+V2X -> CGW : emergencyContext clear / timeoutClear pulse
+deactivate V2X
+
+activate CGW
+CGW -> CGW : Raise fallback alert if boundary path\nstill requires degraded warning
+CGW -> RENDER : selectedAlertEffective* update\nor clear transition
+deactivate CGW
+
+note over V2X, RENDER
+    **Timeout / Recovery Rule**
+    • V2X decides timeout clear pulse
+    • CGW decides final degraded / fail-safe shaping
+    • render and observer nodes consume published result only
+end note
+
+@enduml

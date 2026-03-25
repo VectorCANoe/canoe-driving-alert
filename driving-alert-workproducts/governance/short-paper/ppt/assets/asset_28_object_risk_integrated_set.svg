@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+
+  <text x="640" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222">객체 기반 위험도 산정 구조</text>
+  <text x="640" y="82" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#555">거리와 상대속도로 TTC를 계산하고, TTC 구간별 기본 위험도와 편향 항을 더해 최종 객체 위험도를 산정</text>
+
+  <rect x="54" y="122" width="548" height="530" rx="14" fill="#fcfcfc" stroke="#666" stroke-width="2"/>
+  <text x="328" y="155" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#222">1. 입력과 TTC 계산</text>
+
+  <rect x="92" y="198" width="168" height="82" rx="10" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="176" y="230" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">d</text>
+  <text x="176" y="258" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#444">객체 거리</text>
+
+  <rect x="92" y="330" width="168" height="82" rx="10" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="176" y="362" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">|v<tspan baseline-shift="sub" font-size="13">rel</tspan>|</text>
+  <text x="176" y="390" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#444">절대 상대속도</text>
+
+  <rect x="318" y="240" width="240" height="126" rx="12" fill="#ffffff" stroke="#555" stroke-width="2.3"/>
+  <text x="438" y="275" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#222">TTC</text>
+  <text x="438" y="313" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" fill="#333">TTC = 3600 · d / |v<tspan baseline-shift="sub" font-size="13">rel</tspan>|</text>
+  <text x="438" y="341" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#555">거리와 상대속도를 ms 기준 시간축으로 정규화</text>
+
+  <line x1="260" y1="239" x2="318" y2="282" stroke="#444" stroke-width="2.2"/>
+  <polygon points="318,282 307,280 312,271" fill="#444"/>
+  <line x1="260" y1="371" x2="318" y2="324" stroke="#444" stroke-width="2.2"/>
+  <polygon points="318,324 307,328 313,319" fill="#444"/>
+
+  <rect x="98" y="488" width="460" height="104" rx="12" fill="#f7f7f7" stroke="#888" stroke-width="1.6"/>
+  <text x="328" y="520" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#333">해석</text>
+  <text x="328" y="548" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">TTC가 짧을수록 충돌 임박 상태로 간주하고</text>
+  <text x="328" y="570" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">이후 구간별 기본 위험도를 먼저 정한 뒤 편향 항을 더한다.</text>
+
+  <rect x="642" y="122" width="584" height="530" rx="14" fill="#fcfcfc" stroke="#666" stroke-width="2"/>
+  <text x="934" y="155" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#222">2. TTC 구간과 최종 위험도</text>
+
+  <rect x="684" y="198" width="250" height="264" rx="12" fill="#ffffff" stroke="#777" stroke-width="1.8"/>
+  <text x="809" y="230" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222">TTC 구간별 baseRisk</text>
+
+  <rect x="710" y="252" width="198" height="42" rx="8" fill="#fafafa" stroke="#666" stroke-width="1.4"/>
+  <text x="809" y="278" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#333">TTC ≤ 1200 ms  →  85</text>
+
+  <rect x="722" y="306" width="174" height="40" rx="8" fill="#ffffff" stroke="#666" stroke-width="1.4"/>
+  <text x="809" y="331" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#333">≤ 2000 ms  →  72</text>
+
+  <rect x="734" y="358" width="150" height="38" rx="8" fill="#fafafa" stroke="#666" stroke-width="1.4"/>
+  <text x="809" y="382" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#333">≤ 3000 ms  →  58</text>
+
+  <rect x="746" y="408" width="126" height="36" rx="8" fill="#ffffff" stroke="#666" stroke-width="1.4"/>
+  <text x="809" y="430" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#333">≤ 4500 ms  →  40</text>
+
+  <rect x="758" y="456" width="102" height="34" rx="8" fill="#fafafa" stroke="#666" stroke-width="1.4"/>
+  <text x="809" y="477" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#333">&gt; 4500  →  18</text>
+
+  <rect x="974" y="198" width="214" height="182" rx="12" fill="#ffffff" stroke="#777" stroke-width="1.8"/>
+  <text x="1081" y="230" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222">편향 항</text>
+  <text x="1081" y="274" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#444">거리 편향</text>
+  <text x="1081" y="302" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#444">신뢰도 편향</text>
+  <text x="1081" y="330" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#444">교차 충돌 편향</text>
+  <text x="1081" y="358" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#444">끼어들기 편향</text>
+
+  <rect x="956" y="456" width="250" height="120" rx="12" fill="#ffffff" stroke="#555" stroke-width="2.3"/>
+  <text x="1081" y="492" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222">R<tspan baseline-shift="sub" font-size="15">obj</tspan></text>
+  <text x="1081" y="524" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#333">최종 객체 위험도</text>
+  <text x="1081" y="550" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">baseRisk + rangeBias</text>
+  <text x="1081" y="570" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">+ confidenceBias + scenarioBias</text>
+
+  <line x1="934" y1="330" x2="974" y2="330" stroke="#444" stroke-width="2"/>
+  <polygon points="974,330 964,335 964,325" fill="#444"/>
+  <line x1="1081" y1="380" x2="1081" y2="456" stroke="#444" stroke-width="2"/>
+  <polygon points="1081,456 1075,446 1087,446" fill="#444"/>
+
+  <line x1="558" y1="302" x2="684" y2="302" stroke="#444" stroke-width="2.2"/>
+  <polygon points="684,302 674,307 674,297" fill="#444"/>
+  <text x="622" y="288" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#555">TTC 기준 위험도 결정</text>
+
+  <rect x="126" y="676" width="1028" height="26" rx="8" fill="#f7f7f7" stroke="#888" stroke-width="1.1"/>
+  <text x="640" y="694" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" fill="#444">객체 기반 위험도는 TTC를 중심 축으로 삼되, 거리·신뢰도·시나리오 편향을 더해 교차로 및 합류구간 위험을 하나의 판단 축으로 정리한다.</text>
+</svg>

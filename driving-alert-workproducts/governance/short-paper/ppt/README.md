@@ -22,6 +22,8 @@
   - 슬라이드별 목적, 핵심 메시지, 근거 문서, 권장 시각자료
 - `ppt_asset_guide.md`
   - 실제 PPT 편집 시 사용할 이미지/도식 가이드
+- `assets/`
+  - 실제로 바로 넣을 수 있는 SVG 자산 팩
 - `driving_alert_process_presentation.tex`
   - 실제 발표용 Beamer 원고
 - `build_presentation.sh`

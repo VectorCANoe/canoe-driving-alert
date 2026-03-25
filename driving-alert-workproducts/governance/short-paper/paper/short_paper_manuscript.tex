@@ -28,6 +28,8 @@
 \setlength{\parskip}{0.5em}
 \setlength{\parindent}{1.5em}
 \emergencystretch=2em
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
 
 \newcommand{\placeholderfigure}[2]{%
   \fbox{%
@@ -65,6 +67,8 @@
 \end{abstract}
 
 \noindent\textbf{핵심어}: 실시간 주행 경고, CANoe SIL, CAN/Ethernet, 긴급차량 접근, HMI, Traceability
+
+\tableofcontents
 
 \section{서론}
 
@@ -234,7 +238,7 @@ Decel effective result & CGW & effective seam & CGW & CGW & fail-safe 적용 후
 
 \subsection{CAPL 기반 구현 구성}
 
-구현은 CANoe SIL 환경에서 CAPL 기반 논리 ECU로 구성하였다~\cite{canoe}. 동력 계층은 EMS, TCU, VCU를 중심으로 차량 기초 거동을 생성하고, 차체 계층은 ESC와 MDPS를 중심으로 제동 및 조향 상태를 제공한다. 그 위에서 V2X는 긴급 이벤트 정규화와 활성 이벤트 유지, ADAS는 위험도 산정과 최종 경고 중재를 담당하며, BCM, IVI, CLU, HUD, AMP는 최종 경고를 시각 및 청각 표면으로 변환한다. SGW, DCM, IBOX, EXT\_DIAG는 서비스 상태와 경계 조건을 해석하고 검증에 필요한 상태 정보를 제공하는 진단·관측 계층으로 구성하였다.
+구현은 CANoe SIL 환경에서 CAPL 기반 논리 ECU로 구성하였다~\cite{canoe}. 동력 계층은 EMS, TCU, VCU를 중심으로 차량 기초 거동을 생성하고, 차체 계층은 ESC와 MDPS를 중심으로 제동 및 조향 상태를 제공한다. 그 위에서 V2X는 긴급 이벤트 정규화와 활성 이벤트 유지, ADAS는 위험도 산정과 최종 경고 중재를 담당하며, BCM, IVI, CLU, HUD, AMP는 최종 경고를 시각 및 청각 표면으로 변환한다. SGW, DCM, IBOX, EXT\_DIAG는 서비스 상태와 경계 상태를 모니터링하고, 진단 및 검증에 필요한 상태 정보를 제공하는 계층으로 구성하였다.
 
 이 구현 구조의 특징은 핵심 경고 로직이 V2X와 ADAS에 집중되어 있다는 점이다. V2X는 긴급 이벤트의 선택과 해제를 담당하고, ADAS는 위험도 계산과 경고 상태 결정을 담당한다. 따라서 본 컨셉의 핵심 구현은 개별 출력 ECU에 있는 것이 아니라, 두 계층 사이의 정보 정규화와 중재 규칙에 있다고 볼 수 있다. 구현 명세 역시 위험 판단, 표시·안내, 동력 상태, 게이트웨이, 검증 하네스를 구분하여 정리하고 있으며~\cite{sw_impl}, 이는 실제 시험 자산과 직접 연결되는 구현 단위로 기능한다.
 

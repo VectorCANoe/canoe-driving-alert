@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+
+  <text x="640" y="58" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222">TTC 구간별 기본 위험도</text>
+  <text x="640" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#555">객체 기반 위험도는 TTC 구간에 따라 기본 위험도를 먼저 부여한 뒤 편향 항을 더해 산정</text>
+
+  <rect x="130" y="162" width="1020" height="86" rx="10" fill="#fafafa" stroke="#666" stroke-width="2"/>
+  <text x="265" y="198" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">TTC ≤ 1200 ms</text>
+  <text x="265" y="226" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#444">baseRisk = 85</text>
+
+  <rect x="220" y="276" width="840" height="80" rx="10" fill="#fcfcfc" stroke="#666" stroke-width="2"/>
+  <text x="640" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">1200 ms &lt; TTC ≤ 2000 ms</text>
+  <text x="640" y="336" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#444">baseRisk = 72</text>
+
+  <rect x="310" y="384" width="660" height="76" rx="10" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="640" y="416" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">2000 ms &lt; TTC ≤ 3000 ms</text>
+  <text x="640" y="440" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#444">baseRisk = 58</text>
+
+  <rect x="400" y="486" width="480" height="72" rx="10" fill="#fcfcfc" stroke="#666" stroke-width="2"/>
+  <text x="640" y="516" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">3000 ms &lt; TTC ≤ 4500 ms</text>
+  <text x="640" y="540" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#444">baseRisk = 40</text>
+
+  <rect x="490" y="582" width="300" height="62" rx="10" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="640" y="608" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">TTC &gt; 4500 ms</text>
+  <text x="640" y="630" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#444">baseRisk = 18</text>
+
+  <line x1="640" y1="248" x2="640" y2="276" stroke="#555" stroke-width="2"/>
+  <polygon points="640,276 634,266 646,266" fill="#555"/>
+  <line x1="640" y1="356" x2="640" y2="384" stroke="#555" stroke-width="2"/>
+  <polygon points="640,384 634,374 646,374" fill="#555"/>
+  <line x1="640" y1="460" x2="640" y2="486" stroke="#555" stroke-width="2"/>
+  <polygon points="640,486 634,476 646,476" fill="#555"/>
+  <line x1="640" y1="558" x2="640" y2="582" stroke="#555" stroke-width="2"/>
+  <polygon points="640,582 634,572 646,572" fill="#555"/>
+
+  <rect x="166" y="668" width="948" height="28" rx="8" fill="#f7f7f7" stroke="#888" stroke-width="1.2"/>
+  <text x="640" y="687" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#444">이후 거리 편향, 신뢰도 편향, 교차 충돌 및 끼어들기 편향을 더해 최종 객체 위험도 R_obj를 계산한다.</text>
+</svg>

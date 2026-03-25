@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+
+  <text x="640" y="52" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222">Fail-Safe 및 복귀 규칙</text>
+  <text x="640" y="84" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#555">CGW가 경계 상태를 평가해 warningPathStatus, failSafeMode, effective alert를 shaping하는 구조</text>
+
+  <rect x="70" y="132" width="300" height="430" rx="14" fill="#fcfcfc" stroke="#666" stroke-width="2"/>
+  <text x="220" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#222">Trigger</text>
+
+  <rect x="102" y="205" width="236" height="72" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.5"/>
+  <text x="220" y="234" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#333">stale / timeoutClear</text>
+  <text x="220" y="258" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">1000ms 무갱신 또는 stale 입력</text>
+
+  <rect x="102" y="301" width="236" height="72" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.5"/>
+  <text x="220" y="330" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#333">boundary loss</text>
+  <text x="220" y="354" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">vehicle / nav / steering / ingress age 초과</text>
+
+  <rect x="102" y="397" width="236" height="72" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.5"/>
+  <text x="220" y="426" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#333">force fail-safe</text>
+  <text x="220" y="450" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">validation override 또는 강제 강등</text>
+
+  <rect x="102" y="493" width="236" height="52" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.5"/>
+  <text x="220" y="525" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#444">입력 이상은 모두 CGW 경계 규칙으로 수렴</text>
+
+  <rect x="462" y="132" width="356" height="430" rx="14" fill="#fafafa" stroke="#666" stroke-width="2"/>
+  <text x="640" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#222">CGW Boundary Shaping</text>
+
+  <rect x="520" y="210" width="240" height="74" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.5"/>
+  <text x="640" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#333">warningPathStatus</text>
+  <text x="640" y="264" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">0: Normal / 1: Degraded / 2: Failed</text>
+
+  <rect x="520" y="316" width="240" height="74" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.5"/>
+  <text x="640" y="346" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#333">failSafeMode</text>
+  <text x="640" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">warningPathStatus에 따라 0/1/2 결정</text>
+
+  <rect x="520" y="422" width="240" height="108" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.5"/>
+  <text x="640" y="452" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#333">effective shaping</text>
+  <text x="640" y="476" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">level &lt; 3 이면 최소 경고 보장</text>
+  <text x="640" y="498" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">failSafeMode ≥ 1 이면 level ≥ 4로 강등</text>
+  <text x="640" y="520" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">decelAssistReq는 차단, fallback type 적용</text>
+
+  <line x1="370" y1="336" x2="520" y2="336" stroke="#444" stroke-width="2.2"/>
+  <polygon points="520,336 510,331 510,341" fill="#444"/>
+
+  <rect x="910" y="132" width="300" height="430" rx="14" fill="#fcfcfc" stroke="#666" stroke-width="2"/>
+  <text x="1060" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#222">Outcome</text>
+
+  <rect x="942" y="205" width="236" height="84" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.5"/>
+  <text x="1060" y="235" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#333">Normal</text>
+  <text x="1060" y="259" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">warningPathStatus = 0</text>
+  <text x="1060" y="279" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">failSafeMode = 0</text>
+
+  <rect x="942" y="317" width="236" height="84" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.5"/>
+  <text x="1060" y="347" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#333">Degraded</text>
+  <text x="1060" y="371" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">최소 경고 유지 / decel 차단</text>
+  <text x="1060" y="391" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">warningPathStatus = 1</text>
+
+  <rect x="942" y="429" width="236" height="84" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.5"/>
+  <text x="1060" y="459" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#333">Failed</text>
+  <text x="1060" y="483" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">강등 경고 유지 / fallback type</text>
+  <text x="1060" y="503" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">warningPathStatus = 2</text>
+
+  <line x1="760" y1="250" x2="942" y2="250" stroke="#444" stroke-width="2.2"/>
+  <polygon points="942,250 932,245 932,255" fill="#444"/>
+  <line x1="760" y1="358" x2="942" y2="358" stroke="#444" stroke-width="2.2"/>
+  <polygon points="942,358 932,353 932,363" fill="#444"/>
+  <line x1="760" y1="468" x2="942" y2="468" stroke="#444" stroke-width="2.2"/>
+  <polygon points="942,468 932,463 932,473" fill="#444"/>
+
+  <rect x="180" y="610" width="920" height="72" rx="10" fill="#f7f7f7" stroke="#888" stroke-width="1.2"/>
+  <text x="210" y="638" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#333">Recovery</text>
+  <text x="210" y="662" font-family="Arial, sans-serif" font-size="14" fill="#444">경계 상태가 정상으로 회복되면 warningPathStatus = 0, failSafeMode = 0으로 복귀하고, 최소 경고를 해제한 뒤 정상 effective alert 경로로 되돌아간다.</text>
+</svg>

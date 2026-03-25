@@ -69,11 +69,26 @@ Source Rule & Canonical source paths are preserved in each supplementary note \\
 
 \subsection*{원문 기준 경로}
 \begin{itemize}
+\item \path{appendix/source/governance/project_v_model_traceability_map.md}
+\item \path{appendix/source/governance/project_v_model_traceability_map.puml}
 \item \texttt{driving-alert-workproducts/governance/00d\_HARA\_Worksheet.md}
 \item \texttt{driving-alert-workproducts/governance/00e\_ECU\_Naming\_Standard.md}
 \item \texttt{driving-alert-workproducts/governance/00f\_CAN\_ID\_Allocation\_Standard.md}
 \item \texttt{driving-alert-workproducts/governance/00g\_Master\_Test\_Matrix.md}
 \end{itemize}
+
+\subsection*{프로젝트 V-모델과 추적 구조}
+본 별첨의 V-모델 도식은 이론적 일반 모델이 아니라, 현재 active baseline에서 실제로 운영 중인 문서 체계와 검증 체계를 기준으로 정리하였다. 특히 \texttt{00d\_HARA\_Worksheet}, \texttt{01\_Requirements}, \texttt{03 / 0301 / 0302}, \texttt{0303 / 0304}, \texttt{04\_SW\_Implementation}, \texttt{05 / 06 / 07}의 연결 관계와 \texttt{00g\_Master\_Test\_Matrix}의 traceability 역할을 한 장에서 읽을 수 있도록 구성하였다.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.80\textwidth]{../figures/project_v_model_traceability_map.png}
+\caption{Project V-model and traceability map. Development-side documents, verification-side documents, and cross-cutting governance documents are arranged according to the active baseline used in this project.}
+\end{figure}
+\clearpage
+
+\input{partials/project_v_model_traceability_map_appendix.tex}
+\clearpage
 
 \input{generated/00d_HARA_Worksheet.tex}
 \clearpage
@@ -97,7 +112,26 @@ Source Rule & Canonical source paths are preserved in each supplementary note \\
 \item \texttt{canoe/docs/Kor/contracts/multibus-policy.md}
 \item \texttt{canoe/docs/Kor/contracts/panel-sysvar-contract.md}
 \item \texttt{canoe/docs/Kor/contracts/ethernet-backbone.md}
+\item \path{appendix/source/contracts/network_architecture_driving_alert_active_baseline.puml}
+\item \path{appendix/source/contracts/signal_flow_integrated_warning_network.puml}
 \end{itemize}
+
+\subsection*{네트워크 설계도}
+본 별첨의 네트워크 설계도는 현재 \texttt{canoe} 실행 구조를 기준으로 재작성하였다. 문서 최신화가 완전히 끝나지 않은 항목은 \texttt{V2X}, \texttt{ADAS}, \texttt{CGW}, \texttt{TEST\_SCN}, \texttt{TEST\_BAS}의 CAPL 구현과 runtime contract 문서를 함께 대조하여 owner, bus, observer 경계를 확정하였다.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../figures/network_architecture_driving_alert_active_baseline.png}
+\caption{Integrated warning network topology. Domain CAN, ETH Backbone, decision ownership, boundary authority, render/output, validation/diagnostic separation을 한 장에서 정리하였다.}
+\end{figure}
+\clearpage
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../figures/signal_flow_integrated_warning_network.png}
+\caption{Integrated warning signal flow. Context publication, emergency ingress, V2X normalization, ADAS arbitration, CGW boundary shaping, render/verification, timeout recovery 규칙을 순차적으로 정리하였다.}
+\end{figure}
+\clearpage
 
 \input{generated/communication-matrix.tex}
 \clearpage

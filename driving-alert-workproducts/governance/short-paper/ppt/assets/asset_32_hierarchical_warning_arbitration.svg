@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+
+  <text x="640" y="52" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222">계층형 경고 중재 구조</text>
+  <text x="640" y="84" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#555">긴급 경고, 구간 경고, 객체 위험 경고를 하나의 선택 규칙 위에서 중재하고 최종 경고 상태로 수렴</text>
+
+  <rect x="72" y="154" width="252" height="88" rx="10" fill="#fafafa" stroke="#666" stroke-width="1.8"/>
+  <text x="198" y="186" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">긴급 경고 후보</text>
+  <text x="198" y="214" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">V2X 정규화 결과</text>
+
+  <rect x="72" y="288" width="252" height="88" rx="10" fill="#fafafa" stroke="#666" stroke-width="1.8"/>
+  <text x="198" y="320" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">구간 경고 후보</text>
+  <text x="198" y="348" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">school zone / highway / guide lane</text>
+
+  <rect x="72" y="422" width="252" height="88" rx="10" fill="#fafafa" stroke="#666" stroke-width="1.8"/>
+  <text x="198" y="454" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">객체 위험 경고 후보</text>
+  <text x="198" y="482" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">교차로 / 합류 / TTC 위험</text>
+
+  <rect x="72" y="556" width="252" height="88" rx="10" fill="#fafafa" stroke="#666" stroke-width="1.8"/>
+  <text x="198" y="588" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">안전 보정 조건</text>
+  <text x="198" y="616" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">stale / fail-safe / timeout clear</text>
+
+  <rect x="420" y="150" width="446" height="500" rx="14" fill="#fcfcfc" stroke="#555" stroke-width="2.2"/>
+  <text x="643" y="186" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#222">Arbitration Policy</text>
+
+  <rect x="486" y="232" width="314" height="82" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.8"/>
+  <text x="643" y="264" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222">1. 긴급 경고 우선</text>
+  <text x="643" y="290" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">긴급 이벤트가 유효하면 최우선 후보로 승격</text>
+
+  <rect x="486" y="342" width="314" height="82" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.8"/>
+  <text x="643" y="374" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222">2. 비긴급 상태 비교</text>
+  <text x="643" y="400" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">구간 경고와 객체 위험 경고를 비교해 단일 선택</text>
+
+  <rect x="486" y="452" width="314" height="82" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.8"/>
+  <text x="643" y="484" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222">3. 경고 강도 보정</text>
+  <text x="643" y="510" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">decel assist 활성 시 경고 level 상향</text>
+
+  <rect x="486" y="562" width="314" height="60" rx="10" fill="#ffffff" stroke="#777" stroke-width="1.8"/>
+  <text x="643" y="588" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222">4. 최소 안전 경고 보장</text>
+  <text x="643" y="608" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">stale / fail-safe 시 degraded alert 유지</text>
+
+  <line x1="324" y1="198" x2="420" y2="272" stroke="#444" stroke-width="2"/>
+  <polygon points="420,272 409,270 414,261" fill="#444"/>
+  <line x1="324" y1="332" x2="420" y2="382" stroke="#444" stroke-width="2"/>
+  <polygon points="420,382 409,381 414,372" fill="#444"/>
+  <line x1="324" y1="466" x2="420" y2="492" stroke="#444" stroke-width="2"/>
+  <polygon points="420,492 410,497 411,487" fill="#444"/>
+  <line x1="324" y1="600" x2="420" y2="592" stroke="#444" stroke-width="2"/>
+  <polygon points="420,592 410,598 409,588" fill="#444"/>
+
+  <rect x="954" y="230" width="236" height="96" rx="10" fill="#ffffff" stroke="#666" stroke-width="1.8"/>
+  <text x="1072" y="264" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">selectedAlertType</text>
+  <text x="1072" y="292" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">최종 경고 유형</text>
+
+  <rect x="954" y="372" width="236" height="96" rx="10" fill="#ffffff" stroke="#666" stroke-width="1.8"/>
+  <text x="1072" y="406" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">selectedAlertLevel</text>
+  <text x="1072" y="434" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">최종 경고 강도</text>
+
+  <rect x="954" y="514" width="236" height="96" rx="10" fill="#ffffff" stroke="#666" stroke-width="1.8"/>
+  <text x="1072" y="548" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#222">decelAssistReq</text>
+  <text x="1072" y="576" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">감속 보조 요청</text>
+
+  <line x1="866" y1="274" x2="954" y2="278" stroke="#444" stroke-width="2"/>
+  <polygon points="954,278 944,283 944,273" fill="#444"/>
+  <line x1="866" y1="498" x2="954" y2="420" stroke="#444" stroke-width="2"/>
+  <polygon points="954,420 950,430 943,423" fill="#444"/>
+  <line x1="866" y1="592" x2="954" y2="562" stroke="#444" stroke-width="2"/>
+  <polygon points="954,562 946,569 943,560" fill="#444"/>
+
+  <rect x="126" y="676" width="1028" height="28" rx="8" fill="#f7f7f7" stroke="#888" stroke-width="1.1"/>
+  <text x="640" y="694" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" fill="#444">계층형 중재는 단순 우선순위 나열이 아니라, 경고 후보 비교·강도 보정·안전 보정이 연속적으로 결합된 구조이다.</text>
+</svg>

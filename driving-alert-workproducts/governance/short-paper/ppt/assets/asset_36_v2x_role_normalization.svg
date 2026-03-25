@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#5d5d5d"/>
+    </marker>
+  </defs>
+
+  <style>
+    .title { font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; font-size: 32px; font-weight: 700; fill: #111111; }
+    .subtitle { font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; font-size: 17px; fill: #555555; }
+    .section { font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; font-size: 22px; font-weight: 700; fill: #111111; }
+    .label { font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; font-size: 18px; fill: #333333; }
+    .small { font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; font-size: 15px; fill: #555555; }
+    .mono { font-family: Menlo, Consolas, "SF Mono", monospace; font-size: 17px; fill: #222222; }
+    .root { fill: #f6f6f6; stroke: #363636; stroke-width: 2.2; rx: 14; ry: 14; }
+    .box { fill: #fafafa; stroke: #6c6c6c; stroke-width: 1.7; rx: 12; ry: 12; }
+    .arrow { stroke: #5d5d5d; stroke-width: 2.6; fill: none; marker-end: url(#arrow); }
+  </style>
+
+  <text x="640" y="58" text-anchor="middle" class="title">V2X 기능 역할</text>
+  <text x="640" y="88" text-anchor="middle" class="subtitle">다수의 긴급 이벤트 후보를 비교 가능한 입력으로 정규화하여 활성 이벤트 1개를 결정</text>
+
+  <rect x="80" y="170" width="270" height="360" class="root"/>
+  <text x="215" y="214" text-anchor="middle" class="section">긴급 이벤트 후보</text>
+
+  <rect x="115" y="248" width="200" height="66" class="box"/>
+  <text x="215" y="288" text-anchor="middle" class="label">후보 A</text>
+  <text x="215" y="307" text-anchor="middle" class="small">ambulance / ETA 4 / ID 11</text>
+
+  <rect x="115" y="332" width="200" height="66" class="box"/>
+  <text x="215" y="372" text-anchor="middle" class="label">후보 B</text>
+  <text x="215" y="391" text-anchor="middle" class="small">police / ETA 3 / ID 07</text>
+
+  <rect x="115" y="416" width="200" height="66" class="box"/>
+  <text x="215" y="456" text-anchor="middle" class="label">후보 C</text>
+  <text x="215" y="475" text-anchor="middle" class="small">ambulance / ETA 6 / ID 03</text>
+
+  <text x="215" y="512" text-anchor="middle" class="small">수신 자체보다 활성 이벤트 결정이 중요</text>
+
+  <rect x="450" y="170" width="380" height="360" class="root"/>
+  <text x="640" y="214" text-anchor="middle" class="section">V2X 정규화</text>
+
+  <rect x="500" y="252" width="280" height="70" class="box"/>
+  <text x="640" y="292" text-anchor="middle" class="label">1. 긴급차량 유형 우선순위</text>
+  <text x="640" y="311" text-anchor="middle" class="small">구급차 우선, 이후 동일 유형 비교</text>
+
+  <rect x="500" y="338" width="280" height="70" class="box"/>
+  <text x="640" y="378" text-anchor="middle" class="label">2. ETA 비교</text>
+  <text x="640" y="397" text-anchor="middle" class="small">도착 예상 시간이 더 짧은 후보 우선</text>
+
+  <rect x="500" y="424" width="280" height="70" class="box"/>
+  <text x="640" y="464" text-anchor="middle" class="label">3. Source ID 정렬</text>
+  <text x="640" y="483" text-anchor="middle" class="small">동점 조건에서 활성 이벤트 1개로 고정</text>
+
+  <rect x="930" y="170" width="270" height="360" class="root"/>
+  <text x="1065" y="214" text-anchor="middle" class="section">정규화 결과</text>
+
+  <rect x="975" y="270" width="180" height="90" class="box"/>
+  <text x="1065" y="308" text-anchor="middle" class="label">활성 이벤트 1개</text>
+  <text x="1065" y="334" text-anchor="middle" class="mono">active emergency</text>
+
+  <rect x="975" y="396" width="180" height="84" class="box"/>
+  <text x="1065" y="430" text-anchor="middle" class="label">ADAS / HMI 참조</text>
+  <text x="1065" y="454" text-anchor="middle" class="small">비교 가능한 입력으로 사용</text>
+
+  <path d="M 350 350 L 450 350" class="arrow"/>
+  <path d="M 830 350 L 930 350" class="arrow"/>
+
+  <text x="640" y="635" text-anchor="middle" class="small">V2X는 외부 이벤트를 그대로 전달하지 않고, 경고 판단이 가능한 입력 상태로 정리하는 전처리 계층이다.</text>
+</svg>

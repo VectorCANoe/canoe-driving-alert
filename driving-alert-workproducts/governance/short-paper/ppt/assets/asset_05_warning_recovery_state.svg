@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#555"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="700" fill="#ffffff"/>
+  <text x="600" y="60" text-anchor="middle" font-family="Arial" font-size="30" font-weight="700">Warning Selection and Recovery State</text>
+
+  <rect x="90" y="280" width="220" height="120" rx="14" fill="#fafafa" stroke="#777" stroke-width="2"/>
+  <text x="200" y="345" text-anchor="middle" font-family="Arial" font-size="24" font-weight="700">Normal</text>
+
+  <rect x="360" y="180" width="220" height="120" rx="14" fill="#fcfcfc" stroke="#777" stroke-width="2"/>
+  <text x="470" y="245" text-anchor="middle" font-family="Arial" font-size="24" font-weight="700">Selected Alert</text>
+
+  <rect x="360" y="400" width="220" height="120" rx="14" fill="#fcfcfc" stroke="#777" stroke-width="2"/>
+  <text x="470" y="465" text-anchor="middle" font-family="Arial" font-size="24" font-weight="700">Fail-safe</text>
+
+  <rect x="880" y="280" width="220" height="120" rx="14" fill="#ffffff" stroke="#777" stroke-width="2"/>
+  <text x="990" y="345" text-anchor="middle" font-family="Arial" font-size="24" font-weight="700">Recovery</text>
+
+  <line x1="310" y1="320" x2="360" y2="240" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="310" y1="360" x2="360" y2="440" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="580" y1="240" x2="880" y2="320" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="580" y1="440" x2="880" y2="360" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <text x="335" y="255" font-family="Arial" font-size="16">alert raised</text>
+  <text x="320" y="430" font-family="Arial" font-size="16">boundary / fallback</text>
+  <text x="700" y="255" font-family="Arial" font-size="16">timeout clear / stable release</text>
+  <text x="710" y="435" font-family="Arial" font-size="16">recovery condition met</text>
+</svg>

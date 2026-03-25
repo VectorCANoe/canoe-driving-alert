@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1320" viewBox="0 0 1600 1320">
+  <rect width="1600" height="1320" fill="#ffffff"/>
+
+  <style>
+    .title { font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; font-size: 34px; font-weight: 700; fill: #111111; }
+    .subtitle { font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; font-size: 16px; fill: #555555; }
+    .domain { font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; font-size: 21px; font-weight: 700; fill: #111111; }
+    .count { font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; font-size: 14px; fill: #666666; }
+    .tree { font-family: Menlo, Consolas, "SF Mono", monospace; font-size: 15px; fill: #222222; }
+    .box { fill: #fafafa; stroke: #5a5a5a; stroke-width: 1.6; rx: 10; ry: 10; }
+    .rootbox { fill: #f7f7f7; stroke: #333333; stroke-width: 2; rx: 10; ry: 10; }
+    .line { stroke: #6a6a6a; stroke-width: 1.6; fill: none; }
+  </style>
+
+  <text x="800" y="54" text-anchor="middle" class="title">Driving Alert Active Baseline ECU Tree</text>
+  <text x="800" y="82" text-anchor="middle" class="subtitle">ECU nodes only · current visible import bank</text>
+
+  <rect x="610" y="104" width="380" height="74" class="rootbox"/>
+  <text x="800" y="136" text-anchor="middle" class="domain">Project ECU Nodes</text>
+  <text x="800" y="160" text-anchor="middle" class="count">Root → Domain → ECU node</text>
+
+  <!-- connectors -->
+  <path d="M 800 178 L 800 220" class="line"/>
+  <path d="M 220 220 L 1380 220" class="line"/>
+  <path d="M 220 220 L 220 244" class="line"/>
+  <path d="M 690 220 L 690 244" class="line"/>
+  <path d="M 1160 220 L 1160 244" class="line"/>
+  <path d="M 220 682 L 220 706" class="line"/>
+  <path d="M 690 682 L 690 706" class="line"/>
+  <path d="M 1160 682 L 1160 706" class="line"/>
+
+  <!-- Chassis -->
+  <rect x="50" y="244" width="340" height="420" class="box"/>
+  <text x="70" y="276" class="domain">Chassis</text>
+  <text x="370" y="276" text-anchor="end" class="count">15 nodes</text>
+  <text x="70" y="312" class="tree">├─ VCU</text>
+  <text x="70" y="336" class="tree">├─ ESC</text>
+  <text x="70" y="360" class="tree">├─ MDPS</text>
+  <text x="70" y="384" class="tree">├─ ABS</text>
+  <text x="70" y="408" class="tree">├─ EPB</text>
+  <text x="70" y="432" class="tree">├─ TPMS</text>
+  <text x="70" y="456" class="tree">├─ SAS</text>
+  <text x="70" y="480" class="tree">├─ VSM</text>
+  <text x="70" y="504" class="tree">├─ EHB</text>
+  <text x="70" y="528" class="tree">├─ ECS</text>
+  <text x="70" y="552" class="tree">├─ CDC</text>
+  <text x="70" y="576" class="tree">├─ ASM</text>
+  <text x="70" y="600" class="tree">├─ RWS</text>
+  <text x="70" y="624" class="tree">├─ ACU</text>
+  <text x="70" y="648" class="tree">└─ ODS</text>
+
+  <!-- Body -->
+  <rect x="520" y="244" width="340" height="420" class="box"/>
+  <text x="540" y="276" class="domain">Body</text>
+  <text x="840" y="276" text-anchor="end" class="count">24 nodes</text>
+  <text x="540" y="312" class="tree">├─ BCM        ├─ MIR</text>
+  <text x="540" y="336" class="tree">├─ DATC       ├─ RATC</text>
+  <text x="540" y="360" class="tree">├─ SMK        ├─ SRF</text>
+  <text x="540" y="384" class="tree">├─ AFLS       ├─ HLM</text>
+  <text x="540" y="408" class="tree">├─ WIP        ├─ CSM</text>
+  <text x="540" y="432" class="tree">├─ BSEC       ├─ AHLS</text>
+  <text x="540" y="456" class="tree">├─ DOOR_FL    ├─ ADM</text>
+  <text x="540" y="480" class="tree">├─ DOOR_FR    ├─ PTG</text>
+  <text x="540" y="504" class="tree">├─ DOOR_RL    ├─ BIO</text>
+  <text x="540" y="528" class="tree">├─ DOOR_RR    └─ MSC</text>
+  <text x="540" y="552" class="tree">├─ SEAT_DRV</text>
+  <text x="540" y="576" class="tree">├─ SEAT_PASS</text>
+  <text x="540" y="600" class="tree">└─ TGM</text>
+
+  <!-- Infotainment -->
+  <rect x="990" y="244" width="340" height="420" class="box"/>
+  <text x="1010" y="276" class="domain">Infotainment</text>
+  <text x="1310" y="276" text-anchor="end" class="count">13 nodes</text>
+  <text x="1010" y="312" class="tree">├─ IVI</text>
+  <text x="1010" y="336" class="tree">├─ CLU</text>
+  <text x="1010" y="360" class="tree">├─ HUD</text>
+  <text x="1010" y="384" class="tree">├─ AMP</text>
+  <text x="1010" y="408" class="tree">├─ VCS</text>
+  <text x="1010" y="432" class="tree">├─ TMU</text>
+  <text x="1010" y="456" class="tree">├─ NAV</text>
+  <text x="1010" y="480" class="tree">├─ OTA</text>
+  <text x="1010" y="504" class="tree">├─ DKEY</text>
+  <text x="1010" y="528" class="tree">├─ RSE</text>
+  <text x="1010" y="552" class="tree">├─ PGS</text>
+  <text x="1010" y="576" class="tree">├─ PAK</text>
+  <text x="1010" y="600" class="tree">└─ CPAY</text>
+
+  <!-- Powertrain -->
+  <rect x="50" y="706" width="340" height="500" class="box"/>
+  <text x="70" y="738" class="domain">Powertrain</text>
+  <text x="370" y="738" text-anchor="end" class="count">14 nodes</text>
+  <text x="70" y="774" class="tree">├─ EMS</text>
+  <text x="70" y="798" class="tree">├─ TCU</text>
+  <text x="70" y="822" class="tree">├─ _4WD</text>
+  <text x="70" y="846" class="tree">├─ BAT_BMS</text>
+  <text x="70" y="870" class="tree">├─ FPCM</text>
+  <text x="70" y="894" class="tree">├─ LVR</text>
+  <text x="70" y="918" class="tree">├─ ISG</text>
+  <text x="70" y="942" class="tree">├─ EOP</text>
+  <text x="70" y="966" class="tree">├─ EWP</text>
+  <text x="70" y="990" class="tree">├─ OBC</text>
+  <text x="70" y="1014" class="tree">├─ DCDC</text>
+  <text x="70" y="1038" class="tree">├─ MCU</text>
+  <text x="70" y="1062" class="tree">├─ INVERTER</text>
+  <text x="70" y="1086" class="tree">└─ CPC</text>
+
+  <!-- ETH Backbone -->
+  <rect x="520" y="706" width="340" height="500" class="box"/>
+  <text x="540" y="738" class="domain">ETH Backbone</text>
+  <text x="840" y="738" text-anchor="end" class="count">9 nodes</text>
+  <text x="540" y="774" class="tree">├─ CGW</text>
+  <text x="540" y="798" class="tree">├─ V2X</text>
+  <text x="540" y="822" class="tree">├─ SGW</text>
+  <text x="540" y="846" class="tree">├─ IBOX</text>
+  <text x="540" y="870" class="tree">├─ DCM</text>
+  <text x="540" y="894" class="tree">├─ EDR</text>
+  <text x="540" y="918" class="tree">├─ ETHB</text>
+  <text x="540" y="942" class="tree">├─ TEST_SCN</text>
+  <text x="540" y="966" class="tree">└─ TEST_BAS</text>
+
+  <!-- ADAS -->
+  <rect x="990" y="706" width="500" height="500" class="box"/>
+  <text x="1010" y="738" class="domain">ADAS</text>
+  <text x="1470" y="738" text-anchor="end" class="count">26 nodes</text>
+  <text x="1010" y="774" class="tree">├─ ADAS         ├─ SRR_FL       ├─ PKM</text>
+  <text x="1010" y="798" class="tree">├─ SCC          ├─ SRR_FR       ├─ RPC</text>
+  <text x="1010" y="822" class="tree">├─ LDWS_LKAS    ├─ SRR_RL       ├─ RRM</text>
+  <text x="1010" y="846" class="tree">├─ FCA          ├─ SRR_RR       ├─ SPM</text>
+  <text x="1010" y="870" class="tree">├─ BCW          ├─ PUS          ├─ HWP</text>
+  <text x="1010" y="894" class="tree">├─ LCA          ├─ DMS          ├─ LDR</text>
+  <text x="1010" y="918" class="tree">├─ SPAS         ├─ OMS          └─ TRM</text>
+  <text x="1010" y="942" class="tree">├─ RSPA         ├─ AEB</text>
+  <text x="1010" y="966" class="tree">├─ AVM          ├─ FCAM</text>
+  <text x="1010" y="990" class="tree">└─ FRADAR</text>
+
+</svg>

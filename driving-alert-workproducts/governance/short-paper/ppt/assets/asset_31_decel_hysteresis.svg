@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+
+  <text x="640" y="52" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222">감속 보조 on/off 안정화</text>
+  <text x="640" y="84" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#555">단일 임계값이 아니라 hysteresis 구조를 사용해 감속 보조의 반복 진동을 줄이도록 설계</text>
+
+  <rect x="110" y="150" width="360" height="436" rx="14" fill="#fcfcfc" stroke="#666" stroke-width="2"/>
+  <text x="290" y="186" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#222">판정 규칙</text>
+
+  <text x="290" y="246" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#333">u<tspan baseline-shift="sub" font-size="14">t</tspan> =</text>
+
+  <text x="290" y="312" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#333">1,   R<tspan baseline-shift="sub" font-size="12">t</tspan> ≥ T<tspan baseline-shift="sub" font-size="12">on</tspan></text>
+  <text x="290" y="360" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#333">0,   R<tspan baseline-shift="sub" font-size="12">t</tspan> ≤ T<tspan baseline-shift="sub" font-size="12">off</tspan></text>
+  <text x="290" y="408" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#333">u<tspan baseline-shift="sub" font-size="12">t−1</tspan>,   T<tspan baseline-shift="sub" font-size="12">off</tspan> &lt; R<tspan baseline-shift="sub" font-size="12">t</tspan> &lt; T<tspan baseline-shift="sub" font-size="12">on</tspan></text>
+
+  <rect x="160" y="466" width="260" height="82" rx="10" fill="#ffffff" stroke="#888" stroke-width="1.4"/>
+  <text x="290" y="496" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#333">의미</text>
+  <text x="290" y="522" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">중간 구간에서는 이전 상태를 유지하여</text>
+  <text x="290" y="542" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#444">감속 보조의 on/off 흔들림을 줄인다.</text>
+
+  <rect x="560" y="150" width="612" height="436" rx="14" fill="#fcfcfc" stroke="#666" stroke-width="2"/>
+  <text x="866" y="186" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#222">상태 해석</text>
+
+  <line x1="642" y1="500" x2="1090" y2="500" stroke="#444" stroke-width="2"/>
+  <line x1="700" y1="250" x2="700" y2="500" stroke="#444" stroke-width="2"/>
+  <text x="1104" y="506" font-family="Arial, sans-serif" font-size="14" fill="#333">R<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+  <text x="690" y="236" font-family="Arial, sans-serif" font-size="14" fill="#333">u<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+
+  <line x1="760" y1="438" x2="1030" y2="438" stroke="#666" stroke-width="1.6" stroke-dasharray="6 6"/>
+  <text x="1042" y="442" font-family="Arial, sans-serif" font-size="14" fill="#444">T<tspan baseline-shift="sub" font-size="10">on</tspan></text>
+
+  <line x1="760" y1="358" x2="1030" y2="358" stroke="#666" stroke-width="1.6" stroke-dasharray="6 6"/>
+  <text x="1042" y="362" font-family="Arial, sans-serif" font-size="14" fill="#444">T<tspan baseline-shift="sub" font-size="10">off</tspan></text>
+
+  <polyline points="760,500 760,500 820,500 860,438 930,438 980,358 1030,358"
+            fill="none" stroke="#222" stroke-width="3"/>
+
+  <rect x="670" y="544" width="390" height="42" rx="8" fill="#ffffff" stroke="#888" stroke-width="1.2"/>
+  <text x="865" y="570" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">T<tspan baseline-shift="sub" font-size="10">on</tspan> 이상에서 활성, T<tspan baseline-shift="sub" font-size="10">off</tspan> 이하에서 해제, 중간 구간은 이전 상태 유지</text>
+
+  <rect x="132" y="646" width="1016" height="30" rx="8" fill="#f7f7f7" stroke="#888" stroke-width="1.1"/>
+  <text x="640" y="666" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.5" fill="#444">이 구조는 동일 입력이 유지되는 동안 동일 감속 보조 상태가 유지되도록 하여 경고와 제어의 진동을 줄이는 데 목적이 있다.</text>
+</svg>

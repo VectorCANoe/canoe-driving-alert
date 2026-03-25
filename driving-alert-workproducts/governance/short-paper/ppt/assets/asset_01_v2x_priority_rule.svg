@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#555"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="700" fill="#ffffff"/>
+  <text x="600" y="60" text-anchor="middle" font-family="Arial" font-size="30" font-weight="700">V2X Priority Normalization Rule</text>
+  <text x="600" y="95" text-anchor="middle" font-family="Arial" font-size="16" fill="#555">Emergency type, ETA, and SourceID are normalized into one active event.</text>
+
+  <rect x="120" y="150" width="260" height="120" rx="12" fill="#fafafa" stroke="#777" stroke-width="2"/>
+  <text x="250" y="195" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Step 1</text>
+  <text x="250" y="230" text-anchor="middle" font-family="Arial" font-size="20">Type Priority</text>
+  <text x="250" y="258" text-anchor="middle" font-family="Arial" font-size="18" fill="#444">Ambulance &gt; Police</text>
+
+  <rect x="470" y="150" width="260" height="120" rx="12" fill="#fafafa" stroke="#777" stroke-width="2"/>
+  <text x="600" y="195" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Step 2</text>
+  <text x="600" y="230" text-anchor="middle" font-family="Arial" font-size="20">ETA Comparison</text>
+  <text x="600" y="258" text-anchor="middle" font-family="Arial" font-size="18" fill="#444">Shorter ETA first</text>
+
+  <rect x="820" y="150" width="260" height="120" rx="12" fill="#fafafa" stroke="#777" stroke-width="2"/>
+  <text x="950" y="195" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Step 3</text>
+  <text x="950" y="230" text-anchor="middle" font-family="Arial" font-size="20">SourceID Tie-break</text>
+  <text x="950" y="258" text-anchor="middle" font-family="Arial" font-size="18" fill="#444">Lower SourceID first</text>
+
+  <line x1="380" y1="210" x2="470" y2="210" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="730" y1="210" x2="820" y2="210" stroke="#666" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="220" y="390" width="760" height="160" rx="12" fill="#fcfcfc" stroke="#888" stroke-width="2"/>
+  <text x="600" y="445" text-anchor="middle" font-family="Courier New" font-size="26" font-weight="700">e* = argmin(-rank(type), ETA, SourceID)</text>
+  <text x="600" y="490" text-anchor="middle" font-family="Arial" font-size="18">The selected event is the one with the highest type priority, then the shortest ETA,</text>
+  <text x="600" y="520" text-anchor="middle" font-family="Arial" font-size="18">and finally the smallest SourceID under tie conditions.</text>
+</svg>

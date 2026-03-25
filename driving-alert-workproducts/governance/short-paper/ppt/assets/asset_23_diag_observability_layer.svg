@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+
+  <text x="640" y="56" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222">진단·관측 계층 구조</text>
+  <text x="640" y="88" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#555">SGW / DCM / EXT_DIAG는 경고 판단이 아니라 상태 해석과 경계 조건 관측을 담당</text>
+
+  <rect x="160" y="150" width="960" height="190" rx="12" fill="#fafafa" stroke="#777" stroke-width="2"/>
+  <text x="640" y="184" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#222">핵심 경고 판단 계층</text>
+
+  <rect x="240" y="215" width="180" height="82" rx="10" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="330" y="248" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#222">V2X</text>
+  <text x="330" y="276" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">긴급 이벤트 정규화</text>
+
+  <rect x="550" y="215" width="180" height="82" rx="10" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="640" y="248" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#222">ADAS</text>
+  <text x="640" y="276" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">위험도 산정 / 경고 중재</text>
+
+  <rect x="860" y="215" width="180" height="82" rx="10" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="950" y="248" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#222">CGW</text>
+  <text x="950" y="276" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">Boundary shaping / Effective output</text>
+
+  <line x1="420" y1="256" x2="550" y2="256" stroke="#444" stroke-width="2.4"/>
+  <polygon points="550,256 540,251 540,261" fill="#444"/>
+  <line x1="730" y1="256" x2="860" y2="256" stroke="#444" stroke-width="2.4"/>
+  <polygon points="860,256 850,251 850,261" fill="#444"/>
+
+  <rect x="170" y="372" width="940" height="214" rx="12" fill="#f7f7f7" stroke="#888" stroke-width="2"/>
+  <text x="640" y="406" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#222">진단·관측 계층</text>
+
+  <rect x="230" y="438" width="190" height="92" rx="10" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="325" y="472" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#222">SGW</text>
+  <text x="325" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">서비스 상태 관측</text>
+
+  <rect x="545" y="438" width="190" height="92" rx="10" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="640" y="472" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#222">DCM</text>
+  <text x="640" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">경계 조건 / 진단 상태 해석</text>
+
+  <rect x="860" y="438" width="190" height="92" rx="10" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="955" y="472" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#222">EXT_DIAG</text>
+  <text x="955" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#444">외부 관측 / 상태 확인</text>
+
+  <line x1="325" y1="340" x2="325" y2="438" stroke="#666" stroke-width="2" stroke-dasharray="8 8"/>
+  <polygon points="325,438 319,428 331,428" fill="#666"/>
+  <line x1="640" y1="340" x2="640" y2="438" stroke="#666" stroke-width="2" stroke-dasharray="8 8"/>
+  <polygon points="640,438 634,428 646,428" fill="#666"/>
+  <line x1="955" y1="340" x2="955" y2="438" stroke="#666" stroke-width="2" stroke-dasharray="8 8"/>
+  <polygon points="955,438 949,428 961,428" fill="#666"/>
+
+  <text x="346" y="356" font-family="Arial, sans-serif" font-size="13" fill="#555">service state</text>
+  <text x="662" y="356" font-family="Arial, sans-serif" font-size="13" fill="#555">boundary / fail-safe state</text>
+  <text x="977" y="356" font-family="Arial, sans-serif" font-size="13" fill="#555">observability surface</text>
+
+  <rect x="170" y="614" width="940" height="66" rx="10" fill="#ffffff" stroke="#888" stroke-width="1.5"/>
+  <text x="205" y="642" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#333">설계 의미</text>
+  <text x="205" y="666" font-family="Arial, sans-serif" font-size="14" fill="#444">경고 판단 계층과 진단·관측 계층을 분리함으로써, 상태 해석과 Fail-Safe 판단 근거를 독립적으로 설명하고 검증할 수 있도록 구성하였다.</text>
+</svg>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+  <text x="640" y="56" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#222">핵심 정량 결과 지표</text>
+  <text x="640" y="92" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#555">실측값 입력 후 사용</text>
+
+  <rect x="80" y="160" width="350" height="390" rx="14" fill="#fafafa" stroke="#666" stroke-width="2"/>
+  <text x="255" y="215" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#222">N1</text>
+  <text x="255" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#222">V2X 긴급 이벤트 선택 정확도</text>
+  <text x="255" y="315" text-anchor="middle" font-family="Arial, sans-serif" font-size="54" font-weight="700" fill="#111">[N1] %</text>
+  <text x="255" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#444">정상 선택 시나리오 수 / 전체 V2X 선택 시나리오 수</text>
+  <text x="255" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" fill="#444">대표 시험: IT_006, ST_016, ST_017</text>
+  <text x="255" y="468" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#666">유형 &gt; ETA &gt; SourceID 규칙 준수율</text>
+
+  <rect x="465" y="160" width="350" height="390" rx="14" fill="#fcfcfc" stroke="#666" stroke-width="2"/>
+  <text x="640" y="215" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#222">N2</text>
+  <text x="640" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#222">교차로·합류구간 통합 경고 성공률</text>
+  <text x="640" y="315" text-anchor="middle" font-family="Arial, sans-serif" font-size="54" font-weight="700" fill="#111">[N2] %</text>
+  <text x="640" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#444">정상 통합 경고 시나리오 수 / 전체 교차로·합류 시나리오 수</text>
+  <text x="640" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" fill="#444">대표 시험: IT_018, ST_022, ST_023</text>
+  <text x="640" y="468" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#666">긴급 접근 정보와 TTC 기반 위험의 단일 경고 수렴율</text>
+
+  <rect x="850" y="160" width="350" height="390" rx="14" fill="#ffffff" stroke="#666" stroke-width="2"/>
+  <text x="1025" y="215" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#222">N3</text>
+  <text x="1025" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#222">복귀 안정성 준수율</text>
+  <text x="1025" y="315" text-anchor="middle" font-family="Arial, sans-serif" font-size="54" font-weight="700" fill="#111">[N3] %</text>
+  <text x="1025" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#444">정상 복귀 시나리오 수 / 전체 복귀 시나리오 수</text>
+  <text x="1025" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" fill="#444">대표 시험: IT_009, ST_035, ST_036, ST_045, ST_046</text>
+  <text x="1025" y="468" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#666">timeout clear, fail-safe, 정상 복귀 기준 준수율</text>
+
+  <rect x="110" y="596" width="1060" height="72" rx="10" fill="#f7f7f7" stroke="#888" stroke-width="1.5"/>
+  <text x="140" y="626" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#333">입력 규칙</text>
+  <text x="140" y="652" font-family="Arial, sans-serif" font-size="15" fill="#444">CANoe XML export 또는 verdict 집계값으로 [N1], [N2], [N3]만 교체해 사용</text>
+</svg>

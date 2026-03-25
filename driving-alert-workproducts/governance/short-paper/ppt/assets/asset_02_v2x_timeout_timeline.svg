@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#555"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="700" fill="#ffffff"/>
+  <text x="600" y="60" text-anchor="middle" font-family="Arial" font-size="30" font-weight="700">V2X Timeout Clear Timeline</text>
+  <text x="600" y="95" text-anchor="middle" font-family="Arial" font-size="16" fill="#555">The event stays active while packets arrive and is cleared after the timeout window.</text>
+
+  <line x1="120" y1="360" x2="1080" y2="360" stroke="#444" stroke-width="4" marker-end="url(#arrow)"/>
+  <text x="1085" y="365" font-family="Arial" font-size="18">time</text>
+
+  <line x1="220" y1="250" x2="220" y2="470" stroke="#777" stroke-width="2" stroke-dasharray="6,6"/>
+  <text x="220" y="230" text-anchor="middle" font-family="Arial" font-size="18">Ingress</text>
+  <text x="220" y="495" text-anchor="middle" font-family="Arial" font-size="16">packet received</text>
+
+  <line x1="760" y1="250" x2="760" y2="470" stroke="#777" stroke-width="2" stroke-dasharray="6,6"/>
+  <text x="760" y="230" text-anchor="middle" font-family="Arial" font-size="18">Timeout</text>
+  <text x="760" y="495" text-anchor="middle" font-family="Arial" font-size="16">1000 ms clear</text>
+
+  <rect x="240" y="310" width="500" height="100" rx="10" fill="#f2f2f2" stroke="#777" stroke-width="2"/>
+  <text x="490" y="365" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">alertState = ACTIVE</text>
+
+  <rect x="790" y="310" width="190" height="100" rx="10" fill="#ffffff" stroke="#777" stroke-width="2"/>
+  <text x="885" y="365" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">CLEAR</text>
+
+  <text x="240" y="590" font-family="Arial" font-size="18">Rule</text>
+  <text x="290" y="590" font-family="Courier New" font-size="20" font-weight="700">if now - lastIngressTs &gt;= 1000 ms then clear</text>
+</svg>
