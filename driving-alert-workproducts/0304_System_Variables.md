@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.29
-**Date**: 2026-03-09
+**Version**: 2.32
+**Date**: 2026-03-18
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -51,7 +51,7 @@
 | 30 | Infotainment | speedLimit | uint32 | 0 | 255 | 30 | 구간 제한속도(km/h) |
 | 31 | Core | speedLimitNorm | uint32 | 0 | 255 | 30 | 게이트웨이 정규화 후 구간 제한속도 |
 | 32 | Core | proximityRiskLevel | uint32 | 0 | 100 | 0 | 긴급차량 근접 위험도 산정값 |
-| 33 | Core | decelAssistReq | uint32 | 0 | 1 | 0 | 감속 보조 요청 플래그 |
+| 33 | Core | decelAssistReq | uint32 | 0 | 1 | 0 | CGW가 fail-safe 정책을 반영한 effective 감속 보조 요청 플래그 |
 | 34 | Core | failSafeMode | uint32 | 0 | 2 | 0 | 경고 정보 전달 이상 강등 모드 |
 | 35 | CoreState | warningPathStatus | uint32 | 0 | 2 | 0 | 경고 정보 전달 경로 상태(정상/열화/단절) |
 | 36 | CoreState | e2eHealthState | uint32 | 0 | 2 | 0 | E2E 경로 헬스 상태 |
@@ -73,6 +73,22 @@
 | 52 | Test | historyQueryOffset | uint32 | 0 | 255 | 0 | 경고 이력 조회 오프셋 입력(Validation-only) |
 | 53 | Test | historyQueryCode | uint32 | 0 | 65535 | 0 | 경고 이력 조회 코드 입력(Validation-only) |
 | 54 | Test | turnLampOverride | uint32 | 0 | 2 | 0 | 방향지시등 상태 오버라이드 입력(Validation-only) |
+| 55 | CoreState | emergencyIngressDirection | uint32 | 0 | 3 | 0 | V2X owner가 정규화한 긴급 접근 방향 메타데이터 |
+| 56 | CoreState | emergencyIngressEtaSec | uint32 | 0 | 255 | 255 | V2X owner가 정규화한 긴급 접근 ETA 메타데이터 |
+| 57 | CoreState | emergencyIngressSourceId | uint32 | 0 | 255 | 255 | V2X owner가 정규화한 긴급 메시지 Source ID 메타데이터 |
+| 58 | Core | accelPedalNorm | uint32 | 0 | 100 | 0 | CHS_GW에서 정규화한 가속 페달 입력 |
+| 59 | CoreState | selectedAlertDecisionLevel | uint32 | 0 | 7 | 0 | ADAS owner가 산출한 경고 decision 레벨(경계/Failsafe 적용 전) |
+| 60 | CoreState | selectedAlertDecisionType | uint32 | 0 | 15 | 0 | ADAS owner가 산출한 경고 decision 타입(경계/Failsafe 적용 전) |
+| 61 | CoreState | selectedAlertEffectiveLevel | uint32 | 0 | 7 | 0 | CGW owner가 경계/Failsafe 정책을 반영한 경고 effective 레벨 |
+| 62 | CoreState | selectedAlertEffectiveType | uint32 | 0 | 15 | 0 | CGW owner가 경계/Failsafe 정책을 반영한 경고 effective 타입 |
+| 63 | CoreState | selectedAlertGateReason | uint32 | 0 | 3 | 0 | 경고 effective shaping 원인(0=없음 1=timeout-clear 2=boundary-hold 3=fail-safe-floor) |
+| 64 | V2X | ingressHeartbeat | uint32 | 0 | 65535 | 0 | V2X ingress freshness 추적용 heartbeat |
+| 65 | CoreState | driverReleaseReason | uint32 | 0 | 3 | 0 | ADAS owner가 판단한 운전자 감속 해제 원인(0=없음 1=조향 개입 2=제동 개입 3=예약) |
+| 66 | Test | compatPoliceDispatch | uint32 | 0 | 1 | 0 | dispatch-only 검증 경로에서 사용하는 경찰 출동 compat 입력(Validation-only) |
+| 67 | Test | compatAmbulanceDispatch | uint32 | 0 | 1 | 0 | dispatch-only 검증 경로에서 사용하는 구급차 출동 compat 입력(Validation-only) |
+| 68 | Test | compatEmergencyDirection | uint32 | 0 | 3 | 0 | dispatch-only 검증 경로에서 사용하는 긴급 방향 compat 입력(Validation-only) |
+| 69 | Test | compatEmergencyEta | uint32 | 0 | 255 | 255 | dispatch-only 검증 경로에서 사용하는 긴급 ETA compat 입력(Validation-only) |
+| 70 | Test | compatEmergencySourceId | uint32 | 0 | 255 | 255 | dispatch-only 검증 경로에서 사용하는 긴급 Source ID compat 입력(Validation-only) |
 | 101 | Chassis | AccelPedal | uint32 | 0 | 100 | 0 | 가속 페달 입력 |
 | 102 | Chassis | BrakePedal | uint32 | 0 | 100 | 0 | 브레이크 페달 입력 |
 | 103 | Chassis | SteeringState | uint32 | 0 | 3 | 0 | 조향 상태 |
@@ -284,4 +300,19 @@
 | 317 | Diag | RouteOwner | uint32 | 0 | 3 | 0 | 진단 경로 소유 해석(0=None 1=SGW 2=DCM 3=RuntimeOwner) |
 | 318 | Diag | ResponseKind | uint32 | 0 | 4 | 0 | 진단 응답 분류(0=None 1=Positive 2=Negative 3=Timeout 4=Unavailable) |
 | 319 | Diag | ReasonCode | uint32 | 0 | 65535 | 0 | 진단 판정 근거 코드 |
+| 320 | Diag | LastRequestTarget | uint32 | 0 | 255 | 0 | 최근 진단 요청 대상 코드 |
+| 321 | Diag | LastRequestSid | uint32 | 0 | 255 | 0 | 최근 진단 요청 서비스 ID |
+| 322 | Diag | LastRequestDidHigh | uint32 | 0 | 255 | 0 | 최근 진단 요청 DID 상위 바이트 |
+| 323 | Diag | LastRequestDidLow | uint32 | 0 | 255 | 0 | 최근 진단 요청 DID 하위 바이트 |
+| 324 | Diag | LastRequestSourceBus | uint32 | 0 | 255 | 0 | 최근 진단 요청 입력 버스 코드 |
+| 325 | Diag | RequestCounter | uint32 | 0 | 2147483647 | 0 | 진단 요청 누적 카운터 |
+| 326 | Diag | LastRequestTimeMs | uint32 | 0 | 4294967295 | 0 | 최근 진단 요청 시각(ms) |
+| 327 | Diag | LastResponseTarget | uint32 | 0 | 255 | 0 | 최근 진단 응답 대상 코드 |
+| 328 | Diag | LastResponseCode | uint32 | 0 | 255 | 0 | 최근 진단 응답 코드 |
+| 329 | Diag | LastResponseData0 | uint32 | 0 | 255 | 0 | 최근 진단 응답 요약 데이터0 |
+| 330 | Diag | LastResponseData1 | uint32 | 0 | 255 | 0 | 최근 진단 응답 요약 데이터1 |
+| 331 | Diag | LastResponseOk | uint32 | 0 | 1 | 0 | 최근 진단 응답 양성 여부 |
+| 332 | Diag | LastResponseSourceBus | uint32 | 0 | 255 | 0 | 최근 진단 응답 출력 버스 코드 |
+| 333 | Diag | ResponseCounter | uint32 | 0 | 2147483647 | 0 | 진단 응답 누적 카운터 |
+| 334 | Diag | LastResponseTimeMs | uint32 | 0 | 4294967295 | 0 | 최근 진단 응답 시각(ms) |
 ---

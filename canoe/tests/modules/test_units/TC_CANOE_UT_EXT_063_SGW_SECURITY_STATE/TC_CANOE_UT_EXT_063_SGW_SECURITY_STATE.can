@@ -1,0 +1,34 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_EXT_063_SGW_SECURITY_STATE()
+{
+  // Verify SGW semantic owner outputs only; request/response detail belongs to DCM-facing tests.
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(203, 1500, 2100))
+  {
+    return;
+  }
+
+  if (!waitForDiagSemanticState(-1, 3, 1, -1, -1, 1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("security-state", 3, (long)@Diag::SecurityState, "SecurityState");
+  assertIntEq("route-owner", 1, (long)@Diag::RouteOwner, "RouteOwner");
+
+  resetValidationHarnessIfNeeded();
+}

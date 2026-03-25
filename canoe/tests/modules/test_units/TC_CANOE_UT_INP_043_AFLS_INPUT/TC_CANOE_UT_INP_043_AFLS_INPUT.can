@@ -1,0 +1,69 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gAflsMode;
+  int gLevelStep;
+}
+
+on message frmAflsStateMsg
+{
+  gAflsMode = this.AflsMode;
+  gLevelStep = this.LevelStep;
+}
+
+long waitForAflsInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gAflsMode != 1 ||
+          gLevelStep < 1) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gAflsMode != 1 ||
+      gLevelStep < 1)
+  {
+    testStepFail("afls-input-state", "AFLS input timeout waited=%d mode=%d level=%d",
+                 waitedMs,
+                 gAflsMode,
+                 gLevelStep);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_043_AFLS_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gAflsMode = -1;
+  gLevelStep = -1;
+  if (!launchScenarioAndWait(230, 800, 1300))
+  {
+    return;
+  }
+
+  if (!waitForAflsInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s230_aflsMode", 1, gAflsMode, "aflsMode");
+  assertIntMin("s230_levelStep", 1, gLevelStep, "levelStep");
+
+  resetValidationHarnessIfNeeded();
+}

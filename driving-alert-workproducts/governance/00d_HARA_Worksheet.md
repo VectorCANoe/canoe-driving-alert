@@ -37,3 +37,12 @@
 | HC-06 | Req_057~Req_066 | 객체 인지 또는 위험 판단 실패로 위험 경고가 누락되거나 지연됨 | 교차로, 합류, 전방 접근 등 객체 다중 입력 상황 | S3 | E3 | C2 | C (Provisional) | 객체 기반 위험 경고는 TTC, 상대속도, 상대거리, 경로 간섭 조건을 기준으로 정해진 시간 내 발생, 강등, 해제되어야 한다. | 입력 반영 100ms + 경고/강등 150ms | 주요 검증 ID: `IT_009`, `ST_026`, `ST_027`, `ST_028` (객체 기반 경고 발생/강등/기록 확인) |
 | HC-07 | Req_075~Req_079 | 입력 stale 또는 채널 장애 시 경고 연속성과 강등 출력이 유지되지 않음 | 입력 신뢰도 저하, 경로 단절, 출력 채널 일부 장애 | S3 | E3 | C2 | C (Provisional) | 저신뢰 입력은 안전 규칙에 따라 차단 또는 강등되고, 채널 장애 시 대체 경고 채널이 유지되어야 한다. | stale 1000ms + 전환 150ms | 주요 검증 ID: `IT_026`, `ST_032`, `ST_033` (stale 보호, 채널 전환, 대체 출력 유지 확인) |
 | HC-08 | Req_080~Req_082 | 오디오 경합, 팝업 과밀, 채널 비동기로 경고 인지가 어려워짐 | 다중 HMI 부하, 경고 동시다발 상황 | S2 | E3 | C2 | B (Provisional) | 다중 경고 상황에서도 우선 경고의 인지성과 채널 동기 일관성이 유지되어야 한다. | 인지성/동기 복원 150ms | 주요 검증 ID: `IT_040`, `ST_033` |
+
+## 4. 연계 검증 문서
+
+HARA의 안전 목표와 timing 가정은 아래 CANoe-side 검증 계약 문서와 함께 유지한다.
+
+- `canoe/docs/verification/oracle.md`
+- `canoe/docs/verification/acceptance-criteria.md`
+- `canoe/docs/verification/test-asset-mapping.md`
+- `canoe/docs/verification/execution-guide.md`

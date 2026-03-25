@@ -1,0 +1,43 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+/*
+  IT_044
+  Integration-level external TX path for police emergency propagation.
+  Periodicity closure remains Ethernet-trace gated.
+*/
+export testcase TC_CANOE_IT_ETH_044_POLICE_TX()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(4, 700, 1200))
+  {
+    return;
+  }
+
+  if (!waitForObservedSelectedAlertState(6, 1, 800) ||
+      !waitForObservedFailSafe(1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("it-police-tx-context", 1, (long)@Core::emergencyContext, "emergencyContext");
+  assertIntEq("it-police-tx-observed-context", 1, (long)@Test::obsEmergencyContext, "ethEmergencyContext");
+  assertIntEq("it-police-tx-alert-state", 1, (long)@V2X::alertState, "alertState");
+  assertIntEq("it-police-tx-emergency-type", 1, (long)@V2X::emergencyType, "emergencyType");
+  assertIntEq("it-police-tx-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("it-police-tx-type", 1, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  assertIntEq("it-police-tx-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

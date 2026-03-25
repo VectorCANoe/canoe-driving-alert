@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.35
-**Date**: 2026-03-09
+**Version**: 3.36
+**Date**: 2026-03-17
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -258,4 +258,6 @@
 |  |  |  | EnergyFlowMode | 4~5 | 에너지 흐름 방향 | 0~3 | CGW에서 EMS, TCU에 전달 |
 | frmPowertrainCtrlAuthMsg | 0x110 | 1 | CtrlAuthLevel | 0~1 | 파워트레인 제어 권한 상태 | 0~3 | CGW에서 EMS, TCU에 전달 |
 |  |  |  | CtrlAuthSource | 8~11 | 파워트레인 제어 출처 | 0~15 | CGW에서 EMS, TCU에 전달 |
+
+- 외부 진단 관측면(`EXT_DIAG`)은 `Diag::*` 시스템 변수 경로를 통해 진단 요청/응답 및 서비스 상태를 관측하므로 본 표에 별도 CAN/Ethernet payload row를 추가하지 않는다.
 ---

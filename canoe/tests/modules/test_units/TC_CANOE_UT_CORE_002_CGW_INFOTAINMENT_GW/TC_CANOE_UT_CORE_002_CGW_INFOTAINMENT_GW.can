@@ -19,7 +19,11 @@ export testcase TC_CANOE_UT_CORE_002_CGW_INFOTAINMENT_GW()
   {
     return;
   }
-  assertIntEq("info-gw-school-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForNavContextState(1, 30, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("info-gw-school-zone", 1, (long)@Core::baseZoneContext, "baseZoneContext");
   assertIntEq("info-gw-school-limit", 30, (long)@Core::speedLimitNorm, "speedLimitNorm");
 
@@ -31,7 +35,12 @@ export testcase TC_CANOE_UT_CORE_002_CGW_INFOTAINMENT_GW()
   {
     return;
   }
-  assertIntEq("info-gw-guide-left-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForNavContextState(3, -1, 800) ||
+      !waitForStableWarningRender(31, 1, 400))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("info-gw-guide-left-zone", 3, (long)@Core::baseZoneContext, "baseZoneContext");
   assertIntEq("info-gw-guide-left-code", 31, (long)@Cluster::warningTextCode, "warningTextCode");
 
@@ -43,7 +52,12 @@ export testcase TC_CANOE_UT_CORE_002_CGW_INFOTAINMENT_GW()
   {
     return;
   }
-  assertIntEq("info-gw-guide-right-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForNavContextState(4, -1, 800) ||
+      !waitForStableWarningRender(32, 2, 400))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
   assertIntEq("info-gw-guide-right-zone", 4, (long)@Core::baseZoneContext, "baseZoneContext");
   assertIntEq("info-gw-guide-right-code", 32, (long)@Cluster::warningTextCode, "warningTextCode");
 

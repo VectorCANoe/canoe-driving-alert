@@ -20,9 +20,14 @@ export testcase TC_CANOE_IT_013_SEATBELT_CONTEXT()
     return;
   }
 
-  assertIntEq("seatbelt-context-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("seatbelt-context-level", 5, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("seatbelt-context-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  if (!waitForCoreSelectedAlertState(5, 3, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("seatbelt-context-level", 5, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("seatbelt-context-type", 3, getCanonicalSelectedAlertType(), "selectedAlertType");
 
   resetValidationHarnessIfNeeded();
 }

@@ -1,0 +1,106 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gDeploymentArmed;
+  long gPretensionReq;
+  long gAirbagWarn;
+  long gOccupantDetected;
+  long gWeightClass;
+  long gAirbagSuppress;
+  long gChildSeatDetected;
+}
+
+on message frmAcuStateMsg
+{
+  gDeploymentArmed = this.DeploymentArmed;
+  gPretensionReq = this.PretensionReq;
+  gAirbagWarn = this.AirbagWarn;
+}
+
+on message frmOdsStateMsg
+{
+  gOccupantDetected = this.OccupantDetected;
+  gWeightClass = this.WeightClass;
+  gAirbagSuppress = this.AirbagSuppress;
+  gChildSeatDetected = this.ChildSeatDetected;
+}
+
+long waitForOccupantProtectionState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gDeploymentArmed != 0 ||
+          gPretensionReq != 1 ||
+          gAirbagWarn != 1 ||
+          gOccupantDetected != 1 ||
+          gWeightClass != 1 ||
+          gAirbagSuppress != 1 ||
+          gChildSeatDetected != 1) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gDeploymentArmed != 0 ||
+      gPretensionReq != 1 ||
+      gAirbagWarn != 1 ||
+      gOccupantDetected != 1 ||
+      gWeightClass != 1 ||
+      gAirbagSuppress != 1 ||
+      gChildSeatDetected != 1)
+  {
+    testStepFail("occupant-protection-state", "Occupant protection timeout waited=%d armed=%d pretension=%d airbagWarn=%d occupant=%d weight=%d suppress=%d childSeat=%d",
+                 waitedMs,
+                 gDeploymentArmed,
+                 gPretensionReq,
+                 gAirbagWarn,
+                 gOccupantDetected,
+                 gWeightClass,
+                 gAirbagSuppress,
+                 gChildSeatDetected);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_EXT_019_BODY_OCCUPANT_PROTECTION()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gDeploymentArmed = -1;
+  gPretensionReq = -1;
+  gAirbagWarn = -1;
+  gOccupantDetected = -1;
+  gWeightClass = -1;
+  gAirbagSuppress = -1;
+  gChildSeatDetected = -1;
+  if (!launchScenarioAndWait(228, 1500, 350))
+  {
+    return;
+  }
+  if (!waitForOccupantProtectionState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("occupant-armed", 0, gDeploymentArmed, "DeploymentArmed");
+  assertIntEq("occupant-pretension", 1, gPretensionReq, "PretensionReq");
+  assertIntEq("occupant-airbag-warn", 1, gAirbagWarn, "AirbagWarn");
+  assertIntEq("occupant-detected", 1, gOccupantDetected, "OccupantDetected");
+  assertIntEq("occupant-weight-class", 1, gWeightClass, "WeightClass");
+  assertIntEq("occupant-airbag-suppress", 1, gAirbagSuppress, "AirbagSuppress");
+  assertIntEq("occupant-child-seat", 1, gChildSeatDetected, "ChildSeatDetected");
+
+  resetValidationHarnessIfNeeded();
+}

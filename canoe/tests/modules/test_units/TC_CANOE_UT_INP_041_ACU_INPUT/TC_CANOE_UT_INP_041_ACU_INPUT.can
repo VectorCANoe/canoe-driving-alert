@@ -1,0 +1,73 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gDeploymentArmed;
+  int gPretensionReq;
+  int gAirbagWarn;
+}
+
+on message frmAcuStateMsg
+{
+  gDeploymentArmed = this.DeploymentArmed;
+  gPretensionReq = this.PretensionReq;
+  gAirbagWarn = this.AirbagWarn;
+}
+
+long waitForAcuInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gDeploymentArmed != 0 ||
+          gPretensionReq != 1 ||
+          gAirbagWarn != 1) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gDeploymentArmed != 0 ||
+      gPretensionReq != 1 ||
+      gAirbagWarn != 1)
+  {
+    testStepFail("acu-input-state", "ACU input timeout waited=%d armed=%d pretension=%d airbagWarn=%d",
+                 waitedMs,
+                 gDeploymentArmed,
+                 gPretensionReq,
+                 gAirbagWarn);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_041_ACU_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(228, 800, 1300))
+  {
+    return;
+  }
+
+  if (!waitForAcuInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s228_deploymentArmed", 0, gDeploymentArmed, "deploymentArmed");
+  assertIntEq("s228_pretensionReq", 1, gPretensionReq, "pretensionReq");
+  assertIntEq("s228_airbagWarn", 1, gAirbagWarn, "airbagWarn");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -8,6 +8,11 @@ variables
 {
 }
 
+/*
+  This asset fixes the system-level stimulus contract for the police external
+  transport path, but the final 100ms periodicity verdict must be closed by
+  Ethernet trace evidence rather than CAPL-only oracle values.
+*/
 export testcase TC_CANOE_ST_018_POLICE_TX_PERIOD()
 {
   if (!resetValidationHarnessIfNeeded())
@@ -20,15 +25,27 @@ export testcase TC_CANOE_ST_018_POLICE_TX_PERIOD()
     return;
   }
 
-  assertIntEq("eth-police-active-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("eth-police-alert-state", 1, (long)@V2X::alertState, "alertState");
-  assertIntEq("eth-police-type", 1, (long)@V2X::emergencyType, "emergencyType");
-  if (!waitForObservedSelectedAlert(800))
+if (!waitForV2xIngressState(1, 1, 12, 11, 1500))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  if (!waitForObservedSelectedAlertState(6, 1, 800))
   {
     resetValidationHarnessIfNeeded();
     return;
   }
   assertIntEq("eth-police-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("eth-police-type", 1, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  assertIntEq("eth-police-alert-state", 1, (long)@V2X::alertState, "alertState");
+  assertIntEq("eth-police-type-source", 1, (long)@V2X::emergencyType, "emergencyType");
+
+  /*
+    Final verdict closure for ST_018:
+    - Ethernet trace must show the police external TX path at 100ms cadence
+    - CAPL assertions here only confirm scenario contract and alert activation
+  */
 
   resetValidationHarnessIfNeeded();
 }

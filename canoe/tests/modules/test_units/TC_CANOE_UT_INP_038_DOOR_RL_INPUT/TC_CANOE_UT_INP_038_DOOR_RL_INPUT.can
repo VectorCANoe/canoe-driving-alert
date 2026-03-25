@@ -1,0 +1,69 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gAutoDoorState;
+  int gAutoUnlockState;
+  int gDoorApproachScore;
+}
+
+on message frmAutoDoorCtrlStateMsg
+{
+  gAutoDoorState = this.AutoDoorState;
+  gAutoUnlockState = this.AutoUnlockState;
+  gDoorApproachScore = this.DoorApproachScore;
+}
+
+long waitForDoorRlInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gAutoDoorState != 1 ||
+          gAutoUnlockState != 1) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gAutoDoorState != 1 ||
+      gAutoUnlockState != 1)
+  {
+    testStepFail("door-rl-input-state", "Door RL input timeout waited=%d door=%d unlock=%d",
+                 waitedMs,
+                 gAutoDoorState,
+                 gAutoUnlockState);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_038_DOOR_RL_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(226, 800, 1300))
+  {
+    return;
+  }
+
+  if (!waitForDoorRlInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s226_autoDoorState", 1, gAutoDoorState, "autoDoorState");
+  assertIntEq("s226_autoUnlockState", 1, gAutoUnlockState, "autoUnlockState");
+
+  resetValidationHarnessIfNeeded();
+}

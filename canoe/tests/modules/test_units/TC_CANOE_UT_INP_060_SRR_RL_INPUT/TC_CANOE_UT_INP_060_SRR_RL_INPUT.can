@@ -1,0 +1,40 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gMergeConflict;
+  int gTurnLampState;
+}
+
+on message frmSrrRlStateMsg
+{
+  gMergeConflict = this.MergeConflict;
+  gTurnLampState = this.TurnLampState;
+}
+
+export testcase TC_CANOE_UT_INP_060_SRR_RL_INPUT()
+{
+  /* Scenario 22 broadcasts merge-risk input to all SRR channels.
+     Rear-left SRR should expose the merge-conflict state on its local bus. */
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gMergeConflict = -1;
+  gTurnLampState = -1;
+  if (!launchScenarioAndWait(22, 1000, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("s22_srrRlMergeConflict", 1, gMergeConflict, "mergeConflict");
+  assertIntEq("s22_obsMergeCutIn", 1, waitForObservedMergeCutIn(1500), "obsMergeCutIn");
+  assertIntEq("s22_mergeCutIn", 1, (long)@Test::obsMergeCutInFlag, "mergeCutInFlag");
+
+  resetValidationHarnessIfNeeded();
+}

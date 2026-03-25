@@ -1,0 +1,69 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gSunroofPosition;
+  int gSunroofTiltState;
+}
+
+on message frmSunroofStateMsg
+{
+  gSunroofPosition = this.SunroofPosition;
+  gSunroofTiltState = this.SunroofTiltState;
+}
+
+long waitForSrfInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gSunroofPosition != 0 ||
+          gSunroofTiltState != 0) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gSunroofPosition != 0 ||
+      gSunroofTiltState != 0)
+  {
+    testStepFail("srf-input-state", "Sunroof input timeout waited=%d position=%d tilt=%d",
+                 waitedMs,
+                 gSunroofPosition,
+                 gSunroofTiltState);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_048_SRF_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gSunroofPosition = -1;
+  gSunroofTiltState = -1;
+  if (!launchScenarioAndWait(229, 900, 1300))
+  {
+    return;
+  }
+
+  if (!waitForSrfInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s229_sunroofPosition", 0, gSunroofPosition, "sunroofPosition");
+  assertIntEq("s229_sunroofTiltState", 0, gSunroofTiltState, "sunroofTiltState");
+
+  resetValidationHarnessIfNeeded();
+}

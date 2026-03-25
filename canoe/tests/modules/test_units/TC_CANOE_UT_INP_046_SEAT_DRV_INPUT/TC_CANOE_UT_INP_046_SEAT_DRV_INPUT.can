@@ -1,0 +1,72 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gSeatDrvPos;
+  int gSeatDrvHeatLvl;
+}
+
+on message frmSeatDrvStateMsg
+{
+  gSeatDrvPos = this.SeatDrvPos;
+  gSeatDrvHeatLvl = this.SeatDrvHeatLvl;
+}
+
+long waitForSeatDrvInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gSeatDrvPos != 120 ||
+          gSeatDrvHeatLvl != 0) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gSeatDrvPos != 120 ||
+      gSeatDrvHeatLvl != 0)
+  {
+    testStepFail("seat-drv-input-state", "Seat driver input timeout waited=%d pos=%d heat=%d",
+                 waitedMs,
+                 gSeatDrvPos,
+                 gSeatDrvHeatLvl);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_046_SEAT_DRV_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  /* Scenario 229 drives BCM comfort commands from TMU/HVAC inputs.
+     SEAT_DRV should reflect the resulting seat-control path without coupling
+     this unit to the broader TMU/IBOX shared scenario verdict. */
+  gSeatDrvPos = -1;
+  gSeatDrvHeatLvl = -1;
+  if (!launchScenarioAndWait(229, 900, 1300))
+  {
+    return;
+  }
+
+  if (!waitForSeatDrvInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s229_seatDrvPos", 120, gSeatDrvPos, "seatDrvPos");
+  assertIntEq("s229_seatDrvHeatLvl", 0, gSeatDrvHeatLvl, "seatDrvHeatLvl");
+
+  resetValidationHarnessIfNeeded();
+}

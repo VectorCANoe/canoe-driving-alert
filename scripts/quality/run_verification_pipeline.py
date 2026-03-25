@@ -54,6 +54,28 @@ def cmd_prepare(args: argparse.Namespace) -> int:
     return run_cmd(cmd)
 
 
+def cmd_collect(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "collect_native_run_artifacts.py"),
+        "--run-id",
+        args.run_id,
+        "--tier",
+        args.tier,
+        "--evidence-root",
+        str(args.evidence_root),
+    ]
+    if args.raw_log_source:
+        cmd.extend(["--raw-log-source", str(args.raw_log_source)])
+    if args.allow_missing_raw_log:
+        cmd.append("--allow-missing-raw-log")
+    if getattr(args, "supplementary_lookback_minutes", 90) != 90:
+        cmd.extend(["--supplementary-lookback-minutes", str(args.supplementary_lookback_minutes)])
+    if getattr(args, "disable_supplementary_auto_discovery", False):
+        cmd.append("--disable-supplementary-auto-discovery")
+    return run_cmd(cmd)
+
+
 def cmd_fill_score(args: argparse.Namespace) -> int:
     run_dir = args.evidence_root / args.tier / args.run_id
     template_csv = run_dir / "verification_log.csv"
@@ -100,6 +122,54 @@ def cmd_fill_score(args: argparse.Namespace) -> int:
     if args.no_strict_axis:
         score_cmd.append("--no-strict-axis")
     return run_cmd(score_cmd)
+
+
+def cmd_post_run(args: argparse.Namespace) -> int:
+    collect_cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "run_verification_pipeline.py"),
+        "collect",
+        "--run-id",
+        args.run_id,
+        "--tier",
+        args.tier,
+        "--evidence-root",
+        str(args.evidence_root),
+    ]
+    if args.raw_log_source:
+        collect_cmd.extend(["--raw-log-source", str(args.raw_log_source)])
+    if args.allow_missing_raw_log:
+        collect_cmd.append("--allow-missing-raw-log")
+    if getattr(args, "supplementary_lookback_minutes", 90) != 90:
+        collect_cmd.extend(["--supplementary-lookback-minutes", str(args.supplementary_lookback_minutes)])
+    if getattr(args, "disable_supplementary_auto_discovery", False):
+        collect_cmd.append("--disable-supplementary-auto-discovery")
+    rc = run_cmd(collect_cmd)
+    if rc != 0:
+        return rc
+
+    fill_cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "run_verification_pipeline.py"),
+        "fill-score",
+        "--run-id",
+        args.run_id,
+        "--tier",
+        args.tier,
+        "--owner",
+        args.owner,
+        "--run-date",
+        args.run_date,
+        "--evidence-root",
+        str(args.evidence_root),
+    ]
+    if args.baseline_csv:
+        fill_cmd.extend(["--baseline-csv", str(args.baseline_csv)])
+    if args.no_strict_metadata:
+        fill_cmd.append("--no-strict-metadata")
+    if args.no_strict_axis:
+        fill_cmd.append("--no-strict-axis")
+    return run_cmd(fill_cmd)
 
 
 def cmd_smoke(args: argparse.Namespace) -> int:
@@ -241,32 +311,37 @@ def cmd_finalize(args: argparse.Namespace) -> int:
         for item in empty_markers:
             print(f"- {item}")
         print("[FINALIZE] run CANoe scenarios and export Write Window evidence lines before finalize.")
+        print("[FINALIZE] if product native execute was used, verify that:")
+        print("- the active mirror canoe/cfg/channel_assign/ETH_Backbone/TEST_SCN.can contains the dual-write evidence hook")
+        print("- the CANoe configuration was reloaded/saved after project.sysvars update")
+        print("- TEST_SCN/TEST_BAS were recompiled in the active configuration before rerun")
         return 2
 
-    for tier in tiers:
-        fill_cmd = [
-            sys.executable,
-            str(SCRIPT_DIR / "run_verification_pipeline.py"),
-            "fill-score",
-            "--run-id",
-            args.run_id,
-            "--tier",
-            tier,
-            "--owner",
-            args.owner,
-            "--run-date",
-            args.run_date,
-            "--evidence-root",
-            str(args.evidence_root),
-        ]
-        if args.no_strict_metadata:
-            fill_cmd.append("--no-strict-metadata")
-        if args.no_strict_axis:
-            fill_cmd.append("--no-strict-axis")
-        rc = run_cmd(fill_cmd)
-        if rc != 0:
-            print(f"[FINALIZE] fill-score failed for tier={tier}")
-            return rc
+    if not args.skip_fill_score:
+        for tier in tiers:
+            fill_cmd = [
+                sys.executable,
+                str(SCRIPT_DIR / "run_verification_pipeline.py"),
+                "fill-score",
+                "--run-id",
+                args.run_id,
+                "--tier",
+                tier,
+                "--owner",
+                args.owner,
+                "--run-date",
+                args.run_date,
+                "--evidence-root",
+                str(args.evidence_root),
+            ]
+            if args.no_strict_metadata:
+                fill_cmd.append("--no-strict-metadata")
+            if args.no_strict_axis:
+                fill_cmd.append("--no-strict-axis")
+            rc = run_cmd(fill_cmd)
+            if rc != 0:
+                print(f"[FINALIZE] fill-score failed for tier={tier}")
+                return rc
 
     insight_cmd = [
         sys.executable,
@@ -338,6 +413,8 @@ def cmd_status(args: argparse.Namespace) -> int:
         "--output-md",
         str(args.output_md),
     ]
+    if getattr(args, "tiers", None):
+        cmd.extend(["--tiers", *args.tiers])
     return run_cmd(cmd)
 
 
@@ -349,6 +426,16 @@ def build_parser() -> argparse.ArgumentParser:
     p_prepare.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
     p_prepare.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
     p_prepare.set_defaults(func=cmd_prepare)
+
+    p_collect = sub.add_parser("collect", help="Collect native reports and optional raw Write log for one tier run")
+    p_collect.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p_collect.add_argument("--tier", required=True, choices=["UT", "IT", "ST", "FULL"])
+    p_collect.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
+    p_collect.add_argument("--raw-log-source", type=Path, default=None)
+    p_collect.add_argument("--allow-missing-raw-log", action="store_true")
+    p_collect.add_argument("--supplementary-lookback-minutes", type=int, default=90)
+    p_collect.add_argument("--disable-supplementary-auto-discovery", action="store_true")
+    p_collect.set_defaults(func=cmd_collect)
 
     p_fill = sub.add_parser("fill-score", help="Fill and score one tier run from raw Write log")
     p_fill.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
@@ -365,6 +452,29 @@ def build_parser() -> argparse.ArgumentParser:
     p_fill.add_argument("--no-strict-metadata", action="store_true")
     p_fill.add_argument("--no-strict-axis", action="store_true")
     p_fill.set_defaults(func=cmd_fill_score)
+
+    p_post = sub.add_parser(
+        "post-run",
+        help="Collect native run artifacts and immediately fill/score one tier",
+    )
+    p_post.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p_post.add_argument("--tier", required=True, choices=["UT", "IT", "ST"])
+    p_post.add_argument("--owner", default="TBD")
+    p_post.add_argument("--run-date", default=dt.date.today().isoformat())
+    p_post.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
+    p_post.add_argument("--raw-log-source", type=Path, default=None)
+    p_post.add_argument("--allow-missing-raw-log", action="store_true")
+    p_post.add_argument("--supplementary-lookback-minutes", type=int, default=90)
+    p_post.add_argument("--disable-supplementary-auto-discovery", action="store_true")
+    p_post.add_argument(
+        "--baseline-csv",
+        type=Path,
+        default=None,
+        help="Optional baseline scored CSV for regression comparison",
+    )
+    p_post.add_argument("--no-strict-metadata", action="store_true")
+    p_post.add_argument("--no-strict-axis", action="store_true")
+    p_post.set_defaults(func=cmd_post_run)
 
     p_smoke = sub.add_parser("smoke", help="Run development completeness smoke checks via CANoe COM")
     p_smoke.add_argument("--owner", default="TBD")
@@ -467,6 +577,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_finalize.add_argument("--baseline-run-id", default="", help="Optional baseline run ID for insight comparison")
     p_finalize.add_argument("--no-strict-metadata", action="store_true")
     p_finalize.add_argument("--no-strict-axis", action="store_true")
+    p_finalize.add_argument(
+        "--skip-fill-score",
+        action="store_true",
+        help="Assume per-tier post-run already produced scored outputs and skip re-running fill-score",
+    )
     p_finalize.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
     p_finalize.add_argument("--docs-root", type=Path, default=REPO_ROOT / "driving-alert-workproducts")
     p_finalize.add_argument(
@@ -508,6 +623,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_status = sub.add_parser("status", help="Check run readiness for finalize workflow")
     p_status.add_argument("--run-id", required=True, help="Run ID, e.g. 20260307_1030")
+    p_status.add_argument("--tiers", nargs="+", default=["UT", "IT", "ST"], choices=["UT", "IT", "ST"])
     p_status.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
     p_status.add_argument(
         "--output-json",

@@ -14,19 +14,15 @@ import csv
 import datetime as dt
 import json
 import re
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DOC_SPECS = {
-    # Accept canonical test IDs only:
-    # - *_NNN   (e.g. UT_ADAS_001, ST_BASE_PT_001)
-    # - *_A/B/C (boundary suffix, e.g. UT_BND_024_A)
-    # This intentionally excludes prose-level shorthand tokens like UT_BASE_PT.
-    "UT": ("05_Unit_Test.md", re.compile(r"\bUT_[A-Z0-9_]+_(?:\d{3}|[A-Z])\b")),
-    "IT": ("06_Integration_Test.md", re.compile(r"\bIT_[A-Z0-9_]+_(?:\d{3}|[A-Z])\b")),
-    "ST": ("07_System_Test.md", re.compile(r"\bST_[A-Z0-9_]+_(?:\d{3}|[A-Z])\b")),
+    "UT": ("05_Unit_Test.md", re.compile(r"\bUT_(?:\d{3}|[A-Z0-9_]+_(?:\d{3}|[A-Z]))\b")),
+    "IT": ("06_Integration_Test.md", re.compile(r"\bIT_(?:\d{3}|[A-Z0-9_]+_(?:\d{3}|[A-Z]))\b")),
+    "ST": ("07_System_Test.md", re.compile(r"\bST_(?:\d{3}|[A-Z0-9_]+_(?:\d{3}|[A-Z]))\b")),
 }
 
 
@@ -67,6 +63,67 @@ def load_scored_rows(path: Path) -> list[dict[str, str]]:
         for row in reader:
             rows.append(row)
     return rows
+
+
+def _normalize_verdict(value: str) -> str:
+    text = (value or "").strip().upper()
+    if text in {"PASS", "FAIL"}:
+        return text
+    return ""
+
+
+def _parse_float(value: str) -> float | None:
+    text = (value or "").strip()
+    if not text:
+        return None
+    try:
+        return float(text)
+    except ValueError:
+        return None
+
+
+def _join_unique(rows: list[dict[str, str]], key: str) -> str:
+    values = sorted({(row.get(key) or "").strip() for row in rows if (row.get(key) or "").strip()})
+    return ";".join(values)
+
+
+def _aggregate_scored_rows(rows: list[dict[str, str]]) -> dict[str, str]:
+    verdicts = {_normalize_verdict(row.get("computed_verdict", "")) for row in rows}
+    verdicts.discard("")
+    if "FAIL" in verdicts:
+        computed_verdict = "FAIL"
+    elif verdicts == {"PASS"}:
+        computed_verdict = "PASS"
+    else:
+        computed_verdict = ""
+
+    latencies = []
+    for row in rows:
+        latency = _parse_float(row.get("computed_latency_ms", ""))
+        if latency is None:
+            latency = _parse_float(row.get("latency_ms", ""))
+        if latency is not None:
+            latencies.append(latency)
+
+    note = ""
+    if len(rows) > 1:
+        note = f"Aggregated from {len(rows)} scored rows"
+
+    return {
+        "computed_verdict": computed_verdict,
+        "computed_latency_ms": "" if not latencies else f"{max(latencies):.3f}",
+        "scenario_id": _join_unique(rows, "scenario_id"),
+        "rule_type": _join_unique(rows, "rule_type"),
+        "rule_ms": _join_unique(rows, "rule_ms"),
+        "expected": _join_unique(rows, "expected"),
+        "owner": _join_unique(rows, "owner"),
+        "run_date": _join_unique(rows, "run_date"),
+        "evidence_log_path": _join_unique(rows, "evidence_log_path"),
+        "evidence_capture_path": _join_unique(rows, "evidence_capture_path"),
+        "native_asset": _join_unique(rows, "native_asset"),
+        "computed_fail_reasons": _join_unique(rows, "computed_fail_reasons"),
+        "note": note,
+    }
 
 
 def find_scored_csv(evidence_root: Path, tier: str, run_id: str) -> Path:
@@ -125,16 +182,17 @@ def main() -> int:
         scored_path = find_scored_csv(args.evidence_root, tier, args.run_id)
         scored_sources[tier] = _rel(scored_path)
         scored_rows = load_scored_rows(scored_path)
-        scored_map = {
-            (row.get("test_id") or "").strip(): row
-            for row in scored_rows
-            if (row.get("test_id") or "").strip()
-        }
+        scored_map: dict[str, list[dict[str, str]]] = defaultdict(list)
+        for row in scored_rows:
+            test_id = (row.get("test_id") or "").strip()
+            if test_id:
+                scored_map[test_id].append(row)
 
         # Doc IDs -> evidence mapping
         for test_id in doc_ids:
-            row = scored_map.get(test_id)
-            if row:
+            grouped_rows = scored_map.get(test_id, [])
+            aggregated = _aggregate_scored_rows(grouped_rows) if grouped_rows else {}
+            if grouped_rows:
                 status = "READY"
             else:
                 status = "DOC_ONLY"
@@ -146,26 +204,30 @@ def main() -> int:
                 "doc_id": test_id,
                 "doc_file": doc_name,
                 "doc_present": "Y",
-                "evidence_present": "Y" if row else "N",
+                "evidence_present": "Y" if grouped_rows else "N",
                 "binding_status": status,
-                "computed_verdict": (row.get("computed_verdict") or "") if row else "",
-                "computed_latency_ms": (row.get("computed_latency_ms") or "") if row else "",
-                "rule_type": (row.get("rule_type") or "") if row else "",
-                "rule_ms": (row.get("rule_ms") or "") if row else "",
-                "owner": (row.get("owner") or "") if row else "",
-                "run_date": (row.get("run_date") or "") if row else "",
-                "evidence_log_path": (row.get("evidence_log_path") or "") if row else "",
-                "evidence_capture_path": (row.get("evidence_capture_path") or "") if row else "",
-                "computed_fail_reasons": (row.get("computed_fail_reasons") or "") if row else "",
-                "note": "",
+                "computed_verdict": aggregated.get("computed_verdict", ""),
+                "computed_latency_ms": aggregated.get("computed_latency_ms", ""),
+                "scenario_id": aggregated.get("scenario_id", ""),
+                "rule_type": aggregated.get("rule_type", ""),
+                "rule_ms": aggregated.get("rule_ms", ""),
+                "expected": aggregated.get("expected", ""),
+                "owner": aggregated.get("owner", ""),
+                "run_date": aggregated.get("run_date", ""),
+                "evidence_log_path": aggregated.get("evidence_log_path", ""),
+                "evidence_capture_path": aggregated.get("evidence_capture_path", ""),
+                "native_asset": aggregated.get("native_asset", ""),
+                "computed_fail_reasons": aggregated.get("computed_fail_reasons", ""),
+                "note": aggregated.get("note", ""),
             }
             output_rows.append(out)
 
         # Evidence IDs not present in doc
         doc_set = set(doc_ids)
-        for test_id, row in sorted(scored_map.items()):
+        for test_id, grouped_rows in sorted(scored_map.items()):
             if test_id in doc_set:
                 continue
+            aggregated = _aggregate_scored_rows(grouped_rows)
             status_counter["EVIDENCE_ONLY"] += 1
             tier_counter[tier] += 1
             output_rows.append(
@@ -177,16 +239,20 @@ def main() -> int:
                     "doc_present": "N",
                     "evidence_present": "Y",
                     "binding_status": "EVIDENCE_ONLY",
-                    "computed_verdict": row.get("computed_verdict", ""),
-                    "computed_latency_ms": row.get("computed_latency_ms", ""),
-                    "rule_type": row.get("rule_type", ""),
-                    "rule_ms": row.get("rule_ms", ""),
-                    "owner": row.get("owner", ""),
-                    "run_date": row.get("run_date", ""),
-                    "evidence_log_path": row.get("evidence_log_path", ""),
-                    "evidence_capture_path": row.get("evidence_capture_path", ""),
-                    "computed_fail_reasons": row.get("computed_fail_reasons", ""),
-                    "note": "Scored evidence exists but no matching ID in 05/06/07",
+                    "computed_verdict": aggregated.get("computed_verdict", ""),
+                    "computed_latency_ms": aggregated.get("computed_latency_ms", ""),
+                    "scenario_id": aggregated.get("scenario_id", ""),
+                    "rule_type": aggregated.get("rule_type", ""),
+                    "rule_ms": aggregated.get("rule_ms", ""),
+                    "expected": aggregated.get("expected", ""),
+                    "owner": aggregated.get("owner", ""),
+                    "run_date": aggregated.get("run_date", ""),
+                    "evidence_log_path": aggregated.get("evidence_log_path", ""),
+                    "evidence_capture_path": aggregated.get("evidence_capture_path", ""),
+                    "native_asset": aggregated.get("native_asset", ""),
+                    "computed_fail_reasons": aggregated.get("computed_fail_reasons", ""),
+                    "note": "Scored evidence exists but no matching ID in 05/06/07"
+                    + (f"; {aggregated['note']}" if aggregated.get("note") else ""),
                 }
             )
 
@@ -207,12 +273,15 @@ def main() -> int:
         "binding_status",
         "computed_verdict",
         "computed_latency_ms",
+        "scenario_id",
         "rule_type",
         "rule_ms",
+        "expected",
         "owner",
         "run_date",
         "evidence_log_path",
         "evidence_capture_path",
+        "native_asset",
         "computed_fail_reasons",
         "note",
     ]

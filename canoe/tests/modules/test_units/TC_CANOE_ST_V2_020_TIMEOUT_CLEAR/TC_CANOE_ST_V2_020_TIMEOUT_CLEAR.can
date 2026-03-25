@@ -1,0 +1,36 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_V2_020_TIMEOUT_CLEAR()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(35, 1800, 2300))
+  {
+    return;
+  }
+
+  if (!waitForObservedSelectedAlertState(3, 3, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("timeout-clear-level", 3, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("timeout-clear-type", 3, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  assertIntEq("timeout-clear-observed-emergency-context", 0, (long)@Test::obsEmergencyContext, "ethEmergencyContext");
+  assertIntEq("timeout-clear-observed-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+  assertIntEq("timeout-clear-emergency-context", 0, (long)@Core::emergencyContext, "emergencyContext");
+  assertIntEq("timeout-clear-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

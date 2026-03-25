@@ -1,0 +1,31 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_027_FRONTAL_OBJECT_RISK()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(20, 700, 1200))
+  {
+    return;
+  }
+
+  if (!waitForObservedObjectRiskMin(3, 60, 1200) ||
+      !waitForObservedFailSafeMin(1, 1500)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("frontal-object-track-valid", 1, (long)@Test::obsObjectTrackValid, "ethObjectTrackValid");
+  assertIntMin("frontal-object-risk-class", 3, (long)@Test::obsObjectRiskClass, "ethObjectRiskClass");
+  assertIntMin("frontal-object-proximity", 60, (long)@Test::obsObjectRiskLevel, "ethObjectRiskLevel");
+  assertIntEq("frontal-object-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

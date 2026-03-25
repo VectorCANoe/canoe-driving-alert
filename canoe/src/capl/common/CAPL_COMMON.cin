@@ -1,4 +1,4 @@
-int clampRange(int value, int minValue, int maxValue)
+long clampRange(long value, long minValue, long maxValue)
 {
   if (value < minValue)
   {
@@ -42,6 +42,92 @@ int ethIsRecentTick(dword lastTsMs, int maxAgeMs)
 int ethBackbonePort()
 {
   return 5000;
+}
+
+int ethV2xTxPort()
+{
+  return ethBackbonePort() + 1;
+}
+
+int ethAdasTxPort()
+{
+  return ethBackbonePort() + 5;
+}
+
+int ethCgwTxPort()
+{
+  return ethBackbonePort() + 6;
+}
+
+int ethTestScnTxPort()
+{
+  return ethBackbonePort() + 7;
+}
+
+dword ethNodeIpV2x()
+{
+  return IpGetAddressAsNumber("192.168.1.9");
+}
+
+dword ethNodeIpAdas()
+{
+  return IpGetAddressAsNumber("192.168.1.15");
+}
+
+dword ethNodeIpCgw()
+{
+  return IpGetAddressAsNumber("192.168.1.1");
+}
+
+dword ethNodeIpTestScn()
+{
+  return IpGetAddressAsNumber("192.168.1.8");
+}
+
+int ethMatchesSource(dword address, dword expectedIp, dword port, int expectedPort)
+{
+  int actualPort;
+
+  actualPort = (int)port;
+  if (expectedIp != ethInvalidIp() && address == expectedIp)
+  {
+    if (expectedPort <= 0 ||
+        actualPort == expectedPort ||
+        actualPort == ethBackbonePort())
+    {
+      return 1;
+    }
+    return 0;
+  }
+  if ((address == 0 || address == ethInvalidIp()) &&
+      expectedPort > 0 &&
+      (actualPort == expectedPort || actualPort == ethBackbonePort()))
+  {
+    return 1;
+  }
+  return 0;
+}
+
+int ethMatchesSelfSource(dword address, dword selfIp, dword port, int selfPort)
+{
+  int actualPort;
+
+  actualPort = (int)port;
+  if (selfIp != ethInvalidIp() && address == selfIp)
+  {
+    if (selfPort <= 0 || actualPort == selfPort || actualPort == ethBackbonePort())
+    {
+      return 1;
+    }
+    return 0;
+  }
+  if ((address == 0 || address == ethInvalidIp()) &&
+      selfPort > 0 &&
+      actualPort == selfPort)
+  {
+    return 1;
+  }
+  return 0;
 }
 
 int ethMsgVehicleState()
@@ -299,9 +385,49 @@ long ethOpenNodeSocketAt(dword localIp, int localPort)
   return socket;
 }
 
+long ethOpenPreferredNodeSocket(dword localIp, int localPort)
+{
+  long socket;
+
+  socket = ethInvalidSocket();
+  if (localIp != ethInvalidIp() && localIp != 0)
+  {
+    socket = ethOpenNodeSocketAt(localIp, localPort);
+    if (socket != ethInvalidSocket())
+    {
+      return socket;
+    }
+  }
+
+  socket = ethOpenNodeSocket(localPort);
+  if (socket != ethInvalidSocket() && localIp != ethInvalidIp() && localIp != 0)
+  {
+    write("[ETH] tx fallback ip=%u port=%d", localIp, localPort);
+  }
+  return socket;
+}
+
 long ethOpenDefaultSocket()
 {
   return ethOpenNodeSocket(ethBackbonePort());
+}
+
+long ethOpenBackboneReceiverSocket(dword localIp)
+{
+  long socket;
+
+  socket = ethOpenDefaultSocket();
+  if (socket != ethInvalidSocket())
+  {
+    return socket;
+  }
+
+  if (localIp != ethInvalidIp() && localIp != 0)
+  {
+    return ethOpenNodeSocketAt(localIp, ethBackbonePort());
+  }
+
+  return ethInvalidSocket();
 }
 
 void ethCloseSocket(long socket)
@@ -359,6 +485,7 @@ int ethArmReceive(long socket, char rxBuffer[], int rxBufferSize)
 int ethStartReceiver(long socket, char rxBuffer[], int rxBufferSize)
 {
   int result;
+  int fallbackResult;
 
   if (socket == ethInvalidSocket())
   {
@@ -368,9 +495,17 @@ int ethStartReceiver(long socket, char rxBuffer[], int rxBufferSize)
   result = ipJoinMulticastGroup(socket, 1, ethBackboneGroupIp());
   if (result != 0)
   {
-    if (ethIsTransientError(result) == 0)
+    fallbackResult = ipJoinMulticastGroup(socket, 0, ethBackboneGroupIp());
+    if (fallbackResult == 0)
     {
-      write("[ETH] join multicast failed result=%d", result);
+      result = 0;
+    }
+    else if (ethIsTransientError(result) == 0 &&
+             ethIsTransientError(fallbackResult) == 0)
+    {
+      write("[ETH] join multicast failed primary=%d fallback=%d",
+            result,
+            fallbackResult);
     }
   }
 

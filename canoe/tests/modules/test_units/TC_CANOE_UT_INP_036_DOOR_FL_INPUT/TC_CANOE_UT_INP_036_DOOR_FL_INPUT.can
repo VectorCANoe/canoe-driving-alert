@@ -1,0 +1,74 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gAutoDoorState;
+  int gAutoUnlockState;
+  int gDoorApproachScore;
+}
+
+on message frmAutoDoorCtrlStateMsg
+{
+  gAutoDoorState = this.AutoDoorState;
+  gAutoUnlockState = this.AutoUnlockState;
+  gDoorApproachScore = this.DoorApproachScore;
+}
+
+long waitForDoorFlInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gAutoDoorState != 1 ||
+          gAutoUnlockState != 1 ||
+          gDoorApproachScore < 80) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gAutoDoorState != 1 ||
+      gAutoUnlockState != 1 ||
+      gDoorApproachScore < 80)
+  {
+    testStepFail("door-fl-input-state", "Door FL input timeout waited=%d state=%d unlock=%d score=%d",
+                 waitedMs,
+                 gAutoDoorState,
+                 gAutoUnlockState,
+                 gDoorApproachScore);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_036_DOOR_FL_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(226, 800, 1300))
+  {
+    return;
+  }
+
+  if (!waitForCoreDriveState(0, 0, 0, 800) ||
+      !waitForDoorFlInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s226_autoDoorState", 1, gAutoDoorState, "autoDoorState");
+  assertIntEq("s226_autoUnlockState", 1, gAutoUnlockState, "autoUnlockState");
+  assertIntMin("s226_doorApproachScore", 80, gDoorApproachScore, "doorApproachScore");
+
+  resetValidationHarnessIfNeeded();
+}

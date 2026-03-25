@@ -40,6 +40,7 @@ REQUIRED_OUT_KEYS = (
 )
 
 OPTIONAL_OUT_KEYS = (
+    "release",
     "objValid",
     "objClass",
     "objTtc",
@@ -168,6 +169,9 @@ def main() -> int:
         return 2
 
     output_csv = _repo_path(Path(args.output_csv)) if args.output_csv else template_csv.with_name(template_csv.stem + "_filled.csv")
+    raw_log_rel = _rel(raw_log)
+    capture_index = template_csv.with_name("capture_index.csv")
+    capture_index_rel = _rel(capture_index)
 
     rows: List[Dict[str, str]] = []
     with template_csv.open("r", encoding="utf-8-sig", newline="") as f:
@@ -195,6 +199,10 @@ def main() -> int:
             row["owner"] = args.owner
         if args.run_date and not (row.get("run_date") or "").strip():
             row["run_date"] = args.run_date
+        if not (row.get("evidence_log_path") or "").strip():
+            row["evidence_log_path"] = raw_log_rel
+        if not (row.get("evidence_capture_path") or "").strip():
+            row["evidence_capture_path"] = capture_index_rel
         updated += 1
 
     fields = list(rows[0].keys()) if rows else []

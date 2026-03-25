@@ -45,7 +45,7 @@ int useBackboneAlertState()
   }
 
   nowMs = getSimulationTimeMs();
-  if ((nowMs - gBackboneAlertTsMs) > 500)
+  if ((nowMs - gBackboneAlertTsMs) > 1500)
   {
     return 0;
   }
@@ -53,10 +53,55 @@ int useBackboneAlertState()
   return 1;
 }
 
+int useEffectiveAlertState()
+{
+  int effectiveAlertLevel;
+  int effectiveAlertType;
+  int selectedAlertGateReason;
+  int timeoutClear;
+
+  effectiveAlertLevel = clampRange((int)@CoreState::selectedAlertEffectiveLevel, 0, 7);
+  effectiveAlertType = clampRange((int)@CoreState::selectedAlertEffectiveType, 0, 15);
+  selectedAlertGateReason = clampRange((int)@CoreState::selectedAlertGateReason, 0, 7);
+  timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+
+  if (effectiveAlertLevel > 0 ||
+      effectiveAlertType > 0 ||
+      selectedAlertGateReason > 0 ||
+      timeoutClear == 1)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
+int useDecisionAlertState()
+{
+  int decisionAlertLevel;
+  int decisionAlertType;
+  int selectedAlertGateReason;
+  int timeoutClear;
+
+  decisionAlertLevel = clampRange((int)@CoreState::selectedAlertDecisionLevel, 0, 7);
+  decisionAlertType = clampRange((int)@CoreState::selectedAlertDecisionType, 0, 15);
+  selectedAlertGateReason = clampRange((int)@CoreState::selectedAlertGateReason, 0, 7);
+  timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+
+  if ((decisionAlertLevel > 0 || decisionAlertType > 0) &&
+      selectedAlertGateReason == 0 &&
+      timeoutClear == 0)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
 void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
 {
   gBackboneAlertLevel = clampRange(alertLevel, 0, 7);
-  gBackboneAlertType = clampRange(alertType, 0, 7);
+  gBackboneAlertType = clampRange(alertType, 0, 15);
   gBackboneTimeoutClear = (timeoutClear == 1) ? 1 : 0;
   gBackboneAlertTsMs = getSimulationTimeMs();
 }
@@ -64,21 +109,11 @@ void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
 
 int applyDisplayPolicy(int code)
 {
-  int coded;
-
   if (code <= 0)
   {
     return 0;
   }
-
-  coded = code;
-
-  if (gPopupActive == 0 && gAudioFocusOwner > 0)
-  {
-    coded = clampRange(code + 40, 0, 255);
-  }
-
-  return coded;
+  return clampRange(code, 0, 255);
 }
 
 int applyRobustPolicy(int code)
@@ -88,23 +123,30 @@ int applyRobustPolicy(int code)
   int coded;
   int syncMismatch;
   int useBackbone;
+  int useDecision;
+  int useEffective;
 
   coded = code;
-  if (coded > 0 && gAudioFocusOwner != 0 &&
-      (gAudioDuckingLvl >= 4 || gTtsState >= 1))
-  {
-    coded = clampRange(coded + 6, 0, 255);
-  }
-
-  if (coded > 0 &&
-      gPopupActive == 1 && gPopupPriority >= 5 &&
-      coded < 100 && (coded % 10) < 5)
-  {
-    coded = 0;
-  }
-
+  useEffective = useEffectiveAlertState();
+  useDecision = useDecisionAlertState();
   useBackbone = useBackboneAlertState();
-  if (useBackbone == 1)
+  if (useEffective == 1)
+  {
+    selectedAlertLevel = clampRange((int)@CoreState::selectedAlertEffectiveLevel, 0, 7);
+    timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+    updateBackboneAlertState(selectedAlertLevel,
+                             clampRange((int)@CoreState::selectedAlertEffectiveType, 0, 15),
+                             timeoutClear);
+  }
+  else if (useDecision == 1)
+  {
+    selectedAlertLevel = clampRange((int)@CoreState::selectedAlertDecisionLevel, 0, 7);
+    timeoutClear = 0;
+    updateBackboneAlertState(selectedAlertLevel,
+                             clampRange((int)@CoreState::selectedAlertDecisionType, 0, 15),
+                             0);
+  }
+  else if (useBackbone == 1)
   {
     selectedAlertLevel = clampRange(gBackboneAlertLevel, 0, 7);
     timeoutClear = (gBackboneTimeoutClear == 1) ? 1 : 0;
@@ -190,6 +232,31 @@ void respondHistoryQuery()
   @Test::historyQueryCode = response;
 }
 
+void publishCompatSteeringFrame()
+{
+  int angle;
+  int frame;
+  int manualMode;
+
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+
+  if (manualMode == 1)
+  {
+    angle = clampRange(
+      (int)((((long)clampRange((int)@Cmd::steeringAngleCmd, -540, 540)) + 540) * 138 / 1080),
+      0,
+      138
+    );
+  }
+  else
+  {
+    angle = clampRange((int)@Chassis::steeringAngle, 0, 138);
+  }
+  frame = (angle * 69 + 69) / 138;
+
+  @Display::steeringFrame = clampRange(frame, 0, 69);
+}
+
 on start
 {
   int i;
@@ -239,6 +306,9 @@ on start
   @CoreState::clusterSyncSeq = 0;
   @CoreState::alertHistoryCount = 0;
   @Test::historyQueryCode = 0;
+  /* `Chassis::steeringAngle` is a donor panel/manual command seam.
+     CLU must not clobber it during startup; only derived display state belongs here. */
+  @Display::steeringFrame = 35;
   write("[CLU] start");
 }
 
@@ -309,6 +379,11 @@ on message frmClusterSyncStateMsg
   }
 }
 
+on sysvar Chassis::steeringAngle
+{
+  publishCompatSteeringFrame();
+}
+
 on stopMeasurement
 {
   cancelTimer(tDuplicateGuard);
@@ -345,7 +420,6 @@ on message frmClusterWarningMsg
     gLastDisplayMs = 0;
     @CoreState::duplicatePopupGuard = 0;
     @Cluster::warningTextCode = 0;
-    write("[CLU] clear");
   }
   else
   {

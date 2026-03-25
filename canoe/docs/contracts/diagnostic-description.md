@@ -25,6 +25,7 @@ The current model is built around:
 - response-side capture for what the runtime returned
 - summary fields for verdict and evidence workflows
 - counters and timestamps for repeatability and debug support
+- a logical external diagnostic requester surface named `EXT_DIAG`
 
 ## Diagnostic Layers
 
@@ -34,6 +35,24 @@ The current model is built around:
 | Response observation | capture status, payload summary, and timing result | response code, response summary, timing fields |
 | Runtime summary | expose diagnostic state to panel, tools, and verification | `Diag::*` SysVars |
 | Evidence support | support screenshots, logs, and verification records | summary fields, counters, timestamps |
+
+## Current requester baseline
+
+The current target requester is a logical external diagnostic tester surface:
+
+- `EXT_DIAG`
+
+For the active CANoe SIL baseline, `EXT_DIAG` is introduced as a dedicated CAPL node surface.
+
+It is not the same thing as:
+
+- `TEST_SCN`
+- a full CANoe Diagnostics Feature Set setup
+- an ODX/CDD/PDX-backed diagnostic description package
+
+This keeps scenario stimulus separate from diagnostic ownership.
+
+It also allows later replacement of the requester implementation with a CANoe diagnostics toolchain without renaming the architecture role.
 
 ## Current Source Chain
 
@@ -47,8 +66,12 @@ The current model is built around:
 - do not overload panel-facing variables with raw transport payload detail
 - keep evidence-friendly summary fields stable even if implementation detail changes
 - add protocol-specific depth only when the active baseline really requires it
+- keep the requester role separate from `TEST_SCN` and other validation harness nodes
 
 ## Development Note
 
 This document is a development description, not a frozen final protocol specification.
 If the project expands its native diagnostic coverage, transport detail and ownership depth may be extended later.
+Until ODX/CDD/PDX assets are introduced, `EXT_DIAG` remains the active requester placeholder and CAPL-level integration surface.
+
+For the current executable SIL baseline, request-side timing and counters are mirrored by `DCM` from semantic diagnostic transaction changes until a real tester request path is introduced.

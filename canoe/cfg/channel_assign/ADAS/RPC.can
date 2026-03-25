@@ -23,6 +23,26 @@ variables
   int gLastConfidence;
 }
 
+int fcamLeaseWindowMs()
+{
+  return 300;
+}
+
+int fcamHoldWindowMs()
+{
+  return 1200;
+}
+
+int navLeaseWindowMs()
+{
+  return 300;
+}
+
+int navHoldWindowMs()
+{
+  return 1500;
+}
+
 void traceRpcInputHealth(int fcamInputStale, int navInputStale)
 {
   if (fcamInputStale != gLastFcamInputStale)
@@ -57,6 +77,8 @@ void publishRoadPreviewState()
   message frmRoadPreviewCameraStateMsg mPreview;
   int fcamInputStale;
   int navInputStale;
+  int fcamInputExpired;
+  int navInputExpired;
   int zonePreview;
   int speedLimit;
   int cameraHealth;
@@ -65,8 +87,10 @@ void publishRoadPreviewState()
   int confidence;
   int previewHealth;
 
-  fcamInputStale = (ethIsRecentTick(gFcamRxMs, 300) == 1) ? 0 : 1;
-  navInputStale = (ethIsRecentTick(gNavRxMs, 300) == 1) ? 0 : 1;
+  fcamInputStale = (ethIsRecentTick(gFcamRxMs, fcamLeaseWindowMs()) == 1) ? 0 : 1;
+  navInputStale = (ethIsRecentTick(gNavRxMs, navLeaseWindowMs()) == 1) ? 0 : 1;
+  fcamInputExpired = (ethIsRecentTick(gFcamRxMs, fcamHoldWindowMs()) == 1) ? 0 : 1;
+  navInputExpired = (ethIsRecentTick(gNavRxMs, navHoldWindowMs()) == 1) ? 0 : 1;
   traceRpcInputHealth(fcamInputStale, navInputStale);
 
   zonePreview = gNavRouteClass;
@@ -75,17 +99,32 @@ void publishRoadPreviewState()
   objectDetected = gObjectDetected;
   laneModelValid = gLaneModelValid;
   confidence = gConfidence;
-  if (fcamInputStale == 1)
+  if (fcamInputExpired == 1)
   {
     cameraHealth = 0;
     objectDetected = 0;
     laneModelValid = 0;
     confidence = 0;
   }
-  if (navInputStale == 1)
+  else if (fcamInputStale == 1)
+  {
+    if (cameraHealth > 0)
+    {
+      cameraHealth = cameraHealth - 1;
+    }
+    if (confidence > 20)
+    {
+      confidence = confidence - 20;
+    }
+  }
+  if (navInputExpired == 1)
   {
     zonePreview = 0;
     speedLimit = 30;
+  }
+  else if (navInputStale == 1 && confidence > 10)
+  {
+    confidence = confidence - 10;
   }
 
   previewHealth = 0;

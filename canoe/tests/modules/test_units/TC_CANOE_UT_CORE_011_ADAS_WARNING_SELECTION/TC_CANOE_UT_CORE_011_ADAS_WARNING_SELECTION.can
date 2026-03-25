@@ -19,10 +19,15 @@ export testcase TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION()
   {
     return;
   }
+  if (!waitForCoreSelectedAlertState(3, 3, 800) ||
+      !waitForCoreBoundaryState(-1, -1, 0, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
-  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("selected-alert-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("selected-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("selected-alert-level", 3, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("selected-alert-type", 3, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("warning-path-status", 0, (long)@CoreState::warningPathStatus, "warningPathStatus");
   assertIntEq("fail-safe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");
 

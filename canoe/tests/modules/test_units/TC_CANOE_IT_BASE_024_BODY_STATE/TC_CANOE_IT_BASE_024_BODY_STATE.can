@@ -1,0 +1,34 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_BASE_024_BODY_STATE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(211, 900, 1300))
+  {
+    return;
+  }
+
+  if (!waitForCoreSelectedAlertState(6, -1, 800) ||
+      !waitForCoreTurnLampState(3, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("body-hazard-turnlamp", 3, (long)@CoreState::turnLampState, "turnLampState");
+  assertIntEq("body-hazard-level", 6, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+
+  resetValidationHarnessIfNeeded();
+}

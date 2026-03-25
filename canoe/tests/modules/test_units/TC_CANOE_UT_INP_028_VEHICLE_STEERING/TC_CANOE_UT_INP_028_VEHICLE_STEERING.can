@@ -1,0 +1,53 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_INP_028_VEHICLE_STEERING()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(217, 800, 1300))
+  {
+    return;
+  }
+
+  if (!waitForCoreDriveStateMinSpeed(3, 30, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s217_driveStateNorm", 3, (long)@Core::driveStateNorm, "driveStateNorm");
+  assertIntMin("s217_vehicleSpeedNorm", 30, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
+  assertIntEq("s217_failSafeMode", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(218, 800, 1300))
+  {
+    return;
+  }
+
+  if (!waitForCoreChassisState(68, 1, -1, -1, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s218_steeringInputNorm", 1, (long)@Core::steeringInputNorm, "steeringInputNorm");
+  assertIntEq("s218_vehicleSpeedNorm", 68, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
+
+  resetValidationHarnessIfNeeded();
+}

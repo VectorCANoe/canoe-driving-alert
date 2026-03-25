@@ -1,0 +1,41 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gSideObjectDetected;
+  int gSideRiskLevel;
+}
+
+on message frmSrrFlStateMsg
+{
+  gSideObjectDetected = this.SideObjectDetected;
+  gSideRiskLevel = this.SideRiskLevel;
+}
+
+export testcase TC_CANOE_UT_INP_058_SRR_FL_INPUT()
+{
+  /* Scenario 21: lateral/intersection conflict scenario.
+     Left front SRR detects crossing vehicle at intersection.
+     ADAS_WARN_CTRL must raise intersection conflict flag via object risk path. */
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gSideObjectDetected = -1;
+  gSideRiskLevel = -1;
+  if (!launchScenarioAndWait(21, 1000, 1200))
+  {
+    return;
+  }
+
+  assertIntMin("s21_srrFlRx", 0, gSideRiskLevel, "sideRiskLevel");
+  assertIntEq("s21_obsIntersectionConflict", 1, waitForObservedIntersectionConflict(1500), "obsIntersectionConflict");
+  assertIntEq("s21_intersectionConflict", 1, (long)@Test::obsIntersectionConflictFlag, "intersectionConflictFlag");
+
+  resetValidationHarnessIfNeeded();
+}

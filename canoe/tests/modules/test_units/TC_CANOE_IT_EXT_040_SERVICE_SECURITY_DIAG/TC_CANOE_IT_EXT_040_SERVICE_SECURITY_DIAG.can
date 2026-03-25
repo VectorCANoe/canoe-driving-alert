@@ -1,0 +1,51 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_EXT_040_SERVICE_SECURITY_DIAG()
+{
+  // Verify integrated service, security, and external diagnostic summary verdict.
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(205, 1500, 2100))
+  {
+    return;
+  }
+
+  if (!waitForDiagSemanticState(2, 3, 1, 4, 2, 1800) ||
+      !waitForDiagLastExchange(2, 0x22, 2, 0x7F, 1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("service-state", 2, (long)@Diag::ServiceState, "ServiceState");
+  assertIntEq("security-state", 3, (long)@Diag::SecurityState, "SecurityState");
+  assertIntEq("route-owner", 1, (long)@Diag::RouteOwner, "RouteOwner");
+  assertIntEq("request-target", 2, (long)@Diag::LastRequestTarget, "LastRequestTarget");
+  assertIntEq("request-sid", 0x22, (long)@Diag::LastRequestSid, "LastRequestSid");
+  assertIntEq("request-source-bus", 1, (long)@Diag::LastRequestSourceBus, "LastRequestSourceBus");
+  assertLongGe("request-counter", (long)@Diag::RequestCounter, 1, "RequestCounter");
+  assertLongGe("request-time", (long)@Diag::LastRequestTimeMs, 1, "LastRequestTimeMs");
+  assertIntEq("response-kind", 4, (long)@Diag::ResponseKind, "ResponseKind");
+  assertIntEq("reason-code", 2, (long)@Diag::ReasonCode, "ReasonCode");
+  assertIntEq("response-target", 2, (long)@Diag::LastResponseTarget, "LastResponseTarget");
+  assertIntEq("response-code", 0x7F, (long)@Diag::LastResponseCode, "LastResponseCode");
+  assertIntEq("response-data0", 2, (long)@Diag::LastResponseData0, "LastResponseData0");
+  assertIntEq("response-data1", 4, (long)@Diag::LastResponseData1, "LastResponseData1");
+  assertIntEq("response-ok", 0, (long)@Diag::LastResponseOk, "LastResponseOk");
+  assertIntEq("response-source-bus", 1, (long)@Diag::LastResponseSourceBus, "LastResponseSourceBus");
+  assertLongGe("response-counter", (long)@Diag::ResponseCounter, 1, "ResponseCounter");
+  assertLongGe("response-time", (long)@Diag::LastResponseTimeMs, 1, "LastResponseTimeMs");
+
+  resetValidationHarnessIfNeeded();
+}

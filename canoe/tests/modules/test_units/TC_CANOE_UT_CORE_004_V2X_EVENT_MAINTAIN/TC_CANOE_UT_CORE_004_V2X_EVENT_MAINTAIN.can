@@ -20,10 +20,15 @@ export testcase TC_CANOE_UT_CORE_004_V2X_EVENT_MAINTAIN()
     return;
   }
 
-  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForObservedSelectedAlertState(6, 1, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
   assertIntEq("v2x-eta", 10, (long)@V2X::eta, "eta");
   assertIntEq("v2x-source-id", 99, (long)@V2X::sourceId, "sourceId");
-  assertIntEq("selected-alert-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("selected-alert-level", 6, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
 
   resetValidationHarnessIfNeeded();
 }

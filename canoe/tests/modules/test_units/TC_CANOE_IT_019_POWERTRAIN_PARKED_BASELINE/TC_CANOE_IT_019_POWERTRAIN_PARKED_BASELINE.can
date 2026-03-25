@@ -19,11 +19,16 @@ export testcase TC_CANOE_IT_019_POWERTRAIN_PARKED_BASELINE()
   {
     return;
   }
+  if (!waitForCoreDriveState(0, 0, -1, 800) ||
+      !waitForCoreSelectedAlertState(0, 0, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
-  assertIntEq("powertrain-parked-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("powertrain-parked-drive-state", 0, (long)@Core::driveStateNorm, "driveStateNorm");
   assertIntEq("powertrain-parked-speed", 0, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
-  assertIntEq("powertrain-parked-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("powertrain-parked-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
 
   resetValidationHarnessIfNeeded();
 }

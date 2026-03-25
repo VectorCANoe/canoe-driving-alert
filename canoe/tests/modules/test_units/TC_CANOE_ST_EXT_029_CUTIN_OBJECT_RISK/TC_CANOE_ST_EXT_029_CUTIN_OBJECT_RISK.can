@@ -1,0 +1,37 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_029_CUTIN_OBJECT_RISK()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(22, 700, 1200))
+  {
+    return;
+  }
+
+  if (!waitForObservedObjectRiskMin(2, 40, 1200) ||
+      !waitForObservedMergeCutIn(1200) ||
+      !waitForObservedSelectedAlertType(6, 1200) ||
+      !waitForObservedFailSafe(1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("cutin-object-merge-flag", 1, (long)@Test::obsMergeCutInFlag, "ethMergeCutInFlag");
+  assertIntMin("cutin-object-risk-class", 3, (long)@Test::obsObjectRiskClass, "ethObjectRiskClass");
+  assertIntEq("cutin-object-alert-type", 6, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  assertIntEq("cutin-object-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -1,0 +1,80 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gTmuLinkState;
+  long gTmuServiceMode;
+  long gRemoteClimateReq;
+  long gSignalBars;
+}
+
+on message frmTmuServiceStateMsg
+{
+  gTmuLinkState = this.TmuLinkState;
+  gTmuServiceMode = this.TmuServiceMode;
+  gRemoteClimateReq = this.RemoteClimateReq;
+  gSignalBars = this.SignalBars;
+}
+
+long waitForTmuServiceState(long expectedLinkState,
+                            long expectedServiceMode,
+                            long expectedRemoteClimateReq,
+                            long minSignalBars,
+                            dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gTmuLinkState != expectedLinkState ||
+          gTmuServiceMode != expectedServiceMode ||
+          gRemoteClimateReq != expectedRemoteClimateReq ||
+          gSignalBars < minSignalBars) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gTmuLinkState != expectedLinkState ||
+      gTmuServiceMode != expectedServiceMode ||
+      gRemoteClimateReq != expectedRemoteClimateReq ||
+      gSignalBars < minSignalBars)
+  {
+    testStepFail("ivi-display-tmu-state", "TMU service timeout waited=%d link=%d service=%d remote=%d bars=%d",
+                 waitedMs, gTmuLinkState, gTmuServiceMode, gRemoteClimateReq, gSignalBars);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_EXT_021_IVI_DISPLAY_SERVICE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  gTmuLinkState = -1;
+  gTmuServiceMode = -1;
+  gRemoteClimateReq = -1;
+  gSignalBars = -1;
+  if (!launchScenarioAndWait(229, 1500, 450))
+  {
+    return;
+  }
+  if (!waitForTmuServiceState(2, 1, 1, 4, 1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("ivi-display-tmu-link", 2, gTmuLinkState, "TmuLinkState");
+  assertIntEq("ivi-display-tmu-service", 1, gTmuServiceMode, "TmuServiceMode");
+  assertIntEq("ivi-display-tmu-remote", 1, gRemoteClimateReq, "RemoteClimateReq");
+  assertIntEq("ivi-display-tmu-bars", 4, gSignalBars, "SignalBars");
+
+  resetValidationHarnessIfNeeded();
+}

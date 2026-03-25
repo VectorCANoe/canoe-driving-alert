@@ -1,0 +1,25 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_025_FAILSAFE_ENTRY()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(18, 900, 1400)) { return; }
+  if (!waitForObservedFailSafe(1200) ||
+      !waitForObservedDecelState(1, 0, 3, 800) ||
+      !waitForObservedSelectedAlertMinState(6, 1, 800)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("st-failsafe-entry-decision", 1, (long)@Test::obsDecelDecisionReq, "ethDecelDecisionReq");
+  assertIntMin("st-failsafe-entry-mode", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+  assertIntEq("st-failsafe-entry-decel-off", 0, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
+  assertIntEq("st-failsafe-entry-gate", 3, (long)@Test::obsDecelGateReason, "ethDecelGateReason");
+  assertIntMin("st-failsafe-entry-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("st-failsafe-entry-type", 1, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  resetValidationHarnessIfNeeded();
+}

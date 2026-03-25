@@ -47,6 +47,16 @@
 
 이 축은 우선순위와 다르므로 같은 열에 섞지 않는다.
 
+## 3-1. 연계 검증 계약 문서
+
+본 Matrix는 아래 CANoe-side 검증 계약 문서와 함께 유지한다.
+
+- `canoe/docs/verification/oracle.md`
+- `canoe/docs/verification/acceptance-criteria.md`
+- `canoe/docs/verification/test-asset-mapping.md`
+- `canoe/docs/verification/execution-guide.md`
+- `canoe/docs/contracts/diagnostic-matrix.md`
+
 ## 4. Master Test Matrix (Draft Baseline)
 
 | Req ID | HARA ID | Safety Goal | ASIL/QM | Test Level | Test Case ID | Stimulus | Oracle | Timing | Evidence | Owner | Status |

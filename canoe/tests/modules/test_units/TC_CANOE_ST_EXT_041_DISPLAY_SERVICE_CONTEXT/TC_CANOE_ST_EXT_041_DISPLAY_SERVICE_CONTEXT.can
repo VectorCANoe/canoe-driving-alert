@@ -1,0 +1,79 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gTmuLinkState;
+  long gTmuServiceMode;
+  long gRemoteClimateReq;
+  long gSignalBars;
+}
+
+on message frmTmuServiceStateMsg
+{
+  gTmuLinkState = this.TmuLinkState;
+  gTmuServiceMode = this.TmuServiceMode;
+  gRemoteClimateReq = this.RemoteClimateReq;
+  gSignalBars = this.SignalBars;
+}
+
+long waitForTmuDisplayServiceState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gTmuLinkState != 2 ||
+          gTmuServiceMode != 1 ||
+          gRemoteClimateReq != 1 ||
+          gSignalBars < 4) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gTmuLinkState != 2 ||
+      gTmuServiceMode != 1 ||
+      gRemoteClimateReq != 1 ||
+      gSignalBars < 4)
+  {
+    testStepFail("st-display-service-state", "Display service timeout waited=%d link=%d mode=%d remote=%d bars=%d",
+                 waitedMs, gTmuLinkState, gTmuServiceMode, gRemoteClimateReq, gSignalBars);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_ST_EXT_041_DISPLAY_SERVICE_CONTEXT()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  gTmuLinkState = -1;
+  gTmuServiceMode = -1;
+  gRemoteClimateReq = -1;
+  gSignalBars = -1;
+  if (!launchScenarioAndWait(229, 1300, 1700)) { return; }
+  if (!waitForTmuDisplayServiceState(1800)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("st-display-service-link", 2, gTmuLinkState, "TmuLinkState");
+  assertIntEq("st-display-service-mode", 1, gTmuServiceMode, "TmuServiceMode");
+  assertIntEq("st-display-service-remote", 1, gRemoteClimateReq, "RemoteClimateReq");
+  assertIntEq("st-display-service-bars", 4, gSignalBars, "SignalBars");
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(220, 900, 1300)) { return; }
+  if (!waitForStableDisplayPolicy(2, 1, 1, 1, 1200)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("st-display-policy-theme", 2, (long)@CoreState::themeMode, "themeMode");
+  assertIntEq("st-display-policy-popup", 1, (long)@CoreState::popupActive, "popupActive");
+  assertIntEq("st-display-policy-priority", 1, (long)@CoreState::popupPriority, "popupPriority");
+  assertIntEq("st-display-policy-cluster-sync", 1, (long)@CoreState::clusterSyncState, "clusterSyncState");
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(215, 900, 1300)) { return; }
+  if (!waitForAudioPolicyFloor(1, 2, 20, 0, 1800)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntMin("st-audio-policy-focus", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
+  assertIntMin("st-audio-policy-ducking", 2, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
+  assertIntMin("st-audio-policy-volume", 20, (long)@CoreState::volumeLevel, "volumeLevel");
+  assertIntEq("st-audio-policy-popup-clear", 0, (long)@CoreState::popupActive, "popupActive");
+  resetValidationHarnessIfNeeded();
+}

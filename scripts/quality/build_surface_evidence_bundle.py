@@ -131,6 +131,10 @@ def _artifact_list(report_root: Path) -> list[str]:
         report_root / "dev2_batch_report.json",
         report_root / "dev2_batch_report.md",
         report_root / "dev2_batch_report.junit.xml",
+        report_root / "official_reports",
+        report_root / "official_report_tooling.json",
+        report_root / "official_report_manifest.json",
+        report_root / "official_report_manifest.md",
         report_root / "run_insight_report.json",
         report_root / "run_insight_report.md",
         report_root / "doc_binding_bundle.json",
@@ -184,6 +188,7 @@ def _execution_context(batch: dict, readiness: dict, doctor: dict, smoke_rows: l
         "interval_seconds": int(batch.get("campaign", {}).get("interval_seconds", 0)) if isinstance(batch.get("campaign"), dict) else 0,
         "stop_on_fail": bool(batch.get("campaign", {}).get("stop_on_fail", False)) if isinstance(batch.get("campaign"), dict) else False,
         "generated_at": dt.datetime.now().isoformat(),
+        "selected_tiers": list(batch.get("selected_tiers", readiness.get("selected_tiers", []))) if isinstance(readiness, dict) else list(batch.get("selected_tiers", [])),
         "executed_scenario_ids": scenario_ids,
         "smoke_case_ids": smoke_case_ids,
         "doctor_status": str(doctor.get("status", "UNKNOWN")).upper() if doctor else "MISSING",
@@ -401,6 +406,7 @@ def main() -> int:
     parser.add_argument("--output-json", type=Path, default=DEFAULT_REPORT_ROOT / "surface_evidence_bundle.json")
     parser.add_argument("--output-md", type=Path, default=DEFAULT_REPORT_ROOT / "surface_evidence_bundle.md")
     parser.add_argument("--surface-dir", type=Path, default=DEFAULT_REPORT_ROOT / "surface")
+    parser.add_argument("--tiers", nargs="+", default=["UT", "IT", "ST"], choices=["UT", "IT", "ST"])
     args = parser.parse_args()
 
     args.inventory_json = _repo_path(args.inventory_json)

@@ -1,0 +1,72 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gMcuState;
+  int gMotorTorqueCmd;
+  int gMotorSpeedRpm;
+}
+
+on message frmMcuStateMsg
+{
+  gMcuState = this.McuState;
+  gMotorTorqueCmd = this.MotorTorqueCmd;
+  gMotorSpeedRpm = this.MotorSpeedRpm;
+}
+
+long waitForMcuInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gMcuState != 2 ||
+          gMotorTorqueCmd != 124 ||
+          gMotorSpeedRpm != 4800) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gMcuState != 2 ||
+      gMotorTorqueCmd != 124 ||
+      gMotorSpeedRpm != 4800)
+  {
+    testStepFail("inp-mcu-state", "MCU input timeout waited=%d state=%d torque=%d rpm=%d",
+                 waitedMs, gMcuState, gMotorTorqueCmd, gMotorSpeedRpm);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_068_MCU_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  gMcuState = -1;
+  gMotorTorqueCmd = -1;
+  gMotorSpeedRpm = -1;
+
+  if (!launchScenarioAndWait(232, 800, 1300))
+  {
+    return;
+  }
+  if (!waitForMcuInputState(1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s232_mcuState", 2, gMcuState, "mcuState");
+  assertIntEq("s232_motorTorqueCmd", 124, gMotorTorqueCmd, "motorTorqueCmd");
+  assertIntEq("s232_motorSpeedRpm", 4800, gMotorSpeedRpm, "motorSpeedRpm");
+
+  resetValidationHarnessIfNeeded();
+}

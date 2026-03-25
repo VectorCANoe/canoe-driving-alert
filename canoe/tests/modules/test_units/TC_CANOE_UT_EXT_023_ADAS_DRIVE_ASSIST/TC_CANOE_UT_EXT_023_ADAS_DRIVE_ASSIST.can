@@ -1,0 +1,105 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gLaneDepartureWarn;
+  long gLaneKeepAssistActive;
+  long gLaneGuideState;
+  long gSelectedAlertLevel;
+  long gPreviewHealth;
+  long gLanePreviewValid;
+  long gZonePreview;
+  long gSpeedLimit;
+  long gPreviewConfidence;
+}
+
+on message frmLdwsLkasStateMsg
+{
+  gLaneDepartureWarn = this.LaneDepartureWarn;
+  gLaneKeepAssistActive = this.LaneKeepAssistActive;
+  gLaneGuideState = this.LaneGuideState;
+  gSelectedAlertLevel = this.SelectedAlertLevel;
+}
+
+on message frmRoadPreviewCameraStateMsg
+{
+  gPreviewHealth = this.PreviewHealth;
+  gLanePreviewValid = this.LanePreviewValid;
+  gZonePreview = this.ZonePreview;
+  gSpeedLimit = this.SpeedLimit;
+  gPreviewConfidence = this.PreviewConfidence;
+}
+
+long waitForAdasDriveAssistState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while (((gLaneKeepAssistActive < 1 &&
+           gLaneGuideState < 1) ||
+          gSelectedAlertLevel < 2 ||
+          gPreviewHealth != 2 ||
+          gLanePreviewValid != 1 ||
+          gZonePreview != 2 ||
+          gSpeedLimit != 100 ||
+          gPreviewConfidence != 80) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((gLaneKeepAssistActive < 1 &&
+       gLaneGuideState < 1) ||
+      gSelectedAlertLevel < 2 ||
+      gPreviewHealth != 2 ||
+      gLanePreviewValid != 1 ||
+      gZonePreview != 2 ||
+      gSpeedLimit != 100 ||
+      gPreviewConfidence != 80)
+  {
+    testStepFail("adas-drive-assist-state", "ADAS drive assist timeout waited=%d lkas=%d guide=%d alert=%d previewHealth=%d lanePreview=%d zone=%d speed=%d conf=%d",
+                 waitedMs,
+                 gLaneKeepAssistActive,
+                 gLaneGuideState,
+                 gSelectedAlertLevel,
+                 gPreviewHealth,
+                 gLanePreviewValid,
+                 gZonePreview,
+                 gSpeedLimit,
+                 gPreviewConfidence);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_EXT_023_ADAS_DRIVE_ASSIST()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  if (!launchScenarioAndWait(233, 1500, 450))
+  {
+    return;
+  }
+  if (!waitForAdasDriveAssistState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntMin("adas-drive-lane-guide", 1, gLaneGuideState, "LaneGuideState");
+  assertIntMin("adas-drive-alert-level", 2, gSelectedAlertLevel, "SelectedAlertLevel");
+  assertIntEq("adas-drive-preview-health", 2, gPreviewHealth, "PreviewHealth");
+  assertIntEq("adas-drive-lane-preview", 1, gLanePreviewValid, "LanePreviewValid");
+  assertIntEq("adas-drive-zone-preview", 2, gZonePreview, "ZonePreview");
+  assertIntEq("adas-drive-speed-limit", 100, gSpeedLimit, "SpeedLimit");
+  assertIntEq("adas-drive-preview-confidence", 80, gPreviewConfidence, "PreviewConfidence");
+
+  resetValidationHarnessIfNeeded();
+}

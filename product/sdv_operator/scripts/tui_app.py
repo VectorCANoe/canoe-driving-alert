@@ -46,9 +46,10 @@ from cliops.tui_text import (
     recommended_next,
     runtime_badge,
 )
-from textual import work
+from textual import events, work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.screen import ModalScreen
 from textual.widgets import Button, Footer, Header, Input, OptionList, ProgressBar, RichLog, Static
 from textual.widgets.option_list import Option
 from textual.css.query import NoMatches
@@ -61,24 +62,126 @@ RUNNER = ROOT / "scripts" / "run.py"
 FORM_SLOTS = 10
 STATE_FILE = ROOT / "canoe" / "tmp" / "reports" / "verification" / "tui_operator_state.json"
 CAMPAIGN_PROFILES_PATH = ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json"
+VERIFICATION_PACK_MATRIX_PATH = ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json"
 BASE_GROUP_NAMES = list(PRODUCT_COMMAND_GROUPS.keys())
 COMMAND_INDEX = build_command_index()
-PROFILE_SURFACE_LABELS = {
+PROFILE_TITLE_FALLBACKS = {
     "quick_smoke": "Quick smoke",
     "ci_preflight": "CI preflight",
     "nightly_regression": "Nightly",
     "soak_stability": "Soak",
-    "ut_active_baseline": "UT Active Baseline 37",
-    "it_active_baseline": "IT Active Baseline 45",
-    "st_active_baseline": "ST Active Baseline 46",
-    "full_active_baseline": "FULL Active Baseline 128",
+    "ut_active_baseline": "UT Active Baseline",
+    "it_active_baseline": "IT Active Baseline",
+    "st_active_baseline": "ST Active Baseline",
+    "full_active_baseline": "FULL Active Baseline",
 }
-PACK_SURFACE_LABELS = {
-    "ts_canoe_ut_active_baseline": "UT Active Baseline 37",
-    "ts_canoe_it_active_baseline": "IT Active Baseline 45",
-    "ts_canoe_st_active_baseline": "ST Active Baseline 46",
-    "ts_canoe_full_active_baseline": "FULL Active Baseline 128",
+
+HOME_REFERENCE_PREVIEWS: dict[str, tuple[str, Path, str]] = {
+    "docs": (
+        "01~07 공식 문서",
+        ROOT / "driving-alert-workproducts",
+        "리뷰 기준 문서 묶음입니다. 01 Requirements부터 07 System Test까지 공식 표준 양식을 한 번에 확인합니다.",
+    ),
+    "comm-matrix": (
+        "Contract Matrix",
+        ROOT / "canoe" / "docs" / "contracts" / "communication-matrix.md",
+        "CANoe 프로젝트의 frame-level sender/receiver, 소비 ECU, 버스 경계를 확인하는 핵심 contract 문서입니다.",
+    ),
+    "test-asset": (
+        "Test Asset Mapping",
+        ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md",
+        "05/06/07 공식 시험 문서와 executable CANoe asset/oracle/evidence 연결 기준을 확인합니다.",
+    ),
+    "execution-guide": (
+        "Execution Guide",
+        ROOT / "canoe" / "docs" / "verification" / "execution-guide.md",
+        "active suite 실행 순서, harness 기준, evidence 수집 순서를 확인하는 운영 기준 문서입니다.",
+    ),
+    "pack-matrix": (
+        "Pack Matrix",
+        ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json",
+        "현재 operator console이 따르는 verification pack 구성과 source contract 연결을 확인합니다.",
+    ),
 }
+
+
+class ReferencePreviewScreen(ModalScreen[None]):
+    CSS = """
+    ReferencePreviewScreen {
+        align: center middle;
+        background: rgba(5, 8, 12, 0.72);
+    }
+
+    #reference-preview {
+        width: 74;
+        max-width: 92%;
+        height: auto;
+        padding: 1 2;
+        background: #17202b;
+        border: round #4ea1ff;
+    }
+
+    #reference-preview-title {
+        color: #f6c177;
+        text-style: bold;
+        margin-bottom: 1;
+    }
+
+    #reference-preview-body {
+        color: #d7e7f2;
+        margin-bottom: 1;
+    }
+
+    #reference-preview-path {
+        color: #8fb8ff;
+        margin-bottom: 1;
+    }
+
+    #reference-preview-details {
+        max-height: 12;
+        margin-bottom: 1;
+        padding: 1;
+        background: #11161c;
+        border: round #2d3e50;
+        color: #c7d3df;
+    }
+
+    #reference-preview-actions {
+        height: 3;
+    }
+    """
+
+    def __init__(self, title: str, target: Path, summary: str, preview: str) -> None:
+        super().__init__()
+        self.reference_title = title
+        self.reference_target = target
+        self.reference_summary = summary
+        self.reference_preview = preview
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id="reference-preview"):
+            yield Static(self.reference_title, id="reference-preview-title")
+            yield Static(self.reference_summary, id="reference-preview-body")
+            yield Static(str(self.reference_target), id="reference-preview-path")
+            yield Static(self.reference_preview, id="reference-preview-details")
+            with Horizontal(id="reference-preview-actions"):
+                yield Button("원본 열기", id="reference-preview-open", variant="primary")
+                yield Button("경로 복사", id="reference-preview-copy")
+                yield Button("닫기", id="reference-preview-close")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "reference-preview-open":
+            self.app._open_static_target(self.reference_target)  # type: ignore[attr-defined]
+            self.dismiss(None)
+        elif event.button.id == "reference-preview-copy":
+            copied = self.app._copy_text_to_clipboard(str(self.reference_target))  # type: ignore[attr-defined]
+            if copied:
+                self.app._write_log(artifact_copied(str(self.reference_target)))  # type: ignore[attr-defined]
+            else:
+                self.app._write_log(f"[bold yellow]경로 복사를 사용할 수 없습니다.[/] {self.reference_target}")  # type: ignore[attr-defined]
+            self.dismiss(None)
+        else:
+            self.dismiss(None)
 
 
 class SdvTuiApp(App[None]):
@@ -189,6 +292,36 @@ class SdvTuiApp(App[None]):
         background: #17202b;
         border: round #33536f;
         min-height: 7;
+    }
+
+    #home-reference-actions {
+        margin-top: 1;
+        height: 4;
+    }
+
+    #home-reference-actions-compact {
+        margin-top: 1;
+        height: 7;
+    }
+
+    .home-reference-row {
+        height: 3;
+        margin-bottom: 1;
+    }
+
+    .home-reference-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .home-ref-button {
+        width: 1fr;
+        height: 4;
+        margin-right: 1;
+        content-align: center middle;
+    }
+
+    .home-ref-button:last-child {
+        margin-right: 0;
     }
 
     #home-core-flow {
@@ -653,17 +786,31 @@ class SdvTuiApp(App[None]):
                     with VerticalScroll(id="page-home", classes="page"):
                         yield Static(
                             "CANoe Test Verification Console\n\n"
-                            "이 콘솔은 CANoe SIL 검증의 실행, 결과 확인, 증빙 검토, 자동화 운영을 위한 작업 화면입니다.\n"
-                            "기본 흐름은 Gate all -> Scenario run -> Verify quick 순서로 진행합니다.\n"
-                            "실행은 Run, 결과 판정은 Results, 산출물 확인은 Artifacts, 반복 실행은 Automation에서 이어서 진행하십시오.",
+                            "V-model 기준의 CANoe SIL 운영 콘솔입니다.\n"
+                            "ASPICE SWE.4 / SWE.5와 ISO 26262 Traceability Matrix 기준으로 01~07 공식 문서, communication-matrix, test-asset-mapping, execution-guide를 함께 검토합니다.",
                             id="home-body",
                         )
+                        with Horizontal(id="home-reference-actions"):
+                            yield Button("01~07\n문서", id="home-open-docs", classes="home-ref-button")
+                            yield Button("Contract\nMatrix", id="home-open-comm-matrix", classes="home-ref-button")
+                            yield Button("Test Asset\nMapping", id="home-open-test-asset", classes="home-ref-button")
+                            yield Button("Execution\nGuide", id="home-open-execution-guide", classes="home-ref-button")
+                            yield Button("Pack\nMatrix", id="home-open-pack-matrix", classes="home-ref-button")
+                        with Vertical(id="home-reference-actions-compact", classes="hidden"):
+                            with Horizontal(classes="home-reference-row"):
+                                yield Button("01~07 문서", id="home-open-docs-compact", classes="home-ref-button")
+                                yield Button("Contract Matrix", id="home-open-comm-matrix-compact", classes="home-ref-button")
+                                yield Button("Test Asset Mapping", id="home-open-test-asset-compact", classes="home-ref-button")
+                            with Horizontal(classes="home-reference-row"):
+                                yield Button("Execution Guide", id="home-open-execution-guide-compact", classes="home-ref-button")
+                                yield Button("Pack Matrix", id="home-open-pack-matrix-compact", classes="home-ref-button")
                         yield Static(id="home-summary")
                         with Horizontal(id="home-core-flow"):
                             with Vertical(classes="home-task-card"):
                                 yield Static("1) Gate all", classes="home-task-title")
                                 yield Static(
                                     "시나리오 실행 전, 현재 작업본이 검증 가능한 상태인지 먼저 점검합니다.",
+                                    id="home-gate-copy",
                                     classes="home-task-copy",
                                 )
                                 yield Button("Gate all 열기", id="home-gate", classes="quick-button", variant="success")
@@ -671,6 +818,7 @@ class SdvTuiApp(App[None]):
                                 yield Static("2) Scenario run", classes="home-task-title")
                                 yield Static(
                                     "선택한 SIL 시나리오를 CANoe에 주입하고 ACK 응답을 확인합니다.",
+                                    id="home-scenario-copy",
                                     classes="home-task-copy",
                                 )
                                 yield Button("Scenario run 열기", id="home-scenario", classes="quick-button")
@@ -678,6 +826,7 @@ class SdvTuiApp(App[None]):
                                 yield Static("3) Verify quick", classes="home-task-title")
                                 yield Static(
                                     "최근 실행의 준비 상태와 증빙을 생성하고 PASS/WARN/FAIL 판정을 함께 확인합니다.",
+                                    id="home-verify-copy",
                                     classes="home-task-copy",
                                 )
                                 yield Button("Verify quick 열기", id="home-verify", classes="quick-button", variant="primary")
@@ -786,7 +935,7 @@ class SdvTuiApp(App[None]):
                     with VerticalScroll(id="page-automation", classes="page hidden"):
                         yield Static(
                             "Automation 화면은 반복 실행과 CI/CD / Jenkins 연동을 위한 운영 영역입니다.\n"
-                            "운영 profile과 active baseline suite를 선택한 뒤, 상세 결과와 산출물 검토는 Results와 Artifacts에서 이어서 진행하십시오.",
+                            "운영 profile과 active baseline suite를 선택한 뒤, UT/IT/ST official closeout과 FULL regression 규칙을 분리해서 사용하십시오.",
                             id="automation-overview",
                         )
                         with Horizontal(id="automation-strip"):
@@ -795,23 +944,24 @@ class SdvTuiApp(App[None]):
                                 yield Static(
                                     "1) 검증 배치 준비\n"
                                     "2) 운영 profile 선택\n"
-                                    "3) UT / IT / ST / FULL active baseline 선택",
+                                    "3) UT / IT / ST official 또는 FULL regression 선택",
                                     id="automation-ci-body",
                                 )
                             with Vertical(classes="automation-card"):
                                 yield Static("Active Suites", classes="summary-title")
                                 yield Static(
-                                    "UT Active Baseline 37\n"
-                                    "IT Active Baseline 45\n"
-                                    "ST Active Baseline 46\n"
-                                    "FULL Active Baseline 128",
+                                    "UT Active Baseline\n"
+                                    "IT Active Baseline\n"
+                                    "ST Active Baseline\n"
+                                    "FULL Active Baseline (regression-only)",
                                     id="automation-soak-body",
                                 )
                             with Vertical(classes="automation-card"):
                                 yield Static("Profiles / Reference", classes="summary-title")
                                 yield Static(
                                     "test_suites / test_units README, test-asset-mapping,\n"
-                                    "execution-guide, Pack Matrix는 아래에서 바로 확인합니다.",
+                                    "execution-guide, closeout-standard, evidence-policy,\n"
+                                    "Pack Matrix는 아래에서 바로 확인합니다.",
                                     id="automation-native-body",
                                 )
                         with Vertical(id="automation-actions"):
@@ -822,17 +972,17 @@ class SdvTuiApp(App[None]):
                                 yield Button("Nightly", id="automation-profile-nightly")
                                 yield Button("Soak", id="automation-profile-soak")
                             with Horizontal(id="automation-actions-suites"):
-                                yield Button("UT 37", id="automation-profile-ut")
-                                yield Button("IT 45", id="automation-profile-it")
-                                yield Button("ST 46", id="automation-profile-st")
-                                yield Button("FULL 128", id="automation-profile-full")
+                                yield Button("UT", id="automation-profile-ut")
+                                yield Button("IT", id="automation-profile-it")
+                                yield Button("ST", id="automation-profile-st")
+                                yield Button("FULL", id="automation-profile-full")
                         with Horizontal(id="automation-support"):
                             yield Button("실행 프로파일", id="automation-open-profiles")
                             yield Button("Pack Matrix", id="automation-open-pack-matrix")
                             yield Button("CI/CD / Jenkins 문서", id="automation-open-ci")
                         yield Static(
                             "Automation은 실행 프로파일과 active suite pack 선택을 위한 화면입니다. "
-                            "결과 확인과 산출물 검토는 Results와 Artifacts에서 이어서 진행하십시오.",
+                            "UT/IT/ST는 official closeout 후보, FULL은 regression-only로 보고 결과 확인과 산출물 검토는 Results와 Artifacts에서 이어서 진행하십시오.",
                             id="automation-hint",
                         )
                     with Vertical(id="page-logs", classes="page hidden"):
@@ -855,6 +1005,8 @@ class SdvTuiApp(App[None]):
         self.active_group_index = self.group_names.index("Primary Workflow")
         self._refresh_commands(self.active_group_index)
         self._show_page("home")
+        self._refresh_home_reference_layout()
+        self._refresh_home_compact_layout()
         if str(self.state.get("last_result", {}).get("status", "IDLE")) == "RUNNING":
             self._run_started_monotonic = time.monotonic()
         self._refresh_summary_cards()
@@ -862,6 +1014,11 @@ class SdvTuiApp(App[None]):
         self._refresh_log_summary()
         self.set_interval(0.5, self._refresh_global_bars)
         self._write_log("[bold cyan]TUI 준비 완료[/]  작업을 고르고 필요한 값을 입력한 뒤 [bold]Ctrl+R[/]로 실행하십시오.")
+
+    def on_resize(self, event: events.Resize) -> None:
+        self._refresh_home_reference_layout()
+        self._refresh_home_compact_layout()
+        self._refresh_home_summary()
 
     def _show_page(self, page_name: str) -> None:
         self.current_page = page_name
@@ -885,6 +1042,50 @@ class SdvTuiApp(App[None]):
             button.variant = "primary" if button_id == active_nav else "default"
         self._refresh_execute_group_buttons()
         self._refresh_artifact_cards()
+
+    def _refresh_home_reference_layout(self) -> None:
+        try:
+            wide = self.query_one("#home-reference-actions", Horizontal)
+            compact = self.query_one("#home-reference-actions-compact", Vertical)
+        except NoMatches:
+            return
+        if self.size.width <= 110:
+            wide.add_class("hidden")
+            compact.remove_class("hidden")
+        else:
+            compact.add_class("hidden")
+            wide.remove_class("hidden")
+
+    def _refresh_home_compact_layout(self) -> None:
+        compact = self.size.width <= 110
+        try:
+            home_body = self.query_one("#home-body", Static)
+            home_summary = self.query_one("#home-summary", Static)
+            home_recent = self.query_one("#home-recent", Static)
+            home_core_flow = self.query_one("#home-core-flow", Horizontal)
+            gate_copy = self.query_one("#home-gate-copy", Static)
+            scenario_copy = self.query_one("#home-scenario-copy", Static)
+            verify_copy = self.query_one("#home-verify-copy", Static)
+        except NoMatches:
+            return
+
+        home_body.update(
+            "CANoe Test Verification Console\n\n"
+            + (
+                "ASPICE SWE.4 / SWE.5 · ISO 26262 Traceability Matrix 기준 운영 콘솔입니다."
+                if compact
+                else "V-model 기준의 CANoe SIL 운영 콘솔입니다.\n"
+                "ASPICE SWE.4 / SWE.5와 ISO 26262 Traceability Matrix 기준으로 01~07 공식 문서, communication-matrix, test-asset-mapping, execution-guide를 함께 검토합니다."
+            )
+        )
+        gate_copy.update("계약·신호·변수 기준 점검" if compact else "시나리오 실행 전, 현재 작업본이 검증 가능한 상태인지 먼저 점검합니다.")
+        scenario_copy.update("시나리오 주입 및 ACK 확인" if compact else "선택한 SIL 시나리오를 CANoe에 주입하고 ACK 응답을 확인합니다.")
+        verify_copy.update("evidence·판정 빠른 확인" if compact else "최근 실행의 준비 상태와 증빙을 생성하고 PASS/WARN/FAIL 판정을 함께 확인합니다.")
+
+        home_body.styles.min_height = 4 if compact else 6
+        home_summary.styles.min_height = 5 if compact else 7
+        home_recent.styles.min_height = 6 if compact else 8
+        home_core_flow.styles.height = 10 if compact else 12
 
     def _set_command_group(self, group_name: str) -> None:
         if group_name not in self.group_names:
@@ -953,6 +1154,23 @@ class SdvTuiApp(App[None]):
                 out[key] = item
         return out
 
+    def _load_verification_packs(self) -> dict[str, dict[str, object]]:
+        try:
+            raw = json.loads(VERIFICATION_PACK_MATRIX_PATH.read_text(encoding="utf-8-sig"))
+        except Exception:
+            return {}
+        packs = raw.get("packs", []) if isinstance(raw, dict) else []
+        out: dict[str, dict[str, object]] = {}
+        if not isinstance(packs, list):
+            return out
+        for item in packs:
+            if not isinstance(item, dict):
+                continue
+            key = str(item.get("pack_id", "")).strip()
+            if key:
+                out[key] = item
+        return out
+
     def _apply_campaign_profile(self, profile_id: str) -> None:
         profile = self._load_campaign_profiles().get(profile_id)
         if not profile:
@@ -1016,6 +1234,7 @@ class SdvTuiApp(App[None]):
         return tokens
 
     def _refresh_home_summary(self) -> None:
+        compact = self.size.width <= 110
         last_result = self.state.get("last_result", {})
         insight = self.state.get("last_insight", {})
         timeline = self.state.get("timeline", {})
@@ -1029,22 +1248,25 @@ class SdvTuiApp(App[None]):
         scenario = str(timeline.get("scenario", "IDLE")) if isinstance(timeline, dict) else "IDLE"
         verify = str(timeline.get("verify", "IDLE")) if isinstance(timeline, dict) else "IDLE"
         recent = self._recent_rows()
-        self.query_one(
-            "#home-summary", Static
-        ).update(
-            f"단계: {stage}\n"
-            f"최근 결과: {status} | {title}\n"
-            f"실행 흐름: Gate={gate} / Scenario={scenario} / Verify={verify}\n"
-            f"주요 확인점: {bottleneck}\n"
-            f"다음 단계: {next_action}"
-        )
+        summary_lines = [
+            f"최근 결과: {status} | {title}",
+            f"실행 흐름: Gate={gate} / Scenario={scenario} / Verify={verify}",
+            f"다음 단계: {next_action}",
+        ]
+        if not compact:
+            summary_lines.insert(0, f"단계: {stage}")
+            summary_lines.insert(3, f"주요 확인점: {bottleneck}")
+        self.query_one("#home-summary", Static).update("\n".join(summary_lines))
         recent_lines = ["최근 실행 요약"]
         if recent:
-            for item in recent[:3]:
+            for item in recent[: (2 if compact else 3)]:
                 recent_lines.append(f"- {self._recent_entry_label(item)}")
         else:
             recent_lines.append("- 아직 실행 기록이 없습니다. Gate all부터 시작하십시오.")
-        recent_lines.extend(["", f"최근 상세: {detail}", "", "세부 판정은 Results, 산출물과 Source Contracts는 Artifacts, 반복 실행과 CI/CD 연동은 Automation에서 확인하십시오."])
+        if compact:
+            recent_lines.extend(["", f"최근 상세: {detail}"])
+        else:
+            recent_lines.extend(["", f"최근 상세: {detail}", "", "세부 판정은 Results, 산출물과 Source Contracts는 Artifacts, 반복 실행과 CI/CD 연동은 Automation에서 확인하십시오."])
         self.query_one("#home-recent", Static).update("\n".join(recent_lines))
 
     def _format_duration_clock(self, seconds: float) -> str:
@@ -1159,6 +1381,9 @@ class SdvTuiApp(App[None]):
             "doctor_report.json",
             "run_readiness.json",
             "dev2_batch_report.json",
+            "run_insight_report.md",
+            "doc_binding_bundle.md",
+            "doc_fill_template.md",
             "surface_evidence_bundle.json",
         )
         ready = sum(1 for name in tracked if (staging_root / name).exists())
@@ -1458,9 +1683,16 @@ class SdvTuiApp(App[None]):
             ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
         )
         reference_docs = (
+            ROOT / "driving-alert-workproducts" / "05_Unit_Test.md",
+            ROOT / "driving-alert-workproducts" / "06_Integration_Test.md",
+            ROOT / "driving-alert-workproducts" / "07_System_Test.md",
             ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
             ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
             ROOT / "product" / "sdv_operator" / "docs-src" / "verification-packs.md",
+            ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md",
+            ROOT / "canoe" / "docs" / "verification" / "execution-guide.md",
+            ROOT / "canoe" / "docs" / "verification" / "VECTOR_ALIGNED_CLOSEOUT_STANDARD.md",
+            ROOT / "canoe" / "docs" / "verification" / "evidence-policy.md",
         )
         core_ready = sum(1 for item in core_contracts if item.exists())
         docs_ready = sum(1 for item in reference_docs if item.exists())
@@ -1473,7 +1705,7 @@ class SdvTuiApp(App[None]):
             f"현재 active suite: {pack_label}",
             f"Core config: {core_ready}/{len(core_contracts)} ready",
             f"Reference docs: {docs_ready}/{len(reference_docs)} ready",
-            "원본 JSON/MD는 Source Contract 버튼에서 바로 엽니다.",
+            "05/06/07, test-asset-mapping, execution-guide, closeout/evidence 정책은 Source Contract에서 바로 엽니다.",
         ]
         return "\n".join(lines)
 
@@ -1569,13 +1801,23 @@ class SdvTuiApp(App[None]):
         profile_id = profile_id.strip()
         if not profile_id:
             return "-"
-        return PROFILE_SURFACE_LABELS.get(profile_id, profile_id)
+        profile = self._load_campaign_profiles().get(profile_id)
+        if isinstance(profile, dict):
+            title = str(profile.get("title", "")).strip()
+            if title:
+                return title
+        return PROFILE_TITLE_FALLBACKS.get(profile_id, profile_id)
 
     def _pack_surface_label(self, pack_id: str) -> str:
         pack_id = pack_id.strip()
         if not pack_id:
             return "-"
-        return PACK_SURFACE_LABELS.get(pack_id, pack_id)
+        pack = self._load_verification_packs().get(pack_id)
+        if isinstance(pack, dict):
+            title = str(pack.get("title", "")).strip()
+            if title:
+                return title
+        return pack_id
 
     def _summarize_evidence_paths(self) -> str:
         last_result = self.state.get("last_result", {})
@@ -1908,10 +2150,16 @@ class SdvTuiApp(App[None]):
         if command.command_id.startswith("artifact.open"):
             mapping = {
                 "batch-report": "canoe/tmp/reports/verification/dev2_batch_report.md",
+                "run-insight": "canoe/tmp/reports/verification/run_insight_report.md",
+                "doc-binding-bundle": "canoe/tmp/reports/verification/doc_binding_bundle.md",
+                "doc-fill-template": "canoe/tmp/reports/verification/doc_fill_template.md",
                 "surface-bundle": "canoe/tmp/reports/verification/surface_evidence_bundle.md",
                 "readiness": "canoe/tmp/reports/verification/run_readiness.md",
                 "doctor": "canoe/tmp/reports/verification/doctor_report.md",
                 "surface-inventory": "product/sdv_operator/config/surface_ecu_inventory.json",
+                "unit-test-doc": "driving-alert-workproducts/05_Unit_Test.md",
+                "integration-test-doc": "driving-alert-workproducts/06_Integration_Test.md",
+                "system-test-doc": "driving-alert-workproducts/07_System_Test.md",
                 "test-asset-mapping": "canoe/docs/verification/test-asset-mapping.md",
                 "native-test-portfolio": "canoe/docs/verification/test-asset-mapping.md",
                 "active-test-units-guide": "canoe/tests/modules/test_units/README.md",
@@ -1919,6 +2167,8 @@ class SdvTuiApp(App[None]):
                 "active-test-suites-guide": "canoe/tests/modules/test_suites/README.md",
                 "network-gateway-pack": "canoe/tests/modules/test_suites/README.md",
                 "execution-guide": "canoe/docs/verification/execution-guide.md",
+                "closeout-standard": "canoe/docs/verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md",
+                "evidence-policy": "canoe/docs/verification/evidence-policy.md",
                 "verification-pack-matrix": "product/sdv_operator/config/verification_pack_matrix.json",
                 "campaign-profiles": "product/sdv_operator/config/campaign_profiles.json",
                 "capability-matrix-json": "product/sdv_operator/config/capability_boundary_matrix.json",
@@ -2433,6 +2683,67 @@ class SdvTuiApp(App[None]):
     def action_open_build_root(self) -> None:
         self._open_static_target(ROOT / "dist")
 
+    def _build_home_reference_preview(self, key: str, target: Path) -> str:
+        if key == "docs":
+            docs = [
+                "01_Requirements.md",
+                "02_Concept_design.md",
+                "03_Function_definition.md",
+                "0301_SysFuncAnalysis.md",
+                "0302_NWflowDef.md",
+                "0303_Communication_Specification.md",
+                "0304_System_Variables.md",
+                "04_SW_Implementation.md",
+                "05_Unit_Test.md",
+                "06_Integration_Test.md",
+                "07_System_Test.md",
+            ]
+            available = [name for name in docs if (target / name).exists()]
+            return "포함 문서\n" + "\n".join(f"- {name}" for name in available)
+
+        if target.suffix == ".json":
+            try:
+                data = json.loads(target.read_text(encoding="utf-8-sig"))
+                if target.name == "verification_pack_matrix.json" and isinstance(data, dict):
+                    packs = data.get("packs", [])
+                    if isinstance(packs, list):
+                        lines = ["현재 pack"]
+                        for item in packs[:6]:
+                            if isinstance(item, dict):
+                                lines.append(f"- {item.get('title', item.get('pack_id', '-'))}")
+                        return "\n".join(lines)
+            except Exception:
+                pass
+            return "미리보기\n- JSON target\n- 원본 열기 또는 경로 복사로 확인하십시오."
+
+        if target.suffix == ".md":
+            try:
+                lines = target.read_text(encoding="utf-8-sig").splitlines()
+            except Exception:
+                return "미리보기를 읽을 수 없습니다."
+            preview_lines: list[str] = []
+            for raw in lines:
+                line = raw.strip()
+                if not line:
+                    continue
+                if line.startswith("|") and len(preview_lines) >= 4:
+                    continue
+                preview_lines.append(line)
+                if len(preview_lines) == 7:
+                    break
+            return "미리보기\n" + "\n".join(preview_lines) if preview_lines else "미리보기를 읽을 수 없습니다."
+
+        return self._brief_relpath(target)
+
+    def _show_home_reference_preview(self, key: str) -> None:
+        reference = HOME_REFERENCE_PREVIEWS.get(key)
+        if reference is None:
+            self._write_log(f"[yellow]등록되지 않은 HOME reference입니다.[/] {key}")
+            return
+        title, target, summary = reference
+        preview = self._build_home_reference_preview(key, target)
+        self.push_screen(ReferencePreviewScreen(title, target, summary, preview))
+
     def action_copy_artifact(self) -> None:
         target = self._resolve_artifact_target()
         if target is None:
@@ -2799,6 +3110,16 @@ class SdvTuiApp(App[None]):
             self._open_core_task("operate.scenario_trigger", focus="form")
         elif event.button.id == "home-verify":
             self._open_core_task("verify.quick_verify", focus="form")
+        elif event.button.id in {"home-open-docs", "home-open-docs-compact"}:
+            self._show_home_reference_preview("docs")
+        elif event.button.id in {"home-open-comm-matrix", "home-open-comm-matrix-compact"}:
+            self._show_home_reference_preview("comm-matrix")
+        elif event.button.id in {"home-open-test-asset", "home-open-test-asset-compact"}:
+            self._show_home_reference_preview("test-asset")
+        elif event.button.id in {"home-open-execution-guide", "home-open-execution-guide-compact"}:
+            self._show_home_reference_preview("execution-guide")
+        elif event.button.id in {"home-open-pack-matrix", "home-open-pack-matrix-compact"}:
+            self._show_home_reference_preview("pack-matrix")
         elif event.button.id == "group-primary":
             self._set_command_group("Primary Workflow")
         elif event.button.id == "group-runtime":

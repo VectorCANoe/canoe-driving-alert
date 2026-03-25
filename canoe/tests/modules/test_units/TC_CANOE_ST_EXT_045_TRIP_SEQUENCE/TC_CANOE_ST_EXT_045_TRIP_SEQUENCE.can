@@ -1,0 +1,33 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_045_TRIP_SEQUENCE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(200, 3500, 4000))
+  {
+    return;
+  }
+  if (!waitForCoreSelectedAlertState(0, 0, 1200) ||
+      !waitForStableWarningRender(0, 0, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("selected-alert-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("warning-text-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
+
+  resetValidationHarnessIfNeeded();
+}

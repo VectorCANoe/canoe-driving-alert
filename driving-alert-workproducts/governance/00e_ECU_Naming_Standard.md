@@ -63,3 +63,11 @@
 - `0301`, `0302`, `0303`의 상단 공식 표는 표면 ECU 이름을 먼저 쓴다.
 - 구현 이름이 필요한 경우에는 괄호 안에만 병기한다.
 - 제출 문서에서는 표면 ECU 이름만 읽어도 기능 흐름을 이해할 수 있어야 한다.
+
+## 7. 연계 계약 문서
+
+ECU 표면 이름과 계층 표기는 아래 런타임 계약 문서와 함께 유지한다.
+
+- `canoe/docs/contracts/communication-matrix.md`
+- `canoe/docs/contracts/owner-route.md`
+- `canoe/docs/contracts/layer-separation-policy.md`

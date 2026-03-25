@@ -35,6 +35,7 @@ COMPAT_TOPLEVEL_COMMANDS = [
     "verify-prepare",
     "verify-batch",
     "verify-smoke",
+    "verify-post-run",
     "verify-fill-score",
     "verify-insight",
     "verify-bind-doc",
@@ -90,6 +91,34 @@ def add_verify_batch_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> N
     p.add_argument("--skip-gates", action="store_true", help="Skip all gate steps in pre/full phase")
     p.add_argument("--stop-on-fail", action="store_true", help="Stop immediately at first failed step")
     p.add_argument(
+        "--execute-native-tier",
+        default="",
+        choices=["", "UT", "IT", "ST", "FULL"],
+        help="Optionally execute one native CANoe test configuration during pre/full phase",
+    )
+    p.add_argument(
+        "--native-timeout-seconds",
+        type=int,
+        default=1800,
+        help="Timeout for native test configuration execution",
+    )
+    p.add_argument(
+        "--native-poll-ms",
+        type=int,
+        default=500,
+        help="Polling interval for native test configuration execution",
+    )
+    p.add_argument(
+        "--native-restart-if-running",
+        action="store_true",
+        help="Stop and restart the target native configuration if it is already running",
+    )
+    p.add_argument(
+        "--native-fail-on-verdict",
+        action="store_true",
+        help="Return non-zero when native execution completes with failed verdict",
+    )
+    p.add_argument(
         "--report-formats",
         default="json,md",
         help="Comma-separated report formats: json,md,csv,junit (default: json,md)",
@@ -125,6 +154,54 @@ def add_verify_smoke_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> N
     p.add_argument("--owner", default="TBD")
     p.add_argument("--run-date", default=dt.date.today().isoformat())
     p.set_defaults(func=handlers["cmd_verify_smoke"], operator_command_id="verify.smoke")
+
+
+def add_verify_collect_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument("--tier", required=True, choices=["UT", "IT", "ST", "FULL"])
+    p.add_argument(
+        "--evidence-root",
+        default="",
+        help="Optional evidence root path (default pipeline root is used when omitted)",
+    )
+    p.add_argument("--raw-log-source", default="", help="Optional raw log source override")
+    p.add_argument("--allow-missing-raw-log", action="store_true")
+    p.add_argument("--supplementary-lookback-minutes", type=int, default=90)
+    p.add_argument("--disable-supplementary-auto-discovery", action="store_true")
+    p.set_defaults(func=handlers["cmd_verify_collect"], operator_command_id="verify.collect_native")
+
+
+def add_verify_post_run_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument("--tier", required=True, choices=["UT", "IT", "ST"])
+    p.add_argument("--owner", default="TBD")
+    p.add_argument("--run-date", default=dt.date.today().isoformat())
+    p.add_argument(
+        "--evidence-root",
+        default="",
+        help="Optional evidence root path (default pipeline root is used when omitted)",
+    )
+    p.add_argument("--raw-log-source", default="", help="Optional raw log source override")
+    p.add_argument("--allow-missing-raw-log", action="store_true")
+    p.add_argument("--supplementary-lookback-minutes", type=int, default=90)
+    p.add_argument("--disable-supplementary-auto-discovery", action="store_true")
+    p.add_argument("--baseline-csv", default="", help="Optional baseline scored CSV for regression comparison")
+    p.add_argument("--no-strict-metadata", action="store_true")
+    p.add_argument("--no-strict-axis", action="store_true")
+    p.set_defaults(func=handlers["cmd_verify_post_run"], operator_command_id="verify.post_run")
+
+
+def add_verify_report_tools_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--json", action="store_true", help="Print tooling payload as JSON")
+    p.set_defaults(func=handlers["cmd_verify_report_tools"], operator_command_id="verify.report_tools")
+
+
+def add_verify_report_bundle_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--tier", default="", choices=["", "UT", "IT", "ST", "FULL"], help="Tier contract to resolve native summary report")
+    p.add_argument("--report", default="", help="Explicit .vtestreport path override")
+    p.add_argument("--include-pdf", action="store_true", help="Also export official PDF via ReportViewerCli")
+    p.add_argument("--json", action="store_true", help="Print merged bundle JSON")
+    p.set_defaults(func=handlers["cmd_verify_report_bundle"], operator_command_id="verify.report_bundle")
 
 
 def add_verify_quick_args(
@@ -324,14 +401,22 @@ def add_artifact_open_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
         choices=[
             "staging-root",
             "batch-report",
+            "run-insight",
+            "doc-binding-bundle",
+            "doc-fill-template",
             "surface-bundle",
             "readiness",
             "doctor",
             "surface-inventory",
+            "unit-test-doc",
+            "integration-test-doc",
+            "system-test-doc",
             "test-asset-mapping",
             "active-test-units-guide",
             "active-test-suites-guide",
             "execution-guide",
+            "closeout-standard",
+            "evidence-policy",
             "native-test-portfolio",
             "native-testcase-blueprints",
             "network-gateway-pack",
@@ -343,17 +428,24 @@ def add_artifact_open_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
             "phase-policy",
             "manifest",
             "commands-doc",
+            "maintenance-doc",
             "results-doc",
             "packaging-doc",
             "ci-bridge-doc",
             "role-boundary-doc",
             "capability-matrix-doc",
+            "incoming-root",
+            "incoming-trace-root",
+            "incoming-logging-root",
             "jenkinsfile-sample",
             "build-root",
             "archive-run",
             "reports-dir",
             "surface-dir",
             "native-reports",
+            "evidence-dir",
+            "supplementary-trace",
+            "supplementary-logging",
             "execution-manifest",
         ],
         required=True,
@@ -368,6 +460,7 @@ def add_artifact_open_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
 
 def add_verify_status_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
     p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument("--tiers", nargs="+", default=["UT", "IT", "ST"], choices=["UT", "IT", "ST"])
     p.add_argument(
         "--evidence-root",
         default="",
@@ -387,6 +480,7 @@ def add_verify_status_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
 
 
 def add_verify_surface_bundle_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--tiers", nargs="+", default=["UT", "IT", "ST"], choices=["UT", "IT", "ST"])
     p.add_argument(
         "--inventory-json",
         type=Path,
@@ -554,6 +648,29 @@ def add_canoe_capl_call_args(p: argparse.ArgumentParser, handlers: HandlerMap) -
     p.set_defaults(func=handlers["cmd_canoe_capl_call"], operator_command_id="inspect.capl_function_call")
 
 
+def add_canoe_test_config_common_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--config-name", default="", help="Native CANoe test configuration name")
+    p.add_argument("--tier", default="", choices=["", "UT", "IT", "ST", "FULL"], help="Tier alias resolved via native execution contract")
+
+
+def add_canoe_test_config_status_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    add_canoe_test_config_common_args(p)
+    p.add_argument("--json", action="store_true", help="Print JSON payload")
+    p.set_defaults(func=handlers["cmd_canoe_test_config_status"], operator_command_id="operate.native_test_config_status")
+
+
+def add_canoe_test_config_run_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    add_canoe_test_config_common_args(p)
+    p.add_argument("--run-id", default="", help="Optional verification run ID for evidence context")
+    p.add_argument("--timeout-seconds", type=int, default=1800, help="Execution timeout in seconds")
+    p.add_argument("--poll-ms", type=int, default=500, help="Polling interval in milliseconds")
+    p.add_argument("--no-ensure-running", action="store_true", help="Do not auto-start measurement before execution")
+    p.add_argument("--restart-if-running", action="store_true", help="Stop and restart if the configuration is already running")
+    p.add_argument("--fail-on-verdict", action="store_true", help="Return non-zero when execution verdict is failed")
+    p.add_argument("--json", action="store_true", help="Print JSON payload")
+    p.set_defaults(func=handlers["cmd_canoe_test_config_run"], operator_command_id="operate.native_test_config_run")
+
+
 def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Unified script launcher")
     sub = parser.add_subparsers(
@@ -585,6 +702,9 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     canoe_sub.add_parser("measure-stop", help="Stop measurement").set_defaults(func=handlers["cmd_canoe_measure_stop"], operator_command_id="operate.measure_stop")
     canoe_sub.add_parser("measure-reset", help="Reset measurement (stop/start)").set_defaults(func=handlers["cmd_canoe_measure_reset"], operator_command_id="operate.measure_reset")
     add_canoe_capl_call_args(canoe_sub.add_parser("capl-call", help="Call CAPL function"), handlers)
+    canoe_sub.add_parser("test-config-list", help="List native CANoe test configurations").set_defaults(func=handlers["cmd_canoe_test_config_list"], operator_command_id="operate.native_test_config_list")
+    add_canoe_test_config_status_args(canoe_sub.add_parser("test-config-status", help="Read one native CANoe test configuration status"), handlers)
+    add_canoe_test_config_run_args(canoe_sub.add_parser("test-config-run", help="Execute one native CANoe test configuration"), handlers)
 
     sub.add_parser("tui", help="Product-style Textual operator console").set_defaults(func=handlers["cmd_tui"])
     sub.add_parser("shell", help="Interactive slash-command shell").set_defaults(func=handlers["cmd_shell"])
@@ -599,6 +719,10 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     add_verify_prepare_args(verify_sub.add_parser("prepare", help="Create UT/IT/ST evidence run folders"), handlers)
     add_verify_batch_args(verify_sub.add_parser("batch", help="Run Dev2 pre/post/full batch workflow"), handlers)
     add_verify_smoke_args(verify_sub.add_parser("smoke", help="Run CANoe COM smoke checks"), handlers)
+    add_verify_collect_args(verify_sub.add_parser("collect", help="Collect native reports and raw evidence for one tier"), handlers)
+    add_verify_post_run_args(verify_sub.add_parser("post-run", help="Collect + fill-score one tier in one step"), handlers)
+    add_verify_report_tools_args(verify_sub.add_parser("report-tools", help="Inspect official Vector report tooling install"), handlers)
+    add_verify_report_bundle_args(verify_sub.add_parser("report-bundle", help="Export and parse native report via official Vector tooling"), handlers)
     add_verify_quick_args(verify_sub.add_parser("quick", help="Run prepare + smoke + status in one flow"), handlers, default_run_id)
     add_verify_fill_args(verify_sub.add_parser("fill-score", help="Fill and score one tier"), handlers)
     add_verify_insight_args(verify_sub.add_parser("insight", help="Build run-level insight report"), handlers)
@@ -685,6 +809,10 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     add_verify_prepare_args(_add_hidden_parser(sub, "verify-prepare"), handlers)
     add_verify_batch_args(_add_hidden_parser(sub, "verify-batch"), handlers)
     add_verify_smoke_args(_add_hidden_parser(sub, "verify-smoke"), handlers)
+    add_verify_collect_args(_add_hidden_parser(sub, "verify-collect"), handlers)
+    add_verify_post_run_args(_add_hidden_parser(sub, "verify-post-run"), handlers)
+    add_verify_report_tools_args(_add_hidden_parser(sub, "verify-report-tools"), handlers)
+    add_verify_report_bundle_args(_add_hidden_parser(sub, "verify-report-bundle"), handlers)
     add_verify_fill_args(_add_hidden_parser(sub, "verify-fill-score"), handlers)
     add_verify_insight_args(_add_hidden_parser(sub, "verify-insight"), handlers)
     add_verify_bind_doc_args(_add_hidden_parser(sub, "verify-bind-doc"), handlers)

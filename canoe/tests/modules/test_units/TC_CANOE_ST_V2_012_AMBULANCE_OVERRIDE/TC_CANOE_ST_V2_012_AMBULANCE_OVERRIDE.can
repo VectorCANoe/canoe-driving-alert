@@ -1,0 +1,35 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_V2_012_AMBULANCE_OVERRIDE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(223, 800, 1300))
+  {
+    return;
+  }
+
+  if (!waitForObservedSelectedAlertState(7, 2, 800) ||
+      !waitForObservedFailSafe(1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("ambulance-override-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("ambulance-override-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  assertIntEq("ambulance-override-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+  assertIntMin("ambulance-override-arbitration", 1, (long)@Test::baseTraceSnapshotId, "baseTraceSnapshotId");
+
+  resetValidationHarnessIfNeeded();
+}

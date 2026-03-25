@@ -1,0 +1,63 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_CORE_013_IVI_GW_ROUTE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(209, 800, 1300))
+  {
+    return;
+  }
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 1, 12, 40), -1, 1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("ivi-gw-text-route", 2, (long)@CoreState::routingPolicy, "routingPolicy");
+  assertIntEq("ivi-gw-text-code", deriveExpectedEmergencyWarningCode(1, 1, 12, 40), (long)@Cluster::warningTextCode, "warningTextCode");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  if (!launchScenarioAndWait(30, 800, 1300))
+  {
+    return;
+  }
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 2, 12, 20), 2, 1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("ivi-gw-police-code", deriveExpectedEmergencyWarningCode(1, 2, 12, 20), (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("ivi-gw-police-dir", 2, (long)@UiRender::renderDirection, "renderDirection");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  if (!launchScenarioAndWait(33, 800, 1300))
+  {
+    return;
+  }
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(2, 1, 8, 20), 1, 1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("ivi-gw-ambulance-code", deriveExpectedEmergencyWarningCode(2, 1, 8, 20), (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("ivi-gw-ambulance-dir", 1, (long)@UiRender::renderDirection, "renderDirection");
+
+  resetValidationHarnessIfNeeded();
+}

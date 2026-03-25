@@ -1,0 +1,79 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gDoorFlOpenState;
+  long gDoorFrOpenState;
+  long gDoorFlWindowPos;
+  long gDoorFrWindowPos;
+}
+
+on message frmDoorFlStateMsg
+{
+  gDoorFlOpenState = this.DoorFlOpenState;
+  gDoorFlWindowPos = this.DoorFlWindowPos;
+}
+
+on message frmDoorFrStateMsg
+{
+  gDoorFrOpenState = this.DoorFrOpenState;
+  gDoorFrWindowPos = this.DoorFrWindowPos;
+}
+
+long waitForWindowState(long expectedDoorFlOpenState,
+                        long expectedDoorFlWindowPos,
+                        long expectedDoorFrOpenState,
+                        long expectedDoorFrWindowPos,
+                        dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gDoorFlOpenState != expectedDoorFlOpenState ||
+          gDoorFlWindowPos != expectedDoorFlWindowPos ||
+          gDoorFrOpenState != expectedDoorFrOpenState ||
+          gDoorFrWindowPos != expectedDoorFrWindowPos) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gDoorFlOpenState != expectedDoorFlOpenState ||
+      gDoorFlWindowPos != expectedDoorFlWindowPos ||
+      gDoorFrOpenState != expectedDoorFrOpenState ||
+      gDoorFrWindowPos != expectedDoorFrWindowPos)
+  {
+    testStepFail("it-window-state", "Window state timeout waited=%d flOpen=%d flPos=%d frOpen=%d frPos=%d expectedFlOpen=%d expectedFlPos=%d expectedFrOpen=%d expectedFrPos=%d",
+                 waitedMs,
+                 gDoorFlOpenState,
+                 gDoorFlWindowPos,
+                 gDoorFrOpenState,
+                 gDoorFrWindowPos,
+                 expectedDoorFlOpenState,
+                 expectedDoorFlWindowPos,
+                 expectedDoorFrOpenState,
+                 expectedDoorFrWindowPos);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_IT_EXT_025_WINDOW_STATE()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(226, 900, 1300)) { return; }
+  if (!waitForWindowState(1, 20, 0, 0, 800)) { resetValidationHarnessIfNeeded(); return; }
+
+  assertIntEq("it-window-doorfl-open", 1, gDoorFlOpenState, "DoorFlOpenState");
+  assertIntEq("it-window-doorfl-pos", 20, gDoorFlWindowPos, "DoorFlWindowPos");
+  assertIntEq("it-window-doorfr-open", 0, gDoorFrOpenState, "DoorFrOpenState");
+  assertIntEq("it-window-doorfr-pos", 0, gDoorFrWindowPos, "DoorFrWindowPos");
+
+  resetValidationHarnessIfNeeded();
+}

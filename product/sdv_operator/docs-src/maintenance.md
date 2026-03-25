@@ -45,6 +45,7 @@ Dev2가 관리하는 것은 `scripts` 전체가 아니라 `SDV Operator` 제품 
 3. Verification Console은 운영 콘솔로 유지하고, CANoe 제어 GUI를 재구현하지 않습니다.
 4. 구조적 결과 파일(JSON)을 우선하고, Verification Console은 그 결과를 소비합니다.
 5. CI 연계는 `dev2_batch_report.junit.xml`을 정본 Jenkins ingress 포맷으로 사용합니다.
+6. verification 결과 모델은 `native report + supplementary trace/logging + verification log + reviewer approval`을 기준으로 유지합니다.
 
 ## 언어 표면 정책
 

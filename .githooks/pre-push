@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+echo "[pre-push] text integrity gate"
+python scripts/gates/text_integrity_gate.py
+
+echo "[pre-push] cfg hygiene gate"
+python scripts/gates/cfg_hygiene_gate.py
+
+echo "[pre-push] capl sync gate"
+python scripts/run.py gate capl-sync

@@ -1,0 +1,27 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_EXT_043_AUDIO_GUIDE_CHANNEL()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(215, 900, 1700)) { return; }
+  if (!waitForAudioPolicyFloor(1, 2, 20, 0, 1800)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntMin("it-audio-guide-focus", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
+  assertIntMin("it-audio-guide-ducking", 2, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
+  assertIntMin("it-audio-guide-volume", 20, (long)@CoreState::volumeLevel, "volumeLevel");
+  assertIntEq("it-audio-guide-popup-clear", 0, (long)@CoreState::popupActive, "popupActive");
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(220, 900, 1700)) { return; }
+  if (!waitForStableDisplayPolicy(2, 1, 1, -1, 1200)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("it-visual-sync-theme", 2, (long)@CoreState::themeMode, "themeMode");
+  assertIntEq("it-visual-sync-popup", 1, (long)@CoreState::popupActive, "popupActive");
+  assertIntEq("it-visual-sync-priority", 1, (long)@CoreState::popupPriority, "popupPriority");
+  resetValidationHarnessIfNeeded();
+}

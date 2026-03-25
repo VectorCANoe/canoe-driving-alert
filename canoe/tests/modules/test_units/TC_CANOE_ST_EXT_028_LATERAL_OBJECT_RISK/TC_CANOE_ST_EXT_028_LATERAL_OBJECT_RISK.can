@@ -1,0 +1,37 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_028_LATERAL_OBJECT_RISK()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(21, 700, 1200))
+  {
+    return;
+  }
+
+  if (!waitForObservedObjectRiskMin(2, 40, 1200) ||
+      !waitForObservedIntersectionConflict(1200) ||
+      !waitForObservedSelectedAlertType(5, 1200) ||
+      !waitForObservedFailSafe(1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("lateral-object-intersection-flag", 1, (long)@Test::obsIntersectionConflictFlag, "ethIntersectionConflictFlag");
+  assertIntMin("lateral-object-risk-class", 3, (long)@Test::obsObjectRiskClass, "ethObjectRiskClass");
+  assertIntEq("lateral-object-alert-type", 5, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  assertIntEq("lateral-object-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

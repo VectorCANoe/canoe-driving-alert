@@ -1,0 +1,37 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_032_USER_SETTING_CHANGE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(215, 900, 1700))
+  {
+    return;
+  }
+
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 2, 11, 40), 2, 1800) ||
+      !waitForAudioPolicyFloor(1, 2, 20, 0, 1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("user-setting-warning-code", deriveExpectedEmergencyWarningCode(1, 2, 11, 40), (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntMin("user-setting-audio-focus", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
+  assertIntMin("user-setting-audio-ducking", 2, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
+  assertIntMin("user-setting-volume", 20, (long)@CoreState::volumeLevel, "volumeLevel");
+  if (!waitForObservedFailSafe(1200)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("user-setting-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

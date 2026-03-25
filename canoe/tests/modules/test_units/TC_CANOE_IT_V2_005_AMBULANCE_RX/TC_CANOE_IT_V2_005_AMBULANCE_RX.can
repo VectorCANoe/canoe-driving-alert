@@ -1,0 +1,42 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_V2_005_AMBULANCE_RX()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(5, 700, 1200))
+  {
+    return;
+  }
+
+if (!waitForV2xIngressState(1, 2, 8, 22, 1500))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  if (!waitForObservedSelectedAlertState(7, 2, 800) ||
+      !waitForObservedFailSafe(1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("selected-alert-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("selected-alert-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  assertIntEq("eta", 8, (long)@V2X::eta, "eta");
+  assertIntEq("source-id", 22, (long)@V2X::sourceId, "sourceId");
+  assertIntEq("fail-safe-clear", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

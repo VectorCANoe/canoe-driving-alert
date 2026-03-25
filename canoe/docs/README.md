@@ -2,25 +2,103 @@
 
 This folder provides the official developer documentation for the CANoe SIL baseline. It explains how the runtime surface is structured, how interfaces are contracted, how verification is executed, and how results are judged.
 
+## Language Packs
+
+- `English (canonical)`
+  - this folder is the authoritative source for CANoe-side developer documentation
+- `한국어 문서 묶음`
+  - `Kor/README.md`
+  - key contracts and verification guides mirrored in Korean for internal operator and reviewer use
+  - technical identifiers, IDs, and asset names remain aligned to the English canonical docs
+
 ## Start Here
 
 1. `architecture/ecu-classification.md`
 2. `architecture/surface-runtime-verification-map.md`
 3. `architecture/skeleton.md`
-4. `contracts/communication-matrix.md`
-5. `contracts/owner-route.md`
-6. `verification/oracle.md`
+4. `contracts/layer-separation-policy.md`
+5. `contracts/communication-matrix.md`
+6. `contracts/owner-route.md`
+7. `verification/oracle.md`
 
-## Repository Layout
+## Curated Delivery Set
 
-- `architecture/`
-  - ECU roles, runtime boundaries, verification placement, and harness structure
-- `contracts/`
-  - message ownership, route and timeout rules, Ethernet interfaces, diagnostics, and panel or sysvar contracts
-- `verification/`
-  - execution flow, acceptance criteria, oracle rules, and evidence handling
-- `operations/`
-  - GUI-first operations, source-to-mirror sync rules, and execution procedure
+Use this shortlist when you need the actual provided document subset rather than the full reference tree.
+
+- English key contracts
+  - `contracts/communication-matrix.md`
+  - `contracts/layer-separation-policy.md`
+  - `contracts/owner-route.md`
+  - `contracts/multibus-policy.md`
+  - `contracts/ethernet-interface.md`
+  - `contracts/panel-sysvar-contract.md`
+  - `contracts/diagnostic-matrix.md`
+  - `contracts/diagnostic-sysvar-contract.md`
+- English key verification docs
+  - `verification/test-asset-mapping.md`
+  - `verification/execution-guide.md`
+  - `verification/oracle.md`
+  - `verification/acceptance-criteria.md`
+  - `verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md`
+  - `verification/evidence-policy.md`
+  - `verification/diagnostic-coverage.md`
+- Korean key pack
+  - `Kor/README.md`
+  - `Kor/contracts/communication-matrix.md`
+  - `Kor/contracts/layer-separation-policy.md`
+  - `Kor/contracts/owner-route.md`
+  - `Kor/contracts/multibus-policy.md`
+  - `Kor/contracts/ethernet-interface.md`
+  - `Kor/contracts/panel-sysvar-contract.md`
+  - `Kor/contracts/diagnostic-matrix.md`
+  - `Kor/contracts/diagnostic-sysvar-contract.md`
+  - `Kor/verification/test-asset-mapping.md`
+  - `Kor/verification/execution-guide.md`
+  - `Kor/verification/oracle.md`
+  - `Kor/verification/acceptance-criteria.md`
+  - `Kor/verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md`
+  - `Kor/verification/evidence-policy.md`
+  - `Kor/verification/diagnostic-coverage.md`
+  - `../tests/modules/test_units/README.ko.md`
+  - `../tests/modules/test_suites/README.ko.md`
+
+## Architecture
+
+- `architecture/ecu-classification.md`
+- `architecture/surface-runtime-verification-map.md`
+- `architecture/skeleton.md`
+
+## Contracts
+
+- `contracts/communication-matrix.md`
+- `contracts/layer-separation-policy.md`
+- `contracts/owner-route.md`
+- `contracts/multibus-policy.md`
+- `contracts/ethernet-interface.md`
+- `contracts/ethernet-backbone.md`
+- `contracts/panel-sysvar-contract.md`
+- `contracts/diagnostic-description.md`
+- `contracts/diagnostic-matrix.md`
+- `contracts/diagnostic-sysvar-contract.md`
+
+## Verification
+
+- `verification/test-asset-mapping.md`
+- `verification/execution-guide.md`
+- `verification/oracle.md`
+- `verification/acceptance-criteria.md`
+- `verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md`
+- `verification/evidence-policy.md`
+- `verification/diagnostic-coverage.md`
+- `verification/diagnostic-seam-design.md`
+- `verification/native-test-asset-naming.md`
+- `verification/test-suite-composition.md`
+
+## Operations
+
+- `operations/gui-operations.md`
+- `operations/sync-rule.md`
+- `operations/run-procedure.md`
 
 ## Simulation and Test Workflow
 

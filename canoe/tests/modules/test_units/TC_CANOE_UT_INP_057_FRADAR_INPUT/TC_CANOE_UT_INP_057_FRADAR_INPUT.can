@@ -1,0 +1,64 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gPreviewHealth;
+  int gSpeedLimit;
+}
+
+on message frmRoadPreviewCameraStateMsg
+{
+  gPreviewHealth = this.PreviewHealth;
+  gSpeedLimit = this.SpeedLimit;
+}
+
+long waitForFradarInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gPreviewHealth != 2 ||
+          gSpeedLimit != 100) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gPreviewHealth != 2 ||
+      gSpeedLimit != 100)
+  {
+    testStepFail("fradar-input-state", "FRADAR input timeout waited=%d health=%d speedLimit=%d",
+                 waitedMs, gPreviewHealth, gSpeedLimit);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_057_FRADAR_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(233, 800, 1300))
+  {
+    return;
+  }
+  if (!waitForFradarInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s233_previewHealth", 2, gPreviewHealth, "previewHealth");
+  assertIntEq("s233_speedLimit", 100, gSpeedLimit, "speedLimit");
+
+  resetValidationHarnessIfNeeded();
+}

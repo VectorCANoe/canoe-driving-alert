@@ -1,0 +1,72 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gAmpMute;
+  int gAmpDuckingLvl;
+  int gAmpVolumeLevel;
+}
+
+on message frmAmpStateMsg
+{
+  gAmpMute = this.AmpMute;
+  gAmpDuckingLvl = this.AmpDuckingLvl;
+  gAmpVolumeLevel = this.AmpVolumeLevel;
+}
+
+long waitForAmpInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gAmpMute != 0 ||
+          gAmpDuckingLvl < 2 ||
+          gAmpVolumeLevel < 20) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gAmpMute != 0 ||
+      gAmpDuckingLvl < 2 ||
+      gAmpVolumeLevel < 20)
+  {
+    testStepFail("amp-input-state", "AMP input timeout waited=%d mute=%d ducking=%d volume=%d",
+                 waitedMs, gAmpMute, gAmpDuckingLvl, gAmpVolumeLevel);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_050_AMP_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gAmpMute = -1;
+  gAmpDuckingLvl = -1;
+  gAmpVolumeLevel = -1;
+  if (!launchScenarioAndWait(215, 900, 1300))
+  {
+    return;
+  }
+  if (!waitForAmpInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s215_ampMute", 0, gAmpMute, "ampMute");
+  assertIntMin("s215_ampDuckingLvl", 2, gAmpDuckingLvl, "ampDuckingLvl");
+  assertIntMin("s215_ampVolumeLevel", 20, gAmpVolumeLevel, "ampVolumeLevel");
+
+  resetValidationHarnessIfNeeded();
+}

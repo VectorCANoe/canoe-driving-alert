@@ -68,6 +68,19 @@ int pickFresherAgeMs(int ageA, int ageB)
   return (ageA <= ageB) ? ageA : ageB;
 }
 
+int getBoundaryFallbackAlertType(int emergencyContext)
+{
+  if (emergencyContext == 2)
+  {
+    return 2;
+  }
+  if (emergencyContext == 1)
+  {
+    return 1;
+  }
+  return 3;
+}
+
 void publishFailSafeState(int warningPathStatus,
                           int e2eHealthState,
                           int failSafeMode,
@@ -180,11 +193,19 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
     }
     else if (msgId == ethMsgEmergencyMonitor() && ethFramePayloadLen(count) >= 2)
     {
+      if (ethMatchesSource(address, ethNodeIpV2x(), port, ethV2xTxPort()) == 0)
+      {
+        write("[CGW] mon unexpected src=%lu port=%lu", address, port);
+      }
       gEmergencyContext = clampRange(ethGetU8(buffer, 0), 0, 2);
       gEmergencyMonTsMs = getSimulationTimeMs();
     }
     else if (msgId == ethMsgObjectRiskState() && ethFramePayloadLen(count) >= 6)
     {
+      if (ethMatchesSource(address, ethNodeIpAdas(), port, ethAdasTxPort()) == 0)
+      {
+        write("[CGW] obj unexpected src=%lu port=%lu", address, port);
+      }
       objectRiskClass = clampRange(ethGetU8(buffer, 0), 0, 7);
       gObjectTrackValid = clampRange(ethGetU8(buffer, 4), 0, 1);
       gObjectConfidence = clampRange(ethGetU8(buffer, 5), 0, 100);
@@ -209,6 +230,10 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
     }
     else if (msgId == ethMsgValidationOverride() && ethFramePayloadLen(count) >= 1)
     {
+      if (ethMatchesSource(address, ethNodeIpTestScn(), port, ethTestScnTxPort()) == 0)
+      {
+        write("[CGW] override unexpected src=%lu port=%lu", address, port);
+      }
       gForceFailSafeOverride = clampRange(ethGetU8(buffer, 0), 0, 1);
       gForceFailSafeRxMs = getSimulationTimeMs();
     }
@@ -219,8 +244,8 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
 
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
-  gEthTxSocket = ethOpenNodeSocketAt(getCgwLocalIp(), getCgwTxPort());
+  gEthSocket = ethOpenBackboneReceiverSocket(getCgwLocalIp());
+  gEthTxSocket = ethOpenPreferredNodeSocket(getCgwLocalIp(), getCgwTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gChassisAlive = 0;
   gBodyAlive = 0;
@@ -258,8 +283,12 @@ on start
   @CoreState::warningPathStatus = 1;
   @CoreState::e2eHealthState = 1;
   @CoreState::routingPolicy = 0;
-  @Core::failSafeMode = 1;
   @Core::decelAssistReq = 0;
+  @CoreState::decelGateReason = 0;
+  @CoreState::selectedAlertEffectiveLevel = 0;
+  @CoreState::selectedAlertEffectiveType = 0;
+  @CoreState::selectedAlertGateReason = 0;
+  @Core::failSafeMode = 1;
   if (gEthTxSocket == ethInvalidSocket())
   {
     write("[CGW] tx socket unavailable");
@@ -330,6 +359,16 @@ on timer tBoundaryCheck
   int emergencyRxAgeMs;
   int emergencyPathFast;
   int emergencyPathSlow;
+  int selectedAlertDecisionLevel;
+  int selectedAlertDecisionType;
+  int selectedAlertEffectiveLevel;
+  int selectedAlertEffectiveType;
+  int selectedAlertGateReason;
+  int decelDecisionReq;
+  int driverReleaseReason;
+  int decelAssistReq;
+  int decelGateReason;
+  int timeoutClear;
   int forceFailSafe;
   int startupSettling;
 
@@ -383,9 +422,14 @@ on timer tBoundaryCheck
     boundaryAlive = 1;
   }
 
-  forceFailSafe = (ethIsRecentTick(gForceFailSafeRxMs, 300) == 1 &&
-                   gForceFailSafeOverride == 1) ? 1 : 0;
+  forceFailSafe = 0;
+  if (ethIsRecentTick(gForceFailSafeRxMs, 300) == 1 &&
+      gForceFailSafeOverride == 1)
+  {
+    forceFailSafe = 1;
+  }
   startupSettling = (ethIsRecentTick(gStartTsMs, 500) == 1) ? 1 : 0;
+  timeoutClear = ((((int)@Core::timeoutClear) == 1) ? 1 : 0);
   if (forceFailSafe == 1)
   {
     warningPathStatus = 2;
@@ -448,15 +492,66 @@ on timer tBoundaryCheck
     routingPolicy = 1;
   }
 
+  decelDecisionReq = clampRange((int)@Core::decelAssistDecisionReq, 0, 1);
+  driverReleaseReason = clampRange((int)@CoreState::driverReleaseReason, 0, 3);
+  decelAssistReq = decelDecisionReq;
+  if (decelDecisionReq == 0)
+  {
+    decelGateReason = driverReleaseReason;
+  }
+  else
+  {
+    decelGateReason = 0;
+  }
+  if (failSafeMode >= 1 && decelAssistReq == 1)
+  {
+    decelAssistReq = 0;
+    decelGateReason = 3;
+  }
+
+  selectedAlertDecisionLevel = clampRange((int)@CoreState::selectedAlertDecisionLevel, 0, 7);
+  selectedAlertDecisionType = clampRange((int)@CoreState::selectedAlertDecisionType, 0, 15);
+  selectedAlertEffectiveLevel = selectedAlertDecisionLevel;
+  selectedAlertEffectiveType = selectedAlertDecisionType;
+  selectedAlertGateReason = 0;
+
+  if (timeoutClear == 1 ||
+      (boundaryAlive == 0 && (emergencyContext > 0 || selectedAlertDecisionLevel > 0)))
+  {
+    if (selectedAlertEffectiveLevel < 3)
+    {
+      selectedAlertEffectiveLevel = 3;
+    }
+    if (selectedAlertEffectiveType == 0)
+    {
+      selectedAlertEffectiveType = getBoundaryFallbackAlertType(emergencyContext);
+    }
+    selectedAlertGateReason = (timeoutClear == 1) ? 1 : 2;
+  }
+
+  if (failSafeMode >= 1 && (selectedAlertEffectiveLevel > 0 || selectedAlertGateReason != 0))
+  {
+    if (selectedAlertEffectiveLevel < 4)
+    {
+      selectedAlertEffectiveLevel = 4;
+    }
+    if (selectedAlertEffectiveType == 0)
+    {
+      selectedAlertEffectiveType = getBoundaryFallbackAlertType(emergencyContext);
+    }
+    selectedAlertGateReason = 3;
+  }
+
   @CoreState::domainBoundaryStatus = boundaryAlive;
   @CoreState::warningPathStatus = warningPathStatus;
   @CoreState::e2eHealthState = e2eHealthState;
   @CoreState::routingPolicy = routingPolicy;
+  @Core::decelAssistReq = decelAssistReq;
+  @CoreState::decelGateReason = decelGateReason;
+  @CoreState::selectedAlertEffectiveLevel = selectedAlertEffectiveLevel;
+  @CoreState::selectedAlertEffectiveType = selectedAlertEffectiveType;
+  @CoreState::selectedAlertGateReason = selectedAlertGateReason;
   @Core::failSafeMode = failSafeMode;
-  if (failSafeMode > 0)
-  {
-    @Core::decelAssistReq = 0;
-  }
 
   publishFailSafeState(warningPathStatus, e2eHealthState, failSafeMode, boundaryAlive);
   publishGatewayState(routingPolicy, warningPathStatus, e2eHealthState, boundaryAlive);

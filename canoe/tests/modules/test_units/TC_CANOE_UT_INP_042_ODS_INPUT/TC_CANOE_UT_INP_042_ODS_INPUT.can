@@ -1,0 +1,73 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gOccupantDetected;
+  int gWeightClass;
+  int gChildSeatDetected;
+}
+
+on message frmOdsStateMsg
+{
+  gOccupantDetected = this.OccupantDetected;
+  gWeightClass = this.WeightClass;
+  gChildSeatDetected = this.ChildSeatDetected;
+}
+
+long waitForOdsInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gOccupantDetected != 1 ||
+          gWeightClass != 1 ||
+          gChildSeatDetected != 1) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gOccupantDetected != 1 ||
+      gWeightClass != 1 ||
+      gChildSeatDetected != 1)
+  {
+    testStepFail("ods-input-state", "ODS input timeout waited=%d occupant=%d weight=%d childSeat=%d",
+                 waitedMs,
+                 gOccupantDetected,
+                 gWeightClass,
+                 gChildSeatDetected);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_042_ODS_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(228, 800, 1300))
+  {
+    return;
+  }
+
+  if (!waitForOdsInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s228_occupantDetected", 1, gOccupantDetected, "occupantDetected");
+  assertIntEq("s228_weightClass", 1, gWeightClass, "weightClass");
+  assertIntEq("s228_childSeatDetected", 1, gChildSeatDetected, "childSeatDetected");
+
+  resetValidationHarnessIfNeeded();
+}

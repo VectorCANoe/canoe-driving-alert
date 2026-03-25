@@ -1,0 +1,67 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gHudMode;
+  int gHudWarningCode;
+}
+
+on message frmHudStateMsg
+{
+  gHudMode = this.HudMode;
+  gHudWarningCode = this.HudWarningCode;
+}
+
+long waitForHudInputState(long expectedMode, long expectedWarningCode, dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gHudMode != expectedMode ||
+          gHudWarningCode != expectedWarningCode) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gHudMode != expectedMode ||
+      gHudWarningCode != expectedWarningCode)
+  {
+    testStepFail("hud-input-state", "HUD input timeout waited=%d mode=%d code=%d expectedMode=%d expectedCode=%d",
+                 waitedMs, gHudMode, gHudWarningCode, expectedMode, expectedWarningCode);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_049_HUD_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(30, 700, 1200))
+  {
+    return;
+  }
+  if (!waitForHudInputState(1, deriveExpectedEmergencyWarningCode(1, 2, 12, 20), 2200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s30_hudMode", 1, gHudMode, "hudMode");
+  assertIntEq("s30_hudWarningCode",
+              deriveExpectedEmergencyWarningCode(1, 2, 12, 20),
+              gHudWarningCode,
+              "hudWarningCode");
+
+  resetValidationHarnessIfNeeded();
+}

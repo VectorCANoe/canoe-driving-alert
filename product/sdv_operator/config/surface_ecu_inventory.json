@@ -1,28 +1,34 @@
-﻿{
+{
   "schema": "sdv.surface.inventory.v1",
   "owner": "Dev2",
-  "source_doc": "driving-alert-workproducts/ops/change-orders/ECU_RESET_CLASSIFICATION_MATRIX_2026-03-09.md",
-  "policy": "surface-first runtime-second evidence-last",
+  "source_doc": "driving-alert-workproducts/governance/00e_ECU_Naming_Standard.md",
+  "source_chain": [
+    "driving-alert-workproducts/governance/00e_ECU_Naming_Standard.md",
+    "driving-alert-workproducts/04_SW_Implementation.md",
+    "canoe/docs/verification/test-asset-mapping.md",
+    "canoe/docs/verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md"
+  ],
+  "policy": "surface-first runtime-second evidence-last; canonical reviewer-facing surface names follow current 00e + 04 baseline",
   "surfaces": [
     {
-      "surface_id": "ECM",
-      "display_name": "ECM",
-      "bundle_key": "ecm",
+      "surface_id": "EMS",
+      "display_name": "EMS",
+      "bundle_key": "ems",
       "surface_type": "Production ECU",
       "report_order": 10,
       "runtime_modules": ["ENG_CTRL"],
       "evidence_scope": "surface-rollup",
-      "jenkins_bundle_key": "surface-ecm"
+      "jenkins_bundle_key": "surface-ems"
     },
     {
-      "surface_id": "TCM",
-      "display_name": "TCM",
-      "bundle_key": "tcm",
+      "surface_id": "TCU",
+      "display_name": "TCU",
+      "bundle_key": "tcu",
       "surface_type": "Production ECU",
       "report_order": 20,
       "runtime_modules": ["TCM"],
       "evidence_scope": "surface-rollup",
-      "jenkins_bundle_key": "surface-tcm"
+      "jenkins_bundle_key": "surface-tcu"
     },
     {
       "surface_id": "VCU",
@@ -35,24 +41,24 @@
       "jenkins_bundle_key": "surface-vcu"
     },
     {
-      "surface_id": "ESP",
-      "display_name": "ESP",
-      "bundle_key": "esp",
+      "surface_id": "ESC",
+      "display_name": "ESC",
+      "bundle_key": "esc",
       "surface_type": "Production ECU",
       "report_order": 40,
       "runtime_modules": ["BRK_CTRL"],
       "evidence_scope": "surface-rollup",
-      "jenkins_bundle_key": "surface-esp"
+      "jenkins_bundle_key": "surface-esc"
     },
     {
-      "surface_id": "EPS",
-      "display_name": "EPS",
-      "bundle_key": "eps",
+      "surface_id": "MDPS",
+      "display_name": "MDPS",
+      "bundle_key": "mdps",
       "surface_type": "Production ECU",
       "report_order": 50,
       "runtime_modules": ["STEER_CTRL"],
       "evidence_scope": "surface-rollup",
-      "jenkins_bundle_key": "surface-eps"
+      "jenkins_bundle_key": "surface-mdps"
     },
     {
       "surface_id": "BCM",
@@ -75,14 +81,14 @@
       "jenkins_bundle_key": "surface-ivi"
     },
     {
-      "surface_id": "CLUSTER",
-      "display_name": "CLUSTER",
-      "bundle_key": "cluster",
+      "surface_id": "CLU",
+      "display_name": "CLU",
+      "bundle_key": "clu",
       "surface_type": "Production ECU",
       "report_order": 80,
       "runtime_modules": ["CLU_HMI_CTRL", "CLU_BASE_CTRL"],
       "evidence_scope": "surface-rollup",
-      "jenkins_bundle_key": "surface-cluster"
+      "jenkins_bundle_key": "surface-clu"
     },
     {
       "surface_id": "ADAS",

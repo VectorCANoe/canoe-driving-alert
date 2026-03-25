@@ -13,11 +13,18 @@
 - `frmEmergencyBroadcastMsg (0x1C0)` is the SIL backbone emergency ingress contract.
   - Legacy CAN-stub name is retired.
   - Active UDP multicast contract is `ETH_EmergencyAlert (0xE100)` from `V2X`.
+  - `TEST_SCN` may emit the same transport contract as a validation ingress stimulus, but it is not counted as the product sender in this matrix.
+  - Product consumers that need direction, ETA, or source metadata should consume the normalized `CoreState` ingress seam published by `V2X`, not raw `V2X::*` transport mirrors.
 - `ethSelectedAlertMsg` remains the ADAS-owned backbone publication seam in the current SIL profile.
-  - In the active runtime, `BCM`, `IVI`, and `CLU` consume `frmAdasDomainStateMsg` and local `Core::*` mirrors instead of acting as direct backbone RX owners.
+  - In the active runtime, `BCM`, `IVI`, and `CLU` are not direct backbone RX owners.
+  - They consume `CoreState::selectedAlertEffective*` first, then `CoreState::selectedAlertDecision*` as a transient compatibility fallback, then local render/output messages such as `frmAdasDomainStateMsg` where still documented.
   - Treat `ethSelectedAlertMsg` as an output/evidence seam for the active SIL baseline, not as a required direct ingress path for those consumer nodes.
+- layer-level owner, observer, and validation separation is governed by `contracts/layer-separation-policy.md`
 - Backbone contract rows use `UDP multicast (239.0.2.1:5000)` in the source column.
 - Validation result aggregation uses `Test::scenarioResult` and `Test::base*` sysvars, so no active network message is listed for that seam.
+- `EXT_DIAG` is a logical external diagnostic requester or observer surface that currently consumes `Diag::*` only.
+  - no new Ethernet payload row or DBC row is listed for it in this matrix
+  - current executable request/response observation is mirrored by `DCM` and `SGW` through the semantic `Diag::*` seam
 
 | Message | ID (hex) | DLC | Sender | Contract Source | Signals |
 |---|---|---|---|---|---|

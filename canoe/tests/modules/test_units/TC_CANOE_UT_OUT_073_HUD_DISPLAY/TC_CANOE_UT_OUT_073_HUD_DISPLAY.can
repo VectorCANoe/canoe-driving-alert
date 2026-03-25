@@ -1,0 +1,57 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+/*
+  UT_073 uses shared front-display render seams.
+  The project does not currently expose a dedicated HUD namespace, so this unit
+  contract closes the reviewer row via warning / popup / route / theme seams
+  consumed by HUD processing.
+*/
+export testcase TC_CANOE_UT_OUT_073_HUD_DISPLAY()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(30, 700, 1200))
+  {
+    return;
+  }
+
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 2, 12, 20), 2, 1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("hud-direction-code", deriveExpectedEmergencyWarningCode(1, 2, 12, 20), (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("hud-direction-render", 2, (long)@UiRender::renderDirection, "renderDirection");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(220, 900, 1300))
+  {
+    return;
+  }
+
+  if (!waitForStableDisplayPolicy(2, 1, 1, -1, 1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("hud-theme", 2, (long)@CoreState::themeMode, "themeMode");
+  assertIntEq("hud-popup-active", 1, (long)@CoreState::popupActive, "popupActive");
+  assertIntEq("hud-popup-priority", 1, (long)@CoreState::popupPriority, "popupPriority");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -141,6 +141,11 @@ int deriveWarningTextCode(int alertLevel, int alertType, int timeoutClear,
   return clampRange((alertType * 10) + alertLevel, 0, 255);
 }
 
+int iviBackboneAlertHoldWindowMs()
+{
+  return 1500;
+}
+
 int deriveRenderDirection(int renderTextCode, int alertType)
 {
   if (renderTextCode >= 100 && renderTextCode <= 203)
@@ -230,7 +235,7 @@ void publishBackboneNavContext()
 void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
 {
   gBackboneAlertLevel = clampRange(alertLevel, 0, 7);
-  gBackboneAlertType = clampRange(alertType, 0, 7);
+  gBackboneAlertType = clampRange(alertType, 0, 15);
   gBackboneTimeoutClear = (timeoutClear == 1) ? 1 : 0;
   gBackboneAlertTsMs = getSimulationTimeMs();
 }
@@ -245,12 +250,57 @@ int useBackboneAlertState()
   }
 
   nowMs = getSimulationTimeMs();
-  if ((nowMs - gBackboneAlertTsMs) > 500)
+  if ((nowMs - gBackboneAlertTsMs) > (dword)iviBackboneAlertHoldWindowMs())
   {
     return 0;
   }
 
   return 1;
+}
+
+int useEffectiveAlertState()
+{
+  int effectiveAlertLevel;
+  int effectiveAlertType;
+  int selectedAlertGateReason;
+  int timeoutClear;
+
+  effectiveAlertLevel = clampRange((int)@CoreState::selectedAlertEffectiveLevel, 0, 7);
+  effectiveAlertType = clampRange((int)@CoreState::selectedAlertEffectiveType, 0, 15);
+  selectedAlertGateReason = clampRange((int)@CoreState::selectedAlertGateReason, 0, 7);
+  timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+
+  if (effectiveAlertLevel > 0 ||
+      effectiveAlertType > 0 ||
+      selectedAlertGateReason > 0 ||
+      timeoutClear == 1)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
+int useDecisionAlertState()
+{
+  int decisionAlertLevel;
+  int decisionAlertType;
+  int selectedAlertGateReason;
+  int timeoutClear;
+
+  decisionAlertLevel = clampRange((int)@CoreState::selectedAlertDecisionLevel, 0, 7);
+  decisionAlertType = clampRange((int)@CoreState::selectedAlertDecisionType, 0, 15);
+  selectedAlertGateReason = clampRange((int)@CoreState::selectedAlertGateReason, 0, 7);
+  timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+
+  if ((decisionAlertLevel > 0 || decisionAlertType > 0) &&
+      selectedAlertGateReason == 0 &&
+      timeoutClear == 0)
+  {
+    return 1;
+  }
+
+  return 0;
 }
 
 int derivePresentationMode(int alertLevel, int alertType, int baseZoneContext)
@@ -291,9 +341,100 @@ int deriveAlertVolume(int alertLevel, int presentationMode)
   return 30;
 }
 
+int deriveVehicleMotionStep(int roadZoneColorCode, int emergencyType, int emergencyEta, int speed)
+{
+  int step;
+
+  step = 2;
+  if (roadZoneColorCode == 1)
+  {
+    step = 1;
+  }
+  else if (roadZoneColorCode == 2)
+  {
+    step = 4;
+  }
+  else if (roadZoneColorCode == 3)
+  {
+    step = 6;
+  }
+
+  if (emergencyType > 0)
+  {
+    step = 2 + clampRange(speed / 30, 0, 3);
+    if (emergencyEta > 0 && emergencyEta <= 8)
+    {
+      step = step + 2;
+    }
+    else if (emergencyEta > 0 && emergencyEta <= 15)
+    {
+      step = step + 1;
+    }
+  }
+
+  return clampRange(step, 1, 10);
+}
+
+int deriveCabinAmbientAnimFrame(int renderMode,
+                                int renderColor,
+                                int renderPattern,
+                                int roadZoneColorCode,
+                                int roadFlowDirection,
+                                int alertLevel,
+                                int emergencyType,
+                                int ambientPulsePhase)
+{
+  int pulse3;
+  int frame;
+
+  pulse3 = clampRange(ambientPulsePhase, 0, 2);
+  renderMode = clampRange(renderMode, 0, 7);
+  renderColor = clampRange(renderColor, 0, 15);
+  renderPattern = clampRange(renderPattern, 0, 15);
+  roadZoneColorCode = clampRange(roadZoneColorCode, 0, 3);
+  roadFlowDirection = clampRange(roadFlowDirection, 0, 2);
+  alertLevel = clampRange(alertLevel, 0, 7);
+  emergencyType = clampRange(emergencyType, 0, 2);
+
+  if (renderMode == 0 && alertLevel == 0 && roadZoneColorCode == 0 && emergencyType == 0)
+  {
+    return 0;
+  }
+
+  if (alertLevel >= 6 && emergencyType > 0)
+  {
+    return 19 + pulse3;
+  }
+
+  if (roadZoneColorCode == 1)
+  {
+    return 15;
+  }
+  if (roadZoneColorCode == 2)
+  {
+    return 16;
+  }
+  if (roadZoneColorCode == 3)
+  {
+    return (roadFlowDirection == 2) ? 18 : 17;
+  }
+
+  frame = clampRange(renderColor, 1, 14);
+  if (renderPattern >= 4)
+  {
+    frame = frame + clampRange(ambientPulsePhase, 0, 3);
+    if (frame > 14)
+    {
+      frame = 14;
+    }
+  }
+
+  return frame;
+}
+
 on start
 {
-  gEthTxSocket = ethOpenNodeSocketAt(getIviLocalIp(), getIviTxPort());
+  gEthTxSocket = ethOpenPreferredNodeSocket(getIviLocalIp(), getIviTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gLastWarningTextCode = -1;
   gInfoAliveCnt = 0;
@@ -319,6 +460,11 @@ on start
   gNavStateRxMs = 0;
   gRouteRxMs = 0;
   @CoreState::infoHealthTick = 0;
+  @UiRender::beepEmergency = 0;
+  @UiRender::beepIC = 0;
+  @UiRender::beepSpeed = 0;
+  @UiRender::warningBeepState = 0;
+  @Infotainment::cabinAmbientAnimFrame = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
     write("[IVI] tx socket unavailable");
@@ -362,6 +508,9 @@ on message frmAdasDomainStateMsg
 
 on timer tIviCycle
 {
+  int manualMode;
+  int manualAlertOverride;
+  int manualAlertMode;
   int alertLevel;
   int alertType;
   int timeoutClear;
@@ -372,10 +521,28 @@ on timer tIviCycle
   int emergencyDistanceM;
   int emergencyDistanceBand;
   int useBackbone;
+  int useDecision;
+  int useEffective;
   message frmClusterWarningMsg mCluster;
 
+  useEffective = useEffectiveAlertState();
+  useDecision = useDecisionAlertState();
   useBackbone = useBackboneAlertState();
-  if (useBackbone == 1)
+  if (useEffective == 1)
+  {
+    alertLevel = clampRange((int)@CoreState::selectedAlertEffectiveLevel, 0, 7);
+    alertType = clampRange((int)@CoreState::selectedAlertEffectiveType, 0, 15);
+    timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+    updateBackboneAlertState(alertLevel, alertType, timeoutClear);
+  }
+  else if (useDecision == 1)
+  {
+    alertLevel = clampRange((int)@CoreState::selectedAlertDecisionLevel, 0, 7);
+    alertType = clampRange((int)@CoreState::selectedAlertDecisionType, 0, 15);
+    timeoutClear = 0;
+    updateBackboneAlertState(alertLevel, alertType, timeoutClear);
+  }
+  else if (useBackbone == 1)
   {
     alertLevel = gBackboneAlertLevel;
     alertType = gBackboneAlertType;
@@ -387,8 +554,23 @@ on timer tIviCycle
     alertType = 0;
     timeoutClear = 0;
   }
-  emergencyType = (int)@V2X::emergencyType;
-  emergencyDirection = (int)@V2X::emergencyDirection;
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualAlertOverride = clampRange((int)@Inject::manualAlertOverrideCmd, 0, 255);
+  manualAlertMode = (manualMode == 1 &&
+                     (manualAlertOverride > 0 ||
+                      ((int)@Inject::roadZone) > 0 ||
+                      ((int)@Inject::navDirection) > 0 ||
+                      ((int)@Inject::zoneDistance) > 0 ||
+                      ((int)@Inject::speedLimit) > 0 ||
+                      ((int)@Inject::emergencyActiveCmd) > 0)) ? 1 : 0;
+  if (manualAlertMode == 1)
+  {
+    alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+    alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+    timeoutClear = 0;
+  }
+  emergencyType = (int)@Core::emergencyContext;
+  emergencyDirection = (int)@CoreState::emergencyIngressDirection;
   if (ethIsRecentTick(gVehicleStateRxMs, 300) == 1)
   {
     speed = clampRange(gCanVehicleSpeed, 0, 255);
@@ -397,11 +579,15 @@ on timer tIviCycle
   {
     speed = 0;
   }
+  if (manualAlertMode == 1)
+  {
+    speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  }
   if (alertLevel < 0 || alertLevel > 7)
   {
     alertLevel = 0;
   }
-  if (alertType < 0 || alertType > 7)
+  if (alertType < 0 || alertType > 15)
   {
     alertType = 0;
   }
@@ -414,7 +600,7 @@ on timer tIviCycle
     emergencyDirection = 0;
   }
   timeoutClear = (timeoutClear == 1) ? 1 : 0;
-  emergencyDistanceM = calcEmergencyDistanceM((int)@V2X::eta, speed);
+  emergencyDistanceM = calcEmergencyDistanceM((int)@CoreState::emergencyIngressEtaSec, speed);
   emergencyDistanceBand = 0;
   if (emergencyDistanceM > 0)
   {
@@ -436,12 +622,9 @@ on timer tIviCycle
   warningTextCode = deriveWarningTextCode(alertLevel, alertType, timeoutClear,
                                           emergencyType, emergencyDirection, emergencyDistanceBand);
 
-  if (warningTextCode != gLastWarningTextCode)
-  {
-    mCluster.WarningTextCode = warningTextCode;
-    output(mCluster);
-    gLastWarningTextCode = warningTextCode;
-  }
+  mCluster.WarningTextCode = warningTextCode;
+  output(mCluster);
+  gLastWarningTextCode = warningTextCode;
   setTimer(tIviCycle, 10);
 }
 
@@ -462,6 +645,9 @@ on timer tIviBase50
   int driveState;
   int alertLevel;
   int alertType;
+  int emergencyDirection;
+  int emergencyEta;
+  int emergencyType;
   int baseZoneContext;
   int roadZoneColorCode;
   int roadFlowDirection;
@@ -470,10 +656,23 @@ on timer tIviBase50
   int renderPattern;
   int renderTextCode;
   int renderDirection;
+  int cabinAmbientAnimFrame;
   int vehicleMotionStep;
   int presentationMode;
   int effectiveVolume;
+  int displayModeOverride;
+  int volumeOverride;
+  int compatBeepEmergency;
+  int compatBeepIC;
+  int compatBeepSpeed;
   int useBackbone;
+  int useDecision;
+  int useEffective;
+  int manualMode;
+  int manualAlertOverride;
+  int manualAlertMode;
+  int manualRoadZone;
+  int manualNavDirection;
 
   if (ethIsRecentTick(gVehicleStateRxMs, 300) == 1)
   {
@@ -485,8 +684,40 @@ on timer tIviBase50
     speed = 0;
     driveState = 0;
   }
+  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualAlertOverride = clampRange((int)@Inject::manualAlertOverrideCmd, 0, 255);
+  if (manualAlertOverride == 0 && (((int)@Inject::emergencyActiveCmd) > 0))
+  {
+    manualAlertOverride = 1;
+  }
+  manualAlertMode = (manualMode == 1 &&
+                     (manualAlertOverride > 0 ||
+                      ((int)@Inject::roadZone) > 0 ||
+                      ((int)@Inject::navDirection) > 0 ||
+                      ((int)@Inject::zoneDistance) > 0 ||
+                      ((int)@Inject::speedLimit) > 0 ||
+                      ((int)@Inject::emergencyActiveCmd) > 0)) ? 1 : 0;
+  if (manualAlertMode == 1)
+  {
+    speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+    driveState = clampRange((int)@Chassis::driveState, 0, 3);
+  }
+  useEffective = useEffectiveAlertState();
+  useDecision = useDecisionAlertState();
   useBackbone = useBackboneAlertState();
-  if (useBackbone == 1)
+  if (useEffective == 1)
+  {
+    alertLevel = clampRange((int)@CoreState::selectedAlertEffectiveLevel, 0, 7);
+    alertType = clampRange((int)@CoreState::selectedAlertEffectiveType, 0, 15);
+    updateBackboneAlertState(alertLevel, alertType, (((int)@Core::timeoutClear) == 1) ? 1 : 0);
+  }
+  else if (useDecision == 1)
+  {
+    alertLevel = clampRange((int)@CoreState::selectedAlertDecisionLevel, 0, 7);
+    alertType = clampRange((int)@CoreState::selectedAlertDecisionType, 0, 15);
+    updateBackboneAlertState(alertLevel, alertType, 0);
+  }
+  else if (useBackbone == 1)
   {
     alertLevel = clampRange(gBackboneAlertLevel, 0, 7);
     alertType = clampRange(gBackboneAlertType, 0, 15);
@@ -496,6 +727,14 @@ on timer tIviBase50
     alertLevel = 0;
     alertType = 0;
   }
+  if (manualAlertMode == 1)
+  {
+    alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+    alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+  }
+  emergencyType = clampRange((int)@Core::emergencyContext, 0, 2);
+  emergencyDirection = clampRange((int)@CoreState::emergencyIngressDirection, 0, 3);
+  emergencyEta = clampRange((int)@CoreState::emergencyIngressEtaSec, 0, 255);
   if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
   {
     baseZoneContext = deriveBaseZoneContextFromNavState(gCanNavRouteClass, gCanNavGuideType);
@@ -504,12 +743,29 @@ on timer tIviBase50
   {
     baseZoneContext = 0;
   }
+  if (manualAlertMode == 1)
+  {
+    manualRoadZone = clampRange((int)@Inject::roadZone, 0, 3);
+    manualNavDirection = clampRange((int)@Inject::navDirection, 0, 3);
+    baseZoneContext = deriveBaseZoneContextFromNavState(manualRoadZone, manualNavDirection);
+  }
   renderMode = clampRange((int)@Body::ambientMode, 0, 7);
   renderColor = clampRange((int)@Body::ambientColor, 0, 15);
   renderPattern = clampRange((int)@Body::ambientPattern, 0, 15);
   renderTextCode = clampRange((int)@Cluster::warningTextCode, 0, 65535);
   presentationMode = derivePresentationMode(alertLevel, alertType, baseZoneContext);
   effectiveVolume = deriveAlertVolume(alertLevel, presentationMode);
+  displayModeOverride = clampRange((int)@Test::displayModeSetting, 0, 3);
+  if (alertLevel > 0 && displayModeOverride > 0)
+  {
+    presentationMode = displayModeOverride;
+    effectiveVolume = deriveAlertVolume(alertLevel, presentationMode);
+  }
+  volumeOverride = clampRange((int)@Inject::alertVolumeCmd, 0, 100);
+  if (alertLevel > 0 && volumeOverride > 0)
+  {
+    effectiveVolume = volumeOverride;
+  }
 
   /* CLU owns the mirrored display state after consuming these frames. */
 
@@ -582,7 +838,10 @@ on timer tIviBase50
   if ((gIviBaseTick % 2) == 0)
   {
     mHealth.InfoAliveCnt = gInfoAliveCnt & 0xFF;
+    mHealth.InfoDiagState = 1;
     mHealth.InfoFailCode = 0;
+    @Diag::InfoDiagState = mHealth.InfoDiagState;
+    @Diag::InfoFailCode = mHealth.InfoFailCode;
     output(mHealth);
     @CoreState::infoHealthTick = mHealth.InfoAliveCnt;
     gInfoAliveCnt = (gInfoAliveCnt + 1) & 0xFF;
@@ -605,7 +864,22 @@ on timer tIviBase50
     roadZoneColorCode = 0;
   }
 
-  if (baseZoneContext == 3)
+  if (alertLevel >= 6 && emergencyType > 0)
+  {
+    if (emergencyDirection == 1)
+    {
+      roadFlowDirection = 1;
+    }
+    else if (emergencyDirection == 2)
+    {
+      roadFlowDirection = 2;
+    }
+    else
+    {
+      roadFlowDirection = 0;
+    }
+  }
+  else if (baseZoneContext == 3)
   {
     roadFlowDirection = 1;
   }
@@ -618,19 +892,10 @@ on timer tIviBase50
     roadFlowDirection = 0;
   }
 
-  vehicleMotionStep = 2;
-  if (roadZoneColorCode == 1)
-  {
-    vehicleMotionStep = 1;
-  }
-  else if (roadZoneColorCode == 2)
-  {
-    vehicleMotionStep = 4;
-  }
-  else if (roadZoneColorCode == 3)
-  {
-    vehicleMotionStep = 6;
-  }
+  vehicleMotionStep = deriveVehicleMotionStep(roadZoneColorCode,
+                                              emergencyType,
+                                              emergencyEta,
+                                              speed);
 
   if (roadFlowDirection == 2)
   {
@@ -658,7 +923,7 @@ on timer tIviBase50
     gEmsBlinkPhase = 0;
   }
 
-  if (alertType == 4)
+  if (alertType == 4 || (alertLevel >= 6 && emergencyType > 0))
   {
     gAmbientPulsePhase = (gAmbientPulsePhase + 1) & 3;
   }
@@ -677,6 +942,9 @@ on timer tIviBase50
   }
 
   renderDirection = deriveRenderDirection(renderTextCode, alertType);
+  compatBeepEmergency = (alertLevel > 0 && emergencyType > 0) ? 1 : 0;
+  compatBeepIC = ((alertType == 5 || alertType == 6) && alertLevel > 0) ? 1 : 0;
+  compatBeepSpeed = ((roadZoneColorCode == 1 || roadZoneColorCode == 2) && alertLevel > 0) ? 1 : 0;
   @UiRender::renderMode = renderMode;
   @UiRender::renderColor = renderColor;
   @UiRender::renderPattern = renderPattern;
@@ -689,6 +957,19 @@ on timer tIviBase50
   @UiRender::ambientPulsePhase = gAmbientPulsePhase;
   @UiRender::icFlowPhase = gIcFlowPhase;
   @UiRender::activeAlertType = clampRange(alertType, 0, 7);
+  @UiRender::beepEmergency = compatBeepEmergency;
+  @UiRender::beepIC = compatBeepIC;
+  @UiRender::beepSpeed = compatBeepSpeed;
+  @UiRender::warningBeepState = (compatBeepEmergency + compatBeepIC + compatBeepSpeed > 0) ? 1 : 0;
+  cabinAmbientAnimFrame = deriveCabinAmbientAnimFrame(renderMode,
+                                                      renderColor,
+                                                      renderPattern,
+                                                      roadZoneColorCode,
+                                                      roadFlowDirection,
+                                                      alertLevel,
+                                                      emergencyType,
+                                                      gAmbientPulsePhase);
+  @Infotainment::cabinAmbientAnimFrame = cabinAmbientAnimFrame;
 
   setTimer(tIviBase50, 50);
 }

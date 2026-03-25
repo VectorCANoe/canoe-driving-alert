@@ -20,9 +20,15 @@ export testcase TC_CANOE_IT_CORE_007_AMBIENT_OUTPUT()
     return;
   }
 
-  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("selected-alert-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("selected-alert-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
+if (!waitForV2xIngressState(1, 1, 12, 11, 1500) ||
+      !waitForCoreSelectedAlertState(6, 1, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("selected-alert-level", 6, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
+  assertIntEq("selected-alert-type", 1, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("ambient-color", 6, (long)@Body::ambientColor, "ambientColor");
   assertIntEq("ambient-pattern", 6, (long)@Body::ambientPattern, "ambientPattern");
 

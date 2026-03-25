@@ -1,0 +1,69 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gLanePreviewValid;
+  int gZonePreview;
+  int gPreviewConfidence;
+}
+
+on message frmRoadPreviewCameraStateMsg
+{
+  gLanePreviewValid = this.LanePreviewValid;
+  gZonePreview = this.ZonePreview;
+  gPreviewConfidence = this.PreviewConfidence;
+}
+
+long waitForFcamInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gLanePreviewValid != 1 ||
+          gZonePreview != 2 ||
+          gPreviewConfidence != 80) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gLanePreviewValid != 1 ||
+      gZonePreview != 2 ||
+      gPreviewConfidence != 80)
+  {
+    testStepFail("fcam-input-state", "FCAM input timeout waited=%d lane=%d zone=%d conf=%d",
+                 waitedMs, gLanePreviewValid, gZonePreview, gPreviewConfidence);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_056_FCAM_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(233, 800, 1300))
+  {
+    return;
+  }
+  if (!waitForFcamInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s233_lanePreviewValid", 1, gLanePreviewValid, "lanePreviewValid");
+  assertIntEq("s233_zonePreview", 2, gZonePreview, "zonePreview");
+  assertIntEq("s233_previewConfidence", 80, gPreviewConfidence, "previewConfidence");
+
+  resetValidationHarnessIfNeeded();
+}

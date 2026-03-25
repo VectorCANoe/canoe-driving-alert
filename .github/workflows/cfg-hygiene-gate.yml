@@ -1,0 +1,41 @@
+name: CFG Hygiene + CAPL Sync Gate
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "canoe/**"
+      - "scripts/gates/cfg_hygiene_gate.py"
+      - "scripts/gates/check_capl_sync.py"
+      - "scripts/run.py"
+      - "product/sdv_operator/scripts/**"
+      - ".github/workflows/cfg-hygiene-gate.yml"
+  pull_request:
+    paths:
+      - "canoe/**"
+      - "scripts/gates/cfg_hygiene_gate.py"
+      - "scripts/gates/check_capl_sync.py"
+      - "scripts/run.py"
+      - "product/sdv_operator/scripts/**"
+      - ".github/workflows/cfg-hygiene-gate.yml"
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run cfg hygiene gate
+        run: python scripts/run.py gate cfg-hygiene
+
+      - name: Run CAPL src-cfg sync gate
+        run: python scripts/run.py gate capl-sync

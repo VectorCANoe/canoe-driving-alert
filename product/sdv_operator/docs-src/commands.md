@@ -14,13 +14,24 @@ Automation / CI 확장 표면:
 ```powershell
 python scripts/run.py verify batch --run-id 20260310_0900 --campaign-id CMP_20260310 --owner DEV2 --phase pre --surface-scope ALL --repeat-count 1 --duration-minutes 0 --interval-seconds 0 --report-formats json,md,junit
 python scripts/run.py artifact open --target campaign-profiles
+python scripts/run.py artifact open --target unit-test-doc
+python scripts/run.py artifact open --target integration-test-doc
+python scripts/run.py artifact open --target system-test-doc
 python scripts/run.py artifact open --target test-asset-mapping
 python scripts/run.py artifact open --target active-test-units-guide
 python scripts/run.py artifact open --target active-test-suites-guide
 python scripts/run.py artifact open --target execution-guide
+python scripts/run.py artifact open --target closeout-standard
+python scripts/run.py artifact open --target evidence-policy
+python scripts/run.py artifact open --target run-insight
+python scripts/run.py artifact open --target doc-binding-bundle
+python scripts/run.py artifact open --target doc-fill-template
 python scripts/run.py artifact open --target verification-pack-matrix
 python scripts/run.py artifact open --target role-boundary-doc
 python scripts/run.py artifact open --target capability-matrix-doc
+python scripts/run.py artifact open --target evidence-dir --latest
+python scripts/run.py artifact open --target supplementary-trace --latest
+python scripts/run.py artifact open --target supplementary-logging --latest
 python scripts/run.py artifact open --target surface-dir --latest
 ```
 
@@ -85,7 +96,7 @@ python scripts/run.py tui
 용도:
 - 운영 콘솔로 핵심 작업을 클릭/입력 기반으로 실행
 - 결과, 로그, COM 상태, 증빙 경로를 한 화면에서 검토
-- `Results`와 `Artifacts`에서 최근 증빙, native report, execution manifest, 원본 기준 파일을 바로 연다
+- `Results`와 `Artifacts`에서 최근 증빙, native report, execution manifest, supplementary trace/logging, 원본 기준 파일을 바로 연다
 
 ### Plain shell
 
@@ -136,6 +147,9 @@ python scripts/run.py verify batch --run-id 20260308_0900 --campaign-id CMP_2026
 - `phase`에 따라 verdict policy가 달라집니다.
   - `pre`: advisory gate 허용 (`WARN`)
   - `full`: closeout strict (`FAIL`)
+- tier authority는 별도입니다.
+  - `UT / IT / ST`: official closeout seed
+  - `FULL`: regression-only wrapper
 - `campaign_id`는 build/nightly/repeat 묶음 식별자입니다.
 - `surface_scope`는 reviewer-facing으로 집중해서 볼 surface ECU 범위입니다.
 - `repeat_count / duration_minutes / interval_seconds`는 반복 실행 의도와 운영 profile 기록입니다.
@@ -165,7 +179,7 @@ python scripts/run.py verify surface-bundle
 
 사용 시점:
 - reviewer-facing 결과를 runtime module이 아니라 surface ECU 기준으로 다시 묶을 때
-- Jenkins archive를 `BCM / IVI / CLUSTER / ADAS / V2X ...` 번들로 정리할 때
+- Jenkins archive를 `BCM / IVI / CLU / ADAS / V2X ...` 번들로 정리할 때
 
 참고:
 - `verify batch`는 내부적으로 이 단계를 자동 수행합니다.
@@ -210,12 +224,25 @@ python scripts/run.py verify bind-doc --run-id 20260306_1930
 python scripts/run.py verify fill-template --run-id 20260306_1930 --owner-fallback DEV1
 ```
 
+- `bind-doc`
+  - 05/06/07 문서 ID와 scored evidence를 `READY / DOC_ONLY / EVIDENCE_ONLY`로 재정렬합니다.
+  - `scenario_id / native_asset / expected / rule_type / rule_ms`가 closeout carry-forward 필드로 같이 묶입니다.
+- `fill-template`
+  - 문서 반영용 `pass_fail / owner / run_date / evidence 링크` 템플릿을 만듭니다.
+  - `REVIEW_READY_ROW / RUN_AND_SCORE_REQUIRED / ADD_DOC_ID_OR_RENAME_TEST` 액션도 함께 계산합니다.
+
 #### Status and finalize
 
 ```powershell
 python scripts/run.py verify status --run-id 20260306_1930
 python scripts/run.py verify finalize --run-id 20260306_1930 --owner DEV1
 ```
+
+`verify finalize`는 아래 closeout 산출물을 같은 run 기준으로 다시 생성합니다.
+
+- `run_insight_report.json/md`
+- `doc_binding_bundle.csv/json/md`
+- `doc_fill_template.csv/md`
 
 ### Gate command set
 
@@ -262,11 +289,23 @@ python scripts/run.py artifact open --target surface-bundle
 python scripts/run.py artifact open --target surface-dir --latest
 python scripts/run.py artifact open --target execution-manifest --latest
 python scripts/run.py artifact open --target native-reports --latest
+python scripts/run.py artifact open --target evidence-dir --latest
+python scripts/run.py artifact open --target supplementary-trace --latest
+python scripts/run.py artifact open --target supplementary-logging --latest
+python scripts/run.py artifact open --target incoming-root
 python scripts/run.py artifact open --target surface-inventory
+python scripts/run.py artifact open --target unit-test-doc
+python scripts/run.py artifact open --target integration-test-doc
+python scripts/run.py artifact open --target system-test-doc
 python scripts/run.py artifact open --target test-asset-mapping
 python scripts/run.py artifact open --target active-test-units-guide
 python scripts/run.py artifact open --target active-test-suites-guide
 python scripts/run.py artifact open --target execution-guide
+python scripts/run.py artifact open --target closeout-standard
+python scripts/run.py artifact open --target evidence-policy
+python scripts/run.py artifact open --target run-insight
+python scripts/run.py artifact open --target doc-binding-bundle
+python scripts/run.py artifact open --target doc-fill-template
 python scripts/run.py artifact open --target verification-pack-matrix
 python scripts/run.py artifact open --target capability-matrix-json
 python scripts/run.py artifact open --target results-doc
@@ -283,7 +322,7 @@ python scripts/run.py package bundle-portable --mode onefolder --clean --rebuild
 - `artifact list`
   - staging / archive / source 기준으로 현재 확인 가능한 산출물과 원본 계약 파일을 나열합니다.
 - `artifact open`
-  - 결과 문서, execution manifest, native reports, surface inventory, verification pack 원본 같은 원본/산출물 파일을 외부 편집기/탐색기로 바로 엽니다.
+  - 결과 문서, execution manifest, native reports, supplementary trace/logging, surface inventory, verification pack 원본 같은 원본/산출물 파일을 외부 편집기/탐색기로 바로 엽니다.
 - `artifact clean`
   - generated output만 정리합니다. 기본은 preview이고 실제 삭제는 `--yes`가 필요합니다.
 

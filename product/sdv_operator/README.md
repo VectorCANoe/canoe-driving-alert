@@ -13,14 +13,20 @@
 - 실행: `gate all`, `scenario run`, `verify quick`, `doctor`
 - 검토: Verification Console 기반 결과/로그/COM 상태 확인
 - 산출: readiness, batch report, JUnit XML, portable ZIP / exe
+- 공식 report 처리: Vector `ReportViewerCli.exe` + `Vector.ReportViewer.DataApi`
 - 관리: artifact list/open/clean으로 산출물과 원본 계약 파일 확인
 
 현재 source contract의 기본 축:
 
+- `driving-alert-workproducts/05_Unit_Test.md`
+- `driving-alert-workproducts/06_Integration_Test.md`
+- `driving-alert-workproducts/07_System_Test.md`
 - `canoe/tests/modules/test_units/README.md`
 - `canoe/tests/modules/test_suites/README.md`
 - `canoe/docs/verification/test-asset-mapping.md`
 - `canoe/docs/verification/execution-guide.md`
+- `canoe/docs/verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md`
+- `canoe/docs/verification/evidence-policy.md`
 
 ## 언어 표면 규칙
 
@@ -71,10 +77,27 @@ python -m mkdocs build -f product/sdv_operator/mkdocs.yml --strict
 2. [`docs-src/quickstart.md`](docs-src/quickstart.md)
 3. [`docs-src/commands.md`](docs-src/commands.md)
 4. [`docs-src/results.md`](docs-src/results.md)
+   - native `.vtestreport`는 제품이 공식 Vector CLI/XML/XUnit/Data API 경로로 함께 처리한다.
 5. [`docs-src/ci-bridge.md`](docs-src/ci-bridge.md)
 6. [`docs-src/packaging.md`](docs-src/packaging.md)
 7. [`docs-src/repo-surfaces.md`](docs-src/repo-surfaces.md)
 8. [`docs-src/maintenance.md`](docs-src/maintenance.md)
+9. [`docs-src/native-e2e-automation-plan.md`](docs-src/native-e2e-automation-plan.md)
+
+## 공식 Report Tooling 명령
+
+```powershell
+python scripts/run.py verify report-tools --json
+python scripts/run.py verify report-bundle --tier ST --json
+```
+
+위 명령은 Vector 공식 설치를 직접 사용한다.
+
+- CLI: `ReportViewerCli.exe`
+- .NET API: `Vector.ReportViewer.DataApi`, `Vector.ReportViewer.DataApi.DiVa`
+- GUI fallback: `CANoe Test Report Viewer`
+- Optional helper: `ReportViewerSelector.exe`
+- 출력: `canoe/tmp/reports/verification/official_reports/<TIER>/...`
 
 ## 패키징 계약
 

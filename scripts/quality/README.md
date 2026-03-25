@@ -17,12 +17,35 @@ Main tools:
 - `evidence_score_gate.py`
 - `build_evidence_from_write_window.py`
 - `init_evidence_run.py`
+- `collect_native_run_artifacts.py`
 - `package clean --scope staging --yes`
 - Gate scripts moved to: `scripts/gates/`
+
+Canonical verification inputs:
+
+- Official test docs:
+  - `driving-alert-workproducts/05_Unit_Test.md`
+  - `driving-alert-workproducts/06_Integration_Test.md`
+  - `driving-alert-workproducts/07_System_Test.md`
+- Native asset mapping:
+  - `canoe/docs/verification/test-asset-mapping.md`
+- Native executable asset source:
+  - `canoe/tests/modules/test_units/<asset>/<asset>.can`
+
+Current policy:
+
+- `canoe/AGENT/` and legacy `TMP` evidence sandboxes are reference-only.
+- Official `00~07` docs and root `canoe/` assets are the canonical verification SoT.
+- Verification operations follow `canoe/docs/verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md`.
+- `init_evidence_run.py` seeds `verification_log.csv` directly from the official docs and current native assets.
+- `expected` is extracted from the official `05/06/07` tables.
+- `rule_type` / `rule_ms` are deterministic seeds derived from official table text, not vector/RAG inference.
+- Rows with ambiguous timing semantics stay marked for manual confirmation in `note`.
 
 Note:
 
 - `build_evidence_from_write_window.py` parses `[EVIDENCE_OUT]` as key/value pairs.
+- `build_evidence_from_write_window.py` also collects current `release` evidence field from `[EVIDENCE_OUT]`.
 - `evidence_score_gate.py` now outputs CSV + Markdown + JSON summary with:
   - latency distribution KPI
   - near-limit PASS detection
@@ -35,11 +58,39 @@ Note:
 - `build_doc_binding_bundle.py` outputs 05/06/07 binding matrix:
   - READY / DOC_ONLY / EVIDENCE_ONLY status
   - doc ID and scored evidence row alignment
+  - carry-forward fields for closeout:
+    - `scenario_id`
+    - `native_asset`
+    - `expected`
+    - `rule_type`
+    - `rule_ms`
   - csv/json/md bundle for document team handoff
 - `build_doc_fill_template.py` outputs 05/06/07 doc fill template:
   - Pass/Fail, owner, date, evidence links per test ID
+  - closeout carry-forward:
+    - `scenario_id`
+    - `native_asset`
+    - `expected`
+    - `rule_type`
+    - `rule_ms`
   - action-required flag for missing evidence or missing doc IDs
+  - READY rows without final verdict are flagged as `REVIEW_READY_ROW`
   - csv/md bundle for direct document update work
+- `init_evidence_run.py` now produces:
+  - `verification_log.csv` with `native_asset`, `scenario_id`, `expected`, `rule_type`, `rule_ms`
+  - `capture_index.csv`
+  - empty `raw_write_window.txt`
+  - seeded rows based on current official IDs and `launchScenarioAndWait(...)` calls
+- `collect_native_run_artifacts.py` now collects:
+  - summary `Report_<TIER>_ACTIVE_BASELINE.vtestreport`
+  - per-test `Report_*.vtestreport`
+  - matching report settings files
+  - optional `raw_write_window.txt` import from the canonical drop root `canoe/logging/evidence/incoming/`
+  - supplementary trace exports from `canoe/logging/evidence/incoming/<TIER>/trace/`
+  - supplementary logging exports from `canoe/logging/evidence/incoming/<TIER>/logging/`
+  - when canonical supplementary dirs are empty, recent-file auto-discovery from cfg-derived logging output roots
+  - `native_execute_context.json` marker consumption for recent-file window anchoring
+  - legacy `canoe/tmp/write_window/` is fallback-only for migration
 - `check_run_readiness.py` outputs run readiness report:
   - template/raw/scored existence by UT/IT/ST
   - evidence marker count (`[EVIDENCE_OUT]`)
@@ -73,3 +124,31 @@ Note:
 - This allows CAPL evidence lines to add fields without breaking parsing.
 - Gate purpose/CI mapping reference: `product/sdv_operator/docs-src/maintenance.md`
 - `canoe/tmp/reports/verification`는 staging output 전용이며 Git 추적 대상이 아닙니다.
+
+Recommended post-run flow:
+
+1. `python scripts/quality/run_verification_pipeline.py prepare --run-id <RUN_ID>`
+2. CANoe GUI에서 tier 실행
+3. CANoe Write Window export를 canonical drop path에 저장:
+   - `canoe/logging/evidence/incoming/<TIER>/raw_write_window.txt`
+   CANoe native trace/logging exports도 canonical supplementary path에 저장:
+   - `canoe/logging/evidence/incoming/<TIER>/trace/`
+   - `canoe/logging/evidence/incoming/<TIER>/logging/`
+   제품 native execute를 사용한 경우 supplementary path가 비어 있어도
+   cfg-derived logging output root에서 recent-file auto-discovery가 시도됩니다.
+4. `python scripts/quality/run_verification_pipeline.py post-run --run-id <RUN_ID> --tier <UT|IT|ST> --owner <OWNER>`
+5. `python scripts/quality/run_verification_pipeline.py bind-doc --run-id <RUN_ID>`
+6. `python scripts/quality/run_verification_pipeline.py fill-template --run-id <RUN_ID>`
+
+Approval rule:
+
+- automation produces candidate closeout outputs only
+- final official `PASS/FAIL` update remains reviewer-approved
+
+Post-run guarantees:
+
+- native reports are copied into `canoe/logging/evidence/<TIER>/<RUN_ID>/native_reports/`
+- `raw_write_window.txt` is imported when present
+- supplementary trace/logging exports are copied into `canoe/logging/evidence/<TIER>/<RUN_ID>/supplementary/`
+- `evidence_log_path` and `evidence_capture_path` are auto-filled for updated rows
+- scored outputs are generated immediately after collection

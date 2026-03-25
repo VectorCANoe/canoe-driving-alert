@@ -1,0 +1,25 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_023_MERGE_DECEL()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(238, 900, 1300)) { return; }
+  if (!waitForObservedDecelState(1, 1, 0, 1500) ||
+      !waitForObservedMergeCutIn(1500) ||
+      !waitForObservedSelectedAlertState(7, 2, 1500)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("st-merge-flag", 1, (long)@Test::obsMergeCutInFlag, "ethMergeCutInFlag");
+  assertIntEq("st-merge-decision", 1, (long)@Test::obsDecelDecisionReq, "ethDecelDecisionReq");
+  assertIntEq("st-merge-decel-req", 1, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
+  assertIntEq("st-merge-gate-clear", 0, (long)@Test::obsDecelGateReason, "ethDecelGateReason");
+  assertIntEq("st-merge-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("st-merge-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  resetValidationHarnessIfNeeded();
+}

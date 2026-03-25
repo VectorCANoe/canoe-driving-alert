@@ -1,0 +1,1 @@
+﻿/* * Test_Node.can — CAPL 실행 확인용 최소 테스트 * on start 가 동작하면 Write 창에 "TEST OK" 출력됨 */on start{  write("[TEST] CAPL on start fired OK — CAPL is working");  @Ambient::R_Value = 99;   /* sysvar로 실행 확인 */}

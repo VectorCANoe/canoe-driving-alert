@@ -1,0 +1,34 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_OUT_074_AMP_AUDIO()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(215, 900, 1700))
+  {
+    return;
+  }
+
+  if (!waitForAudioPolicyFloor(1, 2, 20, 0, 1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntMin("amp-audio-focus", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
+  assertIntMin("amp-audio-ducking", 2, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
+  assertIntMin("amp-audio-volume", 20, (long)@CoreState::volumeLevel, "volumeLevel");
+  assertIntEq("amp-audio-popup-clear", 0, (long)@CoreState::popupActive, "popupActive");
+
+  resetValidationHarnessIfNeeded();
+}

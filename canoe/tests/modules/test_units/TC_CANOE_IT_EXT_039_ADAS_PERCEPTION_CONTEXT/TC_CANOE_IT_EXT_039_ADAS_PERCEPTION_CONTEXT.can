@@ -1,0 +1,187 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gLaneKeepAssistActive;
+  long gLaneGuideState;
+  long gSelectedAlertLevel;
+  long gPreviewHealth;
+  long gLanePreviewValid;
+  long gZonePreview;
+  long gSpeedLimit;
+  long gPreviewConfidence;
+  long gParkMasterActive;
+  long gAutoManeuverReady;
+  long gParkPhase;
+  long gPkmViewMode;
+  long gMinDistanceCm;
+  long gAssistStage;
+  long gSurroundHealth;
+  long gSurroundActive;
+  long gAutoParkReady;
+  long gSpmViewMode;
+  long gProximityClass;
+  long gSteeringAssistReq;
+  long gBrakeHoldReq;
+  long gDistanceBucket;
+}
+
+long waitForDriveAssistPerceptionContext(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while (waitedMs < timeoutMs)
+  {
+    if ((gLaneKeepAssistActive >= 1 ||
+         gLaneGuideState >= 1) &&
+        gSelectedAlertLevel >= 2 &&
+        gPreviewHealth == 2 &&
+        gLanePreviewValid == 1 &&
+        gZonePreview == 2 &&
+        gSpeedLimit == 100 &&
+        gPreviewConfidence == 80)
+    {
+      return 1;
+    }
+
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  testStepFail("it-adas-driveassist-context-wait",
+               "Drive-assist perception timeout waited=%d lkas=%d guide=%d alert=%d previewHealth=%d lanePreview=%d zone=%d speedLimit=%d confidence=%d",
+               waitedMs,
+               gLaneKeepAssistActive,
+               gLaneGuideState,
+               gSelectedAlertLevel,
+               gPreviewHealth,
+               gLanePreviewValid,
+               gZonePreview,
+               gSpeedLimit,
+               gPreviewConfidence);
+  return 0;
+}
+
+long waitForParkingPerceptionContext(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while (waitedMs < timeoutMs)
+  {
+    if (gParkMasterActive == 1 &&
+        gAutoManeuverReady == 1 &&
+        gParkPhase == 2 &&
+        gPkmViewMode == 3 &&
+        gMinDistanceCm == 28 &&
+        gAssistStage == 2 &&
+        gSurroundHealth == 2 &&
+        gSurroundActive == 1 &&
+        gAutoParkReady == 1 &&
+        gSpmViewMode == 3 &&
+        gProximityClass == 3 &&
+        gSteeringAssistReq == 1 &&
+        gBrakeHoldReq == 0 &&
+        gDistanceBucket == 28)
+    {
+      return 1;
+    }
+
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  testStepFail("it-adas-parking-context-wait",
+               "Parking perception timeout waited=%d active=%d autoReady=%d phase=%d view=%d distance=%d stage=%d health=%d surround=%d autoPark=%d spmView=%d proximity=%d steerReq=%d brakeHold=%d distanceBucket=%d",
+               waitedMs,
+               gParkMasterActive,
+               gAutoManeuverReady,
+               gParkPhase,
+               gPkmViewMode,
+               gMinDistanceCm,
+               gAssistStage,
+               gSurroundHealth,
+               gSurroundActive,
+               gAutoParkReady,
+               gSpmViewMode,
+               gProximityClass,
+               gSteeringAssistReq,
+               gBrakeHoldReq,
+               gDistanceBucket);
+  return 0;
+}
+
+on message frmLdwsLkasStateMsg
+{
+  gLaneKeepAssistActive = this.LaneKeepAssistActive;
+  gLaneGuideState = this.LaneGuideState;
+  gSelectedAlertLevel = this.SelectedAlertLevel;
+}
+
+on message frmRoadPreviewCameraStateMsg
+{
+  gPreviewHealth = this.PreviewHealth;
+  gLanePreviewValid = this.LanePreviewValid;
+  gZonePreview = this.ZonePreview;
+  gSpeedLimit = this.SpeedLimit;
+  gPreviewConfidence = this.PreviewConfidence;
+}
+
+on message frmParkMasterStateMsg
+{
+  gParkMasterActive = this.ParkMasterActive;
+  gAutoManeuverReady = this.AutoManeuverReady;
+  gParkPhase = this.ParkPhase;
+  gPkmViewMode = this.ViewMode;
+  gMinDistanceCm = this.MinDistanceCm;
+  gAssistStage = this.AssistStage;
+  gSurroundHealth = this.SurroundHealth;
+}
+
+on message frmSurroundParkMasterStateMsg
+{
+  gSurroundActive = this.SurroundActive;
+  gAutoParkReady = this.AutoParkReady;
+  gSpmViewMode = this.ViewMode;
+  gProximityClass = this.ProximityClass;
+  gSteeringAssistReq = this.SteeringAssistReq;
+  gBrakeHoldReq = this.BrakeHoldReq;
+  gDistanceBucket = this.DistanceBucket;
+}
+
+export testcase TC_CANOE_IT_EXT_039_ADAS_PERCEPTION_CONTEXT()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(233, 900, 1300)) { return; }
+  if (!waitForDriveAssistPerceptionContext(1200)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntMin("it-adas-driveassist-guide", 1, gLaneGuideState, "LaneGuideState");
+  assertIntMin("it-adas-driveassist-alert", 2, gSelectedAlertLevel, "SelectedAlertLevel");
+  assertIntEq("it-adas-driveassist-preview-health", 2, gPreviewHealth, "PreviewHealth");
+  assertIntEq("it-adas-driveassist-lane-preview", 1, gLanePreviewValid, "LanePreviewValid");
+  assertIntEq("it-adas-driveassist-zone", 2, gZonePreview, "ZonePreview");
+  assertIntEq("it-adas-driveassist-speed-limit", 100, gSpeedLimit, "SpeedLimit");
+  assertIntEq("it-adas-driveassist-confidence", 80, gPreviewConfidence, "PreviewConfidence");
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(234, 900, 1300)) { return; }
+  if (!waitForParkingPerceptionContext(1200)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("it-adas-parking-master-active", 1, gParkMasterActive, "ParkMasterActive");
+  assertIntEq("it-adas-parking-auto-ready", 1, gAutoManeuverReady, "AutoManeuverReady");
+  assertIntEq("it-adas-parking-phase", 2, gParkPhase, "ParkPhase");
+  assertIntEq("it-adas-parking-view", 3, gPkmViewMode, "ViewMode");
+  assertIntEq("it-adas-parking-distance", 28, gMinDistanceCm, "MinDistanceCm");
+  assertIntEq("it-adas-parking-stage", 2, gAssistStage, "AssistStage");
+  assertIntEq("it-adas-parking-health", 2, gSurroundHealth, "SurroundHealth");
+  assertIntEq("it-adas-parking-surround-active", 1, gSurroundActive, "SurroundActive");
+  assertIntEq("it-adas-parking-surround-ready", 1, gAutoParkReady, "AutoParkReady");
+  assertIntEq("it-adas-parking-spm-view", 3, gSpmViewMode, "ViewMode");
+  assertIntEq("it-adas-parking-proximity", 3, gProximityClass, "ProximityClass");
+  assertIntEq("it-adas-parking-steer-req", 1, gSteeringAssistReq, "SteeringAssistReq");
+  assertIntEq("it-adas-parking-brake-hold", 0, gBrakeHoldReq, "BrakeHoldReq");
+  assertIntEq("it-adas-parking-distance-bucket", 28, gDistanceBucket, "DistanceBucket");
+  resetValidationHarnessIfNeeded();
+}

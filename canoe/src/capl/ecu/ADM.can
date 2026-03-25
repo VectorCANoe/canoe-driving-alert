@@ -149,7 +149,9 @@ on timer tAutoDoorCycle
   autoUnlockState = 0;
   if (driveState == 0 && (doorFlLockState == 0 || doorFrLockState == 0))
   {
-    autoUnlockState = 2;
+    /* Entry access should surface as unlocked/approach-ready, not as a
+       separate internal-only state that downstream reviewers never use. */
+    autoUnlockState = 1;
   }
   if (doorFlOpenState == 1 || doorFrOpenState == 1)
   {

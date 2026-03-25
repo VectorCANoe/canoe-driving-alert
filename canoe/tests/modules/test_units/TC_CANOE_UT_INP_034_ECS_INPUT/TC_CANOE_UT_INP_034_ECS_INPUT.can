@@ -1,0 +1,69 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gRideHeightMode;
+  int gFrontHeight;
+  int gRearHeight;
+}
+
+on message frmAirSuspensionStateMsg
+{
+  gRideHeightMode = this.RideHeightMode;
+  gFrontHeight = this.FrontHeight;
+  gRearHeight = this.RearHeight;
+}
+
+long waitForEcsInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gRideHeightMode < 1 ||
+          gFrontHeight < 100 ||
+          gRearHeight < 100) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gRideHeightMode < 1 ||
+      gFrontHeight < 100 ||
+      gRearHeight < 100)
+  {
+    testStepFail("ecs-input-state", "ECS input timeout waited=%d mode=%d front=%d rear=%d minimumMode=%d minimumFront=%d minimumRear=%d",
+                 waitedMs, gRideHeightMode, gFrontHeight, gRearHeight, 1, 100, 100);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_034_ECS_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(225, 800, 1300))
+  {
+    return;
+  }
+  if (!waitForEcsInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntMin("s225_rideHeightMode", 1, gRideHeightMode, "rideHeightMode");
+  assertIntMin("s225_frontHeight", 100, gFrontHeight, "frontHeight");
+  assertIntMin("s225_rearHeight", 100, gRearHeight, "rearHeight");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -1,0 +1,69 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gSeatPassPos;
+  int gSeatPassHeatLvl;
+}
+
+on message frmSeatPassStateMsg
+{
+  gSeatPassPos = this.SeatPassPos;
+  gSeatPassHeatLvl = this.SeatPassHeatLvl;
+}
+
+long waitForSeatPassInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gSeatPassPos != 0 ||
+          gSeatPassHeatLvl != 0) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gSeatPassPos != 0 ||
+      gSeatPassHeatLvl != 0)
+  {
+    testStepFail("seat-pass-input-state", "Seat passenger input timeout waited=%d pos=%d heat=%d",
+                 waitedMs,
+                 gSeatPassPos,
+                 gSeatPassHeatLvl);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_047_SEAT_PASS_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gSeatPassPos = -1;
+  gSeatPassHeatLvl = -1;
+  if (!launchScenarioAndWait(229, 900, 1300))
+  {
+    return;
+  }
+
+  if (!waitForSeatPassInputState(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s229_seatPassPos", 0, gSeatPassPos, "seatPassPos");
+  assertIntEq("s229_seatPassHeatLvl", 0, gSeatPassHeatLvl, "seatPassHeatLvl");
+
+  resetValidationHarnessIfNeeded();
+}

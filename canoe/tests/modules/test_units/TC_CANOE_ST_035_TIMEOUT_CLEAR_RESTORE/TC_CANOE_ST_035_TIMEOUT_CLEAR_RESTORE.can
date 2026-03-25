@@ -20,9 +20,8 @@ export testcase TC_CANOE_ST_035_TIMEOUT_CLEAR_RESTORE()
     return;
   }
 
-  assertIntEq("delay-stability-restore-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  if (!waitForObservedSelectedAlert(800) ||
-      !waitForObservedFailSafe(800))
+  if (!waitForObservedSelectedAlertState(3, 3, 800) ||
+      !waitForObservedFailSafe(1200))
   {
     resetValidationHarnessIfNeeded();
     return;

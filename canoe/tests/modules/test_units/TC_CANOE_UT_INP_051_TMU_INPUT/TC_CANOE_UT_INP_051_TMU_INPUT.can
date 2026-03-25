@@ -1,0 +1,78 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  int gTmuLinkState;
+  int gTmuServiceMode;
+  int gRemoteClimateReq;
+  int gSignalBars;
+}
+
+on message frmTmuServiceStateMsg
+{
+  gTmuLinkState = this.TmuLinkState;
+  gTmuServiceMode = this.TmuServiceMode;
+  gRemoteClimateReq = this.RemoteClimateReq;
+  gSignalBars = this.SignalBars;
+}
+
+long waitForTmuInputState(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gTmuLinkState != 2 ||
+          gTmuServiceMode != 1 ||
+          gRemoteClimateReq != 1 ||
+          gSignalBars < 4) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gTmuLinkState != 2 ||
+      gTmuServiceMode != 1 ||
+      gRemoteClimateReq != 1 ||
+      gSignalBars < 4)
+  {
+    testStepFail("inp-tmu-state", "TMU input timeout waited=%d link=%d service=%d remote=%d bars=%d",
+                 waitedMs, gTmuLinkState, gTmuServiceMode, gRemoteClimateReq, gSignalBars);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_INP_051_TMU_INPUT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gTmuLinkState = -1;
+  gTmuServiceMode = -1;
+  gRemoteClimateReq = -1;
+  gSignalBars = -1;
+  if (!launchScenarioAndWait(229, 900, 1300))
+  {
+    return;
+  }
+  if (!waitForTmuInputState(1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("s229_tmuLinkState", 2, gTmuLinkState, "tmuLinkState");
+  assertIntEq("s229_tmuServiceMode", 1, gTmuServiceMode, "tmuServiceMode");
+  assertIntEq("s229_remoteClimateReq", 1, gRemoteClimateReq, "remoteClimateReq");
+  assertIntEq("s229_signalBars", 4, gSignalBars, "signalBars");
+
+  resetValidationHarnessIfNeeded();
+}

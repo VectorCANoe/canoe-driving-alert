@@ -1,0 +1,38 @@
+name: Text Integrity Gate
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "driving-alert-workproducts/**"
+      - "canoe/**"
+      - "scripts/gates/text_integrity_gate.py"
+      - "scripts/run.py"
+      - "product/sdv_operator/scripts/**"
+      - ".github/workflows/doc-code-sync-gate.yml"
+  pull_request:
+    paths:
+      - "driving-alert-workproducts/**"
+      - "canoe/**"
+      - "scripts/gates/text_integrity_gate.py"
+      - "scripts/run.py"
+      - "product/sdv_operator/scripts/**"
+      - ".github/workflows/doc-code-sync-gate.yml"
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run text integrity gate
+        run: python scripts/run.py gate text-integrity

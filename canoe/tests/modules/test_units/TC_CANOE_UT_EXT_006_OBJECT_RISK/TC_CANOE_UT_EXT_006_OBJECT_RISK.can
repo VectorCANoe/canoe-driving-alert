@@ -1,0 +1,93 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_EXT_006_OBJECT_RISK()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(20, 700, 1200))
+  {
+    return;
+  }
+
+  if (!waitForObservedObjectRiskMin(3, 60, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntMin("object-forward-risk-class", 3, (long)@Test::obsObjectRiskClass, "ethObjectRiskClass");
+  assertIntMin("object-forward-proximity", 60, (long)@Test::obsObjectRiskLevel, "ethObjectRiskLevel");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(21, 700, 1200))
+  {
+    return;
+  }
+
+  if (!waitForObservedObjectRiskMin(2, 40, 1200) ||
+      !waitForObservedIntersectionConflict(1200) ||
+      !waitForObservedSelectedAlertType(5, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("object-intersection-flag", 1, (long)@Test::obsIntersectionConflictFlag, "ethIntersectionConflictFlag");
+  assertIntEq("object-intersection-alert", 5, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(22, 700, 1200))
+  {
+    return;
+  }
+
+  if (!waitForObservedObjectRiskMin(2, 40, 1200) ||
+      !waitForObservedMergeCutIn(1200) ||
+      !waitForObservedSelectedAlertType(6, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("object-merge-flag", 1, (long)@Test::obsMergeCutInFlag, "ethMergeCutInFlag");
+  assertIntEq("object-merge-alert", 6, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(24, 700, 1200))
+  {
+    return;
+  }
+
+  if (!waitForObservedObjectRisk(1200) ||
+      !waitForObservedFailSafeMin(1, 1500) ||
+      !waitForObservedDecelState(-1, 0, -1, 1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("object-confidence", 20, (long)@Test::obsObjectConfidence, "ethObjectConfidence");
+  assertIntMin("object-degrade-failsafe", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+  assertIntEq("object-decel-off", 0, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
+
+  resetValidationHarnessIfNeeded();
+}

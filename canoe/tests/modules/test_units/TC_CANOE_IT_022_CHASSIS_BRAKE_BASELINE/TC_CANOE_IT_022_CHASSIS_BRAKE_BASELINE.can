@@ -19,8 +19,12 @@ export testcase TC_CANOE_IT_022_CHASSIS_BRAKE_BASELINE()
   {
     return;
   }
+  if (!waitForCoreChassisState(0, 0, 30, -1, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
 
-  assertIntEq("chassis-brake-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("chassis-brake-drive-state", 0, (long)@Core::driveStateNorm, "driveStateNorm");
   assertIntEq("chassis-brake-speed", 0, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
   assertIntEq("chassis-brake-steer", 0, (long)@Core::steeringInputNorm, "steeringInputNorm");

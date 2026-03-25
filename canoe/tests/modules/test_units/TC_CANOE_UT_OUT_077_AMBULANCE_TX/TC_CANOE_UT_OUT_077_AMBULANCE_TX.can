@@ -1,0 +1,47 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+/*
+  UT_077
+  External TX unit contract for ambulance emergency transport context.
+  Final frame-level closure remains trace-gated.
+*/
+export testcase TC_CANOE_UT_OUT_077_AMBULANCE_TX()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(5, 700, 1200))
+  {
+    return;
+  }
+
+if (!waitForV2xIngressState(1, 2, 8, 22, 1500))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+
+  assertIntEq("ambulance-tx-alert-state", 1, (long)@V2X::alertState, "alertState");
+  assertIntEq("ambulance-tx-type", 2, (long)@V2X::emergencyType, "emergencyType");
+  assertIntEq("ambulance-tx-eta", 8, (long)@V2X::eta, "eta");
+  assertIntEq("ambulance-tx-source", 22, (long)@V2X::sourceId, "sourceId");
+  if (!waitForObservedSelectedAlertState(7, 2, 800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("ambulance-tx-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("ambulance-tx-code", deriveExpectedEmergencyWarningCode(2, 2, 8, 20), (long)@Cluster::warningTextCode, "warningTextCode");
+
+  resetValidationHarnessIfNeeded();
+}

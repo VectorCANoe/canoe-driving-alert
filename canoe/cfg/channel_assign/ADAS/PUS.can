@@ -98,14 +98,30 @@ void publishParkUltrasonicState()
     brakePedal = 0;
   }
 
-  active = (vehicleInputStale == 0 && vehicleSpeed <= 15) ? 1 : 0;
+  /* Keep park assist passive at manual idle.
+     Only raise the feature when the driver is actually braking or steering
+     in a low-speed parking context. */
+  active = (vehicleInputStale == 0 &&
+            vehicleSpeed <= 15 &&
+            (brakePedal == 1 || steeringInput == 1)) ? 1 : 0;
   minDistance = 255;
   zoneMask = 0;
   audibleWarn = 0;
 
   if (active == 1)
   {
-    minDistance = (vehicleSpeed <= 5) ? 35 : 80;
+    if (vehicleSpeed <= 3)
+    {
+      minDistance = 28;
+    }
+    else if (vehicleSpeed <= 5)
+    {
+      minDistance = 35;
+    }
+    else
+    {
+      minDistance = 80;
+    }
     if (brakePedal == 1)
     {
       zoneMask = zoneMask | 0x01;

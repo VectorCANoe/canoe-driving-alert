@@ -79,6 +79,15 @@
 3. 같은 도메인 안에서 중복 없이 다음 ID를 배정한다.
 4. `0303`, `DBC`, 시험 문서까지 같은 ID로 맞춘다.
 
+## 7. 연계 인터페이스 문서
+
+CAN ID와 Ethernet/UDP 식별자 운용은 아래 문서와 함께 유지한다.
+
+- `canoe/docs/contracts/communication-matrix.md`
+- `canoe/docs/contracts/ethernet-interface.md`
+- `canoe/docs/contracts/ethernet-backbone.md`
+- `canoe/docs/contracts/multibus-policy.md`
+
 ## 7. 운영 메모
 
 - 제출 문서 기준에서는 현재 실행 중인 11-bit ID 체계를 사용한다.

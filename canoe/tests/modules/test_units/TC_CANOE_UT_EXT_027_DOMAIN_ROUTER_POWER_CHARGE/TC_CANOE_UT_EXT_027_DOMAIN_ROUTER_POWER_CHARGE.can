@@ -1,0 +1,92 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gObcState;
+  long gAcPlugState;
+  long gChargePowerKw;
+  long gDcdcMode;
+  long gLvOutputVolt;
+  long gLvOutputCurr;
+}
+
+on message frmObcStateMsg
+{
+  gObcState = this.ObcState;
+  gAcPlugState = this.AcPlugState;
+  gChargePowerKw = this.ChargePowerKw;
+}
+
+on message frmDcdcStateMsg
+{
+  gDcdcMode = this.DcdcMode;
+  gLvOutputVolt = this.LvOutputVolt;
+  gLvOutputCurr = this.LvOutputCurr;
+}
+
+long waitForChargeContext(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((gObcState != 2 ||
+          gAcPlugState != 1 ||
+          gChargePowerKw != 20 ||
+          gDcdcMode != 2 ||
+          gLvOutputVolt != 140 ||
+          gLvOutputCurr != 35) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (gObcState != 2 ||
+      gAcPlugState != 1 ||
+      gChargePowerKw != 20 ||
+      gDcdcMode != 2 ||
+      gLvOutputVolt != 140 ||
+      gLvOutputCurr != 35)
+  {
+    testStepFail("router-power-charge", "Charge context timeout waited=%d obc=%d plug=%d kw=%d dcdc=%d volt=%d curr=%d",
+                 waitedMs, gObcState, gAcPlugState, gChargePowerKw, gDcdcMode, gLvOutputVolt, gLvOutputCurr);
+    return 0;
+  }
+
+  return 1;
+}
+
+export testcase TC_CANOE_UT_EXT_027_DOMAIN_ROUTER_POWER_CHARGE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  gObcState = -1;
+  gAcPlugState = -1;
+  gChargePowerKw = -1;
+  gDcdcMode = -1;
+  gLvOutputVolt = -1;
+  gLvOutputCurr = -1;
+  if (!launchScenarioAndWait(231, 1500, 450))
+  {
+    return;
+  }
+  if (!waitForChargeContext(1200))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("router-power-obc-state", 2, gObcState, "ObcState");
+  assertIntEq("router-power-plug", 1, gAcPlugState, "AcPlugState");
+  assertIntEq("router-power-charge-kw", 20, gChargePowerKw, "ChargePowerKw");
+  assertIntEq("router-power-dcdc-mode", 2, gDcdcMode, "DcdcMode");
+  assertIntEq("router-power-volt", 140, gLvOutputVolt, "LvOutputVolt");
+  assertIntEq("router-power-curr", 35, gLvOutputCurr, "LvOutputCurr");
+
+  resetValidationHarnessIfNeeded();
+}

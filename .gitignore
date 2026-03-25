@@ -19,6 +19,8 @@ Logging/
 *.cbf
 *.stcfg
 *.cfg.ini
+!canoe/cfg/CAN_v2_topology.stcfg
+!canoe/cfg/CAN_v2_topology.cfg.ini
 *.vtcfg.local
 canoe/tmp/*.cfg.bak*
 canoe/tmp/*.png
@@ -65,6 +67,9 @@ test-results/
 *.xml
 coverage/
 *.vtestreport
+*.vtestreport-lock
+*.vtestreport-shm
+*.vtestreport-wal
 
 # Vector CANoe
 *.cfg.bak
@@ -91,6 +96,7 @@ canoe/tmp/dbc_compare/
 canoe/tmp/image.png
 canoe/tmp/assets/screenshots/
 canoe/tmp/backups/
+canoe/tests/tmp/
 canoe/logging/evidence/
 canoe/cfg/.run/
 canoe/tmp/reports/verification/*

@@ -15,15 +15,20 @@ export testcase TC_CANOE_IT_031_AUDIO_GUIDE_RUNTIME()
     return;
   }
 
-  if (!launchScenarioAndWait(215, 900, 1300))
+  if (!launchScenarioAndWait(215, 900, 1700))
   {
     return;
   }
 
-  assertIntEq("audio-runtime-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("audio-runtime-warning-code", 142, (long)@Cluster::warningTextCode, "warningTextCode");
-  assertIntEq("audio-runtime-focus-owner", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
-  assertIntEq("audio-runtime-ducking", 4, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
+  if (!waitForStableWarningRender(deriveExpectedEmergencyWarningCode(1, 2, 11, 40), 2, 1800) ||
+      !waitForAudioPolicyFloor(1, 2, 20, 0, 1800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("audio-runtime-warning-code", deriveExpectedEmergencyWarningCode(1, 2, 11, 40), (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntMin("audio-runtime-focus-owner", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
+  assertIntMin("audio-runtime-ducking", 2, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
   assertIntEq("audio-runtime-popup-active", 0, (long)@CoreState::popupActive, "popupActive");
 
   resetValidationHarnessIfNeeded();

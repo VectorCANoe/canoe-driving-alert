@@ -30,6 +30,7 @@ def _rel(path: Path) -> str:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Check run readiness for verify finalize")
     parser.add_argument("--run-id", required=True, help="Run ID, e.g. 20260307_1030")
+    parser.add_argument("--tiers", nargs="+", default=list(TIERS), choices=list(TIERS))
     parser.add_argument("--evidence-root", type=Path, default=Path("canoe/logging/evidence"))
     parser.add_argument(
         "--output-json",
@@ -76,8 +77,9 @@ def main() -> int:
     args.output_md = _repo_path(args.output_md)
     now = dt.datetime.now().isoformat(timespec="seconds")
 
+    selected_tiers = [str(item).upper() for item in args.tiers if str(item).strip()]
     tier_rows: dict[str, dict[str, object]] = {}
-    for tier in TIERS:
+    for tier in selected_tiers:
         run_dir = args.evidence_root / tier / args.run_id
         template_csv = run_dir / "verification_log.csv"
         raw_log = run_dir / "raw_write_window.txt"
@@ -110,6 +112,7 @@ def main() -> int:
     payload = {
         "generated_at": now,
         "run_id": args.run_id,
+        "selected_tiers": selected_tiers,
         "overall_status": overall,
         "tiers": tier_rows,
         "missing_items": missing_items,
@@ -124,13 +127,14 @@ def main() -> int:
         "",
         f"- Generated: {now}",
         f"- Run ID: `{args.run_id}`",
+        f"- Selected Tiers: `{', '.join(selected_tiers)}`",
         f"- Overall: `{overall}`",
         "",
         "## Tier Status",
         "| Tier | Template | Raw Log | Marker Count | Filled | Scored | Scored Rows |",
         "|---|---|---|---:|---|---|---:|",
     ]
-    for tier in TIERS:
+    for tier in selected_tiers:
         item = tier_rows[tier]
         lines.append(
             "| {tier} | {template_exists} | {raw_exists} | {marker_count} | {filled_exists} | {scored_exists} | {scored_rows} |".format(
