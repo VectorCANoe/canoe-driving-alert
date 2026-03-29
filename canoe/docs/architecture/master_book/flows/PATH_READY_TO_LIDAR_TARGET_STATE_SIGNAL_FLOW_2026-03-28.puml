@@ -1,0 +1,55 @@
+@startuml path_ready_to_lidar_target_state_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Path Ready To Lidar Target State Signal Flow\n(path readiness + object safety -> LDR health/target publish)
+
+participant "Object safety /\npath-ready inputs" as SafetyCtx #F4F7FB
+participant "LDR\nlidar state owner" as LDR #E8F7E8
+participant "Lidar state bus" as LidarBus #FFF4CC
+participant "Observers / ADAS consumers" as Obs #E8F0FE
+
+== Lidar Inputs ==
+
+SafetyCtx -> LDR : objectConfidence\nobjectEventCode\nobjectTrackValid\nobjectFailSafeMode\npathReady
+LDR -> LDR : if objectSafetyInputStale then\nconfidence = 0 / track = 0 / failSafe = 0
+LDR -> LDR : targetDetected = clamp(objectTrackValid, 0, 1)
+LDR -> LDR : if pathReady == 0 or failSafe >= 2\nthen health = 0 and targetDetected = 0
+LDR -> LDR : freeSpaceClass from targetDetected + confidence
+note right of LDR
+Representative gating inputs
+- pathReady
+- objectTrackValid
+- objectConfidence
+- objectFailSafeMode
+end note
+
+== Lidar Publish ==
+
+LDR -> LidarBus : frmLidarStateMsg\nLidarHealth / TargetDetected / FreeSpaceClass
+LDR -> LidarBus : Confidence / RangeBucket
+note right of LDR
+Representative outputs
+- LidarHealth
+- TargetDetected
+- FreeSpaceClass
+- Confidence
+end note
+
+== Downstream Visibility ==
+
+LidarBus -> Obs : lidar target-state readback /\nADAS sensor consumers
+
+note over SafetyCtx, Obs
+Representative runtime chain
+1. Object safety and path readiness reach LDR
+2. LDR decides whether target tracking is trustworthy
+3. LDR publishes health, target-detected, and freespace state
+4. ADAS and observers consume the effective lidar target posture
+end note
+
+@enduml

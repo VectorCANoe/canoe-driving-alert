@@ -45,6 +45,11 @@ int mapSignedSteeringCmdToLegacyAngle(int steeringAngleCmd)
   return clampRange((int)scaledAngle, 0, 138);
 }
 
+void publishManualSteeringReadback(int steeringAngleCmd)
+{
+  @Chassis::steeringAngle = mapSignedSteeringCmdToLegacyAngle(steeringAngleCmd);
+}
+
 void traceEscInputHealth(int vehicleStateInputStale, int steeringInputStale, int pedalInputStale, int aebInputStale)
 {
   if (vehicleStateInputStale != gLastVehicleStateInputStale)
@@ -245,9 +250,8 @@ on timer tEscCycle
   }
   if (manualMode == 1)
   {
-    steeringInput = deriveManualSteeringInputFromAngle(
-      mapSignedSteeringCmdToLegacyAngle((int)@Cmd::steeringAngleCmd)
-    );
+    publishManualSteeringReadback((int)@Cmd::steeringAngleCmd);
+    steeringInput = deriveManualSteeringInputFromAngle((int)@Chassis::steeringAngle);
     appliedBrakePedal = clampRange((int)@Cmd::brakePedalPct, 0, 100);
     @Chassis::brakePressure = appliedBrakePedal;
   }

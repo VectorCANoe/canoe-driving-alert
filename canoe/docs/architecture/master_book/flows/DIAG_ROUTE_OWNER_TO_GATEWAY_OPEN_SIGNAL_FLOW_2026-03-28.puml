@@ -1,0 +1,69 @@
+@startuml diag_route_owner_to_gateway_open_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Diag Route Owner To Gateway Open Signal Flow\n(NAV/TMU route context -> SGW -> DCM / TEST_SCN)
+
+participant "NAV / route context\nand boundary status" as RouteCtx #F4F7FB
+participant "SGW\ndiagnostic gateway owner" as SGW #E8F7E8
+participant "DCM\ndiagnostic response owner" as DCM #FFF4CC
+participant "TEST_SCN\nverification observer" as TEST_SCN #FFE6E6
+
+== Route / Boundary Inputs ==
+
+RouteCtx -> SGW : routeActive / guidedRouteActive\nspeedLimit / vehicleSpeed\nCoreState::domainBoundaryStatus\nCoreState::warningPathStatus\nCore::failSafeMode
+SGW -> SGW : ethHasBoundaryServiceContext()
+SGW -> SGW : ethDiagBoundaryStage()
+note right of SGW
+Representative derived state
+- gIboxRouteState
+- gIboxServiceFlags
+- securitySession
+- authState
+end note
+
+== Diagnostic Gateway Ownership ==
+
+SGW -> SGW : RouteOwner = 0/1/2
+SGW -> SGW : GatewayOpen = routeActive
+SGW -> SGW : SecurityState / AuthState / SecurityFault / SecurityPolicy
+SGW -> DCM : Diag::RouteOwner\nDiag::GatewayOpen\nDiag::SecurityState
+note right of SGW
+Key diag seams
+- Diag::RouteOwner
+- Diag::GatewayOpen
+- Diag::SecurityState
+end note
+
+== DCM Response Path ==
+
+DCM -> DCM : derive ServiceState /\nResponseKind / ReasonCode
+DCM -> DCM : publishDiagRequestObservation()
+DCM -> DCM : publishDiagResponseObservation()
+DCM -> TEST_SCN : Diag::ServiceState\nDiag::ResponseKind\nDiag::ReasonCode\nDiag::LastRequestSid\nDiag::LastResponseCode
+
+== Verification / Evidence ==
+
+TEST_SCN -> TEST_SCN : observe RouteOwner / GatewayOpen /\nServiceState / ReasonCode
+TEST_SCN -> TEST_SCN : evaluate blocked or degraded\nservice context verdicts
+note right of TEST_SCN
+Representative checks
+- RouteOwner == 1
+- ServiceState == 2
+- ResponseKind == 4
+- ReasonCode == 2
+end note
+
+note over RouteCtx, TEST_SCN
+Representative runtime chain
+1. Route/boundary context reaches SGW
+2. SGW owns RouteOwner and GatewayOpen
+3. DCM derives service/response state on top of SGW diag seams
+4. TEST_SCN consumes the diag path as verification evidence
+end note
+
+@enduml

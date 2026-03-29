@@ -1,0 +1,47 @@
+@startuml fuel_battery_to_isg_restart_ready_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Fuel Battery To ISG Restart Ready Signal Flow\n(fuel-battery + vehicle mode/state -> ISG restart-ready publication)
+
+participant "Fuel/Battery source\nBatterySoc / ChargingState" as FB #E8F0FE
+participant "VCU\nvehicle-mode producer" as VCU #E8F7E8
+participant "Vehicle state\nDriveState / VehicleSpeed" as Veh #F4F7FB
+participant "ISG\nidle-stop-go owner" as ISG #FFF4CC
+participant "Powertrain observers" as Obs #FCE8FF
+
+== ISG Inputs ==
+
+FB -> ISG : frmFuelBatteryStateMsg\nBatterySoc / ChargingState
+VCU -> ISG : frmVehicleModeMsg\nDriveMode / PowertrainState
+Veh -> ISG : frmVehicleStateCanMsg\nDriveState / VehicleSpeed
+activate ISG
+ISG -> ISG : normalize stale fuel-battery / vehicle inputs
+ISG -> ISG : derive IsgState from PowertrainState,\nBatterySoc, DriveState, VehicleSpeed
+ISG -> ISG : derive RestartReady / RecuperationLvl
+note right of ISG
+Representative outputs
+- IsgState
+- RestartReady
+- RecuperationLvl
+end note
+
+== ISG Publish ==
+
+ISG -> Obs : frmIsgStateMsg
+ISG -> Obs : traceable restart-ready / regen state
+deactivate ISG
+
+note over FB, Obs
+Representative runtime chain
+1. Fuel-battery state reaches ISG with vehicle mode/state context
+2. ISG derives idle-stop-go state and restart readiness
+3. Recuperation level is adjusted from speed and charging context
+4. Powertrain observers verify restart and regen behavior
+end note
+
+@enduml

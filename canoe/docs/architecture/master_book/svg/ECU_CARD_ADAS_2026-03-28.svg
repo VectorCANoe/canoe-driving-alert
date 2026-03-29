@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2412" viewBox="0 0 1600 2412">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #f8fafc; }
+    .title { font: 700 30px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .sub { font: 500 15px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 18px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .node { font: 700 18px 'Segoe UI', sans-serif; fill: #111827; }
+    .box { rx: 20; ry: 20; stroke: #475569; stroke-width: 2; }
+    .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <rect x="0" y="0" width="1600" height="2412" class="bg"/>
+  <text x="34" y="44" class="title">ECU Network Flow - ADAS</text>
+  <text x="34" y="72" class="sub">Group 02 ADAS AEB Brake Assist | Domain ADAS | generated internal OEM-style network flow card</text>
+
+  <rect x="30" y="100" width="1540" height="144" class="box" fill="#fee2e2"/>
+  <text x="52" y="136" class="label">ECU placement</text>
+  <text x="52" y="168" class="text">Group: Group 02 ADAS AEB Brake Assist</text>
+  <text x="450" y="168" class="text">Domain: ADAS</text>
+  <text x="52" y="198" class="text">Alert arbitration and decel</text>
+<text x="52" y="220" class="text">assist domain controller</text>
+
+  <rect x="30" y="268" width="1540" height="158" class="box" fill="#ffffff"/>
+  <text x="52" y="304" class="label">Network surface</text>
+  <rect x="52" y="320" width="430" height="88" rx="16" ry="16" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="74" y="350" class="small">Inbound DBC / bus surface</text>
+  <text x="74" y="376" class="text">- adas_can.dbc</text>
+<text x="74" y="396" class="text">- body_can.dbc</text>
+<text x="74" y="416" class="text">- chassis_can.dbc</text>
+  <rect x="585" y="320" width="430" height="88" rx="16" ry="16" fill="#ecfeff" stroke="#67e8f9" stroke-width="1.5"/>
+  <text x="607" y="350" class="small">Current ECU lane</text>
+  <text x="607" y="378" class="node">ADAS</text>
+  <text x="607" y="406" class="small">ADAS / Group 02 ADAS AEB Brake Assist</text>
+  <rect x="1118" y="320" width="430" height="88" rx="16" ry="16" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="1140" y="350" class="small">Outbound DBC / bus surface</text>
+  <text x="1140" y="376" class="text">- adas_can.dbc</text>
+
+  <rect x="30" y="450" width="1540" height="1142" class="box" fill="#ffffff"/>
+<text x="52" y="484" class="label">Runtime network flow</text>
+<rect x="40" y="476" width="450" height="1060" class="box" fill="#e0f2fe"/>
+<text x="64" y="512" class="label">Inbound Flow</text>
+<rect x="54" y="534" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="562" class="node">ABS</text>
+<text x="70" y="586" class="small">frmAbsStateMsg</text>
+<rect x="54" y="618" width="422" height="88" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="646" class="node">ADAS</text>
+<text x="70" y="670" class="small">ethEmergencyRiskMsg,</text>
+<text x="70" y="688" class="small">ethObjectRiskStateMsg</text>
+<rect x="54" y="720" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="748" class="node">AEB</text>
+<text x="70" y="772" class="small">frmAebDomainStateMsg</text>
+<rect x="54" y="804" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="832" class="node">ASM</text>
+<text x="70" y="856" class="small">frmAirSuspensionStateMsg</text>
+<rect x="54" y="888" width="422" height="88" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="916" class="node">BCM</text>
+<text x="70" y="940" class="small">frmBodyComfortStateMsg,</text>
+<text x="70" y="958" class="small">frmBodyGatewayStateMsg</text>
+<rect x="54" y="990" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1018" class="node">BCW</text>
+<text x="70" y="1042" class="small">frmBcwStateMsg</text>
+<rect x="54" y="1074" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1102" class="node">CDC</text>
+<text x="70" y="1126" class="small">frmCdcStateMsg</text>
+<rect x="54" y="1158" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1186" class="node">ECS</text>
+<text x="70" y="1210" class="small">frmEcsStateMsg</text>
+<rect x="54" y="1242" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1270" class="node">EHB</text>
+<text x="70" y="1294" class="small">frmEhbStateMsg</text>
+<rect x="54" y="1326" width="422" height="106" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1354" class="node">ESC</text>
+<text x="70" y="1378" class="small">frmBrakeTempMsg, frmEscStateMsg,</text>
+<text x="70" y="1396" class="small">frmRoadFrictionMsg,</text>
+<text x="70" y="1414" class="small">frmSuspensionStateMsg</text>
+<rect x="54" y="1446" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1474" class="node">... +25 more ECU edges</text>
+<text x="70" y="1498" class="small">-</text>
+<rect x="1110" y="476" width="450" height="1096" class="box" fill="#dbeafe"/>
+<text x="1134" y="512" class="label">Outbound Flow</text>
+<rect x="1124" y="534" width="422" height="88" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="562" class="node">ADAS</text>
+<text x="1140" y="586" class="small">ethEmergencyRiskMsg,</text>
+<text x="1140" y="604" class="small">ethObjectRiskStateMsg</text>
+<rect x="1124" y="636" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="664" class="node">AEB</text>
+<text x="1140" y="688" class="small">frmAdasDomainStateMsg</text>
+<rect x="1124" y="720" width="422" height="106" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="748" class="node">BCM</text>
+<text x="1140" y="772" class="small">ethObjectScenarioAlertMsg,</text>
+<text x="1140" y="790" class="small">ethSelectedAlertMsg,</text>
+<text x="1140" y="808" class="small">frmAdasDomainStateMsg</text>
+<rect x="1124" y="840" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="868" class="node">BCW</text>
+<text x="1140" y="892" class="small">frmAdasDomainStateMsg</text>
+<rect x="1124" y="924" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="952" class="node">CLU</text>
+<text x="1140" y="976" class="small">frmAdasDomainStateMsg</text>
+<rect x="1124" y="1008" width="422" height="88" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="1036" class="node">ESC</text>
+<text x="1140" y="1060" class="small">ethDecelAssistReqMsg,</text>
+<text x="1140" y="1078" class="small">frmAdasChassisStatusMsg</text>
+<rect x="1124" y="1110" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="1138" class="node">FCA</text>
+<text x="1140" y="1162" class="small">frmAdasDomainStateMsg</text>
+<rect x="1124" y="1194" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="1222" class="node">FCAM</text>
+<text x="1140" y="1246" class="small">frmAdasDomainStateMsg</text>
+<rect x="1124" y="1278" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="1306" class="node">FRADAR</text>
+<text x="1140" y="1330" class="small">frmAdasDomainStateMsg</text>
+<rect x="1124" y="1362" width="422" height="106" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="1390" class="node">IVI</text>
+<text x="1140" y="1414" class="small">ethObjectScenarioAlertMsg,</text>
+<text x="1140" y="1432" class="small">ethSelectedAlertMsg,</text>
+<text x="1140" y="1450" class="small">frmAdasDomainStateMsg</text>
+<rect x="1124" y="1482" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="1510" class="node">... +9 more ECU edges</text>
+<text x="1140" y="1534" class="small">-</text>
+<rect x="570" y="516" width="460" height="420" class="box" fill="#dcfce7"/>
+<text x="800" y="556" text-anchor="middle" class="node">ADAS</text>
+<text x="604" y="590" class="text">Alert arbitration and decel</text>
+<text x="604" y="612" class="text">assist domain controller</text>
+<text x="604" y="692" class="small">Owner seam</text>
+<text x="604" y="718" class="small">- Core::selectedAlertType</text>
+<text x="604" y="738" class="small">- Core::selectedAlertLevel</text>
+<text x="604" y="826" class="small">Primary sysvar</text>
+<text x="604" y="854" class="text">@Core::selectedAlertType</text>
+<text x="604" y="902" class="small">Representative path: ABS -&gt; ADAS -&gt; ADAS</text>
+<line x1="490" y1="726" x2="570" y2="726" class="lane"/>
+<line x1="1030" y1="726" x2="1110" y2="726" class="lane"/>
+<text x="510" y="700" class="small">Representative Rx:</text>
+<text x="510" y="718" class="small">frmAbsStateMsg</text>
+<text x="1050" y="700" class="small">Representative Tx:</text>
+<text x="1050" y="718" class="small">ethEmergencyRiskMsg,</text>
+<text x="1050" y="736" class="small">ethObjectRiskStateMsg</text>
+
+  <rect x="30" y="1616" width="1540" height="746" class="box" fill="#f8fafc"/>
+<text x="52" y="1650" class="label">ECU metadata</text>
+<rect x="44" y="1670" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1670" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1698" class="text">ECU</text>
+<text x="284" y="1696" class="text">ADAS</text>
+<rect x="44" y="1732" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1732" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1760" class="text">Layer/Group</text>
+<text x="284" y="1758" class="text">ADAS / Group 02 ADAS AEB Brake Assist</text>
+<rect x="44" y="1794" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1794" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1822" class="text">Owner seam</text>
+<text x="284" y="1820" class="text">Core::selectedAlertType, Core::selectedAlertLevel</text>
+<rect x="44" y="1856" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1856" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1884" class="text">Rx message</text>
+<text x="284" y="1882" class="text">frmAbsStateMsg, ethEmergencyRiskMsg, ethObjectRiskStateMsg, frmAebDomainStateMsg</text>
+<rect x="44" y="1918" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1918" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1946" class="text">Tx message</text>
+<text x="284" y="1944" class="text">ethEmergencyRiskMsg, ethObjectRiskStateMsg, frmAdasDomainStateMsg, ethObjectScenarioAlertMsg</text>
+<rect x="44" y="1980" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1980" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2008" class="text">Linked ECU</text>
+<text x="284" y="2006" class="text">ABS, AEB, ASM, BCM, BCW, CDC (+31 more)</text>
+<rect x="44" y="2042" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2042" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2070" class="text">Primary sysvar</text>
+<text x="284" y="2068" class="text">@Core::selectedAlertType</text>
+<rect x="44" y="2104" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2104" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2132" class="text">Primary test asset</text>
+<text x="284" y="2130" class="text">TC_CANOE_IT_EXT_039_ADAS_PERCEPTION_CONTEXT</text>
+<rect x="44" y="2166" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2166" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2194" class="text">Doc source</text>
+<text x="284" y="2192" class="text">0301, 0302, 0303, 0304 (+2 more)</text>
+<rect x="44" y="2228" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2228" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2256" class="text">Gap/Issue</text>
+<text x="284" y="2254" class="text">Must be read together with AEB, not as a standalone risk producer.</text>
+<rect x="44" y="2290" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2290" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2318" class="text">Runtime note</text>
+<text x="284" y="2316" class="text">Consumes route, chassis, and emergency context, then emits selected alert and assist intent.</text>
+</svg>

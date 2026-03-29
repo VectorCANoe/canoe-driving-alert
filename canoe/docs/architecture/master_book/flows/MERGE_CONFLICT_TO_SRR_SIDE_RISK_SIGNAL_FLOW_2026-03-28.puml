@@ -1,0 +1,55 @@
+@startuml merge_conflict_to_srr_side_risk_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Merge Conflict To SRR Side Risk Signal Flow\n(merge-conflict + lamp state -> SRR side-object detection publish)
+
+participant "Scenario/risk /\nlamp context" as SideCtx #F4F7FB
+participant "SRR_FL\nside radar owner" as SRR #E8F7E8
+participant "Side radar state bus" as SrrBus #FFF4CC
+participant "Observers / lane-change users" as Obs #E8F0FE
+
+== Side-risk Inputs ==
+
+SideCtx -> SRR : mergeConflict / riskClass\nturnLampState\npathReady
+SRR -> SRR : if object input stale then\nmergeConflict = 0 / riskClass = 0
+SRR -> SRR : if lamp stale then\nturnLampState = 0
+SRR -> SRR : detected =\n(mergeConflict == 1 and turnLampState == 1 and riskClass >= 2) ? 1 : 0
+SRR -> SRR : riskLevel = detected ? 40 + riskClass*10 : 0
+SRR -> SRR : if pathReady == 0 then\nclear merge / detect / risk
+note right of SRR
+Representative gating inputs
+- mergeConflict
+- riskClass
+- turnLampState
+- pathReady
+end note
+
+== SRR Publish ==
+
+SRR -> SrrBus : frmSrrFlStateMsg\nSideObjectDetected / SideRiskLevel / MergeConflict / TurnLampState
+note right of SRR
+Representative outputs
+- SideObjectDetected
+- SideRiskLevel
+- MergeConflict
+- TurnLampState
+end note
+
+== Downstream Visibility ==
+
+SrrBus -> Obs : side-risk readback /\nlane-change assist consumers
+
+note over SideCtx, Obs
+Representative runtime chain
+1. Merge conflict and lamp context reach SRR
+2. SRR decides whether side-object risk is active
+3. SRR publishes side detection and risk level
+4. Lane-change observers consume the effective side-risk posture
+end note
+
+@enduml

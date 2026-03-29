@@ -1,0 +1,106 @@
+@startuml object_risk_to_warning_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Object Risk To Warning Signal Flow\n(FRADAR / FCA -> ADAS -> CGW -> IVI / CLU)
+
+participant "FRADAR\nobject track source" as FRADAR #E8F7E8
+participant "FCA\nFCW / AEB request view" as FCA #FFF4CC
+participant "ADAS\nobject-risk owner" as ADAS #FCE8FF
+participant "CGW\neffective warning gate" as CGW #FFF4CC
+participant "IVI\nwarning render / popup" as IVI #E8F0FE
+participant "CLU\ncluster warning output" as CLU #E8F0FE
+
+== Object Perception ==
+
+activate FRADAR
+FRADAR -> ADAS : object track / range / relSpeed / confidence
+note right of FRADAR
+Representative perception inputs
+- objectTrackValid
+- objectRange
+- objectRelSpeed
+- objectConfidence
+end note
+deactivate FRADAR
+
+activate FCA
+ADAS -> FCA : decelAssistReq / objectRiskClass / TTC basis
+FCA -> ADAS : FCW/AEB context contribution
+note right of FCA
+Representative outcomes
+- fcwState
+- aebRequest
+end note
+deactivate FCA
+
+== ADAS Object-Risk Decision ==
+
+activate ADAS
+FRADAR -> ADAS : perception inputs
+ADAS -> ADAS : calcObjectRisk()
+ADAS -> ADAS : calcObjectRiskClass()
+ADAS -> ADAS : objectEventCode = 1381 / 1382 / 1383
+ADAS -> ADAS : selectedAlertDecisionLevel / Type
+ADAS -> CGW : CoreState::selectedAlertDecisionLevel
+ADAS -> CGW : CoreState::selectedAlertDecisionType
+ADAS -> CGW : Core::objectRiskClass / objectEventCode
+ADAS -> CGW : frmAdasChassisStatusMsg
+note right of ADAS
+Representative seams
+- Core::objectRiskClass
+- Core::objectEventCode
+- CoreState::selectedAlertDecisionLevel
+- CoreState::selectedAlertDecisionType
+end note
+deactivate ADAS
+
+== CGW Effective Gate ==
+
+activate CGW
+ADAS -> CGW : decision seams + object event
+CGW -> CGW : timeout / boundary / fail-safe adjustment
+CGW -> CGW : selectedAlertEffectiveLevel / Type
+CGW -> IVI : effective alert seams
+CGW -> CLU : effective alert seams
+note right of CGW
+Gateway side effects
+- selectedAlertGateReason
+- object safety visibility
+- fail-safe escalation
+end note
+deactivate CGW
+
+== Warning Rendering ==
+
+activate IVI
+CGW -> IVI : effective alert level/type
+IVI -> IVI : deriveWarningTextCode()
+IVI -> CLU : frmClusterWarningMsg
+IVI -> CLU : frmClusterNotifMsg
+note right of IVI
+Representative outputs
+- Cluster::warningTextCode
+- popup / notif state
+- warningBeepState
+end note
+deactivate IVI
+
+activate CLU
+IVI -> CLU : warning / notif
+CLU -> CLU : update cluster warning text
+deactivate CLU
+
+note over FRADAR, CLU
+Representative runtime chain
+1. FRADAR and FCA provide object-risk context
+2. ADAS computes object risk class and decision alert
+3. CGW gates decision into effective warning
+4. IVI and CLU render text / notification to the driver
+end note
+
+@enduml

@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1792" viewBox="0 0 1600 1792">
+  <defs>
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fce7f3"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .bg { fill: #f7f7f5; }
+    .title { font: 700 32px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .sub { font: 500 15px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 18px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 13px 'Segoe UI', sans-serif; fill: #475569; }
+    .node { font: 700 18px 'Segoe UI', sans-serif; fill: #111827; }
+    .box { rx: 22; ry: 22; stroke: #334155; stroke-width: 1.6; }
+  </style>
+  <rect x="0" y="0" width="1600" height="1792" class="bg"/>
+  <text x="34" y="44" class="title">ECU Design Study - CGW</text>
+  <text x="34" y="72" class="sub">12-column internal card exploration | consulting-style SVG prototype</text>
+  <rect x="30" y="100" width="1540" height="288" class="box" fill="url(#heroGradient)"/>
+<text x="52" y="134" class="small">ECU at a glance</text>
+<text x="52" y="172" class="title">CGW</text>
+<text x="52" y="204" class="text">Group 06 Backbone Gateway Diagnostics | ETH_Backbone</text>
+<text x="52" y="224" class="text"></text>
+<text x="52" y="244" class="text">Central gateway and gatekeeper</text>
+<text x="52" y="264" class="text"></text>
+<text x="52" y="284" class="text">Primary action flow</text>
+<text x="52" y="304" class="text">FLOW_20 Backbone, Diagnostic, and</text>
+<text x="52" y="324" class="text">Service Routing</text>
+<text x="52" y="344" class="text"></text>
+<text x="52" y="364" class="text">Signal route</text>
+<text x="52" y="384" class="text">ACU -&gt; CGW</text>
+<rect x="940" y="134" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="958" y="162" class="small">Published</text>
+<text x="958" y="192" class="node">0</text>
+<rect x="1261" y="134" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1279" y="162" class="small">Consumed</text>
+<text x="1279" y="192" class="node">5</text>
+<rect x="940" y="228" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="958" y="256" class="small">Linked ECU</text>
+<text x="958" y="286" class="node">5</text>
+<rect x="1261" y="228" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1279" y="256" class="small">Native Tests</text>
+<text x="1279" y="286" class="node">3</text>
+<rect x="940" y="322" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="958" y="350" class="small">Upstream</text>
+<text x="958" y="380" class="node">5</text>
+<rect x="1261" y="322" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1279" y="350" class="small">Downstream</text>
+<text x="1279" y="380" class="node">0</text>
+  <rect x="30" y="412" width="760" height="220" class="box" fill="#e0f2fe"/>
+<text x="54" y="448" class="label">Inbound Flow</text>
+<rect x="44" y="470" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="60" y="496" class="node">ACU</text>
+<text x="60" y="518" class="small">frmAcuStateMsg</text>
+<rect x="292" y="470" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="308" y="496" class="node">BCM</text>
+<text x="308" y="518" class="small">frmBodyHealthMsg</text>
+<rect x="540" y="470" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="556" y="496" class="node">ESC</text>
+<text x="556" y="518" class="small">frmChassisHealthMsg</text>
+<rect x="44" y="548" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="60" y="574" class="node">IVI</text>
+<text x="60" y="596" class="small">frmInfotainmentHealthMsg</text>
+<rect x="292" y="548" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="308" y="574" class="node">ODS</text>
+<text x="308" y="596" class="small">frmOdsStateMsg</text>
+  <rect x="810" y="412" width="760" height="220" class="box" fill="#dbeafe"/>
+<text x="834" y="448" class="label">Outbound Flow</text>
+<rect x="824" y="470" width="236" height="84" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="840" y="496" class="node">-</text>
+<text x="840" y="518" class="small">no direct DBC edge</text>
+<text x="840" y="536" class="small">extracted</text>
+  <rect x="30" y="656" width="630" height="224" class="box" fill="#eff6ff"/>
+<text x="52" y="692" class="label">Linked ECU bank</text>
+<text x="52" y="720" class="small">Primary flow: FLOW_20</text>
+<text x="52" y="740" class="small">Support flow count: 3</text>
+<rect x="52" y="778" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="146.0" y="800" text-anchor="middle" class="small">ACU</text>
+<rect x="250" y="778" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="344.0" y="800" text-anchor="middle" class="small">BCM</text>
+<rect x="448" y="778" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="542.0" y="800" text-anchor="middle" class="small">ESC</text>
+<rect x="52" y="822" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="146.0" y="844" text-anchor="middle" class="small">IVI</text>
+<rect x="250" y="822" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="344.0" y="844" text-anchor="middle" class="small">ODS</text>
+  <rect x="680" y="656" width="890" height="220" class="box" fill="#ffffff"/>
+<text x="702" y="692" class="label">Contract inventory</text>
+<text x="702" y="726" class="small">Published (0)</text>
+<text x="702" y="754" class="small">-</text>
+<text x="1137" y="726" class="small">Consumed (5)</text>
+<text x="1137" y="754" class="small">- frmAcuStateMsg</text>
+<text x="1137" y="772" class="small">- frmBodyHealthMsg</text>
+<text x="1137" y="790" class="small">- frmChassisHealthMsg</text>
+<text x="1137" y="808" class="small">- frmInfotainmentHealthMsg</text>
+<text x="1137" y="826" class="small">- frmOdsStateMsg</text>
+<line x1="1125" y1="712" x2="1125" y2="858" stroke="#cbd5e1" stroke-width="1.2"/>
+  <rect x="30" y="904" width="760" height="264" class="box" fill="#f8fafc"/>
+<text x="52" y="940" class="label">Metadata anchors</text>
+<text x="52" y="974" class="text">Layer / Group: ETH_Backbone / Group 06 Backbone Gateway Diagnostics</text>
+<text x="52" y="996" class="text"></text>
+<text x="52" y="1018" class="text">Owner seam</text>
+<text x="52" y="1040" class="text">- CoreState::selectedAlertGateReason</text>
+<text x="52" y="1062" class="text"></text>
+<text x="52" y="1084" class="text">Sysvar hints</text>
+<text x="52" y="1106" class="text">- @CoreState::selectedAlertGateReason</text>
+  <rect x="810" y="904" width="760" height="462" class="box" fill="#ffffff"/>
+<text x="832" y="940" class="label">Evidence and reading anchors</text>
+<text x="832" y="974" class="text">Direct native tests</text>
+<text x="832" y="996" class="text">- TC_CANOE_UT_CORE_001_CGW_CHS_GW</text>
+<text x="832" y="1018" class="text">- TC_CANOE_UT_CORE_002_CGW_INFOTAINMENT_GW</text>
+<text x="832" y="1040" class="text">- TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS</text>
+<text x="832" y="1062" class="text"></text>
+<text x="832" y="1084" class="text">Files</text>
+<text x="832" y="1106" class="text">- canoe/src/capl/ecu/CGW.can</text>
+<text x="832" y="1128" class="text">- canoe/cfg/channel_assign/ETH_Backbone/CGW.can</text>
+<text x="832" y="1150" class="text"></text>
+<text x="832" y="1172" class="text">Doc source</text>
+<text x="832" y="1194" class="text">- 0301</text>
+<text x="832" y="1216" class="text">- 0302</text>
+<text x="832" y="1238" class="text">- 0303</text>
+<text x="832" y="1260" class="text">- 0304</text>
+<text x="832" y="1282" class="text">- 04_SW_Implementation</text>
+<text x="832" y="1304" class="text">- ecu-flow-appendix</text>
+  <rect x="30" y="1390" width="1540" height="352" class="box" fill="#fff7ed"/>
+<text x="52" y="1426" class="label">Review notes and action map</text>
+<text x="52" y="1460" class="text">Primary flow: FLOW_20 Backbone, Diagnostic, and Service Routing</text>
+<text x="52" y="1482" class="text">Supporting flow: FLOW_12 V2X Emergency Ingress</text>
+<text x="52" y="1504" class="text">Supporting flow: FLOW_13 Alert Arbitration and Gate</text>
+<text x="52" y="1526" class="text">Supporting flow: FLOW_01 Steering Control Readback</text>
+<text x="52" y="1548" class="text"></text>
+<text x="52" y="1570" class="text">Downstream display behavior depends heavily on gate reason consistency.</text>
+<text x="52" y="1592" class="text"></text>
+<text x="52" y="1614" class="text">Bridges domain outputs toward IVI, CLU, BCM, and AMP while enforcing gate logic.</text>
+<text x="52" y="1636" class="text"></text>
+<text x="52" y="1658" class="text">Owner seam preview</text>
+<text x="52" y="1680" class="text">CoreState::selectedAlertGateReason</text>
+</svg>

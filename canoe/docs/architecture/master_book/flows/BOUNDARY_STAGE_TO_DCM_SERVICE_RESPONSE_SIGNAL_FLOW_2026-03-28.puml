@@ -1,0 +1,55 @@
+@startuml boundary_stage_to_dcm_service_response_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Boundary Stage To DCM Service Response Signal Flow\n(route/boundary context -> DCM diagnostic service seams)
+
+participant "NAV / alert /\nboundary context" as DiagCtx #F4F7FB
+participant "DCM\ndiagnostic communication owner" as DCM #E8F7E8
+participant "Diag service seams" as DiagBus #FFF4CC
+participant "Observers / tests" as Obs #E8F0FE
+
+== Diagnostic Inputs ==
+
+DiagCtx -> DCM : routeActive / alertLevel\nboundaryAlive / warningPathStatus / failSafeMode
+DCM -> DCM : serviceContext = ethHasBoundaryServiceContext(routeActive, alertLevel)
+DCM -> DCM : diagStage = ethDiagBoundaryStage(routeActive, alertLevel, boundaryAlive, warningPathStatus, failSafeMode)
+DCM -> DCM : securitySession and authState derived from serviceContext / diagStage
+note right of DCM
+Representative gating inputs
+- routeActive
+- alertLevel
+- boundaryAlive
+- warningPathStatus
+- failSafeMode
+end note
+
+== Service-seam Publish ==
+
+DCM -> DiagBus : Diag::ServiceState / ResponseKind / ReasonCode
+DCM -> DiagBus : request/response trace sysvars via publishDcmStateTrace()
+note right of DCM
+Representative outputs
+- ServiceState
+- ResponseKind
+- ReasonCode
+- request/response trace context
+end note
+
+== Downstream Visibility ==
+
+DiagBus -> Obs : diagnostic service readback /\ntest verdict evidence
+
+note over DiagCtx, Obs
+Representative runtime chain
+1. Route and boundary context reach DCM
+2. DCM derives diagnostic stage and response posture
+3. DCM publishes service-state and response seams
+4. Tests and observers consume the effective diagnostic response state
+end note
+
+@enduml

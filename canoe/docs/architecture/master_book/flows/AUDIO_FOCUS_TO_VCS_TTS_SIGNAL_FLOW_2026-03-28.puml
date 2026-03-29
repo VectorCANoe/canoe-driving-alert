@@ -1,0 +1,55 @@
+@startuml audio_focus_to_vcs_tts_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Audio Focus To VCS TTS Signal Flow\n(audio focus + TMU service + cluster notif -> VCS voice/TTS publish)
+
+participant "Audio focus / TMU /\ncluster notification inputs" as VoiceCtx #F4F7FB
+participant "VCS\nvoice control owner" as VCS #E8F7E8
+participant "Voice / TTS state bus" as VoiceBus #FFF4CC
+participant "Observers / audio users" as Obs #E8F0FE
+
+== Voice Inputs ==
+
+VoiceCtx -> VCS : audioFocusOwner / audioDuckingLvl\ntmuServiceMode / signalBars\nclusterNotifType / clusterNotifArg
+VCS -> VCS : if audio focus stale\nthen focusOwner = 0 / duck = 0
+VCS -> VCS : if TMU stale\nthen serviceMode = 0 / bars = 0
+VCS -> VCS : if notif stale\nthen notifType = 0 / notifArg = 0
+VCS -> VCS : voiceAssistState from serviceMode / focusOwner
+VCS -> VCS : wakeWordState when serviceMode == 1 and bars >= 2
+VCS -> VCS : ttsState / ttsPriority / ttsQueueDepth from notif + focus + duck
+note right of VCS
+Representative gating inputs
+- audioFocusOwner / audioDuckingLvl
+- tmuServiceMode / signalBars
+- clusterNotifType / clusterNotifArg
+end note
+
+== Voice Publish ==
+
+VCS -> VoiceBus : frmVoiceAssistStateMsg\nVoiceAssistState / WakeWordState
+VCS -> VoiceBus : frmSpeechTtsStateMsg\nTtsState / TtsPriority / TtsQueueDepth
+note right of VCS
+Representative outputs
+- VoiceAssistState
+- WakeWordState
+- TtsState / Priority / QueueDepth
+end note
+
+== Downstream Visibility ==
+
+VoiceBus -> Obs : voice/TTS readback /\naudio-routing consumers
+
+note over VoiceCtx, Obs
+Representative runtime chain
+1. Audio focus, TMU, and notification context reach VCS
+2. VCS determines assist, wake-word, and TTS activity
+3. VCS publishes voice and TTS state frames
+4. Audio users and observers consume the effective spoken-output posture
+end note
+
+@enduml

@@ -1,0 +1,57 @@
+@startuml bat_bms_to_cpc_charge_port_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title BAT_BMS To CPC Charge-Port Signal Flow\n(BMS pack state + OBC + vehicle state -> CPC charge-port publication)
+
+participant "BAT_BMS\npack-state producer" as BMS #E8F7E8
+participant "OBC\ncharge-source state" as OBC #E8F0FE
+participant "Vehicle state\nDriveState" as Veh #F4F7FB
+participant "CPC\ncharge-port owner" as CPC #FFF4CC
+participant "Charge observers /\ncomfort outputs" as Obs #FCE8FF
+
+== Charge-Port Inputs ==
+
+BMS -> CPC : frmBatBmsStateMsg\nBmsState / PackSoc / PackTemp
+OBC -> CPC : frmOnBoardChargerStateMsg\nOBC / plug state
+Veh -> CPC : frmVehicleStateCanMsg\nDriveState
+activate CPC
+CPC -> CPC : normalize stale BMS / OBC / vehicle inputs
+CPC -> CPC : derive PortLockState / PlugState
+CPC -> CPC : derive ChargeEnable / ThermalState
+CPC -> CPC : derive ChargeTargetSoc
+note right of CPC
+Representative inputs
+- BmsState
+- PackSoc
+- PackTemp
+- OBC state
+- DriveState
+
+Representative outputs
+- PortLockState
+- PlugState
+- ChargeEnable
+- ThermalState
+- ChargeTargetSoc
+end note
+
+== Charge-Port Publish ==
+
+CPC -> Obs : frmChargePortStateMsg
+CPC -> Obs : traceable charge-port / thermal state
+deactivate CPC
+
+note over BMS, Obs
+Representative runtime chain
+1. BAT_BMS publishes pack state and thermal context
+2. CPC combines BMS, OBC, and vehicle drive state
+3. CPC derives charge-port lock/enable/thermal outputs
+4. Charge observers and tests verify charging readiness
+end note
+
+@enduml

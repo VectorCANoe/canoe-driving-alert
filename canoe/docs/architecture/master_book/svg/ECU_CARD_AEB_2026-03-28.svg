@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1820" viewBox="0 0 1600 1820">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #f8fafc; }
+    .title { font: 700 30px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .sub { font: 500 15px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 18px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .node { font: 700 18px 'Segoe UI', sans-serif; fill: #111827; }
+    .box { rx: 20; ry: 20; stroke: #475569; stroke-width: 2; }
+    .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <rect x="0" y="0" width="1600" height="1820" class="bg"/>
+  <text x="34" y="44" class="title">ECU Network Flow - AEB</text>
+  <text x="34" y="72" class="sub">Group 02 ADAS AEB Brake Assist | Domain ADAS | generated internal OEM-style network flow card</text>
+
+  <rect x="30" y="100" width="1540" height="126" class="box" fill="#fee2e2"/>
+  <text x="52" y="136" class="label">ECU placement</text>
+  <text x="52" y="168" class="text">Group: Group 02 ADAS AEB Brake Assist</text>
+  <text x="450" y="168" class="text">Domain: ADAS</text>
+  <text x="52" y="198" class="text">AEB domain controller</text>
+
+  <rect x="30" y="250" width="1540" height="140" class="box" fill="#ffffff"/>
+  <text x="52" y="286" class="label">Network surface</text>
+  <rect x="52" y="302" width="430" height="70" rx="16" ry="16" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="74" y="332" class="small">Inbound DBC / bus surface</text>
+  <text x="74" y="358" class="text">- adas_can.dbc</text>
+  <rect x="585" y="302" width="430" height="70" rx="16" ry="16" fill="#ecfeff" stroke="#67e8f9" stroke-width="1.5"/>
+  <text x="607" y="332" class="small">Current ECU lane</text>
+  <text x="607" y="360" class="node">AEB</text>
+  <text x="607" y="388" class="small">ADAS / Group 02 ADAS AEB Brake Assist</text>
+  <rect x="1118" y="302" width="430" height="70" rx="16" ry="16" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="1140" y="332" class="small">Outbound DBC / bus surface</text>
+  <text x="1140" y="358" class="text">- adas_can.dbc</text>
+
+  <rect x="30" y="414" width="1540" height="586" class="box" fill="#ffffff"/>
+<text x="52" y="448" class="label">Runtime network flow</text>
+<rect x="40" y="440" width="450" height="220" class="box" fill="#e0f2fe"/>
+<text x="64" y="476" class="label">Inbound Flow</text>
+<rect x="54" y="498" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="526" class="node">ADAS</text>
+<text x="70" y="550" class="small">frmAdasDomainStateMsg</text>
+<rect x="1110" y="440" width="450" height="316" class="box" fill="#dbeafe"/>
+<text x="1134" y="476" class="label">Outbound Flow</text>
+<rect x="1124" y="498" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="526" class="node">ADAS</text>
+<text x="1140" y="550" class="small">frmAebDomainStateMsg</text>
+<rect x="1124" y="582" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="610" class="node">CLU</text>
+<text x="1140" y="634" class="small">frmAebDomainStateMsg</text>
+<rect x="1124" y="666" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="694" class="node">ESC</text>
+<text x="1140" y="718" class="small">frmAebDomainStateMsg</text>
+<rect x="570" y="480" width="460" height="420" class="box" fill="#dcfce7"/>
+<text x="800" y="520" text-anchor="middle" class="node">AEB</text>
+<text x="604" y="554" class="text">AEB domain controller</text>
+<text x="604" y="634" class="small">Owner seam</text>
+<text x="604" y="660" class="small">- AEB StopReq / DecelProfile /</text>
+<text x="604" y="680" class="small">  DomainHealth</text>
+<text x="604" y="790" class="small">Primary sysvar</text>
+<text x="604" y="818" class="text">-</text>
+<text x="604" y="866" class="small">Representative path: ADAS -&gt; AEB -&gt; ADAS</text>
+<line x1="490" y1="690" x2="570" y2="690" class="lane"/>
+<line x1="1030" y1="690" x2="1110" y2="690" class="lane"/>
+<text x="510" y="664" class="small">Representative Rx:</text>
+<text x="510" y="682" class="small">frmAdasDomainStateMsg</text>
+<text x="1050" y="664" class="small">Representative Tx:</text>
+<text x="1050" y="682" class="small">frmAebDomainStateMsg</text>
+
+  <rect x="30" y="1024" width="1540" height="746" class="box" fill="#f8fafc"/>
+<text x="52" y="1058" class="label">ECU metadata</text>
+<rect x="44" y="1078" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1078" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1106" class="text">ECU</text>
+<text x="284" y="1104" class="text">AEB</text>
+<rect x="44" y="1140" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1140" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1168" class="text">Layer/Group</text>
+<text x="284" y="1166" class="text">ADAS / Group 02 ADAS AEB Brake Assist</text>
+<rect x="44" y="1202" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1202" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1230" class="text">Owner seam</text>
+<text x="284" y="1228" class="text">AEB StopReq / DecelProfile / DomainHealth</text>
+<rect x="44" y="1264" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1264" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1292" class="text">Rx message</text>
+<text x="284" y="1290" class="text">frmAdasDomainStateMsg</text>
+<rect x="44" y="1326" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1326" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1354" class="text">Tx message</text>
+<text x="284" y="1352" class="text">frmAebDomainStateMsg</text>
+<rect x="44" y="1388" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1388" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1416" class="text">Linked ECU</text>
+<text x="284" y="1414" class="text">ADAS, CLU, ESC</text>
+<rect x="44" y="1450" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1450" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1478" class="text">Primary sysvar</text>
+<text x="284" y="1476" class="text">-</text>
+<rect x="44" y="1512" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1512" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1540" class="text">Primary test asset</text>
+<text x="284" y="1538" class="text">No direct native test asset matched</text>
+<rect x="44" y="1574" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1574" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1602" class="text">Doc source</text>
+<text x="284" y="1600" class="text">0301, 0302, 0303, 0304 (+2 more)</text>
+<rect x="44" y="1636" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1636" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1664" class="text">Gap/Issue</text>
+<text x="284" y="1662" class="text">This is the most likely producer of stepped brake feel across ESC, EHB, and VSM.</text>
+<rect x="44" y="1698" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1698" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1726" class="text">Runtime note</text>
+<text x="284" y="1724" class="text">One AEB profile change can appear as multiple simultaneous chassis ECU reactions.</text>
+</svg>

@@ -35,8 +35,9 @@
 3. [oracle.md](./verification/oracle.md)
 4. [ecu-classification.md](./architecture/ecu-classification.md)
 5. [surface-runtime-verification-map.md](./architecture/surface-runtime-verification-map.md)
-6. [gui-operations.md](./operations/gui-operations.md)
-7. [run-procedure.md](./operations/run-procedure.md)
+6. [ecu-flow-appendix.md](./architecture/ecu-flow-appendix.md)
+7. [gui-operations.md](./operations/gui-operations.md)
+8. [run-procedure.md](./operations/run-procedure.md)
 
 ## 카테고리
 
@@ -96,6 +97,7 @@
 
 - [ecu-classification.md](./architecture/ecu-classification.md)
 - [surface-runtime-verification-map.md](./architecture/surface-runtime-verification-map.md)
+- [ecu-flow-appendix.md](./architecture/ecu-flow-appendix.md)
 - [skeleton.md](./architecture/skeleton.md)
 
 ### Operations

@@ -1,0 +1,49 @@
+@startuml gear_input_to_tcu_shift_slip_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Gear Input To TCU Shift Slip Signal Flow\n(gear input + mode/speed context -> TCU shift-slip publication)
+
+participant "Gear source\nGearInput / GearState" as Gear #E8F0FE
+participant "VCU\nDriveMode / PowertrainState" as VCU #E8F7E8
+participant "Vehicle state\nVehicleSpeed" as Veh #F4F7FB
+participant "TCU\ntransmission owner" as TCU #FFF4CC
+participant "Transmission observers" as Obs #FCE8FF
+
+== Shift-Slip Inputs ==
+
+Gear -> TCU : frmGearStateMsg\nGearInput / GearState
+VCU -> TCU : frmVehicleModeMsg\nDriveMode / PowertrainState
+Veh -> TCU : frmVehicleStateCanMsg\nVehicleSpeed
+activate TCU
+TCU -> TCU : normalize stale inputs
+TCU -> TCU : detect gear transition against\nlast gear state
+TCU -> TCU : derive ShiftState / ShiftTargetGear / ShiftSlip
+TCU -> TCU : update ShiftCounter and clutch temperature
+note right of TCU
+Representative outputs
+- ShiftState
+- ShiftTargetGear
+- ShiftSlip
+- ClutchTemp
+end note
+
+== Shift Publish ==
+
+TCU -> Obs : frmTransShiftStateMsg
+TCU -> Obs : frmTransmissionTempMsg
+deactivate TCU
+
+note over Gear, Obs
+Representative runtime chain
+1. Gear input change reaches TCU
+2. TCU combines it with drive-mode and speed context
+3. TCU detects active shift transition and computes shift slip
+4. Transmission observers verify shift-state progression
+end note
+
+@enduml

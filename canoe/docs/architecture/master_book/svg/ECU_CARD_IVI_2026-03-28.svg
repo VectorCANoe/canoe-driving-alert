@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2394" viewBox="0 0 1600 2394">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #f8fafc; }
+    .title { font: 700 30px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .sub { font: 500 15px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 18px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .node { font: 700 18px 'Segoe UI', sans-serif; fill: #111827; }
+    .box { rx: 20; ry: 20; stroke: #475569; stroke-width: 2; }
+    .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <rect x="0" y="0" width="1600" height="2394" class="bg"/>
+  <text x="34" y="44" class="title">ECU Network Flow - IVI</text>
+  <text x="34" y="72" class="sub">Group 03 Display Warning Audio | Domain Infotainment | generated internal OEM-style network flow card</text>
+
+  <rect x="30" y="100" width="1540" height="126" class="box" fill="#ede9fe"/>
+  <text x="52" y="136" class="label">ECU placement</text>
+  <text x="52" y="168" class="text">Group: Group 03 Display Warning Audio</text>
+  <text x="450" y="168" class="text">Domain: Infotainment</text>
+  <text x="52" y="198" class="text">HMI and display gateway</text>
+
+  <rect x="30" y="250" width="1540" height="140" class="box" fill="#ffffff"/>
+  <text x="52" y="286" class="label">Network surface</text>
+  <rect x="52" y="302" width="430" height="70" rx="16" ry="16" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="74" y="332" class="small">Inbound DBC / bus surface</text>
+  <text x="74" y="358" class="text">- adas_can.dbc</text>
+<text x="74" y="378" class="text">- infotainment_can.dbc</text>
+  <rect x="585" y="302" width="430" height="70" rx="16" ry="16" fill="#ecfeff" stroke="#67e8f9" stroke-width="1.5"/>
+  <text x="607" y="332" class="small">Current ECU lane</text>
+  <text x="607" y="360" class="node">IVI</text>
+  <text x="607" y="388" class="small">Infotainment / Group 03 Display Warning Audio</text>
+  <rect x="1118" y="302" width="430" height="70" rx="16" ry="16" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="1140" y="332" class="small">Outbound DBC / bus surface</text>
+  <text x="1140" y="358" class="text">- infotainment_can.dbc</text>
+
+  <rect x="30" y="414" width="1540" height="1160" class="box" fill="#ffffff"/>
+<text x="52" y="448" class="label">Runtime network flow</text>
+<rect x="40" y="440" width="450" height="1114" class="box" fill="#e0f2fe"/>
+<text x="64" y="476" class="label">Inbound Flow</text>
+<rect x="54" y="498" width="422" height="106" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="526" class="node">ADAS</text>
+<text x="70" y="550" class="small">ethObjectScenarioAlertMsg,</text>
+<text x="70" y="568" class="small">ethSelectedAlertMsg,</text>
+<text x="70" y="586" class="small">frmAdasDomainStateMsg</text>
+<rect x="54" y="618" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="646" class="node">AMP</text>
+<text x="70" y="670" class="small">frmAmpStateMsg</text>
+<rect x="54" y="702" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="730" class="node">AVM</text>
+<text x="70" y="754" class="small">frmAvmStateMsg</text>
+<rect x="54" y="786" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="814" class="node">CPAY</text>
+<text x="70" y="838" class="small">frmCarpayCtrlStateMsg</text>
+<rect x="54" y="870" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="898" class="node">DKEY</text>
+<text x="70" y="922" class="small">frmDigitalKeyStateMsg</text>
+<rect x="54" y="954" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="982" class="node">HUD</text>
+<text x="70" y="1006" class="small">frmHudStateMsg</text>
+<rect x="54" y="1038" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1066" class="node">IVI</text>
+<text x="70" y="1090" class="small">frmConnectivityStateMsg</text>
+<rect x="54" y="1122" width="422" height="160" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1150" class="node">NAV</text>
+<text x="70" y="1174" class="small">frmMapRenderStateMsg,</text>
+<text x="70" y="1192" class="small">frmNavModuleStateMsg,</text>
+<text x="70" y="1210" class="small">frmNaviGuideStateMsg,</text>
+<text x="70" y="1228" class="small">frmNavigationRouteMsg,</text>
+<text x="70" y="1246" class="small">frmRouteAlertMsg,</text>
+<text x="70" y="1264" class="small">frmTrafficEventMsg</text>
+<rect x="54" y="1296" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1324" class="node">OTA</text>
+<text x="70" y="1348" class="small">frmOtaMasterStateMsg</text>
+<rect x="54" y="1380" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1408" class="node">PGS</text>
+<text x="70" y="1432" class="small">frmPgsStateMsg</text>
+<rect x="54" y="1464" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1492" class="node">... +6 more ECU edges</text>
+<text x="70" y="1516" class="small">-</text>
+<rect x="1110" y="440" width="450" height="526" class="box" fill="#dbeafe"/>
+<text x="1134" y="476" class="label">Outbound Flow</text>
+<rect x="1124" y="498" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="526" class="node">CGW</text>
+<text x="1140" y="550" class="small">frmInfotainmentHealthMsg</text>
+<rect x="1124" y="582" width="422" height="160" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="610" class="node">CLU</text>
+<text x="1140" y="634" class="small">frmAudioFocusMsg,</text>
+<text x="1140" y="652" class="small">frmCallStateMsg,</text>
+<text x="1140" y="670" class="small">frmClusterBaseStateMsg,</text>
+<text x="1140" y="688" class="small">frmClusterNotifMsg,</text>
+<text x="1140" y="706" class="small">frmClusterSyncStateMsg,</text>
+<text x="1140" y="724" class="small">frmClusterThemeMsg</text>
+<rect x="1124" y="756" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="784" class="node">IVI</text>
+<text x="1140" y="808" class="small">frmConnectivityStateMsg</text>
+<rect x="1124" y="840" width="422" height="106" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="868" class="node">TEST_SCN</text>
+<text x="1140" y="892" class="small">frmInfotainmentHealthMsg,</text>
+<text x="1140" y="910" class="small">frmIviDiagResMsg,</text>
+<text x="1140" y="928" class="small">frmIviHealthDetailMsg</text>
+<rect x="570" y="480" width="460" height="420" class="box" fill="#dcfce7"/>
+<text x="800" y="520" text-anchor="middle" class="node">IVI</text>
+<text x="604" y="554" class="text">HMI and display gateway</text>
+<text x="604" y="634" class="small">Owner seam</text>
+<text x="604" y="660" class="small">- Cluster::warningTextCode</text>
+<text x="604" y="680" class="small">- UiRender::*</text>
+<text x="604" y="790" class="small">Primary sysvar</text>
+<text x="604" y="818" class="text">@Cluster::warningTextCode</text>
+<text x="604" y="866" class="small">Representative path: ADAS -&gt; IVI -&gt; CGW</text>
+<line x1="490" y1="690" x2="570" y2="690" class="lane"/>
+<line x1="1030" y1="690" x2="1110" y2="690" class="lane"/>
+<text x="510" y="664" class="small">Representative Rx:</text>
+<text x="510" y="682" class="small">ethObjectScenarioAlertMsg,</text>
+<text x="510" y="700" class="small">ethSelectedAlertMsg,</text>
+<text x="510" y="718" class="small">frmAdasDomainStateMsg</text>
+<text x="1050" y="664" class="small">Representative Tx:</text>
+<text x="1050" y="682" class="small">frmInfotainmentHealthMsg</text>
+
+  <rect x="30" y="1598" width="1540" height="746" class="box" fill="#f8fafc"/>
+<text x="52" y="1632" class="label">ECU metadata</text>
+<rect x="44" y="1652" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1652" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1680" class="text">ECU</text>
+<text x="284" y="1678" class="text">IVI</text>
+<rect x="44" y="1714" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1714" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1742" class="text">Layer/Group</text>
+<text x="284" y="1740" class="text">Infotainment / Group 03 Display Warning Audio</text>
+<rect x="44" y="1776" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1776" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1804" class="text">Owner seam</text>
+<text x="284" y="1802" class="text">Cluster::warningTextCode, UiRender::*</text>
+<rect x="44" y="1838" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1838" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1866" class="text">Rx message</text>
+<text x="284" y="1864" class="text">ethObjectScenarioAlertMsg, ethSelectedAlertMsg, frmAdasDomainStateMsg, frmAmpStateMsg</text>
+<rect x="44" y="1900" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1900" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1928" class="text">Tx message</text>
+<text x="284" y="1926" class="text">frmInfotainmentHealthMsg, frmAudioFocusMsg, frmCallStateMsg, frmClusterBaseStateMsg</text>
+<rect x="44" y="1962" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1962" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1990" class="text">Linked ECU</text>
+<text x="284" y="1988" class="text">ADAS, AMP, AVM, CGW, CLU, CPAY (+11 more)</text>
+<rect x="44" y="2024" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2024" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2052" class="text">Primary sysvar</text>
+<text x="284" y="2050" class="text">@Cluster::warningTextCode</text>
+<rect x="44" y="2086" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2086" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2114" class="text">Primary test asset</text>
+<text x="284" y="2112" class="text">TC_CANOE_UT_CORE_013_IVI_GW_ROUTE</text>
+<rect x="44" y="2148" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2148" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2176" class="text">Doc source</text>
+<text x="284" y="2174" class="text">0301, 0302, 0303, 0304 (+2 more)</text>
+<rect x="44" y="2210" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2210" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2238" class="text">Gap/Issue</text>
+<text x="284" y="2236" class="text">Display path is structurally sound; most issues originate upstream.</text>
+<rect x="44" y="2272" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2272" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2300" class="text">Runtime note</text>
+<text x="284" y="2298" class="text">Routes gated alert state into visible display, map, and audio focus paths.</text>
+</svg>

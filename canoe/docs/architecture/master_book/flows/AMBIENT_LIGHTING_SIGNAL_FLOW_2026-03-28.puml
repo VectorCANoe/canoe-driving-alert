@@ -1,0 +1,76 @@
+@startuml ambient_lighting_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Ambient Lighting Signal Flow\n(Input_Console / CGW -> BCM -> ambient output / IVI)
+
+actor "Driver\n(Input Console)" as Driver #F4F7FB
+participant "Input_Console\nVehicle > Ambient" as Panel #E8F0FE
+participant "CGW\nselected alert gate" as CGW #FFF4CC
+participant "BCM\nambient owner" as BCM #E8F7E8
+participant "Ambient lighting\nbody output surface" as Ambient #FCE8FF
+participant "IVI\nrender consumer" as IVI #E8F0FE
+
+== Manual Ambient Input ==
+
+Driver -> Panel : Select ambient mode
+activate Panel
+Panel -> Panel : Write Cmd::ambientModeCmd\nrange 0..7
+note right of Panel
+Input seam:
+- Cmd::ambientModeCmd
+- used only when scenarioActiveId == 0
+end note
+deactivate Panel
+
+== Alert Context Feed ==
+
+activate CGW
+CGW -> BCM : CoreState::selectedAlertEffectiveLevel
+CGW -> BCM : CoreState::selectedAlertEffectiveType
+CGW -> BCM : Core::timeoutClear
+note right of CGW
+Auto mode uses gated alert state,
+not raw donor input.
+end note
+deactivate CGW
+
+== BCM Ambient Ownership ==
+
+activate BCM
+Panel -> BCM : Cmd::ambientModeCmd (manual mode)
+BCM -> BCM : if scenarioActiveId == 0 -> use Cmd::ambientModeCmd
+BCM -> BCM : else deriveAmbientMode(alertLevel, alertType, timeoutClear)
+BCM -> BCM : deriveAmbientColorFromMode() / deriveAmbientPatternFromMode()
+BCM -> Ambient : frmAmbientControlMsg\nAmbientMode / AmbientColor / AmbientPattern
+BCM -> Ambient : Body::ambientMode / Body::ambientColor / Body::ambientPattern
+deactivate BCM
+
+== Downstream Visual Consumer ==
+
+activate IVI
+BCM -> IVI : Body::ambientMode
+IVI -> IVI : renderMode = clamp(Body::ambientMode, 0..7)
+note right of IVI
+IVI consumes ambient mode as a
+display/render context, while BCM
+remains the real owner.
+end note
+deactivate IVI
+
+Driver <- Ambient : cabin color / pattern update
+
+note over Driver, IVI
+Representative runtime chain
+1. Input_Console can request Cmd::ambientModeCmd in manual mode
+2. CGW provides the gated alert context for automatic mode
+3. BCM decides the final ambient mode / color / pattern
+4. BCM publishes frmAmbientControlMsg and Body::* readback
+5. Ambient hardware and IVI both reflect the BCM-owned result
+end note
+
+@enduml

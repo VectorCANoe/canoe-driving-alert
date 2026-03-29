@@ -1,0 +1,69 @@
+@startuml scenario_start_stop_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Scenario Start / Stop Signal Flow\n(Input_Console -> TEST_SCN -> scenario state / lamps)
+
+actor "Operator\n(Input Console)" as Operator #F4F7FB
+participant "Input_Console\nScenario tab" as Panel #E8F0FE
+participant "TEST_SCN\nscenario owner" as SCN #FFE6E6
+participant "Scenario state\nreadback seams" as State #E8F7E8
+participant "Execution lamps\nSTOP / WARN / RUN" as Lamps #FFF4CC
+
+== Start Request ==
+
+Operator -> Panel : Click SCN preset
+Panel -> SCN : Test::scenarioCommand
+SCN -> SCN : applyScenarioPanelRequest(scenarioId, 0)
+SCN -> SCN : beginScenarioExecution()
+SCN -> SCN : applyScenarioPreset()
+SCN -> State : Test::testScenario = scenarioId
+SCN -> State : Test::scenarioCommandAck = scenarioId
+SCN -> State : Test::scenarioActiveId = scenarioId
+SCN -> Lamps : scenarioLampStop = 0\nscenarioLampWarn = 0\nscenarioLampRun = 1
+SCN -> SCN : scheduleScenarioEvaluation()
+
+== Evaluation / Result ==
+
+SCN -> State : Test::scenarioSettledId = active scenario
+SCN -> State : Test::scenarioEvaluatedId = active scenario
+SCN -> State : Test::scenarioResult = 0 or 1
+SCN -> Lamps : refresh STOP / WARN / RUN lamps
+note right of SCN
+Lamp rule:
+- activeScenarioId != 0 -> RUN
+- ack != 0 and evaluated != 0 and result == 0 -> WARN
+- otherwise STOP
+end note
+
+== Stop / Manual ==
+
+Operator -> Panel : Click STOP / MANUAL
+Panel -> SCN : Test::scenarioStopReq
+SCN -> SCN : applyScenarioPanelRequest(0, 1)
+SCN -> SCN : stopScenarioExecution()
+SCN -> State : Test::scenarioCommandAck = 0
+SCN -> State : Test::scenarioActiveId = 0
+SCN -> State : Test::scenarioSettledId = 0
+SCN -> State : Test::scenarioEvaluatedId = 0
+SCN -> State : Test::scenarioResult = 0
+SCN -> State : Test::testScenario = 0
+SCN -> Lamps : scenarioLampStop = 1\nscenarioLampWarn = 0\nscenarioLampRun = 0
+
+Operator <- State : Current / Ack / Result boxes update
+Operator <- Lamps : execution status LEDs update
+
+note over Operator, Lamps
+Representative runtime chain
+1. Scenario tab writes Test::scenarioCommand or Test::scenarioStopReq
+2. TEST_SCN accepts, mirrors, and locks the active scenario
+3. TEST_SCN publishes commandAck / activeId / evaluatedId / result
+4. TEST_SCN also drives STOP / WARN / RUN lamp seams
+5. Input_Console reads back the same seams as the scenario state panel
+end note
+
+@enduml

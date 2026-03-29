@@ -1,0 +1,54 @@
+@startuml audio_focus_to_amp_ducking_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Audio Focus To AMP Ducking Signal Flow\n(audio focus / TTS / media state -> AMP ducking and render volume)
+
+participant "Media / audio-focus /\nvoice context" as AudioCtx #F4F7FB
+participant "AMP\naudio output owner" as AMP #E8F7E8
+participant "AMP state / UiRender" as AmpBus #FFF4CC
+participant "Observers / audio users" as Obs #E8F0FE
+
+== Audio Inputs ==
+
+AudioCtx -> AMP : mediaState / muteState / volumeLevel\naudioFocusOwner / audioDuckingLvl\nvoiceAssistState / ttsState
+AMP -> AMP : baseVolume = deriveBaseVolume(Inject::alertVolumeCmd)
+AMP -> AMP : ampMode from media / voice / tts activity
+AMP -> AMP : ampDucking escalates when TTS / voice / focus is active
+AMP -> AMP : if volume >= 90 or ducking >= 6\nthen raise ducking and force voice-safe mode
+note right of AMP
+Representative gating inputs
+- audioFocusOwner / audioDuckingLvl
+- voiceAssistState / ttsState
+- mediaState / volumeLevel
+end note
+
+== AMP Publish ==
+
+AMP -> AmpBus : frmAmpStateMsg\nAmpMode / AmpMute / AmpDuckingLvl / AmpVolumeLevel
+AMP -> AmpBus : UiRender::renderVolumLevel
+note right of AMP
+Representative outputs
+- AmpMode
+- AmpDuckingLvl
+- AmpVolumeLevel
+- renderVolumLevel
+end note
+
+== Downstream Visibility ==
+
+AmpBus -> Obs : audio-output readback /\nrender-volume consumers
+
+note over AudioCtx, Obs
+Representative runtime chain
+1. Media, focus, and speech context reach AMP
+2. AMP decides ducking level and output mode
+3. AMP publishes audio state and render volume
+4. Observers expose the effective audio priority posture
+end note
+
+@enduml

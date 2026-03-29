@@ -1,0 +1,53 @@
+@startuml tmu_remote_climate_to_comfort_profile_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title TMU Remote Climate To Comfort Profile Signal Flow\n(TMU/HVAC -> BCM -> comfort profile / seat/sunroof commands)
+
+participant "TMU / HVAC inputs" as ClimateCtx #F4F7FB
+participant "BCM\ncomfort owner" as BCM #E8F7E8
+participant "Seat / Sunroof /\nComfort bus" as ComfortBus #FFF4CC
+participant "Observers / panels" as Obs #E8F0FE
+
+== Remote Climate Inputs ==
+
+ClimateCtx -> BCM : gTmuRemoteClimateReq\ngTmuServiceMode\ngHvacCabinSetTemp\ngHvacBlowerLevel\ngHvacAcOn\ngDriveState
+BCM -> BCM : if manualMode == 0 and\nremoteClimateReq == 1 and\nserviceMode >= 1
+BCM -> BCM : derive seatHeatLevel / seatVentLevel
+BCM -> BCM : derive sunshadeCmd /\nsunroofPositionCmd / sunroofTiltCmd
+note right of BCM
+Representative derived commands
+- SeatHeatLevel / SeatVentLevel
+- SunroofPositionCmd / TiltCmd
+- SunshadeCmd
+end note
+
+== Comfort Command Publish ==
+
+BCM -> ComfortBus : frmSeatControlMsg
+BCM -> ComfortBus : frmSunroofControlMsg
+BCM -> BCM : if remote climate or seat comfort active\nthen comfortProfile = 3
+BCM -> ComfortBus : frmBodyComfortStateMsg
+note right of BCM
+Representative comfort output
+- ComfortProfile = 3 for remote climate / comfort assist
+- ComfortStatus / ComfortError
+end note
+
+== Downstream Visibility ==
+
+ComfortBus -> Obs : comfort profile / seat / sunroof readback
+
+note over ClimateCtx, Obs
+Representative runtime chain
+1. TMU/HVAC remote-climate context reaches BCM
+2. BCM derives seat and sunroof comfort commands
+3. BCM lifts ComfortProfile into remote-climate mode
+4. Comfort buses and panels expose the resulting body-comfort state
+end note
+
+@enduml

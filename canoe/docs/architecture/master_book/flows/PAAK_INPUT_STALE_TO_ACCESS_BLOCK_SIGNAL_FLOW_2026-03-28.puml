@@ -1,0 +1,50 @@
+@startuml paak_input_stale_to_access_block_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title PAAK Input Stale To Access Block Signal Flow\n(PAAK freshness loss -> BCM fallback -> door access block)
+
+participant "PAAK freshness /\nvehicle context" as FreshnessCtx #F4F7FB
+participant "BCM\nbody access owner" as BCM #E8F7E8
+participant "Door control path" as DoorBus #FFF4CC
+participant "Observers / panels" as Obs #E8F0FE
+
+== Freshness Loss ==
+
+FreshnessCtx -> BCM : gPaakRxMs / gVehicleRxMs
+BCM -> BCM : paakInputStale = recentTick(PAAK) ? 0 : 1
+BCM -> BCM : if paakInputStale == 1\nthen clear paakState / authLevel / proximity
+note right of BCM
+Representative freshness behavior
+- paakInputStale = 1 when PAAK input is not recent
+- access-related state is zeroed before command decision
+end note
+
+== Access Block ==
+
+BCM -> BCM : recompute DoorControlCmd after stale clear
+BCM -> BCM : stale path prevents valid access-open condition
+BCM -> DoorBus : frmDoorControlMsg\nDoorControlCmd = 0
+note right of BCM
+Representative blocked output
+- DoorControlCmd falls back to closed
+- no access-driven open command is published
+end note
+
+== Visibility ==
+
+DoorBus -> Obs : blocked access readback /\nbody command health trace
+
+note over FreshnessCtx, Obs
+Representative runtime chain
+1. PAAK freshness is lost
+2. BCM clears access credentials and proximity context
+3. Door open command is blocked on the body command path
+4. Observers expose stale access and blocked-door behavior
+end note
+
+@enduml

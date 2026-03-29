@@ -1,0 +1,56 @@
+@startuml battery_soc_to_bms_pack_state_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Battery SOC To BMS Pack State Signal Flow\n(energy input -> BAT_BMS -> CPC / observers)
+
+actor "Energy source\nbattery / charge input" as Energy #F4F7FB
+participant "Input context\nbatterySoc + chargingState" as Inp #E8F0FE
+participant "BAT_BMS\nbattery pack owner" as BMS #E8F7E8
+participant "CPC\npower consumer" as CPC #FFF4CC
+participant "Observers / tests" as Obs #FCE8FF
+
+== Pack-State Inputs ==
+
+Energy -> Inp : battery SOC / charging status update
+Inp -> BMS : gBatterySoc\ngChargingState
+activate BMS
+BMS -> BMS : apply stale-input fallback\nwhen source age is broken
+BMS -> BMS : derive BmsState
+BMS -> BMS : map PackSoc directly
+BMS -> BMS : derive PackTemp from SOC / charge state
+note right of BMS
+Representative inputs
+- batterySoc
+- chargingState
+
+Representative outputs
+- BmsState
+- PackSoc
+- PackTemp
+end note
+
+== Pack-State Publish ==
+
+BMS -> CPC : frmBatBmsStateMsg
+BMS -> Obs : BAT_BMS trace / observer view
+note right of CPC
+Representative consumer
+- CPC uses BmsState / PackSoc / PackTemp
+  for energy and downstream power context
+end note
+deactivate BMS
+
+note over Energy, Obs
+Representative runtime chain
+1. Battery SOC and charging state reach BAT_BMS
+2. BAT_BMS normalizes stale cases and derives pack state
+3. frmBatBmsStateMsg is published to CPC
+4. Tests and observers verify pack-state transitions
+end note
+
+@enduml

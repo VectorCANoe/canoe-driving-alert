@@ -1,0 +1,53 @@
+@startuml ambient_mode_to_ivi_render_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Ambient Mode To IVI Render Signal Flow\n(BCM ambient ownership -> IVI render seams -> cabin animation)
+
+participant "Cmd / alert context" as AmbientCtx #F4F7FB
+participant "BCM\nambient owner" as BCM #E8F7E8
+participant "IVI\nrender owner" as IVI #FFF4CC
+participant "UiRender / panels" as RenderObs #E8F0FE
+
+== Ambient Ownership ==
+
+AmbientCtx -> BCM : Cmd::ambientModeCmd\nalertLevel / alertType / timeoutClear
+BCM -> BCM : derive AmbientMode / AmbientColor / AmbientPattern
+BCM -> BCM : publish Body::ambientMode / Color / Pattern
+note right of BCM
+Representative ownership outputs
+- Body::ambientMode
+- Body::ambientColor
+- Body::ambientPattern
+end note
+
+== Render Translation ==
+
+BCM -> IVI : Body::ambientMode / Color / Pattern
+IVI -> IVI : renderMode = Body::ambientMode
+IVI -> IVI : renderColor = Body::ambientColor
+IVI -> IVI : renderPattern = Body::ambientPattern
+IVI -> IVI : cabinAmbientAnimFrame = deriveCabinAmbientAnimFrame(...)
+IVI -> RenderObs : UiRender::renderMode / renderColor / renderPattern
+IVI -> RenderObs : UiRender::ambientPulsePhase / cabin ambient animation
+note right of IVI
+Representative render outputs
+- UiRender::renderMode
+- UiRender::renderColor
+- UiRender::renderPattern
+- cabin ambient animation frame
+end note
+
+note over AmbientCtx, RenderObs
+Representative runtime chain
+1. Ambient mode is owned in BCM from manual or alert context
+2. BCM publishes stabilized body ambient state
+3. IVI translates ambient state into render seams and animation frames
+4. Panels consume UiRender seams as visible cabin ambient output
+end note
+
+@enduml

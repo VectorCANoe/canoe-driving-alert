@@ -1,0 +1,174 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2346" viewBox="0 0 1600 2346">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #f8fafc; }
+    .title { font: 700 30px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .sub { font: 500 15px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 18px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .node { font: 700 18px 'Segoe UI', sans-serif; fill: #111827; }
+    .box { rx: 20; ry: 20; stroke: #475569; stroke-width: 2; }
+    .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <rect x="0" y="0" width="1600" height="2346" class="bg"/>
+  <text x="34" y="44" class="title">ECU Network Flow - BCM</text>
+  <text x="34" y="72" class="sub">Group 04 Body Comfort Ambient | Domain Body | generated internal OEM-style network flow card</text>
+
+  <rect x="30" y="100" width="1540" height="126" class="box" fill="#dcfce7"/>
+  <text x="52" y="136" class="label">ECU placement</text>
+  <text x="52" y="168" class="text">Group: Group 04 Body Comfort Ambient</text>
+  <text x="450" y="168" class="text">Domain: Body</text>
+  <text x="52" y="198" class="text">Body and ambient owner</text>
+
+  <rect x="30" y="250" width="1540" height="140" class="box" fill="#ffffff"/>
+  <text x="52" y="286" class="label">Network surface</text>
+  <rect x="52" y="302" width="430" height="70" rx="16" ry="16" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="74" y="332" class="small">Inbound DBC / bus surface</text>
+  <text x="74" y="358" class="text">- adas_can.dbc</text>
+<text x="74" y="378" class="text">- body_can.dbc</text>
+  <rect x="585" y="302" width="430" height="70" rx="16" ry="16" fill="#ecfeff" stroke="#67e8f9" stroke-width="1.5"/>
+  <text x="607" y="332" class="small">Current ECU lane</text>
+  <text x="607" y="360" class="node">BCM</text>
+  <text x="607" y="388" class="small">Body / Group 04 Body Comfort Ambient</text>
+  <rect x="1118" y="302" width="430" height="70" rx="16" ry="16" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="1140" y="332" class="small">Outbound DBC / bus surface</text>
+  <text x="1140" y="358" class="text">- body_can.dbc</text>
+
+  <rect x="30" y="414" width="1540" height="1112" class="box" fill="#ffffff"/>
+<text x="52" y="448" class="label">Runtime network flow</text>
+<rect x="40" y="440" width="450" height="1066" class="box" fill="#e0f2fe"/>
+<text x="64" y="476" class="label">Inbound Flow</text>
+<rect x="54" y="498" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="526" class="node">ACU</text>
+<text x="70" y="550" class="small">frmAcuStateMsg</text>
+<rect x="54" y="582" width="422" height="106" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="610" class="node">ADAS</text>
+<text x="70" y="634" class="small">ethObjectScenarioAlertMsg,</text>
+<text x="70" y="652" class="small">ethSelectedAlertMsg,</text>
+<text x="70" y="670" class="small">frmAdasDomainStateMsg</text>
+<rect x="54" y="702" width="422" height="160" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="730" class="node">BCM</text>
+<text x="70" y="754" class="small">frmAmbientControlMsg,</text>
+<text x="70" y="772" class="small">frmCabinAirStateMsg,</text>
+<text x="70" y="790" class="small">frmDoorControlMsg,</text>
+<text x="70" y="808" class="small">frmDoorStateMsg,</text>
+<text x="70" y="826" class="small">frmHazardControlMsg,</text>
+<text x="70" y="844" class="small">frmInteriorLightMsg</text>
+<rect x="54" y="876" width="422" height="88" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="904" class="node">DATC</text>
+<text x="70" y="928" class="small">frmHvacActuatorMsg,</text>
+<text x="70" y="946" class="small">frmHvacStateMsg</text>
+<rect x="54" y="978" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1006" class="node">MIR</text>
+<text x="70" y="1030" class="small">frmMirrorStateMsg</text>
+<rect x="54" y="1062" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1090" class="node">MSC</text>
+<text x="70" y="1114" class="small">frmMassageSeatCtrlStateMsg</text>
+<rect x="54" y="1146" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1174" class="node">ODS</text>
+<text x="70" y="1198" class="small">frmOdsStateMsg</text>
+<rect x="54" y="1230" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1258" class="node">OMS</text>
+<text x="70" y="1282" class="small">frmOmsStateMsg</text>
+<rect x="54" y="1314" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1342" class="node">PUS</text>
+<text x="70" y="1366" class="small">frmParkUltrasonicStateMsg</text>
+<rect x="54" y="1398" width="422" height="88" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1426" class="node">TEST_SCN</text>
+<text x="70" y="1450" class="small">frmBcmDiagReqMsg,</text>
+<text x="70" y="1468" class="small">frmTurnLampInputMsg</text>
+<rect x="1110" y="440" width="450" height="610" class="box" fill="#dbeafe"/>
+<text x="1134" y="476" class="label">Outbound Flow</text>
+<rect x="1124" y="498" width="422" height="88" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="526" class="node">ADAS</text>
+<text x="1140" y="550" class="small">frmBodyComfortStateMsg,</text>
+<text x="1140" y="568" class="small">frmBodyGatewayStateMsg</text>
+<rect x="1124" y="600" width="422" height="160" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="628" class="node">BCM</text>
+<text x="1140" y="652" class="small">frmAmbientControlMsg,</text>
+<text x="1140" y="670" class="small">frmCabinAirStateMsg,</text>
+<text x="1140" y="688" class="small">frmDoorControlMsg,</text>
+<text x="1140" y="706" class="small">frmDoorStateMsg,</text>
+<text x="1140" y="724" class="small">frmHazardControlMsg,</text>
+<text x="1140" y="742" class="small">frmInteriorLightMsg</text>
+<rect x="1124" y="774" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="802" class="node">CGW</text>
+<text x="1140" y="826" class="small">frmBodyHealthMsg</text>
+<rect x="1124" y="858" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="886" class="node">SRF</text>
+<text x="1140" y="910" class="small">frmSunroofControlMsg</text>
+<rect x="1124" y="942" width="422" height="88" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="970" class="node">TEST_SCN</text>
+<text x="1140" y="994" class="small">frmBcmDiagResMsg,</text>
+<text x="1140" y="1012" class="small">frmBodyHealthMsg</text>
+<rect x="570" y="480" width="460" height="420" class="box" fill="#dcfce7"/>
+<text x="800" y="520" text-anchor="middle" class="node">BCM</text>
+<text x="604" y="554" class="text">Body and ambient owner</text>
+<text x="604" y="634" class="small">Owner seam</text>
+<text x="604" y="660" class="small">- Body::ambientMode</text>
+<text x="604" y="680" class="small">- Body::frontWiperAnimFrame</text>
+<text x="604" y="700" class="small">- Body::blinkLeft</text>
+<text x="604" y="720" class="small">- Body::blinkRight</text>
+<text x="604" y="790" class="small">Primary sysvar</text>
+<text x="604" y="818" class="text">@Body::ambientMode</text>
+<text x="604" y="866" class="small">Representative path: ACU -&gt; BCM -&gt; ADAS</text>
+<line x1="490" y1="690" x2="570" y2="690" class="lane"/>
+<line x1="1030" y1="690" x2="1110" y2="690" class="lane"/>
+<text x="510" y="664" class="small">Representative Rx:</text>
+<text x="510" y="682" class="small">frmAcuStateMsg</text>
+<text x="1050" y="664" class="small">Representative Tx:</text>
+<text x="1050" y="682" class="small">frmBodyComfortStateMsg,</text>
+<text x="1050" y="700" class="small">frmBodyGatewayStateMsg</text>
+
+  <rect x="30" y="1550" width="1540" height="746" class="box" fill="#f8fafc"/>
+<text x="52" y="1584" class="label">ECU metadata</text>
+<rect x="44" y="1604" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1604" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1632" class="text">ECU</text>
+<text x="284" y="1630" class="text">BCM</text>
+<rect x="44" y="1666" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1666" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1694" class="text">Layer/Group</text>
+<text x="284" y="1692" class="text">Body / Group 04 Body Comfort Ambient</text>
+<rect x="44" y="1728" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1728" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1756" class="text">Owner seam</text>
+<text x="284" y="1754" class="text">Body::ambientMode, Body::frontWiperAnimFrame, Body::blinkLeft, Body::blinkRight</text>
+<rect x="44" y="1790" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1790" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1818" class="text">Rx message</text>
+<text x="284" y="1816" class="text">frmAcuStateMsg, ethObjectScenarioAlertMsg, ethSelectedAlertMsg, frmAdasDomainStateMsg</text>
+<rect x="44" y="1852" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1852" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1880" class="text">Tx message</text>
+<text x="284" y="1878" class="text">frmBodyComfortStateMsg, frmBodyGatewayStateMsg, frmAmbientControlMsg, frmCabinAirStateMsg</text>
+<rect x="44" y="1914" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1914" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1942" class="text">Linked ECU</text>
+<text x="284" y="1940" class="text">ACU, ADAS, CGW, DATC, MIR, MSC (+5 more)</text>
+<rect x="44" y="1976" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1976" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2004" class="text">Primary sysvar</text>
+<text x="284" y="2002" class="text">@Body::ambientMode</text>
+<rect x="44" y="2038" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2038" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2066" class="text">Primary test asset</text>
+<text x="284" y="2064" class="text">TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY</text>
+<rect x="44" y="2100" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2100" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2128" class="text">Doc source</text>
+<text x="284" y="2126" class="text">0301, 0302, 0303, 0304 (+2 more)</text>
+<rect x="44" y="2162" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2162" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2190" class="text">Gap/Issue</text>
+<text x="284" y="2188" class="text">Ambient and comfort breadth are wider than the current input-console surface.</text>
+<rect x="44" y="2224" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2224" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2252" class="text">Runtime note</text>
+<text x="284" y="2250" class="text">Owns comfort and ambient outputs while bridging body leaf ECU state back to HMI.</text>
+</svg>

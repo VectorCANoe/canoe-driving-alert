@@ -1,0 +1,54 @@
+@startuml remote_climate_to_datc_hvac_output_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Remote Climate To DATC HVAC Output Signal Flow\n(TMU/cabin-air context -> DATC HVAC state and actuator publish)
+
+participant "TMU / cabin-air inputs" as ClimateCtx #F4F7FB
+participant "DATC\nHVAC owner" as DATC #E8F7E8
+participant "HVAC state / actuator bus" as HvacBus #FFF4CC
+participant "Observers / comfort users" as Obs #E8F0FE
+
+== HVAC Inputs ==
+
+ClimateCtx -> DATC : remoteClimateReq\ntmuLinkState\ntmuServiceMode\nsignalBars\ncabinTemp
+DATC -> DATC : if TMU stale then\nremoteClimateReq = 0 / link = 0 / service = 0
+DATC -> DATC : if cabin-air stale then\ncabinTemp = 24
+DATC -> DATC : derive CabinSetTemp / BlowerLevel / AcOn / VentMode / DefogMode
+note right of DATC
+Representative gating inputs
+- remoteClimateReq
+- tmuLinkState / serviceMode
+- signalBars
+- cabinTemp
+end note
+
+== HVAC Publish ==
+
+DATC -> HvacBus : frmHvacStateMsg\nCabinSetTemp / BlowerLevel / AcCompressorOn
+DATC -> HvacBus : frmHvacActuatorMsg\nVentMode / RecircMode / DefogMode / FanRpmStep
+note right of DATC
+Representative outputs
+- CabinSetTemp
+- BlowerLevel
+- AcCompressorOn
+- VentMode / DefogMode
+end note
+
+== Downstream Visibility ==
+
+HvacBus -> Obs : HVAC readback /\ncomfort-service consumers
+
+note over ClimateCtx, Obs
+Representative runtime chain
+1. TMU remote-climate and cabin-air context reach DATC
+2. DATC decides HVAC state and actuator targets
+3. DATC publishes HVAC state and actuator frames
+4. Comfort users and observers consume the effective HVAC posture
+end note
+
+@enduml

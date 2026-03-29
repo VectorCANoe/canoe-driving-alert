@@ -1,0 +1,74 @@
+@startuml warning_beep_to_audio_focus_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Warning Beep To Audio Focus Signal Flow\n(Core / IVI -> CLU / AMP)
+
+participant "Core / CoreState\nalert decision/effective state" as Core #FFF4CC
+participant "IVI\npresentation + audio owner" as IVI #E8F0FE
+participant "CLU\ncluster mirror consumer" as CLU #E8F7E8
+participant "AMP\naudio ducking owner" as AMP #FFE6E6
+
+== Warning / Presentation Inputs ==
+
+Core -> IVI : selectedAlertEffectiveLevel / Type\nemergencyContext / timeoutClear
+IVI -> IVI : derivePresentationMode()
+IVI -> IVI : deriveAlertVolume()
+IVI -> IVI : compatBeepEmergency / IC / Speed
+IVI -> IVI : warningBeepState = any(beep*) > 0
+note right of IVI
+Key render/audio seams
+- UiRender::beepEmergency
+- UiRender::beepIC
+- UiRender::beepSpeed
+- UiRender::warningBeepState
+end note
+
+== Audio Focus Publication ==
+
+IVI -> IVI : AudioFocusOwner = (alertLevel > 0 and presentationMode != 1) ? 1 : 0
+IVI -> IVI : AudioDuckingLvl = (alertLevel > 0) ? 4 : 1
+IVI -> CLU : frmAudioFocusMsg\nfrmMediaStateMsg
+IVI -> AMP : frmAudioFocusMsg\nfrmMediaStateMsg
+
+== CLU Mirror ==
+
+activate CLU
+CLU -> CLU : consume frmAudioFocusMsg
+CLU -> CLU : mirror CoreState::audioFocusOwner\nCoreState::audioDuckingLvl
+note right of CLU
+CLU keeps a cluster-visible mirror
+of the current audio focus and
+ducking state for runtime review.
+end note
+deactivate CLU
+
+== AMP Ducking Ownership ==
+
+activate AMP
+AMP -> AMP : consume media/focus/voice/tts frames
+AMP -> AMP : expire stale inputs if needed
+AMP -> AMP : baseVolume = deriveBaseVolume(Inject::alertVolumeCmd)
+AMP -> AMP : ampDucking = max(audioDuckingLvl,\nvoice/tts floors)
+AMP -> AMP : publish AmpMode / AmpDuckingLvl / AmpVolumeLevel
+note right of AMP
+Representative outputs
+- CoreState::baseVolume
+- UiRender::renderVolumLevel
+- frmAmplifierStateMsg
+end note
+deactivate AMP
+
+note over Core, AMP
+Representative runtime chain
+1. Core effective alert state reaches IVI
+2. IVI derives beep flags and audio-focus frames
+3. CLU mirrors focus state for cluster visibility
+4. AMP turns focus/ducking into actual amplifier behavior
+end note
+
+@enduml

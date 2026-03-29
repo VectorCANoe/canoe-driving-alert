@@ -1,0 +1,53 @@
+@startuml aeb_pressure_to_ehb_command_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title AEB Pressure To EHB Command Signal Flow\n(brake pressure + AEB domain state -> EHB control and pressure command)
+
+participant "Brake / AEB inputs" as BrakeCtx #F4F7FB
+participant "EHB\nbrake-hydraulic owner" as EHB #E8F7E8
+participant "EHB state bus" as EhbBus #FFF4CC
+participant "Observers / brake users" as Obs #E8F0FE
+
+== Brake Inputs ==
+
+BrakeCtx -> EHB : brakePressure\naebStopReq / aebDecelProfile / aebDomainHealth
+EHB -> EHB : if brake stale then\nbrakePressure = 0
+EHB -> EHB : if AEB stale then\nstopReq = 0 / decelProfile = 0 / domainHealth = 0
+EHB -> EHB : aebPressureCmd = deriveAebPressureCmd(stopReq, decelProfile, domainHealth)
+EHB -> EHB : pressureCmd = max(brakePressure, aebPressureCmd)
+EHB -> EHB : ctrlState = 2 when AEB overlay active, else 1 when manual brake > 0
+note right of EHB
+Representative gating inputs
+- brakePressure
+- aebStopReq
+- aebDecelProfile
+- aebDomainHealth
+end note
+
+== EHB Publish ==
+
+EHB -> EhbBus : frmEhbStateMsg\nEhbCtrlState / EhbPressureCmd
+note right of EHB
+Representative outputs
+- EhbCtrlState
+- EhbPressureCmd
+end note
+
+== Downstream Visibility ==
+
+EhbBus -> Obs : hydraulic-brake readback /\nassist overlay consumers
+
+note over BrakeCtx, Obs
+Representative runtime chain
+1. Manual brake pressure and AEB domain state reach EHB
+2. EHB computes the stronger of manual and AEB pressure demands
+3. EHB publishes control state and effective pressure command
+4. Brake observers consume the final hydraulic command posture
+end note
+
+@enduml

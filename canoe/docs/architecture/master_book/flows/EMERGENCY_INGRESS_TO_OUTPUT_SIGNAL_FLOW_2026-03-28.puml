@@ -1,0 +1,106 @@
+@startuml emergency_ingress_to_output_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Emergency Ingress To Output Signal Flow\n(TEST_SCN / Input_Console -> V2X -> ADAS -> CGW -> IVI / CLU)
+
+actor "Emergency Source\n(TEST_SCN or manual inject)" as Source #F4F7FB
+participant "Input_Console\nContext > Inject / Emergency" as Panel #E8F0FE
+participant "V2X\ningress normalization owner" as V2X #E8F7E8
+participant "ADAS\nproximity / alert decision" as ADAS #FCE8FF
+participant "CGW\nwarning gate / decel gate" as CGW #FFF4CC
+participant "IVI\nwarning render" as IVI #E8F0FE
+participant "CLU\ncluster output" as CLU #E8F0FE
+
+== Emergency Ingress ==
+
+Source -> V2X : eth emergency alert\nor TEST_SCN compat dispatch
+Source -> Panel : optional manual emergency inject
+activate V2X
+Panel -> V2X : Inject::emergencyActiveCmd\nInject::emergencyType / Direction / Eta / SourceId
+V2X -> V2X : stageEmergencyIngress()\npriority rank / eta ordering
+V2X -> V2X : publishNormalizedEmergencyIngress()
+V2X -> ADAS : Core::emergencyContext
+V2X -> ADAS : CoreState::emergencyIngressDirection
+V2X -> ADAS : CoreState::emergencyIngressEtaSec
+V2X -> IVI : V2X::v2xFrame
+note right of V2X
+Representative outputs
+- Core::emergencyContext
+- CoreState::emergencyIngressDirection
+- CoreState::emergencyIngressEtaSec
+- V2X::v2xFrame
+- Core::timeoutClear
+end note
+deactivate V2X
+
+== ADAS Emergency Decision ==
+
+activate ADAS
+V2X -> ADAS : normalized ingress seams
+ADAS -> ADAS : calcProximityRisk(emergencyContext,\netaSec, speed, emergencyDirection, driveState)
+ADAS -> ADAS : select emergency alert type/level
+ADAS -> CGW : CoreState::selectedAlertDecisionLevel
+ADAS -> CGW : CoreState::selectedAlertDecisionType
+note right of ADAS
+Emergency path highlights
+- emergencyContext can override base alert type
+- riskLevel feeds warning + decel decision
+end note
+deactivate ADAS
+
+== CGW Effective Gate ==
+
+activate CGW
+ADAS -> CGW : decision seams
+V2X -> CGW : timeoutClear / emergency context visibility
+CGW -> CGW : selectedAlertEffectiveLevel / Type
+CGW -> CGW : decelAssistReq / gate reason
+CGW -> IVI : effective alert seams
+CGW -> CLU : effective alert seams
+note right of CGW
+Gateway side effects
+- selectedAlertGateReason
+- decelGateReason
+- fail-safe escalation if needed
+end note
+deactivate CGW
+
+== Output Rendering ==
+
+activate IVI
+CGW -> IVI : selectedAlertEffectiveLevel / Type
+V2X -> IVI : emergency direction / eta derived distance
+IVI -> IVI : deriveEmergencyWarningCode()
+IVI -> IVI : derive warningBeep / road flow / motion step
+IVI -> CLU : frmClusterWarningMsg
+note right of IVI
+Representative outputs
+- Cluster::warningTextCode
+- UiRender::warningBeepState
+- UiRender::roadFlowDirection
+- UiRender::renderVolumeLevel
+end note
+deactivate IVI
+
+activate CLU
+IVI -> CLU : frmClusterWarningMsg
+CLU -> Panel : warning text / state readback
+deactivate CLU
+
+Source <- Panel : Emergency ingress becomes visible\nas warning text / beep / render state
+
+note over Source, CLU
+Representative runtime chain
+1. External or manual emergency ingress arrives
+2. V2X normalizes type / direction / eta / source
+3. ADAS converts ingress into alert decision
+4. CGW gates decision into effective output
+5. IVI / CLU render emergency warning to the driver
+end note
+
+@enduml

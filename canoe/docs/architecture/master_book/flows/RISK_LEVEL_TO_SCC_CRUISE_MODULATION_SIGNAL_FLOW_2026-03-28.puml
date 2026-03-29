@@ -1,0 +1,55 @@
+@startuml risk_level_to_scc_cruise_modulation_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Risk Level To SCC Cruise Modulation Signal Flow\n(NAV/decel/fail-safe context -> SCC cruise state and set-speed modulation)
+
+participant "NAV / decel /\nalert context" as CruiseCtx #F4F7FB
+participant "SCC\ncruise owner" as SCC #E8F7E8
+participant "Cruise state bus" as CruiseBus #FFF4CC
+participant "Observers / longitudinal users" as Obs #E8F0FE
+
+== Cruise Inputs ==
+
+CruiseCtx -> SCC : speedLimit\nriskLevel\nfailSafeMode\nemergencyContext\nselectedAlertLevel\nvehicleSpeed
+SCC -> SCC : default cruiseSetSpeed = speedLimit
+SCC -> SCC : if driveState == D and failSafeMode == 0\nthen auto-enable cruiseState = 1
+SCC -> SCC : if risk >= 70 or alert >= 6 or emergencyContext > 0\nthen cruiseState = 2, gap = 3, setSpeed = vehicleSpeed - 10
+SCC -> SCC : else if risk >= 40 or alert >= 4\nthen cruiseState = 2, gap = 3, setSpeed = vehicleSpeed - 5
+note right of SCC
+Representative gating inputs
+- speedLimit
+- riskLevel
+- failSafeMode
+- emergencyContext / selectedAlertLevel
+- vehicleSpeed
+end note
+
+== Cruise Publish ==
+
+SCC -> CruiseBus : frmCruiseStateMsg\nCruiseState / GapLevel / CruiseSetSpeed
+SCC -> CruiseBus : Powertrain::cruiseState / cruiseSetSpeed
+note right of SCC
+Representative outputs
+- CruiseState
+- GapLevel
+- CruiseSetSpeed
+end note
+
+== Downstream Visibility ==
+
+CruiseBus -> Obs : cruise modulation readback /\nlongitudinal-control consumers
+
+note over CruiseCtx, Obs
+Representative runtime chain
+1. NAV speed-limit and decel/fail-safe context reach SCC
+2. SCC modulates cruise state and set speed from perceived risk
+3. SCC publishes cruise state, gap, and effective set speed
+4. Longitudinal users observe the risk-modulated cruise posture
+end note
+
+@enduml

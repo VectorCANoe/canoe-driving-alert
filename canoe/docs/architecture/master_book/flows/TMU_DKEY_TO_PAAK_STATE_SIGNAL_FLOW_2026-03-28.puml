@@ -1,0 +1,48 @@
+@startuml tmu_dkey_to_paak_state_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title TMU + DKEY To PAAK State Signal Flow\n(DKEY auth + TMU proximity + vehicle state -> Phone-as-Key publication)
+
+participant "DKEY\nDKeyState / AuthMode" as DKEY #E8F7E8
+participant "TMU\nSignalBars / service mode" as TMU #E8F0FE
+participant "Vehicle state\nDriveState" as Veh #F4F7FB
+participant "PAK\nphone-as-key owner" as PAK #FFF4CC
+participant "Access observers /\nconsumer ECUs" as Obs #FCE8FF
+
+== PAAK Inputs ==
+
+DKEY -> PAK : frmDigitalKeyStateMsg\nDKeyState / AuthMode
+TMU -> PAK : frmTmuServiceStateMsg\nSignalBars
+Veh -> PAK : frmVehicleStateCanMsg\nDriveState
+activate PAK
+PAK -> PAK : normalize stale DKEY / TMU / vehicle inputs
+PAK -> PAK : derive PaakState / AuthLevel
+PAK -> PAK : derive ProximityState / SyncLatency
+note right of PAK
+Representative outputs
+- PaakState
+- AuthLevel
+- ProximityState
+- SyncLatency
+end note
+
+== PAAK Publish ==
+
+PAK -> Obs : frmPhoneAsKeyStateMsg
+PAK -> Obs : traceable phone-key state for\naccess consumers and tests
+deactivate PAK
+
+note over DKEY, Obs
+Representative runtime chain
+1. DKEY provides digital-key state and auth level
+2. TMU provides signal-bar proximity context
+3. PAK combines those with drive state
+4. PAK publishes consolidated phone-as-key state
+end note
+
+@enduml

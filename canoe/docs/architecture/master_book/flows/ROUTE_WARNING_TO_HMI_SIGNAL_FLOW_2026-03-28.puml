@@ -1,0 +1,117 @@
+@startuml route_warning_to_hmi_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Route Warning To HMI Signal Flow\n(Input_Console / NAV -> ADAS -> CGW -> IVI / CLU / AMP)
+
+actor "Driver\n(Input Console)" as Driver #F4F7FB
+participant "Input_Console\nContext > Inject / Route" as Panel #E8F0FE
+participant "NAV\nroute context producer" as NAV #E8F7E8
+participant "ADAS\nalert decision owner" as ADAS #FCE8FF
+participant "CGW\nwarning gateway / fail-safe" as CGW #FFF4CC
+participant "IVI\nrender / popup / audio focus" as IVI #E8F0FE
+participant "CLU\ncluster warning output" as CLU #E8F0FE
+participant "AMP\nducking / audio output" as AMP #FFE6E6
+
+== Route Context Injection ==
+
+Driver -> Panel : Set ROAD ZONE / NAV DIR\nZONE DIST / SPD LIMIT
+activate Panel
+Panel -> Panel : Write Inject::roadZone\nInject::navDirection
+Panel -> Panel : Write Inject::zoneDistance\nInject::speedLimit
+deactivate Panel
+
+== NAV Context Publish ==
+
+activate NAV
+Panel -> NAV : Inject::* route context
+NAV -> NAV : calcBaseZoneContext()\ncalcEffectiveSpeedLimit()
+NAV -> ADAS : frmNavModuleStateMsg
+NAV -> CGW : frmNavigationRouteMsg
+NAV -> IVI : frmNavigationRouteMsg
+note right of NAV
+Representative outputs
+- frmNavModuleStateMsg
+- frmNavigationRouteMsg
+- route class / guide / distance / speed limit
+end note
+deactivate NAV
+
+== ADAS Decision ==
+
+activate ADAS
+NAV -> ADAS : frmNavModuleStateMsg
+ADAS -> ADAS : baseZoneContext / speedLimitNorm
+ADAS -> ADAS : selectedAlertDecisionLevel / Type
+ADAS -> CGW : CoreState::selectedAlertDecisionLevel
+ADAS -> CGW : CoreState::selectedAlertDecisionType
+note right of ADAS
+Representative logic
+- road/speed warning selection
+- zone-adjusted warning priority
+- direct write to decision seams
+end note
+deactivate ADAS
+
+== CGW Effective Gate ==
+
+activate CGW
+NAV -> CGW : frmNavigationRouteMsg
+ADAS -> CGW : decision seams
+CGW -> CGW : apply timeout / boundary / fail-safe gate
+CGW -> IVI : CoreState::selectedAlertEffectiveLevel / Type
+CGW -> CLU : CoreState::selectedAlertEffectiveLevel / Type
+CGW -> AMP : CoreState::selectedAlertEffectiveLevel via IVI audio focus path
+note right of CGW
+Effective outputs
+- selectedAlertEffectiveLevel
+- selectedAlertEffectiveType
+- selectedAlertGateReason
+end note
+deactivate CGW
+
+== HMI Rendering ==
+
+activate IVI
+CGW -> IVI : effective alert seams
+IVI -> IVI : deriveWarningTextCode()
+IVI -> IVI : derive roadZoneColorCode / renderMode
+IVI -> CLU : frmClusterWarningMsg
+IVI -> CLU : frmClusterNotifMsg
+IVI -> CLU : frmHmiPopupStateMsg
+IVI -> AMP : frmAudioFocusMsg
+IVI -> AMP : frmMediaStateMsg
+note right of IVI
+Visible/render seams
+- UiRender::warningBeepState
+- UiRender::roadZoneColorCode
+- Cluster::warningTextCode
+end note
+deactivate IVI
+
+activate CLU
+IVI -> CLU : cluster warning / notif / popup
+CLU -> Panel : warning text / notif readback
+deactivate CLU
+
+activate AMP
+IVI -> AMP : audio focus / media state
+AMP -> AMP : ducking / focus owner
+deactivate AMP
+
+Driver <- Panel : Route warning is visible in cluster / popup\nand audible through audio ducking
+
+note over Driver, AMP
+Representative runtime chain
+1. Input_Console injects route context
+2. NAV publishes route/state messages
+3. ADAS decides warning level/type
+4. CGW gates decision into effective alert
+5. IVI / CLU / AMP render text, popup, and audio
+end note
+
+@enduml

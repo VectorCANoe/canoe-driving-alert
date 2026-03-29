@@ -1,0 +1,263 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2408" viewBox="0 0 1600 2408">
+  <defs>
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dbeafe"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .bg { fill: #f7f7f5; }
+    .title { font: 700 32px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .sub { font: 500 15px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 18px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 13px 'Segoe UI', sans-serif; fill: #475569; }
+    .node { font: 700 18px 'Segoe UI', sans-serif; fill: #111827; }
+    .box { rx: 22; ry: 22; stroke: #334155; stroke-width: 1.6; }
+  </style>
+  <rect x="0" y="0" width="1600" height="2408" class="bg"/>
+  <text x="34" y="44" class="title">ECU Design Study - VCU</text>
+  <text x="34" y="72" class="sub">12-column internal card exploration | consulting-style SVG prototype</text>
+  <rect x="30" y="100" width="1540" height="268" class="box" fill="url(#heroGradient)"/>
+<text x="52" y="134" class="small">ECU at a glance</text>
+<text x="52" y="172" class="title">VCU</text>
+<text x="52" y="204" class="text">Group 01 Base Vehicle Dynamics | Chassis</text>
+<text x="52" y="224" class="text"></text>
+<text x="52" y="244" class="text">Powertrain controller</text>
+<text x="52" y="264" class="text"></text>
+<text x="52" y="284" class="text">Primary action flow</text>
+<text x="52" y="304" class="text">FLOW_02 Brake Stability Response</text>
+<text x="52" y="324" class="text"></text>
+<text x="52" y="344" class="text">Signal route</text>
+<text x="52" y="364" class="text">BAT_BMS -&gt; VCU -&gt; ADAS</text>
+<rect x="940" y="134" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="958" y="162" class="small">Published</text>
+<text x="958" y="192" class="node">11</text>
+<rect x="1261" y="134" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1279" y="162" class="small">Consumed</text>
+<text x="1279" y="192" class="node">24</text>
+<rect x="940" y="228" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="958" y="256" class="small">Linked ECU</text>
+<text x="958" y="286" class="node">18</text>
+<rect x="1261" y="228" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1279" y="256" class="small">Native Tests</text>
+<text x="1279" y="286" class="node">0</text>
+<rect x="940" y="322" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="958" y="350" class="small">Upstream</text>
+<text x="958" y="380" class="node">17</text>
+<rect x="1261" y="322" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1279" y="350" class="small">Downstream</text>
+<text x="1279" y="380" class="node">5</text>
+  <rect x="30" y="392" width="760" height="562" class="box" fill="#e0f2fe"/>
+<text x="54" y="428" class="label">Inbound Flow</text>
+<rect x="44" y="450" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="60" y="476" class="node">BAT_BMS</text>
+<text x="60" y="498" class="small">frmBatBmsStateMsg</text>
+<rect x="292" y="450" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="308" y="476" class="node">CPC</text>
+<text x="308" y="498" class="small">frmChargePortCtrlStateMsg</text>
+<rect x="540" y="450" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="556" y="476" class="node">DCDC</text>
+<text x="556" y="498" class="small">frmDcdcStateMsg</text>
+<rect x="44" y="528" width="236" height="156" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="60" y="554" class="node">EMS</text>
+<text x="60" y="576" class="small">frmEngineLoadMsg,</text>
+<text x="60" y="594" class="small">frmEngineSpeedTempMsg,</text>
+<text x="60" y="612" class="small">frmEngineTorqueMsg,</text>
+<text x="60" y="630" class="small">frmFuelBatteryStateMsg,</text>
+<text x="60" y="648" class="small">frmThermalMgmtStateMsg,</text>
+<text x="60" y="666" class="small">frmThrottleStateMsg</text>
+<rect x="292" y="528" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="308" y="554" class="node">EOP</text>
+<text x="308" y="576" class="small">frmEopStateMsg</text>
+<rect x="540" y="528" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="556" y="554" class="node">ESC</text>
+<text x="556" y="576" class="small">frmWheelSpeedMsg</text>
+<rect x="292" y="606" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="308" y="632" class="node">EWP</text>
+<text x="308" y="654" class="small">frmEwpStateMsg</text>
+<rect x="540" y="606" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="556" y="632" class="node">FPCM</text>
+<text x="556" y="654" class="small">frmFpcmStateMsg</text>
+<rect x="292" y="684" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="308" y="710" class="node">INVERTER</text>
+<text x="308" y="732" class="small">frmInverterStateMsg</text>
+<rect x="540" y="684" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="556" y="710" class="node">ISG</text>
+<text x="556" y="732" class="small">frmIsgStateMsg</text>
+<rect x="44" y="696" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="60" y="722" class="node">LVR</text>
+<text x="60" y="744" class="small">frmLvrStateMsg</text>
+<rect x="292" y="762" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="308" y="788" class="node">MCU</text>
+<text x="308" y="810" class="small">frmMcuStateMsg</text>
+<rect x="540" y="762" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="556" y="788" class="node">OBC</text>
+<text x="556" y="810" class="small">frmObcStateMsg</text>
+<rect x="44" y="774" width="236" height="84" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="60" y="800" class="node">TCU</text>
+<text x="60" y="822" class="small">frmTransShiftStateMsg,</text>
+<text x="60" y="840" class="small">frmTransmissionTempMsg</text>
+<rect x="292" y="840" width="236" height="84" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="308" y="866" class="node">TEST_SCN</text>
+<text x="308" y="888" class="small">frmPedalInputCanMsg,</text>
+<text x="308" y="906" class="small">frmPtDiagReqMsg</text>
+<rect x="540" y="840" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="556" y="866" class="node">TRM</text>
+<text x="556" y="888" class="small">frmTrailerCtrlStateMsg</text>
+<rect x="44" y="870" width="236" height="66" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="60" y="896" class="node">_4WD</text>
+<text x="60" y="918" class="small">frm4wdStateMsg</text>
+  <rect x="810" y="392" width="760" height="328" class="box" fill="#dbeafe"/>
+<text x="834" y="428" class="label">Outbound Flow</text>
+<rect x="824" y="450" width="236" height="102" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="840" y="476" class="node">ADAS</text>
+<text x="840" y="498" class="small">frmTcsStateMsg,</text>
+<text x="840" y="516" class="small">frmVehicleStateCanMsg,</text>
+<text x="840" y="534" class="small">frmWheelPulseMsg</text>
+<rect x="1072" y="450" width="236" height="138" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="1088" y="476" class="node">EMS</text>
+<text x="1088" y="498" class="small">frmEnergyFlowStateMsg,</text>
+<text x="1088" y="516" class="small">frmPowerLimitMsg,</text>
+<text x="1088" y="534" class="small">frmPowertrainCtrlAuthMsg,</text>
+<text x="1088" y="552" class="small">frmPowertrainGatewayMsg,</text>
+<text x="1088" y="570" class="small">frmVehicleModeMsg</text>
+<rect x="1320" y="450" width="236" height="102" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="1336" y="476" class="node">ESC</text>
+<text x="1336" y="498" class="small">frmAccelStatusMsg,</text>
+<text x="1336" y="516" class="small">frmTcsStateMsg,</text>
+<text x="1336" y="534" class="small">frmVehicleStateCanMsg</text>
+<rect x="824" y="564" width="236" height="138" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="840" y="590" class="node">TCU</text>
+<text x="840" y="612" class="small">frmEnergyFlowStateMsg,</text>
+<text x="840" y="630" class="small">frmPowerLimitMsg,</text>
+<text x="840" y="648" class="small">frmPowertrainCtrlAuthMsg,</text>
+<text x="840" y="666" class="small">frmPowertrainGatewayMsg,</text>
+<text x="840" y="684" class="small">frmVehicleModeMsg</text>
+<rect x="1320" y="564" width="236" height="84" rx="16" ry="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="1336" y="590" class="node">TEST_SCN</text>
+<text x="1336" y="612" class="small">frmPowertrainHealthMsg,</text>
+<text x="1336" y="630" class="small">frmPtDiagResMsg</text>
+  <rect x="30" y="978" width="630" height="400" class="box" fill="#eff6ff"/>
+<text x="52" y="1014" class="label">Linked ECU bank</text>
+<text x="52" y="1042" class="small">Primary flow: FLOW_02</text>
+<text x="52" y="1062" class="small">Support flow count: 3</text>
+<rect x="52" y="1100" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="146.0" y="1122" text-anchor="middle" class="small">ADAS</text>
+<rect x="250" y="1100" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="344.0" y="1122" text-anchor="middle" class="small">BAT_BMS</text>
+<rect x="448" y="1100" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="542.0" y="1122" text-anchor="middle" class="small">CPC</text>
+<rect x="52" y="1144" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="146.0" y="1166" text-anchor="middle" class="small">DCDC</text>
+<rect x="250" y="1144" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="344.0" y="1166" text-anchor="middle" class="small">EMS</text>
+<rect x="448" y="1144" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="542.0" y="1166" text-anchor="middle" class="small">EOP</text>
+<rect x="52" y="1188" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="146.0" y="1210" text-anchor="middle" class="small">ESC</text>
+<rect x="250" y="1188" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="344.0" y="1210" text-anchor="middle" class="small">EWP</text>
+<rect x="448" y="1188" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="542.0" y="1210" text-anchor="middle" class="small">FPCM</text>
+<rect x="52" y="1232" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="146.0" y="1254" text-anchor="middle" class="small">INVERTER</text>
+<rect x="250" y="1232" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="344.0" y="1254" text-anchor="middle" class="small">ISG</text>
+<rect x="448" y="1232" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="542.0" y="1254" text-anchor="middle" class="small">LVR</text>
+<rect x="52" y="1276" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="146.0" y="1298" text-anchor="middle" class="small">MCU</text>
+<rect x="250" y="1276" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="344.0" y="1298" text-anchor="middle" class="small">OBC</text>
+<rect x="448" y="1276" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="542.0" y="1298" text-anchor="middle" class="small">TCU</text>
+<rect x="52" y="1320" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="146.0" y="1342" text-anchor="middle" class="small">TEST_SCN</text>
+<rect x="250" y="1320" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="344.0" y="1342" text-anchor="middle" class="small">TRM</text>
+<rect x="448" y="1320" width="188" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="542.0" y="1342" text-anchor="middle" class="small">_4WD</text>
+  <rect x="680" y="978" width="890" height="562" class="box" fill="#ffffff"/>
+<text x="702" y="1014" class="label">Contract inventory</text>
+<text x="702" y="1048" class="small">Published (11)</text>
+<text x="702" y="1076" class="small">- frmAccelStatusMsg</text>
+<text x="702" y="1094" class="small">- frmEnergyFlowStateMsg</text>
+<text x="702" y="1112" class="small">- frmPowerLimitMsg</text>
+<text x="702" y="1130" class="small">- frmPowertrainCtrlAuthMsg</text>
+<text x="702" y="1148" class="small">- frmPowertrainGatewayMsg</text>
+<text x="702" y="1166" class="small">- frmPowertrainHealthMsg</text>
+<text x="702" y="1184" class="small">- frmPtDiagResMsg</text>
+<text x="702" y="1202" class="small">- frmTcsStateMsg</text>
+<text x="702" y="1220" class="small">- frmVehicleModeMsg</text>
+<text x="702" y="1238" class="small">- frmVehicleStateCanMsg</text>
+<text x="702" y="1256" class="small">- frmWheelPulseMsg</text>
+<text x="1137" y="1048" class="small">Consumed (24)</text>
+<text x="1137" y="1076" class="small">- frm4wdStateMsg</text>
+<text x="1137" y="1094" class="small">- frmBatBmsStateMsg</text>
+<text x="1137" y="1112" class="small">- frmChargePortCtrlStateMsg</text>
+<text x="1137" y="1130" class="small">- frmDcdcStateMsg</text>
+<text x="1137" y="1148" class="small">- frmEngineLoadMsg</text>
+<text x="1137" y="1166" class="small">- frmEngineSpeedTempMsg</text>
+<text x="1137" y="1184" class="small">- frmEngineTorqueMsg</text>
+<text x="1137" y="1202" class="small">- frmEopStateMsg</text>
+<text x="1137" y="1220" class="small">- frmEwpStateMsg</text>
+<text x="1137" y="1238" class="small">- frmFpcmStateMsg</text>
+<text x="1137" y="1256" class="small">- frmFuelBatteryStateMsg</text>
+<text x="1137" y="1274" class="small">- frmInverterStateMsg</text>
+<text x="1137" y="1292" class="small">- frmIsgStateMsg</text>
+<text x="1137" y="1310" class="small">- frmLvrStateMsg</text>
+<text x="1137" y="1328" class="small">- frmMcuStateMsg</text>
+<text x="1137" y="1346" class="small">- frmObcStateMsg</text>
+<text x="1137" y="1364" class="small">- frmPedalInputCanMsg</text>
+<text x="1137" y="1382" class="small">- frmPtDiagReqMsg</text>
+<text x="1137" y="1400" class="small">- frmThermalMgmtStateMsg</text>
+<text x="1137" y="1418" class="small">- frmThrottleStateMsg</text>
+<text x="1137" y="1436" class="small">- frmTrailerCtrlStateMsg</text>
+<text x="1137" y="1454" class="small">- frmTransShiftStateMsg</text>
+<text x="1137" y="1472" class="small">- frmTransmissionTempMsg</text>
+<text x="1137" y="1490" class="small">- frmWheelSpeedMsg</text>
+<line x1="1125" y1="1034" x2="1125" y2="1522" stroke="#cbd5e1" stroke-width="1.2"/>
+  <rect x="30" y="1564" width="760" height="352" class="box" fill="#f8fafc"/>
+<text x="52" y="1600" class="label">Metadata anchors</text>
+<text x="52" y="1634" class="text">Layer / Group: Chassis / Group 01 Base Vehicle Dynamics</text>
+<text x="52" y="1656" class="text"></text>
+<text x="52" y="1678" class="text">Owner seam</text>
+<text x="52" y="1700" class="text">- Chassis::vehicleSpeed</text>
+<text x="52" y="1722" class="text">- Chassis::driveState</text>
+<text x="52" y="1744" class="text">- Chassis::throttlePosition</text>
+<text x="52" y="1766" class="text"></text>
+<text x="52" y="1788" class="text">Sysvar hints</text>
+<text x="52" y="1810" class="text">- @Chassis::vehicleSpeed</text>
+<text x="52" y="1832" class="text">- @Chassis::driveState</text>
+<text x="52" y="1854" class="text">- @Chassis::throttlePosition</text>
+  <rect x="810" y="1564" width="760" height="418" class="box" fill="#ffffff"/>
+<text x="832" y="1600" class="label">Evidence and reading anchors</text>
+<text x="832" y="1634" class="text">Direct native tests</text>
+<text x="832" y="1656" class="text">-</text>
+<text x="832" y="1678" class="text"></text>
+<text x="832" y="1700" class="text">Files</text>
+<text x="832" y="1722" class="text">- canoe/src/capl/ecu/VCU.can</text>
+<text x="832" y="1744" class="text">- canoe/cfg/channel_assign/Chassis/VCU.can</text>
+<text x="832" y="1766" class="text"></text>
+<text x="832" y="1788" class="text">Doc source</text>
+<text x="832" y="1810" class="text">- 0301</text>
+<text x="832" y="1832" class="text">- 0302</text>
+<text x="832" y="1854" class="text">- 0303</text>
+<text x="832" y="1876" class="text">- 0304</text>
+<text x="832" y="1898" class="text">- 04_SW_Implementation</text>
+<text x="832" y="1920" class="text">- ecu-flow-appendix</text>
+  <rect x="30" y="2006" width="1540" height="352" class="box" fill="#fff7ed"/>
+<text x="52" y="2042" class="label">Review notes and action map</text>
+<text x="52" y="2076" class="text">Primary flow: FLOW_02 Brake Stability Response</text>
+<text x="52" y="2098" class="text">Supporting flow: FLOW_03 Propulsion Energy Status</text>
+<text x="52" y="2120" class="text">Supporting flow: FLOW_04 Cruise Speed Support</text>
+<text x="52" y="2142" class="text">Supporting flow: FLOW_05 Chassis Sensor Health</text>
+<text x="52" y="2164" class="text"></text>
+<text x="52" y="2186" class="text">Manual speed target and pedal dynamics can still fight if stale assist hints are reasserted.</text>
+<text x="52" y="2208" class="text"></text>
+<text x="52" y="2230" class="text">Primary dynamics producer for speed, drive state, and throttle interpretation.</text>
+<text x="52" y="2252" class="text"></text>
+<text x="52" y="2274" class="text">Owner seam preview</text>
+<text x="52" y="2296" class="text">Chassis::vehicleSpeed</text>
+</svg>

@@ -1,0 +1,47 @@
+@startuml vcu_vehicle_mode_to_isg_state_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title VCU Vehicle Mode To ISG State Signal Flow\n(VCU vehicle-mode + fuel-battery context -> ISG state publication)
+
+participant "VCU\nvehicle-mode producer" as VCU #E8F7E8
+participant "Fuel/Battery source" as FB #E8F0FE
+participant "Vehicle state\nspeed / drive state" as Veh #F4F7FB
+participant "ISG\nidle-stop-go owner" as ISG #FFF4CC
+participant "Powertrain observers" as Obs #FCE8FF
+
+== ISG Inputs ==
+
+VCU -> ISG : frmVehicleModeMsg\nDriveMode / PowertrainState
+FB -> ISG : frmFuelBatteryStateMsg\nBatterySoc / ChargingState
+Veh -> ISG : frmVehicleStateCanMsg\nDriveState / VehicleSpeed
+activate ISG
+ISG -> ISG : normalize stale fuel-battery / vehicle inputs
+ISG -> ISG : if PowertrainState == 0 -> ISG off
+ISG -> ISG : else derive RestartReady / RecuperationLvl
+note right of ISG
+Representative outputs
+- IsgState
+- RestartReady
+- RecuperationLvl
+end note
+
+== ISG Publish ==
+
+ISG -> Obs : frmIsgStateMsg
+ISG -> Obs : traceable ISG state /\nrestart / regen visibility
+deactivate ISG
+
+note over VCU, Obs
+Representative runtime chain
+1. VCU publishes vehicle mode and powertrain state
+2. ISG combines that with fuel-battery and vehicle-speed context
+3. ISG derives restart readiness and recuperation level
+4. Powertrain observers verify idle-stop-go behavior
+end note
+
+@enduml

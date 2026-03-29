@@ -1,0 +1,56 @@
+@startuml boundary_failsafe_to_gateway_security_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Boundary Fail-safe To Gateway Security Signal Flow\n(boundary/fail-safe/service context -> SGW diagnostic security seams)
+
+participant "Core / boundary /\nservice context" as BoundaryCtx #F4F7FB
+participant "SGW\ngateway security owner" as SGW #E8F7E8
+participant "Diag seams /\ngateway state" as DiagBus #FFF4CC
+participant "Observers / testers" as Obs #E8F0FE
+
+== Boundary / Service Inputs ==
+
+BoundaryCtx -> SGW : domainBoundaryStatus\nwarningPathStatus\nfailSafeMode\nrouteActive\nalertLevel
+SGW -> SGW : diagStage = ethDiagBoundaryStage(...)
+SGW -> SGW : securitySession derived from diagStage / routeActive / authState
+SGW -> SGW : securityFault = ethDiagStageToSecurityFault(diagStage)
+SGW -> SGW : securityPolicy = ethDiagStageToPolicy(diagStage)
+note right of SGW
+Representative gating inputs
+- boundaryAlive
+- warningPathStatus
+- failSafeMode
+- routeActive / alertLevel
+end note
+
+== Security Publish ==
+
+SGW -> DiagBus : Diag::SecurityState / RouteOwner
+SGW -> DiagBus : Diag::SessionState / GatewayOpen
+SGW -> DiagBus : Diag::SecurityFault / SecurityPolicy
+note right of SGW
+Representative outputs
+- SecurityState
+- RouteOwner
+- SessionState
+- SecurityFault / SecurityPolicy
+end note
+
+== Downstream Visibility ==
+
+DiagBus -> Obs : gateway security readback /\ndiagnostic test evidence
+
+note over BoundaryCtx, Obs
+Representative runtime chain
+1. Boundary and fail-safe context reach SGW
+2. SGW derives diagnostic stage and security session
+3. SGW publishes security state and route owner seams
+4. Testers and observers see the current gateway security posture
+end note
+
+@enduml

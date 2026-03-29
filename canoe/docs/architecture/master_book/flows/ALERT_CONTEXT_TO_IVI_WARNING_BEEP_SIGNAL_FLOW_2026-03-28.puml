@@ -1,0 +1,54 @@
+@startuml alert_context_to_ivi_warning_beep_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Alert Context To IVI Warning Beep Signal Flow\n(alert/emergency/road-zone context -> IVI warning beep seams)
+
+participant "Alert / emergency /\nroad-zone context" as AlertCtx #F4F7FB
+participant "IVI\nrender owner" as IVI #E8F7E8
+participant "UiRender seams" as UiBus #FFF4CC
+participant "Observers / audio users" as Obs #E8F0FE
+
+== Beep Inputs ==
+
+AlertCtx -> IVI : alertLevel / alertType\nemergencyType\nroadZoneColorCode
+IVI -> IVI : compatBeepEmergency =\n(alertLevel > 0 and emergencyType > 0)
+IVI -> IVI : compatBeepIC =\n(alertType in {5,6} and alertLevel > 0)
+IVI -> IVI : compatBeepSpeed =\n(roadZoneColorCode in {1,2} and alertLevel > 0)
+IVI -> IVI : warningBeepState =\n(compatBeepEmergency + compatBeepIC + compatBeepSpeed > 0) ? 1 : 0
+note right of IVI
+Representative gating inputs
+- alertLevel / alertType
+- emergencyType
+- roadZoneColorCode
+end note
+
+== UiRender Publish ==
+
+IVI -> UiBus : UiRender::beepEmergency / beepIC / beepSpeed
+IVI -> UiBus : UiRender::warningBeepState / activeAlertType
+note right of IVI
+Representative outputs
+- beepEmergency
+- beepIC
+- beepSpeed
+- warningBeepState
+end note
+
+== Downstream Visibility ==
+
+UiBus -> Obs : warning-beep readback /\naudio/render consumers
+
+note over AlertCtx, Obs
+Representative runtime chain
+1. Alert, emergency, and road-zone context reach IVI
+2. IVI derives the active beep categories
+3. IVI publishes warning-beep seams on UiRender
+4. Audio/render consumers observe the effective beep posture
+end note
+
+@enduml

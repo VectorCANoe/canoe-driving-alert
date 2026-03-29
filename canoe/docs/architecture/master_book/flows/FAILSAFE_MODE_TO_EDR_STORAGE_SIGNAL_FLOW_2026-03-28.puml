@@ -1,0 +1,49 @@
+@startuml failsafe_mode_to_edr_storage_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Failsafe Mode To EDR Storage Signal Flow\n(Core fail-safe / alert severity -> EDR storage escalation)
+
+participant "CGW / CoreState\nfail-safe context" as CoreCtx #F4F7FB
+participant "EDR\nevent data recorder" as EDR #E8F7E8
+participant "EDR storage /\nevidence bus" as StorageBus #FFF4CC
+participant "Observers / diagnostics" as Obs #E8F0FE
+
+== Fail-safe Inputs ==
+
+CoreCtx -> EDR : Core::failSafeMode\nwarningPathStatus\ne2eHealthState\nselectedAlertLevel
+EDR -> EDR : eventSeverity =\n3 if alert >= 4\n2 if alert >= 3 or failSafe > 0\n1 if alert > 0
+EDR -> EDR : storageState = high if failSafe == 2 or severity >= 3
+EDR -> EDR : storageLevel = severity*20 + warningPath*10 + degraded E2E bonus
+note right of EDR
+Representative escalation inputs
+- failSafeMode
+- warningPathStatus
+- e2eHealthState
+- selectedAlertLevel
+end note
+
+== Storage Publication ==
+
+EDR -> StorageBus : frmEdrStateMsg\nStorageState / StorageLevel / EventSeverity
+EDR -> Obs : diagnostic event trace /\nEDR readback
+note right of EDR
+Representative outputs
+- EventSeverity
+- StorageState
+- StorageLevel
+end note
+
+note over CoreCtx, Obs
+Representative runtime chain
+1. Core fail-safe and alert context reach EDR
+2. EDR escalates severity and storage policy
+3. Recorder publishes storage state for diagnostics/evidence
+4. Observers expose the preserved fail-safe event level
+end note
+
+@enduml

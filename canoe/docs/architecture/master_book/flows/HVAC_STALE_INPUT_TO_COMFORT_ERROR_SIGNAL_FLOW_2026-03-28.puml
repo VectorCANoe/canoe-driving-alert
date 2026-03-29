@@ -1,0 +1,53 @@
+@startuml hvac_stale_input_to_comfort_error_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title HVAC Stale Input To Comfort Error Signal Flow\n(TMU/HVAC/vehicle freshness -> BCM -> comfort error publication)
+
+participant "TMU / HVAC /\nvehicle freshness" as FreshnessCtx #F4F7FB
+participant "BCM\ncomfort owner" as BCM #E8F7E8
+participant "Comfort state bus" as ComfortBus #FFF4CC
+participant "Observers / panels /\nevidence" as Obs #E8F0FE
+
+== Freshness Check ==
+
+FreshnessCtx -> BCM : gTmuServiceRxMs\ngHvacStateRxMs\ngVehicleRxMs
+BCM -> BCM : tmuInputStale = recentTick(TMU) ? 0 : 1
+BCM -> BCM : hvacInputStale = recentTick(HVAC) ? 0 : 1
+BCM -> BCM : vehicleCtxInputStale = recentTick(vehicle) ? 0 : 1
+note right of BCM
+Representative freshness gates
+- tmuInputStale
+- hvacInputStale
+- vehicleCtxInputStale
+end note
+
+== Comfort Error Ownership ==
+
+BCM -> BCM : if any stale input is active\nthen comfortError = 1
+BCM -> BCM : if vehicle/door/seat detail stale\nthen comfortProfile = 0
+BCM -> ComfortBus : frmBodyComfortStateMsg\nComfortProfile / ComfortStatus / ComfortError
+note right of BCM
+Representative outputs
+- ComfortProfile
+- ComfortStatus
+- ComfortError
+end note
+
+== Downstream Visibility ==
+
+ComfortBus -> Obs : comfort readback /\nstale-state evidence
+
+note over FreshnessCtx, Obs
+Representative runtime chain
+1. BCM evaluates TMU, HVAC, and vehicle-context freshness
+2. BCM suppresses comfort profile when stale context exists
+3. BCM raises ComfortError on the body comfort publication path
+4. Panels and evidence consumers observe degraded comfort service state
+end note
+
+@enduml

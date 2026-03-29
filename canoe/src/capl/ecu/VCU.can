@@ -26,6 +26,8 @@ variables
   int gPtAliveCnt;
   int gManualDriveStateTarget;
   int gManualVehicleSpeedTarget;
+  int gLastPanelDriveStateCmd;
+  int gLastPanelVehicleSpeedCmd;
   int gLastPublishedDriveState;
   int gLastPublishedVehicleSpeed;
   dword gPedalRxMs;
@@ -365,6 +367,8 @@ on start
   gPtAliveCnt = 0;
   gManualDriveStateTarget = 0;
   gManualVehicleSpeedTarget = 0;
+  gLastPanelDriveStateCmd = 0;
+  gLastPanelVehicleSpeedCmd = 0;
   gLastPublishedDriveState = 0;
   gLastPublishedVehicleSpeed = 0;
   gPedalRxMs = 0;
@@ -521,15 +525,17 @@ on timer tVcuCycle
     panelDriveStateSeam = cmdDriveStateCmd;
     panelVehicleSpeedSeam = cmdVehicleSpeedCmd;
     if (manualIgnitionCmd == 1 &&
-        panelDriveStateSeam != gLastPublishedDriveState)
+        panelDriveStateSeam != gLastPanelDriveStateCmd)
     {
       gManualDriveStateTarget = panelDriveStateSeam;
     }
     if (manualIgnitionCmd == 1 &&
-        panelVehicleSpeedSeam != gLastPublishedVehicleSpeed)
+        panelVehicleSpeedSeam != gLastPanelVehicleSpeedCmd)
     {
       gManualVehicleSpeedTarget = panelVehicleSpeedSeam;
     }
+    gLastPanelDriveStateCmd = panelDriveStateSeam;
+    gLastPanelVehicleSpeedCmd = panelVehicleSpeedSeam;
     if (manualIgnitionCmd == 0 && gSpeed <= 0)
     {
       gManualDriveStateTarget = 0;
@@ -581,6 +587,8 @@ on timer tVcuCycle
   {
     gManualDriveStateTarget = 0;
     gManualVehicleSpeedTarget = 0;
+    gLastPanelDriveStateCmd = cmdDriveStateCmd;
+    gLastPanelVehicleSpeedCmd = cmdVehicleSpeedCmd;
   }
 
   externalSpeedDelta = externalSpeedHint - gSpeed;

@@ -1,0 +1,53 @@
+@startuml esc_aeb_input_to_vsm_intervention_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title ESC AEB Input To VSM Intervention Signal Flow\n(ESC + AEB + speed context -> VSM control and intervention publish)
+
+participant "ESC / AEB /\nvehicle speed inputs" as VsmCtx #F4F7FB
+participant "VSM\nstability manager owner" as VSM #E8F7E8
+participant "VSM state bus" as VsmBus #FFF4CC
+participant "Observers / brake users" as Obs #E8F0FE
+
+== Stability Inputs ==
+
+VsmCtx -> VSM : escCtrlState / escIntervention\naebArmed / stopReq / decelProfile / domainHealth\nvehicleSpeed
+VSM -> VSM : if ESC stale then\nesc state/intervention = 0
+VSM -> VSM : if AEB stale then\narmed = 0 / stopReq = 0 / decelProfile = 0 / domainHealth = 1
+VSM -> VSM : ctrlState escalates when stale or AEB armed\nand reaches 3 when domainHealth <= 0
+VSM -> VSM : intervention = ESC intervention\nraised to 20/35/50/60 by AEB profile / stopReq
+note right of VSM
+Representative gating inputs
+- escCtrlState / escIntervention
+- aebArmed / stopReq / decelProfile
+- aebDomainHealth
+- vehicleSpeed
+end note
+
+== VSM Publish ==
+
+VSM -> VsmBus : frmVsmStateMsg\nVsmCtrlState / VsmAlertLevel / VsmIntervention
+note right of VSM
+Representative outputs
+- VsmCtrlState
+- VsmAlertLevel
+- VsmIntervention
+end note
+
+== Downstream Visibility ==
+
+VsmBus -> Obs : stability-intervention readback /\nbrake-assist observers
+
+note over VsmCtx, Obs
+Representative runtime chain
+1. ESC, AEB, and speed context reach VSM
+2. VSM derives control state and effective intervention level
+3. VSM publishes stability state and intervention magnitude
+4. Brake-assist observers consume the final VSM posture
+end note
+
+@enduml

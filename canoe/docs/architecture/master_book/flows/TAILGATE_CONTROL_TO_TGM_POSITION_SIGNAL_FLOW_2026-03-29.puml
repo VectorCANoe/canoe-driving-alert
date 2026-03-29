@@ -1,0 +1,45 @@
+@startuml tailgate_control_to_tgm_position_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Tailgate Control To TGM Position Signal Flow\n(power-tailgate control request -> TGM position/power publication)
+
+participant "Tailgate control source\nassist / open request / actuator" as Ctrl #F4F7FB
+participant "Vehicle state\nDriveState" as Veh #E8F0FE
+participant "TGM\ntailgate owner" as TGM #FFF4CC
+participant "Body observers" as Obs #FCE8FF
+
+== Tailgate Control Inputs ==
+
+Ctrl -> TGM : frmPowerTailgateCtrlStateMsg\nTailgateAssistMode / OpenRequestState / TailgateActuatorCmd
+Veh -> TGM : frmVehicleStateCanMsg\nDriveState
+activate TGM
+TGM -> TGM : normalize stale control / vehicle inputs
+TGM -> TGM : derive TailgateOpenState from\nOpenRequestState and actuator command
+TGM -> TGM : derive TailgatePowerState / TailgatePosition
+note right of TGM
+Representative outputs
+- TailgateOpenState
+- TailgatePowerState
+- TailgatePosition
+end note
+
+== Tailgate Publish ==
+
+TGM -> Obs : frmTailgateStateMsg
+TGM -> Obs : traceable tailgate position/power state
+deactivate TGM
+
+note over Ctrl, Obs
+Representative runtime chain
+1. Tailgate control request enters TGM
+2. TGM applies drive-state and control gating
+3. TGM derives power/open/position state
+4. Observers confirm the resulting tailgate movement state
+end note
+
+@enduml

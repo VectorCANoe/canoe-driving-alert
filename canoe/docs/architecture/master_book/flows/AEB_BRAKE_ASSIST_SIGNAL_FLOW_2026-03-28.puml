@@ -1,0 +1,99 @@
+@startuml aeb_brake_assist_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title AEB Brake Assist Signal Flow\n(ADAS / FCA -> AEB -> ESC / EHB / VSM -> brake feel)
+
+participant "ADAS / FCA\nrisk + warning producer" as ADAS #FCE8FF
+participant "AEB\ndomain controller" as AEB #FFE6E6
+participant "ESC\nassist floor + brake owner" as ESC #FFF4CC
+participant "EHB\nhydraulic pressure leaf" as EHB #E8F7E8
+participant "VSM\nintervention leaf" as VSM #E8F0FE
+participant "Driver / CLU\nfelt brake output" as Driver #F4F7FB
+
+== Risk And Path Input ==
+
+ADAS -> AEB : frmFcaStateMsg\nFcwState / AebRequest / DecelAssistReq\nObjectRiskClass / TtcBucket / SelectedAlertLevel
+ADAS -> AEB : frmAdasDomainStateMsg\nWarningPathStatus / E2eHealthState / FailSafeMode
+
+== AEB Domain Publish ==
+
+activate AEB
+AEB -> AEB : publishAebDomainState()
+AEB -> AEB : derive StopReq / DecelProfile / DomainHealth
+note right of AEB
+Published every 100 ms:
+- frmAebDomainStateMsg
+- AebArmed
+- StopReq
+- DecelProfile 0..3
+- DomainHealth 0..3
+end note
+AEB -> ESC : frmAebDomainStateMsg
+AEB -> EHB : frmAebDomainStateMsg
+AEB -> VSM : frmAebDomainStateMsg
+deactivate AEB
+
+== ESC Brake Assist Overlay ==
+
+activate ESC
+ESC -> ESC : deriveEscAssistPressureFloor()
+note right of ESC
+Floor policy:
+- StopReq=1 -> 55
+- Profile=3 -> 45
+- Profile=2 -> 35
+- Profile=1 -> 25
+end note
+ESC -> ESC : appliedBrakePedal = max(driver pedal, assist floor)
+ESC -> ESC : @Chassis::brakePressure / @Chassis::brakeLamp / @Chassis::absActive
+ESC -> EHB : frmBrakeStatusMsg
+deactivate ESC
+
+== Leaf ECU Reaction ==
+
+activate EHB
+EHB -> EHB : deriveAebPressureCmd()
+note right of EHB
+Pressure policy:
+- StopReq=1 -> 180
+- Profile=3 -> 150
+- Profile=2 -> 110
+- Profile=1 -> 70
+end note
+EHB -> EHB : pressureCmd = max(brakePressure, aebPressureCmd)
+EHB -> EHB : output frmEhbStateMsg
+deactivate EHB
+
+activate VSM
+VSM -> VSM : intervention = max(escIntervention, AEB floor)
+note right of VSM
+Intervention floor:
+- StopReq=1 -> 60
+- Profile=3 -> 50
+- Profile=2 -> 35
+- Profile=1 -> 20
+end note
+VSM -> VSM : output frmVsmStateMsg
+deactivate VSM
+
+== Visible Runtime Outcome ==
+
+ESC -> Driver : Chassis::brakePressure\nfrmBrakeStatusMsg
+EHB -> Driver : frmEhbStateMsg
+VSM -> Driver : frmVsmStateMsg
+
+note over ADAS, Driver
+Representative runtime chain
+1. ADAS/FCA sends object risk and path readiness
+2. AEB collapses that into StopReq / DecelProfile / DomainHealth
+3. ESC raises the minimum brake pedal floor
+4. EHB and VSM apply hydraulic / intervention overlays
+5. Driver perceives stepped red brake feel when AEB profile changes
+end note
+
+@enduml

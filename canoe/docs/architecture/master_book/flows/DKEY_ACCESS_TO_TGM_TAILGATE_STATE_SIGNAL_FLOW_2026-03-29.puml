@@ -1,0 +1,49 @@
+@startuml dkey_access_to_tgm_tailgate_state_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title DKEY Access To TGM Tailgate State Signal Flow\n(DKEY access + tailgate control -> TGM tailgate-state publication)
+
+participant "Tailgate control source\nassist / open request / actuator" as Ctrl #F4F7FB
+participant "DKEY\nVehicleAccessState / KeyPresence" as DKEY #E8F0FE
+participant "Vehicle state\nDriveState" as Veh #E8F0FE
+participant "TGM\ntailgate owner" as TGM #FFF4CC
+participant "Body observers /\npanel readback" as Obs #FCE8FF
+
+== Tailgate Inputs ==
+
+Ctrl -> TGM : frmPowerTailgateCtrlStateMsg\nTailgateAssistMode / OpenRequestState / TailgateActuatorCmd
+DKEY -> TGM : frmDigitalKeyStateMsg\nVehicleAccessState / KeyPresence
+Veh -> TGM : frmVehicleStateCanMsg\nDriveState
+activate TGM
+TGM -> TGM : normalize stale control / DKEY / vehicle inputs
+TGM -> TGM : accessAuthorized when drive=0\nand DKEY access/key conditions are met
+TGM -> TGM : derive TailgateLockState / OpenState
+TGM -> TGM : derive TailgatePowerState / TailgatePosition
+note right of TGM
+Representative conditions
+- DriveState == 0
+- KeyPresence == 1
+- VehicleAccessState >= 1
+- assist / request / actuator command valid
+end note
+
+== Tailgate Publish ==
+
+TGM -> Obs : frmTailgateStateMsg
+TGM -> Obs : traceable tailgate lock/open/power state
+deactivate TGM
+
+note over Ctrl, Obs
+Representative runtime chain
+1. Tailgate control command arrives with DKEY access context
+2. TGM validates park/access authorization
+3. TGM derives lock, open, power, and position state
+4. Body observers and tests confirm the tailgate outcome
+end note
+
+@enduml

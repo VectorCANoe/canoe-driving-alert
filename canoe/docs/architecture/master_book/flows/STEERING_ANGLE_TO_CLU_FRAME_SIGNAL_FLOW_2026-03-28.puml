@@ -1,0 +1,49 @@
+@startuml steering_angle_to_clu_frame_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Steering Angle To CLU Frame Signal Flow\n(steering angle/manual command -> CLU steering frame render)
+
+participant "Steering state / manual command" as AngleCtx #F4F7FB
+participant "CLU\ncluster render owner" as CLU #E8F7E8
+participant "Display seams" as DisplayBus #FFF4CC
+participant "Cluster / panels" as Obs #E8F0FE
+
+== Frame Inputs ==
+
+AngleCtx -> CLU : Chassis::steeringAngle\nCmd::steeringAngleCmd\nscenario manual mode
+CLU -> CLU : if manual mode\nangle = normalized Cmd::steeringAngleCmd
+CLU -> CLU : else angle = Chassis::steeringAngle
+CLU -> CLU : frame = (angle * 69 + 69) / 138
+note right of CLU
+Representative gating inputs
+- Cmd::steeringAngleCmd
+- Chassis::steeringAngle
+- manualMode
+end note
+
+== Display Publish ==
+
+CLU -> DisplayBus : Display::steeringFrame
+note right of CLU
+Representative outputs
+- Display::steeringFrame
+end note
+
+== Downstream Visibility ==
+
+DisplayBus -> Obs : steering-wheel render frame /\ncluster visual readback
+
+note over AngleCtx, Obs
+Representative runtime chain
+1. Steering angle reaches CLU from manual or chassis-owned path
+2. CLU normalizes the angle into the donor frame range
+3. CLU publishes Display::steeringFrame
+4. Cluster visuals and panels consume the rendered steering frame
+end note
+
+@enduml

@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820">
+  <style>
+    .title { font: 700 26px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .label { font: 600 18px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #334155; }
+    .box { rx: 18; ry: 18; stroke: #475569; stroke-width: 2; }
+    .arrow { stroke: #334155; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#334155"/>
+    </marker>
+  </defs>
+
+  <text x="40" y="48" class="title">Core Coupled ECU Group Map</text>
+  <text x="40" y="74" class="small">Internal runtime reading aid. Official SoT stays in 0301~0304.</text>
+
+  <rect x="40" y="110" width="210" height="90" class="box" fill="#e0f2fe"/>
+  <text x="62" y="145" class="label">Input Surface</text>
+  <text x="62" y="172" class="small">Input_Console</text>
+  <text x="62" y="192" class="small">Cmd::* / Inject::* / Test::*</text>
+
+  <rect x="320" y="110" width="320" height="140" class="box" fill="#dcfce7"/>
+  <text x="342" y="145" class="label">Base Vehicle Dynamics</text>
+  <text x="342" y="172" class="small">VCU / ESC / MDPS / TCU / EMS</text>
+  <text x="342" y="195" class="small">vehicleSpeed / driveState / brakePressure / steering</text>
+  <text x="342" y="218" class="small">frmVehicleStateCanMsg / frmBrakeStatusMsg / frmSteeringTorqueMsg</text>
+
+  <rect x="720" y="110" width="300" height="140" class="box" fill="#fef3c7"/>
+  <text x="742" y="145" class="label">ADAS / AEB Assist</text>
+  <text x="742" y="172" class="small">ADAS / SCC / V2X / AEB</text>
+  <text x="742" y="195" class="small">risk / decel assist / StopReq / DecelProfile</text>
+  <text x="742" y="218" class="small">frmAebDomainStateMsg</text>
+
+  <rect x="1080" y="110" width="260" height="140" class="box" fill="#fee2e2"/>
+  <text x="1102" y="145" class="label">Brake Consumers</text>
+  <text x="1102" y="172" class="small">ESC / EHB / VSM</text>
+  <text x="1102" y="195" class="small">assist floor / pressure / intervention</text>
+
+  <rect x="320" y="350" width="320" height="140" class="box" fill="#e9d5ff"/>
+  <text x="342" y="385" class="label">Gateway / Gate Reason</text>
+  <text x="342" y="412" class="small">CGW</text>
+  <text x="342" y="435" class="small">selectedAlertGateReason / boundary / fail-safe</text>
+
+  <rect x="720" y="350" width="300" height="140" class="box" fill="#fde68a"/>
+  <text x="742" y="385" class="label">Display / Warning Output</text>
+  <text x="742" y="412" class="small">IVI / CLU / BCM / AMP</text>
+  <text x="742" y="435" class="small">text / ambient / audio / display render</text>
+
+  <rect x="1080" y="350" width="260" height="140" class="box" fill="#dbeafe"/>
+  <text x="1102" y="385" class="label">Validation Overlay</text>
+  <text x="1102" y="412" class="small">TEST_SCN / TEST_BAS</text>
+  <text x="1102" y="435" class="small">scenario control / baseline summary</text>
+
+  <rect x="40" y="590" width="600" height="150" class="box" fill="#f8fafc"/>
+  <text x="62" y="625" class="label">Primary current risk</text>
+  <text x="62" y="655" class="small">AEB profile change drives simultaneous reactions in ESC / EHB / VSM.</text>
+  <text x="62" y="680" class="small">This can feel like intermittent brake intervention even when panel input is stable.</text>
+  <text x="62" y="705" class="small">Trace cluster first: StopReq, DecelProfile, DomainHealth, assist floor, brake pressure.</text>
+
+  <path class="arrow" d="M250 155 L320 155"/>
+  <path class="arrow" d="M640 180 L720 180"/>
+  <path class="arrow" d="M1020 180 L1080 180"/>
+  <path class="arrow" d="M480 250 L480 350"/>
+  <path class="arrow" d="M870 250 L870 350"/>
+  <path class="arrow" d="M640 420 L720 420"/>
+  <path class="arrow" d="M1180 250 L1180 350"/>
+</svg>

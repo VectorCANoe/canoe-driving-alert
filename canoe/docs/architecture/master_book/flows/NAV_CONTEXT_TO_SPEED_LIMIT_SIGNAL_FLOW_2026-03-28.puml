@@ -1,0 +1,80 @@
+@startuml nav_context_to_speed_limit_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title NAV Context To Speed Limit Signal Flow\n(Input_Console -> NAV -> ADAS -> IVI)
+
+actor "Driver\n(Input Console)" as Driver #F4F7FB
+participant "Input_Console\nContext > Inject / Route" as Panel #E8F0FE
+participant "NAV\nroute context owner" as NAV #E8F7E8
+participant "ADAS\nspeed-limit / zone consumer" as ADAS #FCE8FF
+participant "IVI\nroute render consumer" as IVI #E8F0FE
+
+== Route Input ==
+
+Driver -> Panel : Set road zone / nav dir / zone dist / speed limit
+activate Panel
+Panel -> Panel : Write Inject::roadZone
+Panel -> Panel : Write Inject::navDirection
+Panel -> Panel : Write Inject::zoneDistance
+Panel -> Panel : Write Inject::speedLimit
+deactivate Panel
+
+== NAV Ownership ==
+
+activate NAV
+Panel -> NAV : Inject::* route seams
+NAV -> NAV : calcBaseZoneContext()
+NAV -> NAV : calcEffectiveSpeedLimit()
+NAV -> NAV : derive route class / guide / ETA
+NAV -> ADAS : frmNavModuleStateMsg
+NAV -> IVI : frmNavModuleStateMsg
+NAV -> IVI : frmNavigationRouteMsg
+note right of NAV
+Representative outputs
+- NavRouteClass
+- NavGuideType
+- NavSpeedLimit
+- RouteAlertEta
+end note
+deactivate NAV
+
+== ADAS Speed-Limit Consumption ==
+
+activate ADAS
+NAV -> ADAS : frmNavModuleStateMsg
+ADAS -> ADAS : deriveBaseZoneContextFromNavState()
+ADAS -> ADAS : apply gCanNavSpeedLimit
+ADAS -> ADAS : speedLimitNorm / baseZoneContext
+note right of ADAS
+Representative outputs
+- Core::speedLimitNorm
+- Core::baseZoneContext
+- warning selection based on speed/zone
+end note
+deactivate ADAS
+
+== IVI Route Render ==
+
+activate IVI
+NAV -> IVI : frmNavModuleStateMsg
+NAV -> IVI : frmNavigationRouteMsg
+IVI -> IVI : deriveBaseZoneContextFromNavState()
+IVI -> IVI : roadZoneColorCode / presentationMode
+deactivate IVI
+
+Driver <- Panel : Route context becomes speed-limit and route-warning state
+
+note over Driver, IVI
+Representative runtime chain
+1. Input_Console injects route context
+2. NAV normalizes route class and effective speed limit
+3. ADAS consumes NavSpeedLimit and baseZoneContext
+4. IVI consumes the same NAV state for route presentation
+end note
+
+@enduml

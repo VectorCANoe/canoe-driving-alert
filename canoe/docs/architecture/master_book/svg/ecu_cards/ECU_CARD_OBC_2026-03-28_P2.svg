@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1092" viewBox="0 0 1600 1092">
+  <defs>
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dbeafe"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #f7f7f5; }
+    .title { font: 700 32px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .sub { font: 500 15px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 18px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 13px 'Segoe UI', sans-serif; fill: #475569; }
+    .statement { font: 700 26px 'Segoe UI', sans-serif; fill: #111827; }
+    .node { font: 700 18px 'Segoe UI', sans-serif; fill: #111827; }
+    .box { rx: 22; ry: 22; stroke: #334155; stroke-width: 1.6; }
+    .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <rect x="0" y="0" width="1600" height="1092" class="bg"/>
+  <text x="34" y="44" class="title">ECU Reference Card - OBC</text>
+  <text x="34" y="72" class="sub">page 2 | grouped reference bank with balanced network layout</text>
+  <rect x="30" y="100" width="1540" height="142" class="box" fill="url(#heroGradient)"/> <text x="52" y="134" class="small">Reference bank | page 2</text> <text x="52" y="172" class="title">OBC</text> <text x="52" y="202" class="text">Group 01 Base Vehicle Dynamics | Powertrain</text> <text x="52" y="226" class="text">Primary flow: FLOW_03</text>
+  <rect x="30" y="266" width="1540" height="180" class="box" fill="#eff6ff"/>
+<text x="52" y="302" class="label">Linked ECU bank</text>
+<text x="52" y="330" class="small">Linked ECU visible: 3</text>
+<text x="52" y="350" class="small">Upstream 2 | Downstream 1 | Peer 0</text>
+<rect x="52" y="388" width="366" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="235.0" y="410" text-anchor="middle" class="small">BAT_BMS</text>
+<rect x="428" y="388" width="366" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="611.0" y="410" text-anchor="middle" class="small">CPC</text>
+<rect x="804" y="388" width="366" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="987.0" y="410" text-anchor="middle" class="small">VCU</text>
+  <rect x="550" y="464" width="500" height="578" class="box" fill="#ffffff"/>
+<text x="572" y="500" class="label">Reference snapshot</text>
+<rect x="572" y="526" width="222" height="82" rx="18" ry="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="590" y="554" class="small">Flows</text>
+<text x="590" y="584" class="node">1</text>
+<rect x="806" y="526" width="222" height="82" rx="18" ry="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="824" y="554" class="small">Owner seams</text>
+<text x="824" y="584" class="node">0</text>
+<rect x="572" y="620" width="222" height="82" rx="18" ry="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="590" y="648" class="small">Sysvars</text>
+<text x="590" y="678" class="node">0</text>
+<rect x="806" y="620" width="222" height="82" rx="18" ry="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="824" y="648" class="small">Tests</text>
+<text x="824" y="678" class="node">1</text>
+<text x="572" y="724" class="small">Primary flow</text>
+<rect x="572" y="738" width="456" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="586" y="760" class="small">FLOW_03</text>
+<text x="572" y="786" class="small">Support pack</text>
+<rect x="572" y="800" width="456" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="586" y="822" class="small">0 supporting flows</text>
+<text x="572" y="848" class="small">Key seam</text>
+<rect x="572" y="862" width="456" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="586" y="884" class="small">-</text>
+<text x="572" y="910" class="small">Verification</text>
+<rect x="572" y="924" width="456" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="586" y="946" class="small">TC_CANOE_UT_INP_066_OBC_INPUT</text>
+<text x="572" y="972" class="small">Source pack</text>
+<rect x="572" y="986" width="456" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="586" y="1008" class="small">2 CAPL / 6 docs</text>
+  <rect x="30" y="464" width="500" height="144" class="box" fill="#fff7ed"/>
+<text x="52" y="498" class="small">What this ECU does</text>
+<text x="52" y="542" class="statement">Publishes on-board charger state for</text>
+<text x="52" y="570" class="statement">charging status and energy visibility</text>
+  <rect x="1070" y="464" width="500" height="180" class="box" fill="#ffffff"/>
+<text x="1092" y="498" class="small">Interaction sketch</text>
+<rect x="1092" y="530" width="140" height="88" rx="18" ry="18" fill="#e0f2fe" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1110" y="556" class="small">Input</text>
+<text x="1110" y="582" class="node">2 inbound</text>
+<text x="1110" y="604" class="small">BAT_BMS, CPC</text>
+<rect x="1250" y="530" width="140" height="88" rx="18" ry="18" fill="#dcfce7" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1268" y="556" class="small">ECU</text>
+<text x="1268" y="582" class="node">OBC</text>
+<text x="1268" y="604" class="small">Publishes on-board ch…</text>
+<rect x="1408" y="530" width="140" height="88" rx="18" ry="18" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1426" y="556" class="small">Output</text>
+<text x="1426" y="582" class="node">1 outbound</text>
+<text x="1426" y="604" class="small">VCU</text>
+<line x1="1232" y1="574" x2="1250" y2="574" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="1390" y1="574" x2="1408" y2="574" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>
+</svg>

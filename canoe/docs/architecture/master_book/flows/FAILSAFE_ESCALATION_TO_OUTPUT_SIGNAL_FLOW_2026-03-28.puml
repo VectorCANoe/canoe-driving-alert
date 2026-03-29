@@ -1,0 +1,74 @@
+@startuml failsafe_escalation_to_output_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title FailSafe Escalation To Output Signal Flow\n(CGW -> IVI / CLU)
+
+participant "ADAS / body boundary\nwarning sources" as Sources #E8F7E8
+participant "CGW\nfail-safe / gateway owner" as CGW #FFF4CC
+participant "IVI\nwarning render owner" as IVI #E8F0FE
+participant "CLU\ncluster warning owner" as CLU #E8F0FE
+
+== Boundary / Gateway Intake ==
+
+Sources -> CGW : decision seams + timeout / boundary inputs
+activate CGW
+CGW -> CGW : warningPathStatus / e2eHealthState / boundaryAlive
+CGW -> CGW : failSafeMode = 0 / 1 / 2
+CGW -> CGW : selectedAlertEffectiveLevel / Type
+CGW -> CGW : selectedAlertGateReason = 1 / 2 / 3
+note right of CGW
+Representative escalation rules
+- timeoutClear or dead boundary -> gate reason 1/2
+- failSafeMode >= 1 -> effective level floor 4
+- fallback alert type when decision type is 0
+end note
+CGW -> IVI : CoreState::selectedAlertEffectiveLevel
+CGW -> IVI : CoreState::selectedAlertEffectiveType
+CGW -> IVI : CoreState::selectedAlertGateReason
+CGW -> IVI : Core::timeoutClear
+CGW -> IVI : Core::failSafeMode
+CGW -> CLU : same effective seams
+CGW -> CGW : publishFailSafeState()
+CGW -> CGW : publishGatewayState()
+CGW -> CGW : publishObjectSafetyState()
+deactivate CGW
+
+== IVI Escalated Warning Render ==
+
+activate IVI
+CGW -> IVI : effective seams + timeoutClear
+IVI -> IVI : deriveWarningTextCode()
+IVI -> IVI : updateBackboneAlertState()
+IVI -> IVI : UiRender::warningBeepState
+IVI -> CLU : frmClusterWarningMsg
+IVI -> CLU : frmClusterNotifMsg
+note right of IVI
+Representative outputs
+- warning text code
+- notif / popup state
+- warning beep state
+end note
+deactivate IVI
+
+== CLU Escalated Display ==
+
+activate CLU
+CGW -> CLU : effective seams
+IVI -> CLU : frmClusterWarningMsg / frmClusterNotifMsg
+CLU -> CLU : keep alert visible when\nselectedAlertGateReason > 0 or timeoutClear == 1
+deactivate CLU
+
+note over Sources, CLU
+Representative runtime chain
+1. Boundary or transport issue reaches CGW
+2. CGW escalates effective alert and gate reason
+3. IVI converts escalation into warning text / beep
+4. CLU keeps the escalated warning visible to the driver
+end note
+
+@enduml

@@ -1,0 +1,195 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2470" viewBox="0 0 1600 2470">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #f8fafc; }
+    .title { font: 700 30px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .sub { font: 500 15px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 18px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .node { font: 700 18px 'Segoe UI', sans-serif; fill: #111827; }
+    .box { rx: 20; ry: 20; stroke: #475569; stroke-width: 2; }
+    .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <rect x="0" y="0" width="1600" height="2470" class="bg"/>
+  <text x="34" y="44" class="title">ECU Network Flow - TEST_SCN</text>
+  <text x="34" y="72" class="sub">Group 05 Validation Scenario | Domain ETH_Backbone | generated internal OEM-style network flow card</text>
+
+  <rect x="30" y="100" width="1540" height="144" class="box" fill="#fef3c7"/>
+  <text x="52" y="136" class="label">ECU placement</text>
+  <text x="52" y="168" class="text">Group: Group 05 Validation Scenario</text>
+  <text x="450" y="168" class="text">Domain: ETH_Backbone</text>
+  <text x="52" y="198" class="text">Validation and scenario</text>
+<text x="52" y="220" class="text">harness</text>
+
+  <rect x="30" y="268" width="1540" height="198" class="box" fill="#ffffff"/>
+  <text x="52" y="304" class="label">Network surface</text>
+  <rect x="52" y="320" width="430" height="128" rx="16" ry="16" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="74" y="350" class="small">Inbound DBC / bus surface</text>
+  <text x="74" y="376" class="text">- adas_can.dbc</text>
+<text x="74" y="396" class="text">- body_can.dbc</text>
+<text x="74" y="416" class="text">- chassis_can.dbc</text>
+<text x="74" y="436" class="text">- infotainment_can.dbc</text>
+<text x="74" y="456" class="text">- powertrain_can.dbc</text>
+  <rect x="585" y="320" width="430" height="128" rx="16" ry="16" fill="#ecfeff" stroke="#67e8f9" stroke-width="1.5"/>
+  <text x="607" y="350" class="small">Current ECU lane</text>
+  <text x="607" y="378" class="node">TEST_SCN</text>
+  <text x="607" y="406" class="small">ETH_Backbone / Group 05 Validation Scenario</text>
+  <rect x="1118" y="320" width="430" height="128" rx="16" ry="16" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="1140" y="350" class="small">Outbound DBC / bus surface</text>
+  <text x="1140" y="376" class="text">- adas_can.dbc</text>
+<text x="1140" y="396" class="text">- body_can.dbc</text>
+<text x="1140" y="416" class="text">- chassis_can.dbc</text>
+<text x="1140" y="436" class="text">- infotainment_can.dbc</text>
+<text x="1140" y="456" class="text">- powertrain_can.dbc</text>
+
+  <rect x="30" y="490" width="1540" height="1142" class="box" fill="#ffffff"/>
+<text x="52" y="524" class="label">Runtime network flow</text>
+<rect x="40" y="516" width="450" height="1096" class="box" fill="#e0f2fe"/>
+<text x="64" y="552" class="label">Inbound Flow</text>
+<rect x="54" y="574" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="602" class="node">ABS</text>
+<text x="70" y="626" class="small">frmAbsDiagResMsg</text>
+<rect x="54" y="658" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="686" class="node">ACU</text>
+<text x="70" y="710" class="small">frmAcuDiagResMsg</text>
+<rect x="54" y="742" width="422" height="160" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="770" class="node">ADAS</text>
+<text x="70" y="794" class="small">ethDecelAssistReqMsg,</text>
+<text x="70" y="812" class="small">ethEmergencyRiskMsg,</text>
+<text x="70" y="830" class="small">ethObjectRiskStateMsg,</text>
+<text x="70" y="848" class="small">ethObjectScenarioAlertMsg,</text>
+<text x="70" y="866" class="small">ethSelectedAlertMsg,</text>
+<text x="70" y="884" class="small">frmAdasDiagResMsg</text>
+<rect x="54" y="916" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="944" class="node">AFLS</text>
+<text x="70" y="968" class="small">frmAflsDiagResMsg</text>
+<rect x="54" y="1000" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1028" class="node">AMP</text>
+<text x="70" y="1052" class="small">frmAmpDiagResMsg</text>
+<rect x="54" y="1084" width="422" height="88" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1112" class="node">BCM</text>
+<text x="70" y="1136" class="small">frmBcmDiagResMsg,</text>
+<text x="70" y="1154" class="small">frmBodyHealthMsg</text>
+<rect x="54" y="1186" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1214" class="node">CDC</text>
+<text x="70" y="1238" class="small">frmCdcDiagResMsg</text>
+<rect x="54" y="1270" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1298" class="node">CLU</text>
+<text x="70" y="1322" class="small">frmCluDiagResMsg</text>
+<rect x="54" y="1354" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1382" class="node">DATC</text>
+<text x="70" y="1406" class="small">frmDatcDiagResMsg</text>
+<rect x="54" y="1438" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1466" class="node">DKEY</text>
+<text x="70" y="1490" class="small">frmDigitalKeyStateMsg</text>
+<rect x="54" y="1522" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="70" y="1550" class="node">... +19 more ECU edges</text>
+<text x="70" y="1574" class="small">-</text>
+<rect x="1110" y="516" width="450" height="1024" class="box" fill="#dbeafe"/>
+<text x="1134" y="552" class="label">Outbound Flow</text>
+<rect x="1124" y="574" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="602" class="node">ABS</text>
+<text x="1140" y="626" class="small">frmAbsDiagReqMsg</text>
+<rect x="1124" y="658" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="686" class="node">ACU</text>
+<text x="1140" y="710" class="small">frmAcuDiagReqMsg</text>
+<rect x="1124" y="742" width="422" height="88" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="770" class="node">ADAS</text>
+<text x="1140" y="794" class="small">ethObjectRiskInputMsg,</text>
+<text x="1140" y="812" class="small">frmAdasDiagReqMsg</text>
+<rect x="1124" y="844" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="872" class="node">AFLS</text>
+<text x="1140" y="896" class="small">frmAflsDiagReqMsg</text>
+<rect x="1124" y="928" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="956" class="node">AMP</text>
+<text x="1140" y="980" class="small">frmAmpDiagReqMsg</text>
+<rect x="1124" y="1012" width="422" height="88" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="1040" class="node">BCM</text>
+<text x="1140" y="1064" class="small">frmBcmDiagReqMsg,</text>
+<text x="1140" y="1082" class="small">frmTurnLampInputMsg</text>
+<rect x="1124" y="1114" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="1142" class="node">CDC</text>
+<text x="1140" y="1166" class="small">frmCdcDiagReqMsg</text>
+<rect x="1124" y="1198" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="1226" class="node">CLU</text>
+<text x="1140" y="1250" class="small">frmCluDiagReqMsg</text>
+<rect x="1124" y="1282" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="1310" class="node">DATC</text>
+<text x="1140" y="1334" class="small">frmDatcDiagReqMsg</text>
+<rect x="1124" y="1366" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="1394" class="node">DMS</text>
+<text x="1140" y="1418" class="small">frmDmsDiagReqMsg</text>
+<rect x="1124" y="1450" width="422" height="70" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="1140" y="1478" class="node">... +26 more ECU edges</text>
+<text x="1140" y="1502" class="small">-</text>
+<rect x="570" y="556" width="460" height="420" class="box" fill="#dcfce7"/>
+<text x="800" y="596" text-anchor="middle" class="node">TEST_SCN</text>
+<text x="604" y="630" class="text">Validation and scenario</text>
+<text x="604" y="652" class="text">harness</text>
+<text x="604" y="732" class="small">Owner seam</text>
+<text x="604" y="758" class="small">- Test::scenarioCommand</text>
+<text x="604" y="778" class="small">- Test::scenarioActiveId</text>
+<text x="604" y="798" class="small">- Test::scenarioResult</text>
+<text x="604" y="866" class="small">Primary sysvar</text>
+<text x="604" y="894" class="text">@Test::scenarioCommand</text>
+<text x="604" y="942" class="small">Representative path: ABS -&gt; TEST_SCN -&gt; ABS</text>
+<line x1="490" y1="766" x2="570" y2="766" class="lane"/>
+<line x1="1030" y1="766" x2="1110" y2="766" class="lane"/>
+<text x="510" y="740" class="small">Representative Rx:</text>
+<text x="510" y="758" class="small">frmAbsDiagResMsg</text>
+<text x="1050" y="740" class="small">Representative Tx:</text>
+<text x="1050" y="758" class="small">frmAbsDiagReqMsg</text>
+
+  <rect x="30" y="1656" width="1540" height="764" class="box" fill="#f8fafc"/>
+<text x="52" y="1690" class="label">ECU metadata</text>
+<rect x="44" y="1710" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1710" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1738" class="text">ECU</text>
+<text x="284" y="1736" class="text">TEST_SCN</text>
+<rect x="44" y="1772" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1772" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1800" class="text">Layer/Group</text>
+<text x="284" y="1798" class="text">ETH_Backbone / Group 05 Validation Scenario</text>
+<rect x="44" y="1834" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1834" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1862" class="text">Owner seam</text>
+<text x="284" y="1860" class="text">Test::scenarioCommand, Test::scenarioActiveId, Test::scenarioResult</text>
+<rect x="44" y="1896" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1896" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1924" class="text">Rx message</text>
+<text x="284" y="1922" class="text">frmAbsDiagResMsg, frmAcuDiagResMsg, ethDecelAssistReqMsg, ethEmergencyRiskMsg</text>
+<rect x="44" y="1958" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="1958" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="1986" class="text">Tx message</text>
+<text x="284" y="1984" class="text">frmAbsDiagReqMsg, frmAcuDiagReqMsg, ethObjectRiskInputMsg, frmAdasDiagReqMsg</text>
+<rect x="44" y="2020" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2020" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2048" class="text">Linked ECU</text>
+<text x="284" y="2046" class="text">ABS, ACU, ADAS, AFLS, AMP, BCM (+33 more)</text>
+<rect x="44" y="2082" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2082" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2110" class="text">Primary sysvar</text>
+<text x="284" y="2108" class="text">@Test::scenarioCommand</text>
+<rect x="44" y="2144" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2144" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2172" class="text">Primary test asset</text>
+<text x="284" y="2170" class="text">No direct native test asset matched</text>
+<rect x="44" y="2206" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2206" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2234" class="text">Doc source</text>
+<text x="284" y="2232" class="text">0301, 0302, 0303, 0304 (+2 more)</text>
+<rect x="44" y="2268" width="220" height="50" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2268" width="1276" height="50" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2296" class="text">Gap/Issue</text>
+<text x="284" y="2294" class="text">Must stay scenario-focused and not silently become a normal feature owner.</text>
+<rect x="44" y="2330" width="220" height="68" rx="12" ry="12" fill="#e5eefb" stroke="#c7d2fe" stroke-width="1.2"/>
+<rect x="270" y="2330" width="1276" height="68" rx="12" ry="12" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="62" y="2358" class="text">Runtime note</text>
+<text x="284" y="2356" class="text">Scenario entry point for validation presets, stop/manual logic, and scenario verdict</text>
+<text x="284" y="2374" class="text">readback.</text>
+</svg>

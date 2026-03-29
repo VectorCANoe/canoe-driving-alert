@@ -1,0 +1,57 @@
+@startuml steering_input_to_mdps_state_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Steering Input To MDPS State Signal Flow\n(steering command + speed -> MDPS steering state / torque publish)
+
+participant "Steering / vehicle inputs" as SteerCtx #F4F7FB
+participant "MDPS\nsteering assist owner" as MDPS #E8F7E8
+participant "Steering state bus" as SteerBus #FFF4CC
+participant "Observers / CLU / ADAS" as Obs #E8F0FE
+
+== Steering Inputs ==
+
+SteerCtx -> MDPS : steeringInput / steeringAngle\nvehicleSpeed\nmanualMode
+MDPS -> MDPS : if steeringInput stale then\nsteeringInput = 0
+MDPS -> MDPS : if vehicle stale then\nspeedNorm = 0
+MDPS -> MDPS : in manual mode, derive steeringInput from Chassis::steeringAngle
+MDPS -> MDPS : steeringAngleRaw = steeringInput * 30
+MDPS -> MDPS : assistLevel = (speedNorm > 80) ? 1 : 2
+MDPS -> MDPS : steeringTorque = steeringInput * 20
+note right of MDPS
+Representative gating inputs
+- steeringInput / steeringAngle
+- vehicleSpeed
+- manualMode
+end note
+
+== MDPS Publish ==
+
+MDPS -> SteerBus : frmSteeringStateCanMsg\nSteeringState
+MDPS -> SteerBus : frmSteeringTorqueMsg\nSteeringTorque / SteeringAssistLv
+MDPS -> SteerBus : frmEpsStateMsg\nEpsAssistState / EpsFaultState
+note right of MDPS
+Representative outputs
+- SteeringState
+- SteeringTorque
+- SteeringAssistLv
+- EpsAssistState
+end note
+
+== Downstream Visibility ==
+
+SteerBus -> Obs : steering state / torque readback
+
+note over SteerCtx, Obs
+Representative runtime chain
+1. Steering command and speed context reach MDPS
+2. MDPS derives raw steering angle, torque, and assist level
+3. MDPS publishes steering state, torque, and EPS status
+4. CLU, ADAS, and observers consume the effective steering-assist posture
+end note
+
+@enduml

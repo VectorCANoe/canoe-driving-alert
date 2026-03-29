@@ -1,0 +1,61 @@
+@startuml door_open_warn_to_comfort_profile_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Door Open Warn To Comfort Profile Signal Flow\n(Door leaf states -> BCM -> Body comfort state)
+
+participant "Door / Tailgate leaves\nFL/FR/RL/RR + Tailgate" as Doors #F4F7FB
+participant "BCM\ndoor + comfort owner" as BCM #E8F7E8
+participant "Body gateway / comfort frames" as BodyBus #FFF4CC
+participant "Observers / Panels" as Obs #E8F0FE
+
+== Door-State Aggregation ==
+
+Doors -> BCM : gDoorFlOpenState / LockState\n... gDoorRrOpenState / LockState\nTailgateOpenState
+BCM -> BCM : build doorStateMask
+BCM -> BCM : derive doorLockState
+BCM -> BCM : if any door open or tailgate open\nthen doorOpenWarn = 1
+note right of BCM
+Representative door seams
+- DoorStateMask
+- DoorLockState
+- DoorOpenWarn
+end note
+
+== Body Door Publication ==
+
+BCM -> BodyBus : frmDoorStateMsg
+BCM -> BCM : output DoorStateMask /\nDoorLockState / DoorOpenWarn
+
+== Comfort Profile Derivation ==
+
+BCM -> BCM : if stale inputs -> comfortProfile = 0
+BCM -> BCM : else if remote climate / seat comfort -> 3
+BCM -> BCM : else if door command / open door / unlocked /\nPAAK access -> 2
+BCM -> BCM : else if driveState > 0 or ambientMode > 0 -> 4
+BCM -> BCM : else default -> 1
+BCM -> BCM : comfortStatus / comfortError
+note right of BCM
+Representative comfort output
+- frmBodyComfortStateMsg
+- ComfortProfile / Status / Error
+end note
+
+== Downstream Visibility ==
+
+BCM -> BodyBus : frmBodyComfortStateMsg
+BCM -> Obs : write trace / panel readback
+
+note over Doors, Obs
+Representative runtime chain
+1. Door leaf states enter BCM
+2. BCM derives DoorOpenWarn from door/tailgate openness
+3. BCM folds access/open/lock state into ComfortProfile
+4. Door state and comfort state are published as separate body frames
+end note
+
+@enduml

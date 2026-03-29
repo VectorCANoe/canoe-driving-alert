@@ -1,0 +1,117 @@
+@startuml steering_turn_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Steering Turn Signal Flow\n(Input_Console -> ESC -> MDPS -> CGW / ADAS / CLU)
+
+actor "Driver\n(Input Console)" as Driver #F4F7FB
+participant "Input_Console\nVehicle > Steering" as Panel #E8F0FE
+participant "ESC\nmanual steering bridge" as ESC #FFE6E6
+participant "MDPS\nsteering state producer" as MDPS #E8F7E8
+participant "CGW\nfreshness/gateway view" as CGW #FFF4CC
+participant "ADAS\nsteering consumer" as ADAS #FCE8FF
+participant "CLU\nwheel frame output" as CLU #E8F0FE
+
+== Manual Steering Input ==
+
+Driver -> Panel : Drag steering bar / wheel
+activate Panel
+Panel -> Panel : Write Cmd::steeringAngleCmd\nrange -540..+540 deg
+note right of Panel
+Input seam
+- Cmd::steeringAngleCmd
+- donor/readback UI also watches
+  Chassis::steeringAngle and
+  Display::steeringFrame
+end note
+deactivate Panel
+
+== ESC Manual Readback Bridge ==
+
+activate ESC
+Panel -> ESC : Cmd::steeringAngleCmd (sysvar)
+ESC -> ESC : mapSignedSteeringCmdToLegacyAngle()
+ESC -> ESC : publishManualSteeringReadback()
+ESC -> ESC : deriveManualSteeringInputFromAngle()
+note right of ESC
+Manual mode condition:
+- Test::scenarioActiveId == 0
+
+Effects:
+- Chassis::steeringAngle = 0..138
+- steeringInput = 0 or 1
+end note
+ESC -> CLU : Chassis::steeringAngle (sysvar readback)
+deactivate ESC
+
+== MDPS Steering Publish ==
+
+activate MDPS
+ESC -> MDPS : frmSteeringCanMsg\nor manual Chassis::steeringAngle
+MDPS -> MDPS : deriveManualSteeringInputFromAngle()\nwhen manual mode
+MDPS -> MDPS : steeringAngleRaw = steeringInput * 30
+MDPS -> MDPS : steeringTorque = steeringInput * 20
+MDPS -> CGW : frmSteeringStateCanMsg
+MDPS -> ADAS : frmSteeringStateCanMsg
+MDPS -> MDPS : output frmSteeringTorqueMsg
+note right of MDPS
+Published every 50 ms:
+- frmSteeringStateCanMsg
+- frmSteeringTorqueMsg
+- frmEpsStateMsg
+- backbone steering state
+end note
+deactivate MDPS
+
+== Downstream Consumers ==
+
+activate CGW
+CGW -> CGW : update gSteeringTsMs\nand steering freshness age
+note right of CGW
+Gateway side effect:
+- steering freshness merged into
+  chassis visibility / health view
+end note
+deactivate CGW
+
+activate ADAS
+ADAS -> ADAS : gCanSteeringInput = SteeringState
+ADAS -> ADAS : steeringInputNorm /\nAB-group / release logic
+note right of ADAS
+Used by:
+- decel release logic
+- zone/speed adjustment
+- steer group detection
+end note
+deactivate ADAS
+
+activate CLU
+CLU -> CLU : if manual -> use Cmd::steeringAngleCmd
+CLU -> CLU : else -> use Chassis::steeringAngle
+CLU -> CLU : frame = (angle * 69 + 69) / 138
+CLU -> Panel : Display::steeringFrame
+note right of CLU
+Display seam:
+- Display::steeringFrame 0..69
+- wheel image follows the bar
+end note
+deactivate CLU
+
+== Visible User Outcome ==
+
+Driver <- Panel : Steering bar, degree box,\nwheel image move together
+
+note over Driver, CLU
+Representative runtime chain
+1. Input_Console writes Cmd::steeringAngleCmd
+2. ESC creates manual steering readback
+3. MDPS publishes steering state / torque
+4. CGW and ADAS consume steering state
+5. CLU renders steeringFrame for donor wheel image
+end note
+
+@enduml

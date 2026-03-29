@@ -1,0 +1,56 @@
+@startuml diag_stage_to_ethb_service_security_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Diag Stage To ETHB Service Security Signal Flow\n(route/boundary diag stage -> ETHB route-health and security-level publish)
+
+participant "NAV / notif /\nboundary context" as DiagCtx #F4F7FB
+participant "ETHB\nbackbone state owner" as ETHB #E8F7E8
+participant "Backbone service state" as BackboneBus #FFF4CC
+participant "Observers / diagnostics" as Obs #E8F0FE
+
+== Backbone Inputs ==
+
+DiagCtx -> ETHB : nav session / route class\nalert level\nboundaryAlive\nwarningPathStatus\nfailSafeMode
+ETHB -> ETHB : roadZoneActive / guidedRouteActive
+ETHB -> ETHB : serviceContext = ethHasBoundaryServiceContext(...)
+ETHB -> ETHB : diagStage = ethDiagBoundaryStage(...)
+note right of ETHB
+Representative inputs
+- roadZoneActive / guidedRouteActive
+- boundaryAlive
+- warningPathStatus
+- failSafeMode
+- alertLevel
+end note
+
+== Service / Security Publish ==
+
+ETHB -> ETHB : routeHealth / serviceHealth / securityLevel / activeServices / faultBitmap
+ETHB -> BackboneBus : backbone mode / route health / service health / security level
+note right of ETHB
+Representative outputs
+- backboneMode
+- routeHealth
+- serviceHealth
+- securityLevel
+- faultBitmap
+end note
+
+== Downstream Visibility ==
+
+BackboneBus -> Obs : backbone route/service/security readback
+
+note over DiagCtx, Obs
+Representative runtime chain
+1. Route, alert, and boundary context reach ETHB
+2. ETHB derives diagnostic stage and service context
+3. ETHB publishes route health and security level on the backbone state path
+4. Observers and diagnostics consume the effective backbone posture
+end note
+
+@enduml

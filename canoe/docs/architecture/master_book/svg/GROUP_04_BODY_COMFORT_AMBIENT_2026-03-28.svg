@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1580" height="1100" viewBox="0 0 1580 1100">
+  <style>
+    .title { font: 700 28px 'Segoe UI', sans-serif; fill: #111827; }
+    .label { font: 700 19px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .node { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .box { rx: 18; ry: 18; stroke: #475569; stroke-width: 2; }
+    .arrow { stroke: #334155; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#334155"/>
+    </marker>
+  </defs>
+  <text x="36" y="44" class="title">Group 04 - Body / Comfort / Ambient</text>
+  <text x="36" y="72" class="small">Wider than the current input surface. Important for completeness, but lower priority than the dynamics and AEB cluster.</text>
+
+  <rect x="40" y="120" width="300" height="160" class="box" fill="#e0f2fe"/>
+  <text x="62" y="156" class="label">Command surface</text>
+  <text x="62" y="184" class="node">lock / door / window / wiper / turn / ambient</text>
+  <text x="62" y="208" class="small">Cmd::* and ambient selection inputs</text>
+
+  <rect x="410" y="120" width="280" height="180" class="box" fill="#dbeafe"/>
+  <text x="432" y="156" class="label">BCM</text>
+  <text x="432" y="184" class="node">body comfort and ambient owner</text>
+  <text x="432" y="208" class="small">ambientMode, blink, wiper frame, body state</text>
+  <text x="432" y="232" class="small">coordinates body leaves and comfort outputs</text>
+
+  <rect x="760" y="70" width="320" height="280" class="box" fill="#ffffff"/>
+  <text x="782" y="106" class="label">Body leaves</text>
+  <text x="782" y="136" class="node">DATC, WIP, DOOR_FL, DOOR_FR, DOOR_RL, DOOR_RR</text>
+  <text x="782" y="160" class="node">SEAT_DRV, SEAT_PASS, SRF, TGM, AFLS, AHLS</text>
+  <text x="782" y="184" class="node">SMK, MIR, MSC, RATC, HLM, ADM, BIO, BSEC, CSM, PTG</text>
+  <text x="782" y="220" class="small">body state, cabin comfort, access, lighting, wiper</text>
+  <text x="782" y="244" class="small">many are broader than the current Input_Console surface</text>
+
+  <rect x="1150" y="120" width="350" height="180" class="box" fill="#fde68a"/>
+  <text x="1172" y="156" class="label">Output readers</text>
+  <text x="1172" y="184" class="node">IVI / CLU / BCM ambient / audio side effects</text>
+  <text x="1172" y="208" class="small">comfort and context consistency at cabin level</text>
+
+  <rect x="240" y="420" width="320" height="180" class="box" fill="#fef3c7"/>
+  <text x="262" y="456" class="label">Why it matters</text>
+  <text x="262" y="484" class="node">body context influences perceived cabin behavior</text>
+  <text x="262" y="508" class="node">ambient policy must not drift from warning policy</text>
+
+  <rect x="650" y="420" width="320" height="180" class="box" fill="#f8fafc"/>
+  <text x="672" y="456" class="label">Current gap</text>
+  <text x="672" y="484" class="node">body breadth is wider than the current unified panel surface</text>
+  <text x="672" y="508" class="node">not every leaf needs to be exposed in Input_Console</text>
+
+  <rect x="1060" y="420" width="380" height="180" class="box" fill="#fff7ed"/>
+  <text x="1082" y="456" class="label">Rule</text>
+  <text x="1082" y="484" class="node">keep minimal readback in Input_Console</text>
+  <text x="1082" y="508" class="node">do not try to mirror every donor observer detail</text>
+
+  <rect x="40" y="690" width="1460" height="150" class="box" fill="#ffffff"/>
+  <text x="62" y="726" class="label">Priority</text>
+  <text x="62" y="756" class="node">After dynamics and AEB clusters stabilize, use this group to close comfort/context consistency gaps.</text>
+  <text x="62" y="780" class="node">Ambient mode belongs here and should track BCM ownership cleanly.</text>
+
+  <rect x="40" y="870" width="1460" height="170" class="box" fill="#f8fafc"/>
+  <text x="62" y="906" class="label">ECU roster in this group</text>
+  <text x="62" y="938" class="node">BCM</text>
+  <text x="132" y="938" class="node">DATC</text>
+  <text x="212" y="938" class="node">WIP</text>
+  <text x="272" y="938" class="node">DOOR_FL</text>
+  <text x="382" y="938" class="node">DOOR_FR</text>
+  <text x="492" y="938" class="node">DOOR_RL</text>
+  <text x="602" y="938" class="node">DOOR_RR</text>
+  <text x="712" y="938" class="node">SEAT_DRV</text>
+  <text x="832" y="938" class="node">SEAT_PASS</text>
+  <text x="962" y="938" class="node">SRF</text>
+  <text x="1022" y="938" class="node">AHLS</text>
+  <text x="1102" y="938" class="node">AFLS</text>
+  <text x="62" y="970" class="small">related wider comfort leaves in the same domain: SMK, MIR, MSC, RATC, HLM, ADM, BIO, BSEC, CSM, PTG, TGM</text>
+
+  <path class="arrow" d="M340 200 L410 200"/>
+  <path class="arrow" d="M690 210 L760 210"/>
+  <path class="arrow" d="M1080 210 L1150 210"/>
+  <path class="arrow" d="M550 300 L400 420"/>
+  <path class="arrow" d="M550 300 L810 420"/>
+  <path class="arrow" d="M550 300 L1240 420"/>
+</svg>

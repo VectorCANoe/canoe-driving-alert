@@ -1,0 +1,55 @@
+@startuml object_input_to_fcam_camera_state_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Object Input To FCAM Camera State Signal Flow\n(object/nav/path context -> FCAM camera health and detection publish)
+
+participant "Object / NAV /\npath context" as CameraCtx #F4F7FB
+participant "FCAM\ncamera state owner" as FCAM #E8F7E8
+participant "Camera state bus" as CameraBus #FFF4CC
+participant "Observers / pilot users" as Obs #E8F0FE
+
+== Camera Inputs ==
+
+CameraCtx -> FCAM : objectTrackValid\nobjectConfidence\nnavRouteClass\nobjectInputStale\nnavInputStale\npathReady
+FCAM -> FCAM : if objectInputStale then\ntrack = 0 / confidence = 0
+FCAM -> FCAM : if pathReady == 0\nthen navRouteClass = 0
+FCAM -> FCAM : objectDetected = clamp(objectTrackValid, 0, 1)
+FCAM -> FCAM : laneModelValid = calcLaneModelValid(navRouteClass, navInputStale, pathReady)
+FCAM -> FCAM : cameraHealth =\n0 if pathReady == 0 or objectInputStale\n1 if navInputStale\n2 otherwise
+note right of FCAM
+Representative gating inputs
+- objectTrackValid / objectConfidence
+- navRouteClass
+- objectInputStale / navInputStale
+- pathReady
+end note
+
+== Camera Publish ==
+
+FCAM -> CameraBus : frmFcamInputMsg\nCameraHealth / ObjectDetected / LaneModelValid / Confidence
+note right of FCAM
+Representative outputs
+- CameraHealth
+- ObjectDetected
+- LaneModelValid
+- Confidence
+end note
+
+== Downstream Visibility ==
+
+CameraBus -> Obs : camera-state readback /\nhighway-pilot consumers
+
+note over CameraCtx, Obs
+Representative runtime chain
+1. Object, NAV, and path context reach FCAM
+2. FCAM normalizes stale and no-path conditions
+3. FCAM publishes camera health, detection, and lane-model status
+4. Pilot users and observers consume the effective camera state
+end note
+
+@enduml

@@ -1,0 +1,49 @@
+@startuml dkey_access_to_smk_immobilizer_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title DKEY Access To SMK Immobilizer Signal Flow\n(DKEY access publication -> SMK immobilizer/key-auth state)
+
+participant "DKEY\naccess-state producer" as DKEY #E8F7E8
+participant "Vehicle state\nDriveState visibility" as Veh #E8F0FE
+participant "SMK\nimmobilizer owner" as SMK #FFF4CC
+participant "Immobilizer bus /\nobservers" as Obs #FCE8FF
+
+== Access Inputs ==
+
+DKEY -> SMK : frmDigitalKeyStateMsg\nVehicleAccessState / KeyPresence
+Veh -> SMK : frmVehicleStateCanMsg\nDriveState
+activate SMK
+SMK -> SMK : normalize DKEY / vehicle stale inputs
+SMK -> SMK : accessAuthorized =\nKeyPresence == 1 && VehicleAccessState >= 1
+SMK -> SMK : derive ImmobilizerState / KeyAuthState
+note right of SMK
+Representative inputs
+- VehicleAccessState
+- KeyPresence
+- DriveState
+
+Representative outputs
+- ImmobilizerState
+- KeyAuthState
+end note
+
+== Immobilizer Publish ==
+
+SMK -> Obs : frmImmobilizerStateMsg
+SMK -> Obs : traceable SMK auth / immo state
+deactivate SMK
+
+note over DKEY, Obs
+Representative runtime chain
+1. DKEY publishes access state and key presence
+2. SMK combines that with current drive state
+3. SMK derives immobilizer and key-auth state
+4. Downstream observers and tests verify authorization readiness
+end note
+
+@enduml

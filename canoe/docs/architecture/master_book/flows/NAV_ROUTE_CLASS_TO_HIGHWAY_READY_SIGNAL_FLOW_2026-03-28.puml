@@ -1,0 +1,52 @@
+@startuml nav_route_class_to_highway_ready_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Nav Route Class To Highway Ready Signal Flow\n(NAV route class + cruise/attention -> FCAM/HWP readiness)
+
+participant "NAV / cruise /\ndriver attention inputs" as NavCtx #F4F7FB
+participant "FCAM / HWP\nhighway readiness consumers" as PilotOwners #E8F7E8
+participant "Highway pilot /\nlane-model outputs" as PilotBus #FFF4CC
+participant "Observers / panels" as Obs #E8F0FE
+
+== Route / Attention Inputs ==
+
+NavCtx -> PilotOwners : gNavRouteClass\ngCruiseState\ngAttentionLevel\npathReady / laneGuideState
+PilotOwners -> PilotOwners : FCAM laneModelValid =\n(pathReady and navRouteClass in {2,3})
+PilotOwners -> PilotOwners : HWP highwayReady =\n(navRouteClass == 2 and cruiseState >= 1 and attentionLevel <= 2)
+note right of PilotOwners
+Representative gating inputs
+- navRouteClass
+- cruiseState
+- attentionLevel
+- pathReady / laneGuideState
+end note
+
+== Readiness Publish ==
+
+PilotOwners -> PilotBus : frmFcamInputMsg\nLaneModelValid
+PilotOwners -> PilotBus : frmHighwayPilotStateMsg\nHighwayPilotReady / LongCtrlActive / LatCtrlActive
+note right of PilotOwners
+Representative outputs
+- LaneModelValid
+- HighwayPilotReady
+- LongCtrlActive / LatCtrlActive
+end note
+
+== Downstream Visibility ==
+
+PilotBus -> Obs : highway-ready / lane-model /\npilot-state readback
+
+note over NavCtx, Obs
+Representative runtime chain
+1. NAV route class and vehicle attention context reach FCAM/HWP
+2. FCAM validates lane model from route class and path readiness
+3. HWP raises highway-ready when cruise and attention conditions fit
+4. Pilot-state outputs expose readiness to downstream observers
+end note
+
+@enduml

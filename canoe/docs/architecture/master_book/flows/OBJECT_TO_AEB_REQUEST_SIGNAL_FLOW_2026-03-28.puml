@@ -1,0 +1,101 @@
+@startuml object_to_aeb_request_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Object To AEB Request Signal Flow\n(FRADAR / ADAS -> FCA -> AEB -> ESC / EHB / VSM)
+
+participant "FRADAR\nobject track source" as FRADAR #E8F7E8
+participant "ADAS\nobject risk owner" as ADAS #FCE8FF
+participant "FCA\nFCW / AEB request owner" as FCA #FFF4CC
+participant "AEB\nautonomous brake owner" as AEB #FFE6E6
+participant "ESC\nbrake floor owner" as ESC #FFE6E6
+participant "EHB\nhydraulic brake owner" as EHB #FFF4CC
+participant "VSM\nstability owner" as VSM #FCE8FF
+
+== Object Risk Classification ==
+
+activate FRADAR
+FRADAR -> ADAS : objectTrackValid / range / relSpeed / confidence
+deactivate FRADAR
+
+activate ADAS
+FRADAR -> ADAS : perception inputs
+ADAS -> ADAS : calcObjectRisk()
+ADAS -> ADAS : calcObjectRiskClass()
+ADAS -> ADAS : Core::objectRiskClass
+ADAS -> ADAS : Core::decelAssistReq
+ADAS -> FCA : frmAdasDomainStateMsg
+note right of ADAS
+Representative outputs
+- ObjectRiskClass
+- DecelAssistReq
+- SelectedAlertLevel
+- TTC bucket basis
+end note
+deactivate ADAS
+
+== FCA Request Formation ==
+
+activate FCA
+ADAS -> FCA : frmAdasDomainStateMsg
+FCA -> FCA : calcFcwState()
+FCA -> FCA : aebRequest = 1 when\ndecelAssistReq == 1 and objectRiskClass >= 4 and failSafeMode < 2
+FCA -> AEB : frmFcaStateMsg
+note right of FCA
+Representative outputs
+- FcwState
+- AebRequest
+- DecelAssistReq
+- ObjectRiskClass
+end note
+deactivate FCA
+
+== AEB Domain Control ==
+
+activate AEB
+FCA -> AEB : frmFcaStateMsg
+AEB -> AEB : pathReady / aebArmed / stopReq
+AEB -> AEB : decelProfile = 1/2/3 from objectRiskClass and TTC bucket
+AEB -> ESC : frmAebDomainStateMsg
+AEB -> EHB : frmAebDomainStateMsg
+AEB -> VSM : frmAebDomainStateMsg
+note right of AEB
+Representative outputs
+- StopReq
+- DecelProfile
+- DomainHealth
+- ObjectRiskClass
+end note
+deactivate AEB
+
+== Chassis Consumers ==
+
+activate ESC
+AEB -> ESC : frmAebDomainStateMsg
+ESC -> ESC : assistPressureFloor = 25 / 35 / 45 / 55
+deactivate ESC
+
+activate EHB
+AEB -> EHB : frmAebDomainStateMsg
+EHB -> EHB : aebPressureCmd floor 70 / 110 / 150 / 180
+deactivate EHB
+
+activate VSM
+AEB -> VSM : frmAebDomainStateMsg
+VSM -> VSM : intervention floor 20 / 35 / 50 / 60
+deactivate VSM
+
+note over FRADAR, VSM
+Representative runtime chain
+1. FRADAR provides object track context
+2. ADAS converts perception into object risk and decel assist intent
+3. FCA converts decel assist into FCW/AEB request
+4. AEB emits stopReq / decelProfile / domainHealth
+5. ESC / EHB / VSM apply chassis-level brake intervention
+end note
+
+@enduml

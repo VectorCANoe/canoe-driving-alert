@@ -1,0 +1,51 @@
+@startuml paak_access_to_door_command_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title PAAK Access To Door Command Signal Flow\n(PAAK/TMU vehicle context -> BCM -> door control)
+
+participant "PAAK / TMU /\nvehicle context inputs" as AccessCtx #F4F7FB
+participant "BCM\nbody access owner" as BCM #E8F7E8
+participant "Door modules /\nBody command bus" as Doors #FFF4CC
+participant "Observers / panels" as Obs #E8F0FE
+
+== Access Context Inputs ==
+
+AccessCtx -> BCM : PAAK auth/proximity/state\nTMU service / remote climate\nvehicle drive state
+BCM -> BCM : if manualMode == 0\nand driveState == 0\nand paakAuthLevel >= 1\nand paakProximityState >= 2\nand paakState >= 1\nthen doorControlCmd = 1
+note right of BCM
+Representative access inputs
+- gPaakState / AuthLevel / ProximityState
+- gTmuServiceMode / RemoteClimateReq
+- gDriveState
+end note
+
+== Door Command Ownership ==
+
+BCM -> BCM : childLockState =\n(manualMode == 0 and driveState > 0) ? 1 : 0
+BCM -> Doors : frmDoorControlMsg\nDoorControlCmd / ChildLockCmd
+BCM -> BCM : command trace for access and child lock
+note right of BCM
+Representative outputs
+- frmDoorControlMsg
+- DoorControlCmd
+- ChildLockCmd
+end note
+
+== Downstream Visibility ==
+
+Doors -> Obs : door actuator result /\nbody access readback
+
+note over AccessCtx, Obs
+Representative runtime chain
+1. PAAK and vehicle context reach BCM
+2. BCM determines whether access conditions allow door command
+3. BCM publishes DoorControlCmd / ChildLockCmd
+4. Door modules and observers reflect access-driven body behavior
+end note
+
+@enduml

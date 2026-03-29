@@ -1,0 +1,48 @@
+@startuml failsafe_to_diagnostic_state_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Fail-safe To Diagnostic State Signal Flow\n(Core fail-safe / warning path -> DCM diagnostic severity publication)
+
+participant "Core / CoreState\nfail-safe context" as FailCtx #F4F7FB
+participant "DCM\ndiagnostic communication owner" as DCM #E8F7E8
+participant "Diagnostic state bus" as DiagBus #FFF4CC
+participant "Observers / testers" as Obs #E8F0FE
+
+== Diagnostic Inputs ==
+
+FailCtx -> DCM : CoreState::warningPathStatus\nCore::failSafeMode\nboundaryAlive
+DCM -> DCM : warningPathStatus = boundaryAlive ? value : 2
+DCM -> DCM : failSafeMode = boundaryAlive ? value : 2
+DCM -> DCM : diagnostic severity = deriveSystemSeverity(...)
+note right of DCM
+Representative inputs
+- warningPathStatus
+- failSafeMode
+- boundaryAlive
+end note
+
+== Diagnostic Publish ==
+
+DCM -> DiagBus : diagnostic state / reason /\nservice-severity publication
+DCM -> Obs : diagnostic trace /\nservice response context
+note right of DCM
+Representative outputs
+- derived diagnostic severity
+- route / reason context
+- visible diagnostic trace state
+end note
+
+note over FailCtx, Obs
+Representative runtime chain
+1. Core fail-safe and warning-path state reach DCM
+2. DCM normalizes degraded/boundary-broken cases
+3. Diagnostic severity is derived from fail-safe context
+4. Testers and observers see the corresponding diagnostic state
+end note
+
+@enduml

@@ -1,0 +1,48 @@
+@startuml obc_input_to_cpc_charge_enable_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title OBC Input To CPC Charge Enable Signal Flow\n(OBC plug/charger state -> CPC charge-enable publication)
+
+participant "OBC\ncharger-state producer" as OBC #E8F7E8
+participant "BAT_BMS\npack-state producer" as BMS #E8F0FE
+participant "Vehicle state\nDriveState" as Veh #F4F7FB
+participant "CPC\ncharge-port owner" as CPC #FFF4CC
+participant "Charge observers" as Obs #FCE8FF
+
+== Charge-Port Inputs ==
+
+OBC -> CPC : frmObcStateMsg\nObcState / AcPlugState
+BMS -> CPC : frmBatBmsStateMsg\nBmsState / PackSoc / PackTemp
+Veh -> CPC : frmVehicleStateCanMsg\nDriveState
+activate CPC
+CPC -> CPC : normalize stale OBC / BMS / vehicle inputs
+CPC -> CPC : derive PlugState / ChargeEnable
+CPC -> CPC : derive ThermalState / ChargeTargetSoc
+note right of CPC
+Representative outputs
+- PlugState
+- ChargeEnable
+- ThermalState
+- ChargeTargetSoc
+end note
+
+== Charge-Port Publish ==
+
+CPC -> Obs : frmChargePortStateMsg
+CPC -> Obs : traceable charge-port enable /\nthermal publication
+deactivate CPC
+
+note over OBC, Obs
+Representative runtime chain
+1. OBC provides charger state and AC plug visibility
+2. CPC combines OBC, BAT_BMS, and vehicle state
+3. CPC derives charge-enable and thermal outputs
+4. Charge-port observers confirm charging readiness
+end note
+
+@enduml

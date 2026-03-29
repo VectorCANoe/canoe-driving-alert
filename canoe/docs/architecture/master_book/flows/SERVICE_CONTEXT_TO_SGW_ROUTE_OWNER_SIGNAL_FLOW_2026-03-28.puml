@@ -1,0 +1,56 @@
+@startuml service_context_to_sgw_route_owner_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Service Context To SGW Route Owner Signal Flow\n(route/service context -> SGW security session and route-owner seams)
+
+participant "NAV / vehicle /\nalert context" as ServiceCtx #F4F7FB
+participant "SGW\ndiagnostic gateway owner" as SGW #E8F7E8
+participant "Diag sysvar seams" as DiagSeams #FFF4CC
+participant "Observers / tests" as Obs #E8F0FE
+
+== Service Inputs ==
+
+ServiceCtx -> SGW : routeActive\nguidedRouteActive\nspeedLimit\nvehicleSpeed\nalertLevel\nboundaryAlive\nwarningPathStatus\nfailSafeMode
+SGW -> SGW : serviceContext = ethHasBoundaryServiceContext(routeActive, alertLevel)
+SGW -> SGW : diagStage = ethDiagBoundaryStage(...)
+SGW -> SGW : securitySession from serviceContext / diagStage / routeActive
+SGW -> SGW : authState / securityFault / securityPolicy derived from diagStage
+note right of SGW
+Representative gating inputs
+- routeActive / guidedRouteActive
+- alertLevel
+- boundaryAlive / warningPathStatus / failSafeMode
+- speedLimit / vehicleSpeed
+end note
+
+== Route-owner Publish ==
+
+SGW -> DiagSeams : Diag::SecurityState / RouteOwner
+SGW -> DiagSeams : Diag::SessionState / GatewayOpen / TesterPresentActive
+SGW -> DiagSeams : Diag::AuthState / SecurityFault / SecurityPolicy
+note right of SGW
+Representative outputs
+- SecurityState
+- RouteOwner
+- SessionState
+- GatewayOpen / SecurityPolicy
+end note
+
+== Downstream Visibility ==
+
+DiagSeams -> Obs : gateway security/readiness readback /\ntest evidence
+
+note over ServiceCtx, Obs
+Representative runtime chain
+1. Route and alert service context reach SGW
+2. SGW derives diagnostic stage, session, and auth posture
+3. SGW publishes route-owner and security seams
+4. Tests and observers consume the effective gateway-access state
+end note
+
+@enduml

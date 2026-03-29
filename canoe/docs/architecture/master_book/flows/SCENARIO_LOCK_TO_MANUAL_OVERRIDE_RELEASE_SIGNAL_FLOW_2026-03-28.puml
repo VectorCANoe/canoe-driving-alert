@@ -1,0 +1,93 @@
+@startuml scenario_lock_to_manual_override_release_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Scenario Lock To Manual Override Release Signal Flow\n(Input_Console -> TEST_SCN / TEST_BAS -> Router compat)
+
+actor "Operator\n(Scenario Tab)" as Operator #F4F7FB
+participant "Input_Console\nScenario controls" as Panel #E8F0FE
+participant "TEST_SCN\nscenario harness owner" as TEST_SCN #FFE6E6
+participant "TEST_BAS\nbase lifecycle mirror" as TEST_BAS #FFF4CC
+participant "INPUT_CONSOLE_ROUTER\nmanual compat publisher" as Router #E8F7E8
+participant "Core / Inject\nmanual seams" as Manual #E8F0FE
+
+== Scenario Start ==
+
+Operator -> Panel : Click scenario preset
+activate Panel
+Panel -> TEST_SCN : Test::scenarioCommand\nor compat Test::testScenario
+deactivate Panel
+
+activate TEST_SCN
+TEST_SCN -> TEST_SCN : applyScenarioPanelRequest()
+TEST_SCN -> TEST_SCN : set scenarioCommandAck / activeId
+note right of TEST_SCN
+Scenario harness owns:
+- scenario start/stop acceptance
+- active scenario lifecycle
+- scenario lock payload staging
+end note
+TEST_SCN -> TEST_BAS : Test::scenarioCommandAck\nTest::scenarioActiveId
+deactivate TEST_SCN
+
+== Scenario Lock Active ==
+
+activate TEST_BAS
+TEST_BAS -> TEST_BAS : stageBaseScenarioLifecycle()
+TEST_BAS -> TEST_BAS : publishInputConsoleManualCompat()
+note right of TEST_BAS
+While active, manual panel mirrors
+follow scenario lifecycle state rather
+than free manual exploration intent.
+end note
+TEST_BAS -> Router : compat publish trigger
+deactivate TEST_BAS
+
+activate Router
+Router -> Router : isScenarioLocked() == 1
+Router -> Manual : compatPoliceDispatch /\ncompatAmbulanceDispatch /\ncompatEmergencyDirection /\ncompatEmergencyEta /\ncompatEmergencySourceId
+deactivate Router
+
+== Stop / Manual Release ==
+
+Operator -> Panel : Click STOP / MANUAL
+activate Panel
+Panel -> TEST_SCN : Test::scenarioStopReq = 1
+deactivate Panel
+
+activate TEST_SCN
+TEST_SCN -> TEST_SCN : applyScenarioPanelRequest(0, 1)
+TEST_SCN -> TEST_SCN : clear scenarioActiveId /\ncommandAck / testScenario mirror
+TEST_SCN -> TEST_BAS : scenarioActiveId = 0
+deactivate TEST_SCN
+
+activate TEST_BAS
+TEST_BAS -> TEST_BAS : maybeClearBaseStateOnHarnessIdle()
+TEST_BAS -> Router : publishInputConsoleManualCompat()
+deactivate TEST_BAS
+
+activate Router
+Router -> Router : isScenarioLocked() == 0
+Router -> Manual : manualAlertOverrideCmd /\nmanual emergency compat mirrors restored
+note right of Router
+Release effect
+- scenario lock no longer dominates
+- Input_Console manual overrides
+  become the active manual source again
+end note
+deactivate Router
+
+note over Operator, Manual
+Representative runtime chain
+1. Scenario preset starts TEST_SCN lifecycle
+2. TEST_BAS mirrors lifecycle and publishes lock-aware compat state
+3. Router exposes scenario-dominant manual mirrors while locked
+4. STOP/MANUAL clears lifecycle
+5. Router returns control to free manual override inputs
+end note
+
+@enduml

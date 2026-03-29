@@ -1,0 +1,50 @@
+@startuml vcu_vehicle_mode_to_tcu_shift_state_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title VCU Vehicle Mode To TCU Shift State Signal Flow\n(VCU mode/state + gear/speed -> TCU shift-state publication)
+
+participant "VCU\nvehicle-mode producer" as VCU #E8F7E8
+participant "Gear input\nGearState / GearInput" as Gear #E8F0FE
+participant "Vehicle state\nspeed / drive state" as Veh #F4F7FB
+participant "TCU\ntransmission owner" as TCU #FFF4CC
+participant "Transmission observers" as Obs #FCE8FF
+
+== Shift Inputs ==
+
+VCU -> TCU : frmVehicleModeMsg\nDriveMode / PowertrainState
+Gear -> TCU : frmGearStateMsg\nGearInput / GearState
+Veh -> TCU : frmVehicleStateCanMsg\nVehicleSpeed
+activate TCU
+TCU -> TCU : normalize stale gear / mode / vehicle inputs
+TCU -> TCU : derive manual gear state from drive state\nwhen scenario inactive
+TCU -> TCU : derive ShiftState / ShiftTargetGear / ShiftSlip
+TCU -> TCU : derive TransOilTemp / ClutchTemp
+note right of TCU
+Representative outputs
+- ShiftState
+- ShiftTargetGear
+- ShiftSlip
+- TransOilTemp
+- ClutchTemp
+end note
+
+== Shift Publish ==
+
+TCU -> Obs : frmTransShiftStateMsg
+TCU -> Obs : frmTransmissionTempMsg
+deactivate TCU
+
+note over VCU, Obs
+Representative runtime chain
+1. VCU publishes drive mode and powertrain state
+2. TCU combines that with gear input and vehicle speed
+3. TCU derives shift transition state and transmission temperatures
+4. Transmission observers verify active gear-shift behavior
+end note
+
+@enduml

@@ -1,0 +1,54 @@
+@startuml dms_attention_to_hwp_driver_monitor_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title DMS Attention To HWP Driver Monitor Signal Flow\n(DMS/attention context -> HWP driver-monitor request and availability)
+
+participant "DMS / cruise /\nlane-guide context" as DmsCtx #F4F7FB
+participant "HWP\nhighway pilot owner" as HWP #E8F7E8
+participant "Pilot state bus" as PilotBus #FFF4CC
+participant "Observers / panels" as Obs #E8F0FE
+
+== Driver Monitoring Inputs ==
+
+DmsCtx -> HWP : dmsActive\nattentionLevel\ncruiseState\nlaneGuideState\nnavRouteClass
+HWP -> HWP : if dmsInputStale then\ndmsActive = 1 / attentionLevel = 3
+HWP -> HWP : highwayReady =\n(navRouteClass == 2 and cruiseState >= 1 and attentionLevel <= 2)
+HWP -> HWP : driverMonitorReq =\n(dmsActive == 1 and attentionLevel >= 2)
+HWP -> HWP : availabilityLevel reduced when driverMonitorReq == 1
+note right of HWP
+Representative gating inputs
+- dmsActive
+- attentionLevel
+- cruiseState / laneGuideState
+- navRouteClass
+end note
+
+== Pilot Publish ==
+
+HWP -> PilotBus : frmHighwayPilotStateMsg\nDriverMonitorReq / AvailabilityLevel
+HWP -> PilotBus : HighwayPilotReady / LongCtrlActive / LatCtrlActive
+note right of HWP
+Representative outputs
+- DriverMonitorReq
+- AvailabilityLevel
+- HighwayPilotReady
+end note
+
+== Downstream Visibility ==
+
+PilotBus -> Obs : pilot-monitoring readback /\navailability indication
+
+note over DmsCtx, Obs
+Representative runtime chain
+1. DMS and attention context reach HWP
+2. HWP decides whether driver monitoring must be enforced
+3. HWP publishes monitoring demand and availability level
+4. Observers expose pilot availability under driver-monitor conditions
+end note
+
+@enduml

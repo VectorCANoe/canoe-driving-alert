@@ -1,0 +1,94 @@
+@startuml brake_lamp_and_abs_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Brake Lamp And ABS Signal Flow\n(Input_Console -> ESC -> ABS -> CLU)
+
+actor "Driver\n(Input Console)" as Driver #F4F7FB
+participant "Input_Console\nVehicle > Pedal + Cruise" as Panel #E8F0FE
+participant "VCU\nvehicle speed owner" as VCU #E8F7E8
+participant "ESC\nbrake / brake-lamp owner" as ESC #FFE6E6
+participant "ABS\nwheel-slip / pressure command" as ABS #FFF4CC
+participant "CLU\nvehicle readback" as CLU #E8F0FE
+
+== Brake Command ==
+
+Driver -> Panel : Press brake pedal
+activate Panel
+Panel -> Panel : Write Cmd::brakePedalPct
+deactivate Panel
+
+== Vehicle State For Brake Logic ==
+
+activate VCU
+Panel -> VCU : Optional speed / drive-state aid
+VCU -> ESC : frmVehicleStateCanMsg
+VCU -> ESC : frmWheelPulseMsg
+note right of VCU
+Vehicle state provides
+- speedNorm basis
+- driveState basis
+- wheel pulse cadence
+end note
+deactivate VCU
+
+== ESC Brake Ownership ==
+
+activate ESC
+Panel -> ESC : Cmd::brakePedalPct
+VCU -> ESC : frmVehicleStateCanMsg
+ESC -> ESC : appliedBrakePedal = Cmd::brakePedalPct
+ESC -> ESC : absActive = (pedal > 80 && speedNorm > 10)
+ESC -> ESC : Chassis::brakeLamp = (pedal > 5)
+ESC -> ESC : Chassis::absActive = absActive
+ESC -> ABS : frmBrakeStatusMsg\nBrakePressure / BrakeMode / AbsActive
+ESC -> ABS : frmWheelSpeedMsg
+ESC -> CLU : Chassis::brakePressure / brakeLamp / absActive
+note right of ESC
+Representative outputs
+- frmBrakeStatusMsg
+- frmWheelSpeedMsg
+- Chassis::brakeLamp
+- Chassis::absActive
+end note
+deactivate ESC
+
+== ABS Response ==
+
+activate ABS
+ESC -> ABS : frmBrakeStatusMsg
+ESC -> ABS : frmWheelSpeedMsg
+ABS -> ABS : pressureCmd = brakePressure when absActive
+ABS -> ABS : AbsCtrlState = 2 when active
+ABS -> ABS : output frmAbsStateMsg
+note right of ABS
+Representative logic
+- brake input stale handling
+- wheel-speed stale handling
+- rear wheel average and slip reaction
+end note
+deactivate ABS
+
+== Driver Visible Outcome ==
+
+activate CLU
+ESC -> CLU : Chassis::brakeLamp / absActive
+CLU -> Panel : brake/ABS readback
+deactivate CLU
+
+Driver <- Panel : Brake lamp and ABS state follow the brake event
+
+note over Driver, CLU
+Representative runtime chain
+1. Driver presses brake
+2. ESC owns brake pressure and brake lamp state
+3. ESC publishes brake + wheel-speed status to ABS
+4. ABS derives pressure command / control state
+5. CLU and panel show brake-lamp / ABS feedback
+end note
+
+@enduml

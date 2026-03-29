@@ -1,0 +1,55 @@
+@startuml failsafe_context_to_vcu_routing_policy_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Fail-safe Context To VCU Routing Policy Signal Flow\n(Core/CoreState context -> VCU routing / vehicle-mode publication)
+
+participant "Core / CoreState\nboundary + fail-safe context" as Core #F4F7FB
+participant "VCU\nrouting and powertrain owner" as VCU #E8F7E8
+participant "Backbone / vehicle-mode bus" as Bus #FFF4CC
+participant "CGW / ADAS / DCM /\nother observers" as Obs #FCE8FF
+
+== Routing Inputs ==
+
+Core -> VCU : CoreState::domainBoundaryStatus\nCore::failSafeMode\nCore::emergencyContext
+activate VCU
+VCU -> VCU : boundaryAlive = clamp(domainBoundaryStatus)
+VCU -> VCU : if failSafeMode > 0 -> RoutingPolicy = 0
+VCU -> VCU : else if emergencyContext > 0 -> RoutingPolicy = 2
+VCU -> VCU : else RoutingPolicy = 1
+note right of VCU
+Representative derived values
+- RoutingPolicy
+- BoundaryStatus
+- CtrlAuthLevel
+- VehicleMode.PowertrainState
+end note
+
+== Routing Publish ==
+
+VCU -> Bus : frmPtGwStateMsg\n(RoutingPolicy / BoundaryStatus)
+VCU -> Bus : frmVehicleModeMsg\n(PowertrainState / DriveMode)
+VCU -> Bus : frmCtrlAuthMsg\n(CtrlAuthLevel)
+VCU -> Obs : backbone vehicle state / powertrain visibility
+note right of Obs
+Representative consumers
+- CGW
+- ADAS
+- DCM / ETHB / IBOX / SGW
+- powertrain-side observers
+end note
+deactivate VCU
+
+note over Core, Obs
+Representative runtime chain
+1. Boundary status, fail-safe mode, and emergency context reach VCU
+2. VCU selects the routing policy and control-auth level
+3. VCU publishes gateway state and vehicle-mode visibility
+4. Gateway, ADAS, and diagnostics consume the routing outcome
+end note
+
+@enduml

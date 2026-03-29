@@ -15,11 +15,12 @@ This folder provides the official developer documentation for the CANoe SIL base
 
 1. `architecture/ecu-classification.md`
 2. `architecture/surface-runtime-verification-map.md`
-3. `architecture/skeleton.md`
-4. `contracts/layer-separation-policy.md`
-5. `contracts/communication-matrix.md`
-6. `contracts/owner-route.md`
-7. `verification/oracle.md`
+3. `architecture/ecu-flow-appendix.md`
+4. `architecture/skeleton.md`
+5. `contracts/layer-separation-policy.md`
+6. `contracts/communication-matrix.md`
+7. `contracts/owner-route.md`
+8. `verification/oracle.md`
 
 ## Curated Delivery Set
 
@@ -66,7 +67,11 @@ Use this shortlist when you need the actual provided document subset rather than
 
 - `architecture/ecu-classification.md`
 - `architecture/surface-runtime-verification-map.md`
+- `architecture/ecu-flow-appendix.md`
 - `architecture/skeleton.md`
+- `architecture/master_book/README.md`
+  - full ECU master-book asset pack
+  - 101-ECU cards, grouped SVG views, and feature/action signal-flow companions
 
 ## Contracts
 

@@ -1,0 +1,52 @@
+@startuml afls_input_to_ahls_high_beam_permit_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title AFLS Input To AHLS High Beam Permit Signal Flow\n(AFLS state + vehicle speed -> AHLS assist and high-beam permit)
+
+participant "AFLS state /\nvehicle speed" as LightCtx #F4F7FB
+participant "AHLS\nheadlamp assist owner" as AHLS #E8F7E8
+participant "AHLS state bus" as AhlsBus #FFF4CC
+participant "Observers / lighting users" as Obs #E8F0FE
+
+== Lighting Inputs ==
+
+LightCtx -> AHLS : aflsMode / beamPattern / levelStep\nvehicleSpeed
+AHLS -> AHLS : if AFLS stale then\naflsMode = 0 / beamPattern = 0 / levelStep = 0
+AHLS -> AHLS : if vehicle stale then\nspeed = 0
+AHLS -> AHLS : assistState = (aflsMode > 0) ? 1 : 0
+AHLS -> AHLS : highBeamPermit = (speed >= 50 and beamPattern <= 2) ? 1 : 0
+AHLS -> AHLS : glareCutLevel = levelStep/2 + permit bonus
+note right of AHLS
+Representative gating inputs
+- aflsMode / beamPattern / levelStep
+- vehicleSpeed
+end note
+
+== AHLS Publish ==
+
+AHLS -> AhlsBus : frmAhlsStateMsg\nAhlsAssistState / HighBeamPermit / GlareCutLevel
+note right of AHLS
+Representative outputs
+- AhlsAssistState
+- HighBeamPermit
+- GlareCutLevel
+end note
+
+== Downstream Visibility ==
+
+AhlsBus -> Obs : headlamp-assist readback /\nlighting consumers
+
+note over LightCtx, Obs
+Representative runtime chain
+1. AFLS state and vehicle speed reach AHLS
+2. AHLS decides assist activity and high-beam permission
+3. AHLS publishes glare-cut and permit state
+4. Lighting observers consume the effective headlamp-assist posture
+end note
+
+@enduml

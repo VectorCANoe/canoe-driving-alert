@@ -1,0 +1,85 @@
+@startuml audio_ducking_from_alert_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Audio Ducking From Alert Signal Flow\n(CGW -> IVI -> CLU / AMP)
+
+participant "CGW\neffective alert gate" as CGW #FFF4CC
+participant "IVI\nwarning render + focus owner" as IVI #E8F0FE
+participant "CLU\ncluster/media mirror" as CLU #E8F0FE
+participant "AMP\naudio ducking output" as AMP #FFE6E6
+
+== Effective Alert Intake ==
+
+activate CGW
+CGW -> IVI : CoreState::selectedAlertEffectiveLevel / Type
+CGW -> IVI : Core::timeoutClear
+note right of CGW
+Representative source
+- selectedAlertEffectiveLevel
+- selectedAlertEffectiveType
+- timeoutClear
+end note
+deactivate CGW
+
+== IVI HMI / Audio Focus Publish ==
+
+activate IVI
+CGW -> IVI : effective alert seams
+IVI -> IVI : deriveWarningTextCode()
+IVI -> IVI : compatBeepEmergency / compatBeepIC / compatBeepSpeed
+IVI -> IVI : UiRender::warningBeepState
+IVI -> CLU : frmClusterWarningMsg
+IVI -> CLU : frmHmiPopupStateMsg
+IVI -> CLU : frmMediaStateMsg
+IVI -> CLU : frmAudioFocusMsg
+IVI -> AMP : frmMediaStateMsg
+IVI -> AMP : frmAudioFocusMsg
+note right of IVI
+Representative outputs
+- frmAudioFocusMsg
+- frmMediaStateMsg
+- frmClusterWarningMsg
+- UiRender::warningBeepState
+end note
+deactivate IVI
+
+== Cluster Mirror ==
+
+activate CLU
+IVI -> CLU : frmAudioFocusMsg
+IVI -> CLU : frmMediaStateMsg
+IVI -> CLU : frmClusterWarningMsg
+CLU -> CLU : CoreState::audioFocusOwner
+CLU -> CLU : CoreState::audioDuckingLvl
+deactivate CLU
+
+== AMP Ducking ==
+
+activate AMP
+IVI -> AMP : frmMediaStateMsg
+IVI -> AMP : frmAudioFocusMsg
+AMP -> AMP : traceAmpInputHealth()
+AMP -> AMP : if input lease valid,\napply audioFocusOwner / audioDuckingLvl
+AMP -> AMP : if focus input expired,\nclear focus owner and ducking
+note right of AMP
+Representative outputs
+- ampDucking
+- audio focus owner
+- ducking level
+end note
+deactivate AMP
+
+note over CGW, AMP
+Representative runtime chain
+1. CGW publishes effective alert state
+2. IVI derives warning text / beep and audio focus
+3. IVI sends audio focus + media state to CLU and AMP
+4. AMP applies ducking while CLU mirrors focus state
+end note
+
+@enduml

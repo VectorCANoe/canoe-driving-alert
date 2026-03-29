@@ -1,0 +1,63 @@
+@startuml ambient_pulse_phase_render_path_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Ambient Pulse Phase Render Path\n(BCM ambient output -> IVI pulse phase -> cabin animation)
+
+participant "BCM\nambient mode/color/pattern owner" as BCM #E8F7E8
+participant "IVI\nambient animation renderer" as IVI #E8F0FE
+participant "UiRender / Infotainment\nruntime mirrors" as Render #FFF4CC
+participant "Ambient output panels" as Panels #F4F7FB
+
+== Ambient Surface Inputs ==
+
+activate BCM
+BCM -> IVI : Body::ambientMode\nBody::ambientColor\nBody::ambientPattern
+note right of BCM
+Ambient base state is already
+resolved by BCM before IVI renders it.
+end note
+deactivate BCM
+
+== Pulse Phase Derivation ==
+
+IVI -> IVI : if alertType == 4\nor emergency alert active\nthen gAmbientPulsePhase = (phase + 1) & 3
+IVI -> IVI : else gAmbientPulsePhase = 0
+IVI -> Render : UiRender::ambientPulsePhase
+note right of IVI
+Pulse phase is a renderer-side
+animation state, not a BCM-owned
+ambient contract.
+end note
+
+== Cabin Frame Rendering ==
+
+IVI -> IVI : deriveCabinAmbientAnimFrame(\nrenderMode, renderColor,\nrenderPattern, roadZoneColorCode,\nroadFlowDirection, alertLevel,\nemergencyType, ambientPulsePhase)
+IVI -> Render : UiRender::renderMode /\nrenderColor / renderPattern
+IVI -> Render : Infotainment::cabinAmbientAnimFrame
+note right of IVI
+Representative outputs
+- UiRender::ambientPulsePhase
+- UiRender::renderMode / Color / Pattern
+- Infotainment::cabinAmbientAnimFrame
+end note
+
+== Visible Animation Outcome ==
+
+activate Panels
+Render -> Panels : cabin ambient animation frame\nand render mirrors
+deactivate Panels
+
+note over BCM, Panels
+Representative runtime chain
+1. BCM publishes ambient base state
+2. IVI derives pulse phase from warning/emergency context
+3. IVI converts ambient state + pulse phase into cabin animation frame
+4. Panels consume render mirrors and cabinAmbientAnimFrame
+end note
+
+@enduml

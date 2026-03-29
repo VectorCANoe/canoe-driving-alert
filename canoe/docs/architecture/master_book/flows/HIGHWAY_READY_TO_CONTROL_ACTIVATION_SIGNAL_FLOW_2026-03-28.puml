@@ -1,0 +1,55 @@
+@startuml highway_ready_to_control_activation_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Highway Ready To Control Activation Signal Flow\n(route/cruise/lane context -> HWP -> long/lat control activation)
+
+participant "NAV / cruise /\nlane-guide context" as PilotCtx #F4F7FB
+participant "HWP\nhighway pilot owner" as HWP #E8F7E8
+participant "Pilot state bus" as PilotBus #FFF4CC
+participant "Observers / panels" as Obs #E8F0FE
+
+== Highway Readiness Inputs ==
+
+PilotCtx -> HWP : navRouteClass\ncruiseState\nlaneGuideState\nattentionLevel\ndmsActive
+HWP -> HWP : highwayReady =\n(navRouteClass == 2 and cruiseState >= 1 and attentionLevel <= 2)
+HWP -> HWP : longCtrlActive =\n(highwayReady and cruiseState == 2)
+HWP -> HWP : latCtrlActive =\n(highwayReady and laneGuideState >= 2)
+HWP -> HWP : driverMonitorReq =\n(dmsActive == 1 and attentionLevel >= 2)
+note right of HWP
+Representative activation inputs
+- navRouteClass
+- cruiseState
+- laneGuideState
+- attentionLevel / dmsActive
+end note
+
+== Pilot State Publish ==
+
+HWP -> PilotBus : frmHighwayPilotStateMsg\nHighwayPilotReady / LongCtrlActive / LatCtrlActive
+HWP -> PilotBus : DriverMonitorReq / LaneGuideState / CruiseState
+note right of HWP
+Representative outputs
+- HighwayPilotReady
+- LongCtrlActive
+- LatCtrlActive
+- DriverMonitorReq
+end note
+
+== Downstream Visibility ==
+
+PilotBus -> Obs : highway pilot / control activation readback
+
+note over PilotCtx, Obs
+Representative runtime chain
+1. Route, cruise, and lane-guide context reach HWP
+2. HWP decides whether highway mode is ready
+3. HWP raises long/lat control activation when readiness is satisfied
+4. Observers expose pilot activation and monitoring demand
+end note
+
+@enduml

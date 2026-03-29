@@ -1,0 +1,6292 @@
+[
+  {
+    "ecu": "ABS",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/ABS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/ABS.can",
+    "role_hint": "Chassis runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmAbsDiagResMsg",
+      "frmAbsStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAbsDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "ESC",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "ESC",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmAbsDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmAbsStateMsg",
+      "ESC :: frmAbsStateMsg",
+      "TEST_SCN :: frmAbsDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "ACU",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/ACU.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/ACU.can",
+    "role_hint": "Chassis runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmAcuDiagResMsg",
+      "frmAcuStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAcuDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "BCM",
+      "CGW",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "BCM",
+      "CGW",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmAcuDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "BCM :: frmAcuStateMsg",
+      "CGW :: frmAcuStateMsg",
+      "TEST_SCN :: frmAcuDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc",
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_041_ACU_INPUT"
+    ],
+    "dbc_sources": [
+      "body_can.dbc",
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "ASM",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/ASM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/ASM.can",
+    "role_hint": "Chassis runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmAirSuspensionStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "ADAS",
+      "ESC"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "ADAS",
+      "ESC"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "ADAS :: frmAirSuspensionStateMsg",
+      "ESC :: frmAirSuspensionStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "CDC",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/CDC.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/CDC.can",
+    "role_hint": "Chassis runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmCdcDiagResMsg",
+      "frmCdcStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmCdcDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmCdcDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmCdcStateMsg",
+      "TEST_SCN :: frmCdcDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_035_CDC_INPUT"
+    ],
+    "dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "ECS",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/ECS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/ECS.can",
+    "role_hint": "Chassis runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmEcsDiagResMsg",
+      "frmEcsStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmEcsDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmEcsDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmEcsStateMsg",
+      "TEST_SCN :: frmEcsDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_034_ECS_INPUT"
+    ],
+    "dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "EHB",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/EHB.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/EHB.can",
+    "role_hint": "Brake assist leaf ECU",
+    "owner_seam": [
+      "local brake assist state"
+    ],
+    "published_contracts": [
+      "frmEhbDiagResMsg",
+      "frmEhbStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmEhbDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmEhbDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmEhbStateMsg",
+      "TEST_SCN :: frmEhbDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [
+      "local brake assist state"
+    ],
+    "test_assets": [
+      "TC_CANOE_UT_INP_032_EHB_INPUT"
+    ],
+    "dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "Shares the same decel profile thresholds as ESC/VSM and can amplify perceived brake stutter.",
+    "runtime_note": "Coupled consumer of AEB state rather than an independent decision origin."
+  },
+  {
+    "ecu": "EPB",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/EPB.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/EPB.can",
+    "role_hint": "Chassis runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmEpbDiagResMsg",
+      "frmEpbStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmEpbDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "CLU",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "CLU",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmEpbDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "CLU :: frmEpbStateMsg",
+      "TEST_SCN :: frmEpbDiagResMsg, frmEpbStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_031_EPB_INPUT"
+    ],
+    "dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "ESC",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/ESC.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/ESC.can",
+    "role_hint": "Chassis brake controller",
+    "owner_seam": [
+      "Chassis::brakePressure",
+      "Chassis::brakeLamp",
+      "Chassis::absActive"
+    ],
+    "published_contracts": [
+      "frmBrakeStatusMsg",
+      "frmBrakeTempMsg",
+      "frmBrakeWearMsg",
+      "frmChassisDiagResMsg",
+      "frmChassisHealthMsg",
+      "frmEscStateMsg",
+      "frmRoadFrictionMsg",
+      "frmSuspensionStateMsg",
+      "frmWheelSpeedMsg",
+      "frmYawAccelMsg"
+    ],
+    "consumed_contracts": [
+      "ethDecelAssistReqMsg",
+      "frmAbsStateMsg",
+      "frmAccelStatusMsg",
+      "frmAdasChassisStatusMsg",
+      "frmAebDomainStateMsg",
+      "frmAirSuspensionStateMsg",
+      "frmBrakeStatusMsg",
+      "frmBrakeTempMsg",
+      "frmBrakeWearMsg",
+      "frmChassisDiagReqMsg",
+      "frmEpsStateMsg",
+      "frmEscStateMsg",
+      "frmFcaStateMsg",
+      "frmPedalInputCanMsg",
+      "frmRspaStateMsg",
+      "frmRwsStateMsg",
+      "frmSteeringAngleMsg",
+      "frmSteeringCanMsg",
+      "frmSteeringTorqueMsg",
+      "frmTcsStateMsg",
+      "frmVehicleStateCanMsg",
+      "frmWheelSpeedMsg",
+      "frmYawAccelMsg"
+    ],
+    "linked_ecus": [
+      "ABS",
+      "ADAS",
+      "AEB",
+      "ASM",
+      "CGW",
+      "FCA",
+      "MDPS",
+      "RSPA",
+      "RWS",
+      "SAS",
+      "TEST_SCN",
+      "VCU"
+    ],
+    "upstream_ecus": [
+      "ABS",
+      "ADAS",
+      "AEB",
+      "ASM",
+      "FCA",
+      "MDPS",
+      "RSPA",
+      "RWS",
+      "SAS",
+      "TEST_SCN",
+      "VCU"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CGW",
+      "MDPS",
+      "TEST_SCN",
+      "VCU"
+    ],
+    "inbound_edges": [
+      "ABS :: frmAbsStateMsg",
+      "ADAS :: ethDecelAssistReqMsg, frmAdasChassisStatusMsg",
+      "AEB :: frmAebDomainStateMsg",
+      "ASM :: frmAirSuspensionStateMsg",
+      "ESC :: frmBrakeStatusMsg, frmBrakeTempMsg, frmBrakeWearMsg, frmEscStateMsg, frmWheelSpeedMsg, frmYawAccelMsg",
+      "FCA :: frmFcaStateMsg",
+      "MDPS :: frmEpsStateMsg, frmSteeringTorqueMsg",
+      "RSPA :: frmRspaStateMsg",
+      "RWS :: frmRwsStateMsg",
+      "SAS :: frmSteeringAngleMsg",
+      "TEST_SCN :: frmChassisDiagReqMsg, frmPedalInputCanMsg, frmSteeringCanMsg",
+      "VCU :: frmAccelStatusMsg, frmTcsStateMsg, frmVehicleStateCanMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmBrakeTempMsg, frmEscStateMsg, frmRoadFrictionMsg, frmSuspensionStateMsg",
+      "CGW :: frmChassisHealthMsg",
+      "ESC :: frmBrakeStatusMsg, frmBrakeTempMsg, frmBrakeWearMsg, frmEscStateMsg, frmWheelSpeedMsg, frmYawAccelMsg",
+      "MDPS :: frmWheelSpeedMsg, frmYawAccelMsg",
+      "TEST_SCN :: frmChassisDiagResMsg, frmChassisHealthMsg",
+      "VCU :: frmWheelSpeedMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc",
+      "chassis_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [
+      "@Chassis::brakePressure",
+      "@Chassis::brakeLamp",
+      "@Chassis::absActive"
+    ],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc",
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "assistPressureFloor remains the strongest current dynamics risk during AEB overlay.",
+    "runtime_note": "Consumes vehicle and AEB state, then publishes brake and stability state to downstream readers."
+  },
+  {
+    "ecu": "MDPS",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/MDPS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/MDPS.can",
+    "role_hint": "Chassis steering controller",
+    "owner_seam": [
+      "Chassis::steeringAngle",
+      "Display::steeringFrame"
+    ],
+    "published_contracts": [
+      "frmEpsStateMsg",
+      "frmSteeringStateCanMsg",
+      "frmSteeringTorqueMsg"
+    ],
+    "consumed_contracts": [
+      "frmSpasStateMsg",
+      "frmSteeringCanMsg",
+      "frmSteeringStateCanMsg",
+      "frmWheelSpeedMsg",
+      "frmYawAccelMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "ESC",
+      "SPAS",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "ESC",
+      "SPAS",
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "ESC"
+    ],
+    "inbound_edges": [
+      "ESC :: frmWheelSpeedMsg, frmYawAccelMsg",
+      "MDPS :: frmSteeringStateCanMsg",
+      "SPAS :: frmSpasStateMsg",
+      "TEST_SCN :: frmSteeringCanMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmEpsStateMsg",
+      "ESC :: frmEpsStateMsg, frmSteeringTorqueMsg",
+      "MDPS :: frmSteeringStateCanMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc",
+      "chassis_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [
+      "@Chassis::steeringAngle",
+      "@Display::steeringFrame"
+    ],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc",
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "Steering path is largely coherent after bar, wheel, and readback unification.",
+    "runtime_note": "Steering state must stay aligned across manual command, owner readback, and display frame."
+  },
+  {
+    "ecu": "ODS",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/ODS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/ODS.can",
+    "role_hint": "Chassis runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmOdsDiagResMsg",
+      "frmOdsStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmOdsDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "BCM",
+      "CGW",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "BCM",
+      "CGW",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmOdsDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "BCM :: frmOdsStateMsg",
+      "CGW :: frmOdsStateMsg",
+      "TEST_SCN :: frmOdsDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc",
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_042_ODS_INPUT"
+    ],
+    "dbc_sources": [
+      "body_can.dbc",
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "RWS",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/RWS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/RWS.can",
+    "role_hint": "Chassis runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmRwsStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "ADAS",
+      "ESC"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "ADAS",
+      "ESC"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "ADAS :: frmRwsStateMsg",
+      "ESC :: frmRwsStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "SAS",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/SAS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/SAS.can",
+    "role_hint": "Chassis runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmSasDiagResMsg",
+      "frmSteeringAngleMsg"
+    ],
+    "consumed_contracts": [
+      "frmSasDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "ESC",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "ESC",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmSasDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmSteeringAngleMsg",
+      "ESC :: frmSteeringAngleMsg",
+      "TEST_SCN :: frmSasDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "TPMS",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/TPMS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/TPMS.can",
+    "role_hint": "Chassis runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmTirePressureMsg",
+      "frmTpmsDiagResMsg"
+    ],
+    "consumed_contracts": [
+      "frmTpmsDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmTpmsDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmTirePressureMsg",
+      "TEST_SCN :: frmTpmsDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "VCU",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/VCU.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/VCU.can",
+    "role_hint": "Powertrain controller",
+    "owner_seam": [
+      "Chassis::vehicleSpeed",
+      "Chassis::driveState",
+      "Chassis::throttlePosition"
+    ],
+    "published_contracts": [
+      "frmAccelStatusMsg",
+      "frmEnergyFlowStateMsg",
+      "frmPowerLimitMsg",
+      "frmPowertrainCtrlAuthMsg",
+      "frmPowertrainGatewayMsg",
+      "frmPowertrainHealthMsg",
+      "frmPtDiagResMsg",
+      "frmTcsStateMsg",
+      "frmVehicleModeMsg",
+      "frmVehicleStateCanMsg",
+      "frmWheelPulseMsg"
+    ],
+    "consumed_contracts": [
+      "frm4wdStateMsg",
+      "frmBatBmsStateMsg",
+      "frmChargePortCtrlStateMsg",
+      "frmDcdcStateMsg",
+      "frmEngineLoadMsg",
+      "frmEngineSpeedTempMsg",
+      "frmEngineTorqueMsg",
+      "frmEopStateMsg",
+      "frmEwpStateMsg",
+      "frmFpcmStateMsg",
+      "frmFuelBatteryStateMsg",
+      "frmInverterStateMsg",
+      "frmIsgStateMsg",
+      "frmLvrStateMsg",
+      "frmMcuStateMsg",
+      "frmObcStateMsg",
+      "frmPedalInputCanMsg",
+      "frmPtDiagReqMsg",
+      "frmThermalMgmtStateMsg",
+      "frmThrottleStateMsg",
+      "frmTrailerCtrlStateMsg",
+      "frmTransShiftStateMsg",
+      "frmTransmissionTempMsg",
+      "frmWheelSpeedMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "BAT_BMS",
+      "CPC",
+      "DCDC",
+      "EMS",
+      "EOP",
+      "ESC",
+      "EWP",
+      "FPCM",
+      "INVERTER",
+      "ISG",
+      "LVR",
+      "MCU",
+      "OBC",
+      "TCU",
+      "TEST_SCN",
+      "TRM",
+      "_4WD"
+    ],
+    "upstream_ecus": [
+      "BAT_BMS",
+      "CPC",
+      "DCDC",
+      "EMS",
+      "EOP",
+      "ESC",
+      "EWP",
+      "FPCM",
+      "INVERTER",
+      "ISG",
+      "LVR",
+      "MCU",
+      "OBC",
+      "TCU",
+      "TEST_SCN",
+      "TRM",
+      "_4WD"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "EMS",
+      "ESC",
+      "TCU",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "BAT_BMS :: frmBatBmsStateMsg",
+      "CPC :: frmChargePortCtrlStateMsg",
+      "DCDC :: frmDcdcStateMsg",
+      "EMS :: frmEngineLoadMsg, frmEngineSpeedTempMsg, frmEngineTorqueMsg, frmFuelBatteryStateMsg, frmThermalMgmtStateMsg, frmThrottleStateMsg",
+      "EOP :: frmEopStateMsg",
+      "ESC :: frmWheelSpeedMsg",
+      "EWP :: frmEwpStateMsg",
+      "FPCM :: frmFpcmStateMsg",
+      "INVERTER :: frmInverterStateMsg",
+      "ISG :: frmIsgStateMsg",
+      "LVR :: frmLvrStateMsg",
+      "MCU :: frmMcuStateMsg",
+      "OBC :: frmObcStateMsg",
+      "TCU :: frmTransShiftStateMsg, frmTransmissionTempMsg",
+      "TEST_SCN :: frmPedalInputCanMsg, frmPtDiagReqMsg",
+      "TRM :: frmTrailerCtrlStateMsg",
+      "_4WD :: frm4wdStateMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmTcsStateMsg, frmVehicleStateCanMsg, frmWheelPulseMsg",
+      "EMS :: frmEnergyFlowStateMsg, frmPowerLimitMsg, frmPowertrainCtrlAuthMsg, frmPowertrainGatewayMsg, frmVehicleModeMsg",
+      "ESC :: frmAccelStatusMsg, frmTcsStateMsg, frmVehicleStateCanMsg",
+      "TCU :: frmEnergyFlowStateMsg, frmPowerLimitMsg, frmPowertrainCtrlAuthMsg, frmPowertrainGatewayMsg, frmVehicleModeMsg",
+      "TEST_SCN :: frmPowertrainHealthMsg, frmPtDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc",
+      "chassis_can.dbc",
+      "powertrain_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "chassis_can.dbc",
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [
+      "@Chassis::vehicleSpeed",
+      "@Chassis::driveState",
+      "@Chassis::throttlePosition"
+    ],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc",
+      "chassis_can.dbc",
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "Manual speed target and pedal dynamics can still fight if stale assist hints are reasserted.",
+    "runtime_note": "Primary dynamics producer for speed, drive state, and throttle interpretation."
+  },
+  {
+    "ecu": "VSM",
+    "domain": "Chassis",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/VSM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Chassis/VSM.can",
+    "role_hint": "Vehicle stability intervention leaf ECU",
+    "owner_seam": [
+      "local intervention state"
+    ],
+    "published_contracts": [
+      "frmVsmDiagResMsg",
+      "frmVsmStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmVsmDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmVsmDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmVsmStateMsg",
+      "TEST_SCN :: frmVsmDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "sysvar_hints": [
+      "local intervention state"
+    ],
+    "test_assets": [
+      "TC_CANOE_UT_INP_033_VSM_INPUT"
+    ],
+    "dbc_sources": [
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "Contributes to perceived intervention step changes under the same AEB profile shifts.",
+    "runtime_note": "Consumes ESC and AEB domain state to produce local stability intervention behavior."
+  },
+  {
+    "ecu": "BAT_BMS",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/BAT_BMS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/BAT_BMS.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmBatBmsStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmChargePortCtrlStateMsg"
+    ],
+    "linked_ecus": [
+      "CPC",
+      "DCDC",
+      "OBC",
+      "VCU"
+    ],
+    "upstream_ecus": [
+      "CPC"
+    ],
+    "downstream_ecus": [
+      "DCDC",
+      "OBC",
+      "VCU"
+    ],
+    "inbound_edges": [
+      "CPC :: frmChargePortCtrlStateMsg"
+    ],
+    "outbound_edges": [
+      "DCDC :: frmBatBmsStateMsg",
+      "OBC :: frmBatBmsStateMsg",
+      "VCU :: frmBatBmsStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "CPC",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/CPC.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/CPC.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmChargePortCtrlStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "BAT_BMS",
+      "OBC",
+      "VCU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "BAT_BMS",
+      "OBC",
+      "VCU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "BAT_BMS :: frmChargePortCtrlStateMsg",
+      "OBC :: frmChargePortCtrlStateMsg",
+      "VCU :: frmChargePortCtrlStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "DCDC",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/DCDC.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/DCDC.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmDcdcStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmBatBmsStateMsg"
+    ],
+    "linked_ecus": [
+      "BAT_BMS",
+      "VCU"
+    ],
+    "upstream_ecus": [
+      "BAT_BMS"
+    ],
+    "downstream_ecus": [
+      "VCU"
+    ],
+    "inbound_edges": [
+      "BAT_BMS :: frmBatBmsStateMsg"
+    ],
+    "outbound_edges": [
+      "VCU :: frmDcdcStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_067_DCDC_INPUT"
+    ],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "EMS",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/EMS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/EMS.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmEngineLoadMsg",
+      "frmEngineSpeedTempMsg",
+      "frmEngineTorqueMsg",
+      "frmFuelBatteryStateMsg",
+      "frmThermalMgmtStateMsg",
+      "frmThrottleStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmCruiseStateMsg",
+      "frmEnergyFlowStateMsg",
+      "frmEopStateMsg",
+      "frmEwpStateMsg",
+      "frmFpcmStateMsg",
+      "frmIgnitionEngineMsg",
+      "frmInverterStateMsg",
+      "frmIsgStateMsg",
+      "frmMcuStateMsg",
+      "frmPowerLimitMsg",
+      "frmPowertrainCtrlAuthMsg",
+      "frmPowertrainGatewayMsg",
+      "frmTransmissionTempMsg",
+      "frmVehicleModeMsg"
+    ],
+    "linked_ecus": [
+      "EOP",
+      "EWP",
+      "FPCM",
+      "INVERTER",
+      "ISG",
+      "MCU",
+      "SCC",
+      "TCU",
+      "TEST_SCN",
+      "VCU"
+    ],
+    "upstream_ecus": [
+      "EOP",
+      "EWP",
+      "FPCM",
+      "INVERTER",
+      "ISG",
+      "MCU",
+      "SCC",
+      "TCU",
+      "TEST_SCN",
+      "VCU"
+    ],
+    "downstream_ecus": [
+      "TCU",
+      "VCU"
+    ],
+    "inbound_edges": [
+      "EOP :: frmEopStateMsg",
+      "EWP :: frmEwpStateMsg",
+      "FPCM :: frmFpcmStateMsg",
+      "INVERTER :: frmInverterStateMsg",
+      "ISG :: frmIsgStateMsg",
+      "MCU :: frmMcuStateMsg",
+      "SCC :: frmCruiseStateMsg",
+      "TCU :: frmTransmissionTempMsg",
+      "TEST_SCN :: frmIgnitionEngineMsg",
+      "VCU :: frmEnergyFlowStateMsg, frmPowerLimitMsg, frmPowertrainCtrlAuthMsg, frmPowertrainGatewayMsg, frmVehicleModeMsg"
+    ],
+    "outbound_edges": [
+      "TCU :: frmEngineSpeedTempMsg, frmThrottleStateMsg",
+      "VCU :: frmEngineLoadMsg, frmEngineSpeedTempMsg, frmEngineTorqueMsg, frmFuelBatteryStateMsg, frmThermalMgmtStateMsg, frmThrottleStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_CORE_010_EMS_ALERT_TXRX"
+    ],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "EOP",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/EOP.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/EOP.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmEopStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "EMS",
+      "VCU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "EMS",
+      "VCU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "EMS :: frmEopStateMsg",
+      "VCU :: frmEopStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "EWP",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/EWP.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/EWP.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmEwpStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "EMS",
+      "VCU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "EMS",
+      "VCU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "EMS :: frmEwpStateMsg",
+      "VCU :: frmEwpStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "FPCM",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/FPCM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/FPCM.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmFpcmStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "EMS",
+      "VCU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "EMS",
+      "VCU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "EMS :: frmFpcmStateMsg",
+      "VCU :: frmFpcmStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "INVERTER",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/INVERTER.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/INVERTER.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmInverterStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "EMS",
+      "VCU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "EMS",
+      "VCU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "EMS :: frmInverterStateMsg",
+      "VCU :: frmInverterStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_069_INVERTER_INPUT"
+    ],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "ISG",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/ISG.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/ISG.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmIsgStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "EMS",
+      "VCU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "EMS",
+      "VCU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "EMS :: frmIsgStateMsg",
+      "VCU :: frmIsgStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "LVR",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/LVR.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/LVR.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmLvrStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "TCU",
+      "VCU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "TCU",
+      "VCU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "TCU :: frmLvrStateMsg",
+      "VCU :: frmLvrStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "MCU",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/MCU.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/MCU.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmMcuStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "EMS",
+      "VCU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "EMS",
+      "VCU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "EMS :: frmMcuStateMsg",
+      "VCU :: frmMcuStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_068_MCU_INPUT"
+    ],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "OBC",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/OBC.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/OBC.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmObcStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmBatBmsStateMsg",
+      "frmChargePortCtrlStateMsg"
+    ],
+    "linked_ecus": [
+      "BAT_BMS",
+      "CPC",
+      "VCU"
+    ],
+    "upstream_ecus": [
+      "BAT_BMS",
+      "CPC"
+    ],
+    "downstream_ecus": [
+      "VCU"
+    ],
+    "inbound_edges": [
+      "BAT_BMS :: frmBatBmsStateMsg",
+      "CPC :: frmChargePortCtrlStateMsg"
+    ],
+    "outbound_edges": [
+      "VCU :: frmObcStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_066_OBC_INPUT"
+    ],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "TCU",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/TCU.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/TCU.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmTransShiftStateMsg",
+      "frmTransmissionTempMsg"
+    ],
+    "consumed_contracts": [
+      "frmCruiseStateMsg",
+      "frmEnergyFlowStateMsg",
+      "frmEngineSpeedTempMsg",
+      "frmGearStateMsg",
+      "frmLvrStateMsg",
+      "frmPowerLimitMsg",
+      "frmPowertrainCtrlAuthMsg",
+      "frmPowertrainGatewayMsg",
+      "frmThrottleStateMsg",
+      "frmVehicleModeMsg"
+    ],
+    "linked_ecus": [
+      "EMS",
+      "LVR",
+      "SCC",
+      "TEST_SCN",
+      "VCU"
+    ],
+    "upstream_ecus": [
+      "EMS",
+      "LVR",
+      "SCC",
+      "TEST_SCN",
+      "VCU"
+    ],
+    "downstream_ecus": [
+      "EMS",
+      "VCU"
+    ],
+    "inbound_edges": [
+      "EMS :: frmEngineSpeedTempMsg, frmThrottleStateMsg",
+      "LVR :: frmLvrStateMsg",
+      "SCC :: frmCruiseStateMsg",
+      "TEST_SCN :: frmGearStateMsg",
+      "VCU :: frmEnergyFlowStateMsg, frmPowerLimitMsg, frmPowertrainCtrlAuthMsg, frmPowertrainGatewayMsg, frmVehicleModeMsg"
+    ],
+    "outbound_edges": [
+      "EMS :: frmTransmissionTempMsg",
+      "VCU :: frmTransShiftStateMsg, frmTransmissionTempMsg"
+    ],
+    "inbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "_4WD",
+    "domain": "Powertrain",
+    "group": "GROUP_01_BASE_VEHICLE_DYNAMICS",
+    "source_capl": "canoe/src/capl/ecu/_4WD.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Powertrain/_4WD.can",
+    "role_hint": "Powertrain runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frm4wdStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "VCU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "VCU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "VCU :: frm4wdStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "ADAS",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "-",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/ADAS.can",
+    "role_hint": "Alert arbitration and decel assist domain controller",
+    "owner_seam": [
+      "Core::selectedAlertType",
+      "Core::selectedAlertLevel"
+    ],
+    "published_contracts": [
+      "ethDecelAssistReqMsg",
+      "ethEmergencyRiskMsg",
+      "ethObjectRiskStateMsg",
+      "ethObjectScenarioAlertMsg",
+      "ethSelectedAlertMsg",
+      "frmAdasChassisStatusMsg",
+      "frmAdasDiagResMsg",
+      "frmAdasDomainStateMsg"
+    ],
+    "consumed_contracts": [
+      "ethEmergencyRiskMsg",
+      "ethObjectRiskInputMsg",
+      "ethObjectRiskStateMsg",
+      "frmAbsStateMsg",
+      "frmAdasDiagReqMsg",
+      "frmAebDomainStateMsg",
+      "frmAirSuspensionStateMsg",
+      "frmBcwStateMsg",
+      "frmBodyComfortStateMsg",
+      "frmBodyGatewayStateMsg",
+      "frmBrakeTempMsg",
+      "frmCdcStateMsg",
+      "frmEcsStateMsg",
+      "frmEhbStateMsg",
+      "frmEpsStateMsg",
+      "frmEscStateMsg",
+      "frmFcaStateMsg",
+      "frmFcamStateMsg",
+      "frmFradarStateMsg",
+      "frmHighwayPilotStateMsg",
+      "frmLcaStateMsg",
+      "frmLdwsLkasStateMsg",
+      "frmLidarStateMsg",
+      "frmParkMasterStateMsg",
+      "frmRearRadarMasterStateMsg",
+      "frmRoadFrictionMsg",
+      "frmRoadPreviewCameraStateMsg",
+      "frmRspaStateMsg",
+      "frmRwsStateMsg",
+      "frmSpasStateMsg",
+      "frmSrrFlStateMsg",
+      "frmSrrFrStateMsg",
+      "frmSrrRlStateMsg",
+      "frmSrrRrStateMsg",
+      "frmSteeringAngleMsg",
+      "frmSurroundParkMasterStateMsg",
+      "frmSuspensionStateMsg",
+      "frmTcsStateMsg",
+      "frmTirePressureMsg",
+      "frmTrailerCtrlStateMsg",
+      "frmVehicleStateCanMsg",
+      "frmVsmStateMsg",
+      "frmWheelPulseMsg"
+    ],
+    "linked_ecus": [
+      "ABS",
+      "AEB",
+      "ASM",
+      "BCM",
+      "BCW",
+      "CDC",
+      "CLU",
+      "ECS",
+      "EHB",
+      "ESC",
+      "FCA",
+      "FCAM",
+      "FRADAR",
+      "HWP",
+      "IVI",
+      "LCA",
+      "LDR",
+      "LDWS_LKAS",
+      "MDPS",
+      "PKM",
+      "RPC",
+      "RRM",
+      "RSPA",
+      "RWS",
+      "SAS",
+      "SCC",
+      "SPAS",
+      "SPM",
+      "SRR_FL",
+      "SRR_FR",
+      "SRR_RL",
+      "SRR_RR",
+      "TEST_SCN",
+      "TPMS",
+      "TRM",
+      "VCU",
+      "VSM"
+    ],
+    "upstream_ecus": [
+      "ABS",
+      "AEB",
+      "ASM",
+      "BCM",
+      "BCW",
+      "CDC",
+      "ECS",
+      "EHB",
+      "ESC",
+      "FCA",
+      "FCAM",
+      "FRADAR",
+      "HWP",
+      "LCA",
+      "LDR",
+      "LDWS_LKAS",
+      "MDPS",
+      "PKM",
+      "RPC",
+      "RRM",
+      "RSPA",
+      "RWS",
+      "SAS",
+      "SPAS",
+      "SPM",
+      "SRR_FL",
+      "SRR_FR",
+      "SRR_RL",
+      "SRR_RR",
+      "TEST_SCN",
+      "TPMS",
+      "TRM",
+      "VCU",
+      "VSM"
+    ],
+    "downstream_ecus": [
+      "AEB",
+      "BCM",
+      "BCW",
+      "CLU",
+      "ESC",
+      "FCA",
+      "FCAM",
+      "FRADAR",
+      "IVI",
+      "LCA",
+      "LDR",
+      "LDWS_LKAS",
+      "SCC",
+      "SRR_FL",
+      "SRR_FR",
+      "SRR_RL",
+      "SRR_RR",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "ABS :: frmAbsStateMsg",
+      "ADAS :: ethEmergencyRiskMsg, ethObjectRiskStateMsg",
+      "AEB :: frmAebDomainStateMsg",
+      "ASM :: frmAirSuspensionStateMsg",
+      "BCM :: frmBodyComfortStateMsg, frmBodyGatewayStateMsg",
+      "BCW :: frmBcwStateMsg",
+      "CDC :: frmCdcStateMsg",
+      "ECS :: frmEcsStateMsg",
+      "EHB :: frmEhbStateMsg",
+      "ESC :: frmBrakeTempMsg, frmEscStateMsg, frmRoadFrictionMsg, frmSuspensionStateMsg",
+      "FCA :: frmFcaStateMsg",
+      "FCAM :: frmFcamStateMsg",
+      "FRADAR :: frmFradarStateMsg",
+      "HWP :: frmHighwayPilotStateMsg",
+      "LCA :: frmLcaStateMsg",
+      "LDR :: frmLidarStateMsg",
+      "LDWS_LKAS :: frmLdwsLkasStateMsg",
+      "MDPS :: frmEpsStateMsg",
+      "PKM :: frmParkMasterStateMsg",
+      "RPC :: frmRoadPreviewCameraStateMsg",
+      "RRM :: frmRearRadarMasterStateMsg",
+      "RSPA :: frmRspaStateMsg",
+      "RWS :: frmRwsStateMsg",
+      "SAS :: frmSteeringAngleMsg",
+      "SPAS :: frmSpasStateMsg",
+      "SPM :: frmSurroundParkMasterStateMsg",
+      "SRR_FL :: frmSrrFlStateMsg",
+      "SRR_FR :: frmSrrFrStateMsg",
+      "SRR_RL :: frmSrrRlStateMsg",
+      "SRR_RR :: frmSrrRrStateMsg",
+      "TEST_SCN :: ethObjectRiskInputMsg, frmAdasDiagReqMsg",
+      "TPMS :: frmTirePressureMsg",
+      "TRM :: frmTrailerCtrlStateMsg",
+      "VCU :: frmTcsStateMsg, frmVehicleStateCanMsg, frmWheelPulseMsg",
+      "VSM :: frmVsmStateMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: ethEmergencyRiskMsg, ethObjectRiskStateMsg",
+      "AEB :: frmAdasDomainStateMsg",
+      "BCM :: ethObjectScenarioAlertMsg, ethSelectedAlertMsg, frmAdasDomainStateMsg",
+      "BCW :: frmAdasDomainStateMsg",
+      "CLU :: frmAdasDomainStateMsg",
+      "ESC :: ethDecelAssistReqMsg, frmAdasChassisStatusMsg",
+      "FCA :: frmAdasDomainStateMsg",
+      "FCAM :: frmAdasDomainStateMsg",
+      "FRADAR :: frmAdasDomainStateMsg",
+      "IVI :: ethObjectScenarioAlertMsg, ethSelectedAlertMsg, frmAdasDomainStateMsg",
+      "LCA :: frmAdasDomainStateMsg",
+      "LDR :: frmAdasDomainStateMsg",
+      "LDWS_LKAS :: frmAdasDomainStateMsg",
+      "SCC :: frmAdasDomainStateMsg",
+      "SRR_FL :: frmAdasDomainStateMsg",
+      "SRR_FR :: frmAdasDomainStateMsg",
+      "SRR_RL :: frmAdasDomainStateMsg",
+      "SRR_RR :: frmAdasDomainStateMsg",
+      "TEST_SCN :: ethDecelAssistReqMsg, ethEmergencyRiskMsg, ethObjectRiskStateMsg, ethObjectScenarioAlertMsg, ethSelectedAlertMsg, frmAdasDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc",
+      "body_can.dbc",
+      "chassis_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [
+      "@Core::selectedAlertType",
+      "@Core::selectedAlertLevel"
+    ],
+    "test_assets": [
+      "TC_CANOE_IT_EXT_039_ADAS_PERCEPTION_CONTEXT",
+      "TC_CANOE_ST_EXT_042_ADAS_PERCEPTION_CONTEXT",
+      "TC_CANOE_UT_CORE_005_ADAS_DECEL_ASSIST",
+      "TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION",
+      "TC_CANOE_UT_EXT_023_ADAS_DRIVE_ASSIST",
+      "TC_CANOE_UT_EXT_024_ADAS_PARKING_PERCEPTION"
+    ],
+    "dbc_sources": [
+      "adas_can.dbc",
+      "body_can.dbc",
+      "chassis_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "Must be read together with AEB, not as a standalone risk producer.",
+    "runtime_note": "Consumes route, chassis, and emergency context, then emits selected alert and assist intent."
+  },
+  {
+    "ecu": "AEB",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/AEB.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/AEB.can",
+    "role_hint": "AEB domain controller",
+    "owner_seam": [
+      "AEB StopReq / DecelProfile / DomainHealth"
+    ],
+    "published_contracts": [
+      "frmAebDomainStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "ESC"
+    ],
+    "upstream_ecus": [
+      "ADAS"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU",
+      "ESC"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmAebDomainStateMsg",
+      "CLU :: frmAebDomainStateMsg",
+      "ESC :: frmAebDomainStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [
+      "frmAebDomainStateMsg"
+    ],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "This is the most likely producer of stepped brake feel across ESC, EHB, and VSM.",
+    "runtime_note": "One AEB profile change can appear as multiple simultaneous chassis ECU reactions."
+  },
+  {
+    "ecu": "AVM",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/AVM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/AVM.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmAvmStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "CLU",
+      "IVI"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "CLU",
+      "IVI"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "CLU :: frmAvmStateMsg",
+      "IVI :: frmAvmStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_055_AVM_INPUT"
+    ],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "BCW",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/BCW.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/BCW.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmBcwStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "upstream_ecus": [
+      "ADAS"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmBcwStateMsg",
+      "CLU :: frmBcwStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "DMS",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/DMS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/DMS.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmDmsDiagResMsg",
+      "frmDmsStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmDmsDiagReqMsg",
+      "frmHighwayPilotStateMsg"
+    ],
+    "linked_ecus": [
+      "CLU",
+      "HWP",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "HWP",
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "CLU",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "HWP :: frmHighwayPilotStateMsg",
+      "TEST_SCN :: frmDmsDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "CLU :: frmDmsStateMsg",
+      "TEST_SCN :: frmDmsDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "FCA",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/FCA.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/FCA.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmFcaStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "ESC"
+    ],
+    "upstream_ecus": [
+      "ADAS"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU",
+      "ESC"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmFcaStateMsg",
+      "CLU :: frmFcaStateMsg",
+      "ESC :: frmFcaStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "FCAM",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/FCAM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/FCAM.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmFcamStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg",
+      "frmFcamInputMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg",
+      "TEST_SCN :: frmFcamInputMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmFcamStateMsg",
+      "CLU :: frmFcamStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_056_FCAM_INPUT"
+    ],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "FRADAR",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/FRADAR.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/FRADAR.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmFradarStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg",
+      "frmFradarInputMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg",
+      "TEST_SCN :: frmFradarInputMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmFradarStateMsg",
+      "CLU :: frmFradarStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_057_FRADAR_INPUT"
+    ],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "HWP",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/HWP.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/HWP.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmHighwayPilotStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "DMS"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU",
+      "DMS"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "ADAS :: frmHighwayPilotStateMsg",
+      "CLU :: frmHighwayPilotStateMsg",
+      "DMS :: frmHighwayPilotStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "LCA",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/LCA.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/LCA.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmLcaStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "upstream_ecus": [
+      "ADAS"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmLcaStateMsg",
+      "CLU :: frmLcaStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "LDR",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/LDR.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/LDR.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmLidarStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg",
+      "frmLidarInputMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg",
+      "TEST_SCN :: frmLidarInputMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmLidarStateMsg",
+      "CLU :: frmLidarStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "LDWS_LKAS",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/LDWS_LKAS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/LDWS_LKAS.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmLdwsLkasStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "upstream_ecus": [
+      "ADAS"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmLdwsLkasStateMsg",
+      "CLU :: frmLdwsLkasStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "OMS",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/OMS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/OMS.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmOmsDiagResMsg",
+      "frmOmsStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmOmsDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "BCM",
+      "CLU",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "BCM",
+      "CLU",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmOmsDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "BCM :: frmOmsStateMsg",
+      "CLU :: frmOmsStateMsg",
+      "TEST_SCN :: frmOmsDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "PKM",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/PKM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/PKM.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmParkMasterStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "IVI"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU",
+      "IVI"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "ADAS :: frmParkMasterStateMsg",
+      "CLU :: frmParkMasterStateMsg",
+      "IVI :: frmParkMasterStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "PUS",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/PUS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/PUS.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmParkUltrasonicStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "BCM",
+      "CLU",
+      "IVI"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "BCM",
+      "CLU",
+      "IVI"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "BCM :: frmParkUltrasonicStateMsg",
+      "CLU :: frmParkUltrasonicStateMsg",
+      "IVI :: frmParkUltrasonicStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_054_PUS_INPUT"
+    ],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "RPC",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/RPC.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/RPC.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmRoadPreviewCameraStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "ADAS :: frmRoadPreviewCameraStateMsg",
+      "CLU :: frmRoadPreviewCameraStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "RRM",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/RRM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/RRM.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmRearRadarMasterStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "ADAS :: frmRearRadarMasterStateMsg",
+      "CLU :: frmRearRadarMasterStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "RSPA",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/RSPA.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/RSPA.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmRspaStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "ESC"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU",
+      "ESC"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "ADAS :: frmRspaStateMsg",
+      "CLU :: frmRspaStateMsg",
+      "ESC :: frmRspaStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "SCC",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "-",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/SCC.can",
+    "role_hint": "Longitudinal assist support controller",
+    "owner_seam": [
+      "Powertrain::cruiseSetSpeed"
+    ],
+    "published_contracts": [
+      "frmCruiseStateMsg",
+      "frmSccDiagResMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg",
+      "frmSccDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "EMS",
+      "TCU",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "EMS",
+      "TCU",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg",
+      "TEST_SCN :: frmSccDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "EMS :: frmCruiseStateMsg",
+      "TCU :: frmCruiseStateMsg",
+      "TEST_SCN :: frmSccDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc",
+      "powertrain_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [
+      "@Powertrain::cruiseSetSpeed"
+    ],
+    "test_assets": [
+      "TC_CANOE_UT_INP_052_SCC_INPUT"
+    ],
+    "dbc_sources": [
+      "adas_can.dbc",
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "Support-state coupling matters more than standalone bus ownership.",
+    "runtime_note": "SCC support behavior feeds ADAS and VCU rather than directly owning output HMI."
+  },
+  {
+    "ecu": "SPAS",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/SPAS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/SPAS.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmSpasStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "MDPS"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU",
+      "MDPS"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "ADAS :: frmSpasStateMsg",
+      "CLU :: frmSpasStateMsg",
+      "MDPS :: frmSpasStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "SPM",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/SPM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/SPM.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmSurroundParkMasterStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "IVI"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU",
+      "IVI"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "ADAS :: frmSurroundParkMasterStateMsg",
+      "CLU :: frmSurroundParkMasterStateMsg",
+      "IVI :: frmSurroundParkMasterStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "SRR_FL",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/SRR_FL.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/SRR_FL.can",
+    "role_hint": "Radar sensing leaf ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmSrrFlStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg",
+      "frmSrrFlInputMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg",
+      "TEST_SCN :: frmSrrFlInputMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmSrrFlStateMsg",
+      "CLU :: frmSrrFlStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_058_SRR_FL_INPUT"
+    ],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "SRR_FR",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/SRR_FR.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/SRR_FR.can",
+    "role_hint": "Radar sensing leaf ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmSrrFrStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg",
+      "frmSrrFrInputMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg",
+      "TEST_SCN :: frmSrrFrInputMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmSrrFrStateMsg",
+      "CLU :: frmSrrFrStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_059_SRR_FR_INPUT"
+    ],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "SRR_RL",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/SRR_RL.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/SRR_RL.can",
+    "role_hint": "Radar sensing leaf ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmSrrRlStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg",
+      "frmSrrRlInputMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg",
+      "TEST_SCN :: frmSrrRlInputMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmSrrRlStateMsg",
+      "CLU :: frmSrrRlStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_060_SRR_RL_INPUT"
+    ],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "SRR_RR",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/SRR_RR.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/SRR_RR.can",
+    "role_hint": "Radar sensing leaf ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmSrrRrStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg",
+      "frmSrrRrInputMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "ADAS",
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg",
+      "TEST_SCN :: frmSrrRrInputMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmSrrRrStateMsg",
+      "CLU :: frmSrrRrStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_061_SRR_RR_INPUT"
+    ],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "TRM",
+    "domain": "ADAS",
+    "group": "GROUP_02_ADAS_AEB_BRAKE_ASSIST",
+    "source_capl": "canoe/src/capl/ecu/TRM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ADAS/TRM.can",
+    "role_hint": "ADAS / sensing runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmTrailerCtrlStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "ADAS",
+      "CLU",
+      "VCU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "ADAS",
+      "CLU",
+      "VCU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "ADAS :: frmTrailerCtrlStateMsg",
+      "CLU :: frmTrailerCtrlStateMsg",
+      "VCU :: frmTrailerCtrlStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "AMP",
+    "domain": "Infotainment",
+    "group": "GROUP_03_DISPLAY_WARNING_AUDIO",
+    "source_capl": "canoe/src/capl/ecu/AMP.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Infotainment/AMP.can",
+    "role_hint": "Audio output owner",
+    "owner_seam": [
+      "UiRender::renderVolumLevel",
+      "CoreState::baseVolume"
+    ],
+    "published_contracts": [
+      "frmAmpDiagResMsg",
+      "frmAmpStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAmpDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "CLU",
+      "IVI",
+      "TEST_SCN",
+      "VCS"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "CLU",
+      "IVI",
+      "TEST_SCN",
+      "VCS"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmAmpDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "CLU :: frmAmpStateMsg",
+      "IVI :: frmAmpStateMsg",
+      "TEST_SCN :: frmAmpDiagResMsg",
+      "VCS :: frmAmpStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "sysvar_hints": [
+      "@UiRender::renderVolumLevel",
+      "@CoreState::baseVolume"
+    ],
+    "test_assets": [
+      "TC_CANOE_UT_INP_050_AMP_INPUT",
+      "TC_CANOE_UT_OUT_074_AMP_AUDIO"
+    ],
+    "dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "Audio rendering is stable; alert priority path matters more than bus mapping.",
+    "runtime_note": "Receives gated audio intent from IVI/BCM and renders the final alert volume."
+  },
+  {
+    "ecu": "CLU",
+    "domain": "Infotainment",
+    "group": "GROUP_03_DISPLAY_WARNING_AUDIO",
+    "source_capl": "-",
+    "mirror_capl": "canoe/cfg/channel_assign/Infotainment/CLU.can",
+    "role_hint": "Cluster owner",
+    "owner_seam": [
+      "Cluster::warningTextCode",
+      "Display::steeringFrame"
+    ],
+    "published_contracts": [
+      "frmCluDiagResMsg"
+    ],
+    "consumed_contracts": [
+      "frmAdasDomainStateMsg",
+      "frmAebDomainStateMsg",
+      "frmAmpStateMsg",
+      "frmAudioFocusMsg",
+      "frmAvmStateMsg",
+      "frmBcwStateMsg",
+      "frmCallStateMsg",
+      "frmCluDiagReqMsg",
+      "frmClusterBaseStateMsg",
+      "frmClusterNotifMsg",
+      "frmClusterSyncStateMsg",
+      "frmClusterThemeMsg",
+      "frmClusterWarningMsg",
+      "frmDigitalKeyStateMsg",
+      "frmDmsStateMsg",
+      "frmEpbStateMsg",
+      "frmFcaStateMsg",
+      "frmFcamStateMsg",
+      "frmFradarStateMsg",
+      "frmHighwayPilotStateMsg",
+      "frmHmiPopupStateMsg",
+      "frmHudStateMsg",
+      "frmLcaStateMsg",
+      "frmLdwsLkasStateMsg",
+      "frmLidarStateMsg",
+      "frmMassageSeatCtrlStateMsg",
+      "frmMediaMetaMsg",
+      "frmMediaStateMsg",
+      "frmNavModuleStateMsg",
+      "frmOmsStateMsg",
+      "frmOtaMasterStateMsg",
+      "frmParkMasterStateMsg",
+      "frmParkUltrasonicStateMsg",
+      "frmPgsStateMsg",
+      "frmPhoneProjectionMsg",
+      "frmRearRadarMasterStateMsg",
+      "frmRoadPreviewCameraStateMsg",
+      "frmRseStateMsg",
+      "frmRspaStateMsg",
+      "frmSpasStateMsg",
+      "frmSpeechTtsStateMsg",
+      "frmSrrFlStateMsg",
+      "frmSrrFrStateMsg",
+      "frmSrrRlStateMsg",
+      "frmSrrRrStateMsg",
+      "frmSurroundParkMasterStateMsg",
+      "frmTmuServiceStateMsg",
+      "frmTrailerCtrlStateMsg",
+      "frmVoiceAssistStateMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "AEB",
+      "AMP",
+      "AVM",
+      "BCW",
+      "DKEY",
+      "DMS",
+      "EPB",
+      "FCA",
+      "FCAM",
+      "FRADAR",
+      "HUD",
+      "HWP",
+      "IVI",
+      "LCA",
+      "LDR",
+      "LDWS_LKAS",
+      "MSC",
+      "NAV",
+      "OMS",
+      "OTA",
+      "PGS",
+      "PKM",
+      "PUS",
+      "RPC",
+      "RRM",
+      "RSE",
+      "RSPA",
+      "SPAS",
+      "SPM",
+      "SRR_FL",
+      "SRR_FR",
+      "SRR_RL",
+      "SRR_RR",
+      "TEST_SCN",
+      "TMU",
+      "TRM",
+      "VCS"
+    ],
+    "upstream_ecus": [
+      "ADAS",
+      "AEB",
+      "AMP",
+      "AVM",
+      "BCW",
+      "DKEY",
+      "DMS",
+      "EPB",
+      "FCA",
+      "FCAM",
+      "FRADAR",
+      "HUD",
+      "HWP",
+      "IVI",
+      "LCA",
+      "LDR",
+      "LDWS_LKAS",
+      "MSC",
+      "NAV",
+      "OMS",
+      "OTA",
+      "PGS",
+      "PKM",
+      "PUS",
+      "RPC",
+      "RRM",
+      "RSE",
+      "RSPA",
+      "SPAS",
+      "SPM",
+      "SRR_FL",
+      "SRR_FR",
+      "SRR_RL",
+      "SRR_RR",
+      "TEST_SCN",
+      "TMU",
+      "TRM",
+      "VCS"
+    ],
+    "downstream_ecus": [
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "ADAS :: frmAdasDomainStateMsg",
+      "AEB :: frmAebDomainStateMsg",
+      "AMP :: frmAmpStateMsg",
+      "AVM :: frmAvmStateMsg",
+      "BCW :: frmBcwStateMsg",
+      "DKEY :: frmDigitalKeyStateMsg",
+      "DMS :: frmDmsStateMsg",
+      "EPB :: frmEpbStateMsg",
+      "FCA :: frmFcaStateMsg",
+      "FCAM :: frmFcamStateMsg",
+      "FRADAR :: frmFradarStateMsg",
+      "HUD :: frmHudStateMsg",
+      "HWP :: frmHighwayPilotStateMsg",
+      "IVI :: frmAudioFocusMsg, frmCallStateMsg, frmClusterBaseStateMsg, frmClusterNotifMsg, frmClusterSyncStateMsg, frmClusterThemeMsg",
+      "LCA :: frmLcaStateMsg",
+      "LDR :: frmLidarStateMsg",
+      "LDWS_LKAS :: frmLdwsLkasStateMsg",
+      "MSC :: frmMassageSeatCtrlStateMsg",
+      "NAV :: frmNavModuleStateMsg",
+      "OMS :: frmOmsStateMsg",
+      "OTA :: frmOtaMasterStateMsg",
+      "PGS :: frmPgsStateMsg",
+      "PKM :: frmParkMasterStateMsg",
+      "PUS :: frmParkUltrasonicStateMsg",
+      "RPC :: frmRoadPreviewCameraStateMsg",
+      "RRM :: frmRearRadarMasterStateMsg",
+      "RSE :: frmRseStateMsg",
+      "RSPA :: frmRspaStateMsg",
+      "SPAS :: frmSpasStateMsg",
+      "SPM :: frmSurroundParkMasterStateMsg",
+      "SRR_FL :: frmSrrFlStateMsg",
+      "SRR_FR :: frmSrrFrStateMsg",
+      "SRR_RL :: frmSrrRlStateMsg",
+      "SRR_RR :: frmSrrRrStateMsg",
+      "TEST_SCN :: frmCluDiagReqMsg",
+      "TMU :: frmTmuServiceStateMsg",
+      "TRM :: frmTrailerCtrlStateMsg",
+      "VCS :: frmSpeechTtsStateMsg, frmVoiceAssistStateMsg"
+    ],
+    "outbound_edges": [
+      "TEST_SCN :: frmCluDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc",
+      "body_can.dbc",
+      "chassis_can.dbc",
+      "infotainment_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "sysvar_hints": [
+      "@Cluster::warningTextCode",
+      "@Display::steeringFrame"
+    ],
+    "test_assets": [
+      "TC_CANOE_UT_EXT_007_CLU_CONTEXT_ADJUST",
+      "TC_CANOE_UT_OUT_072_CLU_DISPLAY"
+    ],
+    "dbc_sources": [
+      "adas_can.dbc",
+      "body_can.dbc",
+      "chassis_can.dbc",
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "Output ownership is clean; visible issues are usually upstream.",
+    "runtime_note": "Consumes selected alert state and vehicle state to build cluster-facing output."
+  },
+  {
+    "ecu": "CPAY",
+    "domain": "Infotainment",
+    "group": "GROUP_03_DISPLAY_WARNING_AUDIO",
+    "source_capl": "canoe/src/capl/ecu/CPAY.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Infotainment/CPAY.can",
+    "role_hint": "Display / infotainment runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmCarpayCtrlStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "IVI",
+      "TMU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "IVI",
+      "TMU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "IVI :: frmCarpayCtrlStateMsg",
+      "TMU :: frmCarpayCtrlStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "DKEY",
+    "domain": "Infotainment",
+    "group": "GROUP_03_DISPLAY_WARNING_AUDIO",
+    "source_capl": "canoe/src/capl/ecu/DKEY.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Infotainment/DKEY.can",
+    "role_hint": "Display / infotainment runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmDigitalKeyStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmPhoneAsKeyStateMsg"
+    ],
+    "linked_ecus": [
+      "CLU",
+      "IVI",
+      "PAK",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "PAK"
+    ],
+    "downstream_ecus": [
+      "CLU",
+      "IVI",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "PAK :: frmPhoneAsKeyStateMsg"
+    ],
+    "outbound_edges": [
+      "CLU :: frmDigitalKeyStateMsg",
+      "IVI :: frmDigitalKeyStateMsg",
+      "TEST_SCN :: frmDigitalKeyStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "HUD",
+    "domain": "Infotainment",
+    "group": "GROUP_03_DISPLAY_WARNING_AUDIO",
+    "source_capl": "canoe/src/capl/ecu/HUD.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Infotainment/HUD.can",
+    "role_hint": "Display / infotainment runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmHudDiagResMsg",
+      "frmHudStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmHudDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "CLU",
+      "IVI",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "CLU",
+      "IVI",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmHudDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "CLU :: frmHudStateMsg",
+      "IVI :: frmHudStateMsg",
+      "TEST_SCN :: frmHudDiagResMsg, frmHudStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_049_HUD_INPUT",
+      "TC_CANOE_UT_OUT_073_HUD_DISPLAY"
+    ],
+    "dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "IVI",
+    "domain": "Infotainment",
+    "group": "GROUP_03_DISPLAY_WARNING_AUDIO",
+    "source_capl": "-",
+    "mirror_capl": "canoe/cfg/channel_assign/Infotainment/IVI.can",
+    "role_hint": "HMI and display gateway",
+    "owner_seam": [
+      "Cluster::warningTextCode",
+      "UiRender::*"
+    ],
+    "published_contracts": [
+      "frmAudioFocusMsg",
+      "frmCallStateMsg",
+      "frmClusterBaseStateMsg",
+      "frmClusterNotifMsg",
+      "frmClusterSyncStateMsg",
+      "frmClusterThemeMsg",
+      "frmClusterWarningMsg",
+      "frmConnectivityStateMsg",
+      "frmHmiPopupStateMsg",
+      "frmInfotainmentHealthMsg",
+      "frmIviDiagResMsg",
+      "frmIviHealthDetailMsg",
+      "frmMediaMetaMsg",
+      "frmMediaStateMsg",
+      "frmPhoneProjectionMsg"
+    ],
+    "consumed_contracts": [
+      "ethObjectScenarioAlertMsg",
+      "ethSelectedAlertMsg",
+      "frmAdasDomainStateMsg",
+      "frmAmpStateMsg",
+      "frmAvmStateMsg",
+      "frmCarpayCtrlStateMsg",
+      "frmConnectivityStateMsg",
+      "frmDigitalKeyStateMsg",
+      "frmHudStateMsg",
+      "frmIviDiagReqMsg",
+      "frmMapRenderStateMsg",
+      "frmNavContextCanMsg",
+      "frmNavModuleStateMsg",
+      "frmNaviGuideStateMsg",
+      "frmNavigationRouteMsg",
+      "frmOtaMasterStateMsg",
+      "frmParkMasterStateMsg",
+      "frmParkUltrasonicStateMsg",
+      "frmPgsStateMsg",
+      "frmRouteAlertMsg",
+      "frmRseStateMsg",
+      "frmSurroundParkMasterStateMsg",
+      "frmTmuServiceStateMsg",
+      "frmTrafficEventMsg"
+    ],
+    "linked_ecus": [
+      "ADAS",
+      "AMP",
+      "AVM",
+      "CGW",
+      "CLU",
+      "CPAY",
+      "DKEY",
+      "HUD",
+      "NAV",
+      "OTA",
+      "PGS",
+      "PKM",
+      "PUS",
+      "RSE",
+      "SPM",
+      "TEST_SCN",
+      "TMU"
+    ],
+    "upstream_ecus": [
+      "ADAS",
+      "AMP",
+      "AVM",
+      "CPAY",
+      "DKEY",
+      "HUD",
+      "NAV",
+      "OTA",
+      "PGS",
+      "PKM",
+      "PUS",
+      "RSE",
+      "SPM",
+      "TEST_SCN",
+      "TMU"
+    ],
+    "downstream_ecus": [
+      "CGW",
+      "CLU",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "ADAS :: ethObjectScenarioAlertMsg, ethSelectedAlertMsg, frmAdasDomainStateMsg",
+      "AMP :: frmAmpStateMsg",
+      "AVM :: frmAvmStateMsg",
+      "CPAY :: frmCarpayCtrlStateMsg",
+      "DKEY :: frmDigitalKeyStateMsg",
+      "HUD :: frmHudStateMsg",
+      "IVI :: frmConnectivityStateMsg",
+      "NAV :: frmMapRenderStateMsg, frmNavModuleStateMsg, frmNaviGuideStateMsg, frmNavigationRouteMsg, frmRouteAlertMsg, frmTrafficEventMsg",
+      "OTA :: frmOtaMasterStateMsg",
+      "PGS :: frmPgsStateMsg",
+      "PKM :: frmParkMasterStateMsg",
+      "PUS :: frmParkUltrasonicStateMsg",
+      "RSE :: frmRseStateMsg",
+      "SPM :: frmSurroundParkMasterStateMsg",
+      "TEST_SCN :: frmIviDiagReqMsg, frmNavContextCanMsg",
+      "TMU :: frmTmuServiceStateMsg"
+    ],
+    "outbound_edges": [
+      "CGW :: frmInfotainmentHealthMsg",
+      "CLU :: frmAudioFocusMsg, frmCallStateMsg, frmClusterBaseStateMsg, frmClusterNotifMsg, frmClusterSyncStateMsg, frmClusterThemeMsg",
+      "IVI :: frmConnectivityStateMsg",
+      "TEST_SCN :: frmInfotainmentHealthMsg, frmIviDiagResMsg, frmIviHealthDetailMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc",
+      "infotainment_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "sysvar_hints": [
+      "@Cluster::warningTextCode",
+      "@UiRender::renderVolumLevel"
+    ],
+    "test_assets": [
+      "TC_CANOE_UT_CORE_013_IVI_GW_ROUTE",
+      "TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING",
+      "TC_CANOE_UT_EXT_021_IVI_DISPLAY_SERVICE",
+      "TC_CANOE_UT_EXT_022_IVI_SERVICE_ACCESS",
+      "TC_CANOE_UT_OUT_071_IVI_HMI"
+    ],
+    "dbc_sources": [
+      "adas_can.dbc",
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "Display path is structurally sound; most issues originate upstream.",
+    "runtime_note": "Routes gated alert state into visible display, map, and audio focus paths."
+  },
+  {
+    "ecu": "NAV",
+    "domain": "Infotainment",
+    "group": "GROUP_03_DISPLAY_WARNING_AUDIO",
+    "source_capl": "canoe/src/capl/ecu/NAV.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Infotainment/NAV.can",
+    "role_hint": "Display / infotainment runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmMapRenderStateMsg",
+      "frmNavModuleStateMsg",
+      "frmNaviGuideStateMsg",
+      "frmNavigationRouteMsg",
+      "frmRouteAlertMsg",
+      "frmTrafficEventMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "CLU",
+      "IVI",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "CLU",
+      "IVI",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "CLU :: frmNavModuleStateMsg",
+      "IVI :: frmMapRenderStateMsg, frmNavModuleStateMsg, frmNaviGuideStateMsg, frmNavigationRouteMsg, frmRouteAlertMsg, frmTrafficEventMsg",
+      "TEST_SCN :: frmNavModuleStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_CORE_009_NAV_CTX_MGR",
+      "TC_CANOE_UT_INP_029_NAV_CONTEXT"
+    ],
+    "dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "OTA",
+    "domain": "Infotainment",
+    "group": "GROUP_03_DISPLAY_WARNING_AUDIO",
+    "source_capl": "canoe/src/capl/ecu/OTA.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Infotainment/OTA.can",
+    "role_hint": "Display / infotainment runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmOtaMasterStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "CLU",
+      "IVI",
+      "TEST_SCN",
+      "TMU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "CLU",
+      "IVI",
+      "TEST_SCN",
+      "TMU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "CLU :: frmOtaMasterStateMsg",
+      "IVI :: frmOtaMasterStateMsg",
+      "TEST_SCN :: frmOtaMasterStateMsg",
+      "TMU :: frmOtaMasterStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "PAK",
+    "domain": "Infotainment",
+    "group": "GROUP_03_DISPLAY_WARNING_AUDIO",
+    "source_capl": "canoe/src/capl/ecu/PAK.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Infotainment/PAK.can",
+    "role_hint": "Display / infotainment runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmPhoneAsKeyStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "DKEY",
+      "TMU"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "DKEY",
+      "TMU"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "DKEY :: frmPhoneAsKeyStateMsg",
+      "TMU :: frmPhoneAsKeyStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "PGS",
+    "domain": "Infotainment",
+    "group": "GROUP_03_DISPLAY_WARNING_AUDIO",
+    "source_capl": "canoe/src/capl/ecu/PGS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Infotainment/PGS.can",
+    "role_hint": "Display / infotainment runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmPgsStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "CLU",
+      "IVI"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "CLU",
+      "IVI"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "CLU :: frmPgsStateMsg",
+      "IVI :: frmPgsStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_053_PGS_INPUT"
+    ],
+    "dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "RSE",
+    "domain": "Infotainment",
+    "group": "GROUP_03_DISPLAY_WARNING_AUDIO",
+    "source_capl": "canoe/src/capl/ecu/RSE.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Infotainment/RSE.can",
+    "role_hint": "Display / infotainment runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmRseStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "CLU",
+      "IVI"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "CLU",
+      "IVI"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "CLU :: frmRseStateMsg",
+      "IVI :: frmRseStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "TMU",
+    "domain": "Infotainment",
+    "group": "GROUP_03_DISPLAY_WARNING_AUDIO",
+    "source_capl": "canoe/src/capl/ecu/TMU.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Infotainment/TMU.can",
+    "role_hint": "Display / infotainment runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmTmuDiagResMsg",
+      "frmTmuServiceStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmCarpayCtrlStateMsg",
+      "frmOtaMasterStateMsg",
+      "frmPhoneAsKeyStateMsg",
+      "frmTmuDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "CLU",
+      "CPAY",
+      "DATC",
+      "IVI",
+      "OTA",
+      "PAK",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "CPAY",
+      "OTA",
+      "PAK",
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "CLU",
+      "DATC",
+      "IVI",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "CPAY :: frmCarpayCtrlStateMsg",
+      "OTA :: frmOtaMasterStateMsg",
+      "PAK :: frmPhoneAsKeyStateMsg",
+      "TEST_SCN :: frmTmuDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "CLU :: frmTmuServiceStateMsg",
+      "DATC :: frmTmuServiceStateMsg",
+      "IVI :: frmTmuServiceStateMsg",
+      "TEST_SCN :: frmTmuDiagResMsg, frmTmuServiceStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_051_TMU_INPUT"
+    ],
+    "dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "VCS",
+    "domain": "Infotainment",
+    "group": "GROUP_03_DISPLAY_WARNING_AUDIO",
+    "source_capl": "canoe/src/capl/ecu/VCS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Infotainment/VCS.can",
+    "role_hint": "Display / infotainment runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmSpeechTtsStateMsg",
+      "frmVoiceAssistStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAmpStateMsg"
+    ],
+    "linked_ecus": [
+      "AMP",
+      "CLU"
+    ],
+    "upstream_ecus": [
+      "AMP"
+    ],
+    "downstream_ecus": [
+      "CLU"
+    ],
+    "inbound_edges": [
+      "AMP :: frmAmpStateMsg"
+    ],
+    "outbound_edges": [
+      "CLU :: frmSpeechTtsStateMsg, frmVoiceAssistStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "ADM",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/ADM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/ADM.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmAutoDoorCtrlStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAutoDoorCtrlStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "ADM :: frmAutoDoorCtrlStateMsg"
+    ],
+    "outbound_edges": [
+      "ADM :: frmAutoDoorCtrlStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "AFLS",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/AFLS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/AFLS.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmAflsDiagResMsg",
+      "frmAflsStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAflsDiagReqMsg",
+      "frmAflsStateMsg"
+    ],
+    "linked_ecus": [
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "AFLS :: frmAflsStateMsg",
+      "TEST_SCN :: frmAflsDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "AFLS :: frmAflsStateMsg",
+      "TEST_SCN :: frmAflsDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_043_AFLS_INPUT"
+    ],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "AHLS",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/AHLS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/AHLS.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmAhlsStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAhlsStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "AHLS :: frmAhlsStateMsg"
+    ],
+    "outbound_edges": [
+      "AHLS :: frmAhlsStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_044_AHLS_INPUT"
+    ],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "BCM",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "-",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/BCM.can",
+    "role_hint": "Body and ambient owner",
+    "owner_seam": [
+      "Body::ambientMode",
+      "Body::frontWiperAnimFrame",
+      "Body::blinkLeft",
+      "Body::blinkRight"
+    ],
+    "published_contracts": [
+      "frmAmbientControlMsg",
+      "frmBcmDiagResMsg",
+      "frmBodyComfortStateMsg",
+      "frmBodyGatewayStateMsg",
+      "frmBodyHealthMsg",
+      "frmCabinAirStateMsg",
+      "frmDoorControlMsg",
+      "frmDoorStateMsg",
+      "frmHazardControlMsg",
+      "frmInteriorLightMsg",
+      "frmLampControlMsg",
+      "frmRainLightAutoMsg",
+      "frmSeatBeltStateMsg",
+      "frmSeatControlMsg",
+      "frmSeatStateMsg",
+      "frmSunroofControlMsg",
+      "frmWindowControlMsg"
+    ],
+    "consumed_contracts": [
+      "ethObjectScenarioAlertMsg",
+      "ethSelectedAlertMsg",
+      "frmAcuStateMsg",
+      "frmAdasDomainStateMsg",
+      "frmAmbientControlMsg",
+      "frmBcmDiagReqMsg",
+      "frmCabinAirStateMsg",
+      "frmDoorControlMsg",
+      "frmDoorStateMsg",
+      "frmHazardControlMsg",
+      "frmHvacActuatorMsg",
+      "frmHvacStateMsg",
+      "frmInteriorLightMsg",
+      "frmLampControlMsg",
+      "frmMassageSeatCtrlStateMsg",
+      "frmMirrorStateMsg",
+      "frmOdsStateMsg",
+      "frmOmsStateMsg",
+      "frmParkUltrasonicStateMsg",
+      "frmRainLightAutoMsg",
+      "frmSeatBeltStateMsg",
+      "frmSeatControlMsg",
+      "frmSeatStateMsg",
+      "frmTurnLampInputMsg",
+      "frmWindowControlMsg"
+    ],
+    "linked_ecus": [
+      "ACU",
+      "ADAS",
+      "CGW",
+      "DATC",
+      "MIR",
+      "MSC",
+      "ODS",
+      "OMS",
+      "PUS",
+      "SRF",
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "ACU",
+      "ADAS",
+      "DATC",
+      "MIR",
+      "MSC",
+      "ODS",
+      "OMS",
+      "PUS",
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "ADAS",
+      "CGW",
+      "SRF",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "ACU :: frmAcuStateMsg",
+      "ADAS :: ethObjectScenarioAlertMsg, ethSelectedAlertMsg, frmAdasDomainStateMsg",
+      "BCM :: frmAmbientControlMsg, frmCabinAirStateMsg, frmDoorControlMsg, frmDoorStateMsg, frmHazardControlMsg, frmInteriorLightMsg",
+      "DATC :: frmHvacActuatorMsg, frmHvacStateMsg",
+      "MIR :: frmMirrorStateMsg",
+      "MSC :: frmMassageSeatCtrlStateMsg",
+      "ODS :: frmOdsStateMsg",
+      "OMS :: frmOmsStateMsg",
+      "PUS :: frmParkUltrasonicStateMsg",
+      "TEST_SCN :: frmBcmDiagReqMsg, frmTurnLampInputMsg"
+    ],
+    "outbound_edges": [
+      "ADAS :: frmBodyComfortStateMsg, frmBodyGatewayStateMsg",
+      "BCM :: frmAmbientControlMsg, frmCabinAirStateMsg, frmDoorControlMsg, frmDoorStateMsg, frmHazardControlMsg, frmInteriorLightMsg",
+      "CGW :: frmBodyHealthMsg",
+      "SRF :: frmSunroofControlMsg",
+      "TEST_SCN :: frmBcmDiagResMsg, frmBodyHealthMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc",
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [
+      "@Body::ambientMode",
+      "@Body::frontWiperAnimFrame",
+      "@Body::blinkLeft",
+      "@Body::blinkRight"
+    ],
+    "test_assets": [
+      "TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY",
+      "TC_CANOE_UT_OUT_070_BCM_AMBIENT"
+    ],
+    "dbc_sources": [
+      "adas_can.dbc",
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "Ambient and comfort breadth are wider than the current input-console surface.",
+    "runtime_note": "Owns comfort and ambient outputs while bridging body leaf ECU state back to HMI."
+  },
+  {
+    "ecu": "BIO",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/BIO.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/BIO.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmBiometricAuthStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmBiometricAuthStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "BIO :: frmBiometricAuthStateMsg"
+    ],
+    "outbound_edges": [
+      "BIO :: frmBiometricAuthStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "BSEC",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/BSEC.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/BSEC.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmAlarmStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmAlarmStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "BSEC :: frmAlarmStateMsg"
+    ],
+    "outbound_edges": [
+      "BSEC :: frmAlarmStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "CSM",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/CSM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/CSM.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmCabinSensingStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmCabinSensingStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "CSM :: frmCabinSensingStateMsg"
+    ],
+    "outbound_edges": [
+      "CSM :: frmCabinSensingStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "DATC",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/DATC.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/DATC.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmDatcDiagResMsg",
+      "frmHvacActuatorMsg",
+      "frmHvacStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmDatcDiagReqMsg",
+      "frmTmuServiceStateMsg"
+    ],
+    "linked_ecus": [
+      "BCM",
+      "TEST_SCN",
+      "TMU"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN",
+      "TMU"
+    ],
+    "downstream_ecus": [
+      "BCM",
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmDatcDiagReqMsg",
+      "TMU :: frmTmuServiceStateMsg"
+    ],
+    "outbound_edges": [
+      "BCM :: frmHvacActuatorMsg, frmHvacStateMsg",
+      "TEST_SCN :: frmDatcDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc",
+      "infotainment_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_045_DATC_INPUT"
+    ],
+    "dbc_sources": [
+      "body_can.dbc",
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "DOOR_FL",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/DOOR_FL.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/DOOR_FL.can",
+    "role_hint": "Door body leaf ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmDoorFlStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmDoorFlStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "DOOR_FL :: frmDoorFlStateMsg"
+    ],
+    "outbound_edges": [
+      "DOOR_FL :: frmDoorFlStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_036_DOOR_FL_INPUT"
+    ],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "DOOR_FR",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/DOOR_FR.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/DOOR_FR.can",
+    "role_hint": "Door body leaf ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmDoorFrStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmDoorFrStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "DOOR_FR :: frmDoorFrStateMsg"
+    ],
+    "outbound_edges": [
+      "DOOR_FR :: frmDoorFrStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_037_DOOR_FR_INPUT"
+    ],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "DOOR_RL",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/DOOR_RL.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/DOOR_RL.can",
+    "role_hint": "Door body leaf ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmDoorRlStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmDoorRlStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "DOOR_RL :: frmDoorRlStateMsg"
+    ],
+    "outbound_edges": [
+      "DOOR_RL :: frmDoorRlStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_038_DOOR_RL_INPUT"
+    ],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "DOOR_RR",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/DOOR_RR.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/DOOR_RR.can",
+    "role_hint": "Door body leaf ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmDoorRrStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmDoorRrStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "DOOR_RR :: frmDoorRrStateMsg"
+    ],
+    "outbound_edges": [
+      "DOOR_RR :: frmDoorRrStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_039_DOOR_RR_INPUT"
+    ],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "HLM",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/HLM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/HLM.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmHeadlampLevelStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmHeadlampLevelStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "HLM :: frmHeadlampLevelStateMsg"
+    ],
+    "outbound_edges": [
+      "HLM :: frmHeadlampLevelStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "MIR",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/MIR.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/MIR.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmMirrorStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "BCM"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "BCM"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "BCM :: frmMirrorStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "MSC",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/MSC.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/MSC.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmMassageSeatCtrlStateMsg"
+    ],
+    "consumed_contracts": [],
+    "linked_ecus": [
+      "BCM",
+      "CLU",
+      "SEAT_DRV"
+    ],
+    "upstream_ecus": [],
+    "downstream_ecus": [
+      "BCM",
+      "CLU",
+      "SEAT_DRV"
+    ],
+    "inbound_edges": [],
+    "outbound_edges": [
+      "BCM :: frmMassageSeatCtrlStateMsg",
+      "CLU :: frmMassageSeatCtrlStateMsg",
+      "SEAT_DRV :: frmMassageSeatCtrlStateMsg"
+    ],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "PTG",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/PTG.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/PTG.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmPowerTailgateCtrlStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmPowerTailgateCtrlStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "PTG :: frmPowerTailgateCtrlStateMsg"
+    ],
+    "outbound_edges": [
+      "PTG :: frmPowerTailgateCtrlStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "RATC",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/RATC.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/RATC.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmRearClimateStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmRearClimateStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "RATC :: frmRearClimateStateMsg"
+    ],
+    "outbound_edges": [
+      "RATC :: frmRearClimateStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "SEAT_DRV",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/SEAT_DRV.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/SEAT_DRV.can",
+    "role_hint": "Seat comfort leaf ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmSeatDrvStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmMassageSeatCtrlStateMsg",
+      "frmSeatDrvStateMsg"
+    ],
+    "linked_ecus": [
+      "MSC"
+    ],
+    "upstream_ecus": [
+      "MSC"
+    ],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "MSC :: frmMassageSeatCtrlStateMsg",
+      "SEAT_DRV :: frmSeatDrvStateMsg"
+    ],
+    "outbound_edges": [
+      "SEAT_DRV :: frmSeatDrvStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_046_SEAT_DRV_INPUT"
+    ],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "SEAT_PASS",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/SEAT_PASS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/SEAT_PASS.can",
+    "role_hint": "Seat comfort leaf ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmSeatPassStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmSeatPassStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "SEAT_PASS :: frmSeatPassStateMsg"
+    ],
+    "outbound_edges": [
+      "SEAT_PASS :: frmSeatPassStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_047_SEAT_PASS_INPUT"
+    ],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "SMK",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/SMK.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/SMK.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmImmobilizerStateMsg",
+      "frmSmkDiagResMsg"
+    ],
+    "consumed_contracts": [
+      "frmImmobilizerStateMsg",
+      "frmSmkDiagReqMsg"
+    ],
+    "linked_ecus": [
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "SMK :: frmImmobilizerStateMsg",
+      "TEST_SCN :: frmSmkDiagReqMsg"
+    ],
+    "outbound_edges": [
+      "SMK :: frmImmobilizerStateMsg",
+      "TEST_SCN :: frmSmkDiagResMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "SRF",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/SRF.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/SRF.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmSunroofStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmSunroofControlMsg",
+      "frmSunroofStateMsg"
+    ],
+    "linked_ecus": [
+      "BCM"
+    ],
+    "upstream_ecus": [
+      "BCM"
+    ],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "BCM :: frmSunroofControlMsg",
+      "SRF :: frmSunroofStateMsg"
+    ],
+    "outbound_edges": [
+      "SRF :: frmSunroofStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_048_SRF_INPUT"
+    ],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "TGM",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/TGM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/TGM.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmTailgateStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmTailgateStateMsg"
+    ],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "TGM :: frmTailgateStateMsg"
+    ],
+    "outbound_edges": [
+      "TGM :: frmTailgateStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_040_TGM_INPUT"
+    ],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "WIP",
+    "domain": "Body",
+    "group": "GROUP_04_BODY_COMFORT_AMBIENT",
+    "source_capl": "canoe/src/capl/ecu/WIP.can",
+    "mirror_capl": "canoe/cfg/channel_assign/Body/WIP.can",
+    "role_hint": "Body / comfort runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [
+      "frmWipDiagResMsg",
+      "frmWiperStateMsg"
+    ],
+    "consumed_contracts": [
+      "frmWipDiagReqMsg",
+      "frmWiperStateMsg"
+    ],
+    "linked_ecus": [
+      "TEST_SCN"
+    ],
+    "upstream_ecus": [
+      "TEST_SCN"
+    ],
+    "downstream_ecus": [
+      "TEST_SCN"
+    ],
+    "inbound_edges": [
+      "TEST_SCN :: frmWipDiagReqMsg",
+      "WIP :: frmWiperStateMsg"
+    ],
+    "outbound_edges": [
+      "TEST_SCN :: frmWipDiagResMsg",
+      "WIP :: frmWiperStateMsg"
+    ],
+    "inbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "body_can.dbc"
+    ],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [
+      "body_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "TEST_BAS",
+    "domain": "ETH_Backbone",
+    "group": "GROUP_05_VALIDATION_SCENARIO",
+    "source_capl": "canoe/src/capl/ecu/TEST_BAS.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ETH_Backbone/TEST_BAS.can",
+    "role_hint": "Validation baseline harness",
+    "owner_seam": [
+      "validation summary seams",
+      "Input_Console router entry"
+    ],
+    "published_contracts": [],
+    "consumed_contracts": [],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [],
+    "outbound_edges": [],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [],
+    "sysvar_hints": [
+      "validation summary seams"
+    ],
+    "test_assets": [],
+    "dbc_sources": [],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "Should remain validation-focused and not drift back into scenario ownership.",
+    "runtime_note": "Receives internal input router helpers and publishes baseline validation summaries."
+  },
+  {
+    "ecu": "TEST_SCN",
+    "domain": "ETH_Backbone",
+    "group": "GROUP_05_VALIDATION_SCENARIO",
+    "source_capl": "-",
+    "mirror_capl": "canoe/cfg/channel_assign/ETH_Backbone/TEST_SCN.can",
+    "role_hint": "Validation and scenario harness",
+    "owner_seam": [
+      "Test::scenarioCommand",
+      "Test::scenarioActiveId",
+      "Test::scenarioResult"
+    ],
+    "published_contracts": [
+      "ethObjectRiskInputMsg",
+      "frmAbsDiagReqMsg",
+      "frmAcuDiagReqMsg",
+      "frmAdasDiagReqMsg",
+      "frmAflsDiagReqMsg",
+      "frmAmpDiagReqMsg",
+      "frmBcmDiagReqMsg",
+      "frmCdcDiagReqMsg",
+      "frmChassisDiagReqMsg",
+      "frmCluDiagReqMsg",
+      "frmDatcDiagReqMsg",
+      "frmDmsDiagReqMsg",
+      "frmEcsDiagReqMsg",
+      "frmEhbDiagReqMsg",
+      "frmEpbDiagReqMsg",
+      "frmFcamInputMsg",
+      "frmFradarInputMsg",
+      "frmGearStateMsg",
+      "frmHudDiagReqMsg",
+      "frmIgnitionEngineMsg",
+      "frmIviDiagReqMsg",
+      "frmLidarInputMsg",
+      "frmNavContextCanMsg",
+      "frmOdsDiagReqMsg",
+      "frmOmsDiagReqMsg",
+      "frmPedalInputCanMsg",
+      "frmPtDiagReqMsg",
+      "frmSasDiagReqMsg",
+      "frmSccDiagReqMsg",
+      "frmSmkDiagReqMsg",
+      "frmSrrFlInputMsg",
+      "frmSrrFrInputMsg",
+      "frmSrrRlInputMsg",
+      "frmSrrRrInputMsg",
+      "frmSteeringCanMsg",
+      "frmTmuDiagReqMsg",
+      "frmTpmsDiagReqMsg",
+      "frmTurnLampInputMsg",
+      "frmVsmDiagReqMsg",
+      "frmWipDiagReqMsg"
+    ],
+    "consumed_contracts": [
+      "ethDecelAssistReqMsg",
+      "ethEmergencyRiskMsg",
+      "ethObjectRiskStateMsg",
+      "ethObjectScenarioAlertMsg",
+      "ethSelectedAlertMsg",
+      "frmAbsDiagResMsg",
+      "frmAcuDiagResMsg",
+      "frmAdasDiagResMsg",
+      "frmAflsDiagResMsg",
+      "frmAmpDiagResMsg",
+      "frmBcmDiagResMsg",
+      "frmBodyHealthMsg",
+      "frmCdcDiagResMsg",
+      "frmChassisDiagResMsg",
+      "frmChassisHealthMsg",
+      "frmCluDiagResMsg",
+      "frmDatcDiagResMsg",
+      "frmDigitalKeyStateMsg",
+      "frmDmsDiagResMsg",
+      "frmEcsDiagResMsg",
+      "frmEhbDiagResMsg",
+      "frmEpbDiagResMsg",
+      "frmEpbStateMsg",
+      "frmHudDiagResMsg",
+      "frmHudStateMsg",
+      "frmInfotainmentHealthMsg",
+      "frmIviDiagResMsg",
+      "frmIviHealthDetailMsg",
+      "frmNavModuleStateMsg",
+      "frmOdsDiagResMsg",
+      "frmOmsDiagResMsg",
+      "frmOtaMasterStateMsg",
+      "frmPowertrainHealthMsg",
+      "frmPtDiagResMsg",
+      "frmSasDiagResMsg",
+      "frmSccDiagResMsg",
+      "frmSmkDiagResMsg",
+      "frmTmuDiagResMsg",
+      "frmTmuServiceStateMsg",
+      "frmTpmsDiagResMsg",
+      "frmVsmDiagResMsg",
+      "frmWipDiagResMsg"
+    ],
+    "linked_ecus": [
+      "ABS",
+      "ACU",
+      "ADAS",
+      "AFLS",
+      "AMP",
+      "BCM",
+      "CDC",
+      "CLU",
+      "DATC",
+      "DKEY",
+      "DMS",
+      "ECS",
+      "EHB",
+      "EMS",
+      "EPB",
+      "ESC",
+      "FCAM",
+      "FRADAR",
+      "HUD",
+      "IVI",
+      "LDR",
+      "MDPS",
+      "NAV",
+      "ODS",
+      "OMS",
+      "OTA",
+      "SAS",
+      "SCC",
+      "SMK",
+      "SRR_FL",
+      "SRR_FR",
+      "SRR_RL",
+      "SRR_RR",
+      "TCU",
+      "TMU",
+      "TPMS",
+      "VCU",
+      "VSM",
+      "WIP"
+    ],
+    "upstream_ecus": [
+      "ABS",
+      "ACU",
+      "ADAS",
+      "AFLS",
+      "AMP",
+      "BCM",
+      "CDC",
+      "CLU",
+      "DATC",
+      "DKEY",
+      "DMS",
+      "ECS",
+      "EHB",
+      "EPB",
+      "ESC",
+      "HUD",
+      "IVI",
+      "NAV",
+      "ODS",
+      "OMS",
+      "OTA",
+      "SAS",
+      "SCC",
+      "SMK",
+      "TMU",
+      "TPMS",
+      "VCU",
+      "VSM",
+      "WIP"
+    ],
+    "downstream_ecus": [
+      "ABS",
+      "ACU",
+      "ADAS",
+      "AFLS",
+      "AMP",
+      "BCM",
+      "CDC",
+      "CLU",
+      "DATC",
+      "DMS",
+      "ECS",
+      "EHB",
+      "EMS",
+      "EPB",
+      "ESC",
+      "FCAM",
+      "FRADAR",
+      "HUD",
+      "IVI",
+      "LDR",
+      "MDPS",
+      "ODS",
+      "OMS",
+      "SAS",
+      "SCC",
+      "SMK",
+      "SRR_FL",
+      "SRR_FR",
+      "SRR_RL",
+      "SRR_RR",
+      "TCU",
+      "TMU",
+      "TPMS",
+      "VCU",
+      "VSM",
+      "WIP"
+    ],
+    "inbound_edges": [
+      "ABS :: frmAbsDiagResMsg",
+      "ACU :: frmAcuDiagResMsg",
+      "ADAS :: ethDecelAssistReqMsg, ethEmergencyRiskMsg, ethObjectRiskStateMsg, ethObjectScenarioAlertMsg, ethSelectedAlertMsg, frmAdasDiagResMsg",
+      "AFLS :: frmAflsDiagResMsg",
+      "AMP :: frmAmpDiagResMsg",
+      "BCM :: frmBcmDiagResMsg, frmBodyHealthMsg",
+      "CDC :: frmCdcDiagResMsg",
+      "CLU :: frmCluDiagResMsg",
+      "DATC :: frmDatcDiagResMsg",
+      "DKEY :: frmDigitalKeyStateMsg",
+      "DMS :: frmDmsDiagResMsg",
+      "ECS :: frmEcsDiagResMsg",
+      "EHB :: frmEhbDiagResMsg",
+      "EPB :: frmEpbDiagResMsg, frmEpbStateMsg",
+      "ESC :: frmChassisDiagResMsg, frmChassisHealthMsg",
+      "HUD :: frmHudDiagResMsg, frmHudStateMsg",
+      "IVI :: frmInfotainmentHealthMsg, frmIviDiagResMsg, frmIviHealthDetailMsg",
+      "NAV :: frmNavModuleStateMsg",
+      "ODS :: frmOdsDiagResMsg",
+      "OMS :: frmOmsDiagResMsg",
+      "OTA :: frmOtaMasterStateMsg",
+      "SAS :: frmSasDiagResMsg",
+      "SCC :: frmSccDiagResMsg",
+      "SMK :: frmSmkDiagResMsg",
+      "TMU :: frmTmuDiagResMsg, frmTmuServiceStateMsg",
+      "TPMS :: frmTpmsDiagResMsg",
+      "VCU :: frmPowertrainHealthMsg, frmPtDiagResMsg",
+      "VSM :: frmVsmDiagResMsg",
+      "WIP :: frmWipDiagResMsg"
+    ],
+    "outbound_edges": [
+      "ABS :: frmAbsDiagReqMsg",
+      "ACU :: frmAcuDiagReqMsg",
+      "ADAS :: ethObjectRiskInputMsg, frmAdasDiagReqMsg",
+      "AFLS :: frmAflsDiagReqMsg",
+      "AMP :: frmAmpDiagReqMsg",
+      "BCM :: frmBcmDiagReqMsg, frmTurnLampInputMsg",
+      "CDC :: frmCdcDiagReqMsg",
+      "CLU :: frmCluDiagReqMsg",
+      "DATC :: frmDatcDiagReqMsg",
+      "DMS :: frmDmsDiagReqMsg",
+      "ECS :: frmEcsDiagReqMsg",
+      "EHB :: frmEhbDiagReqMsg",
+      "EMS :: frmIgnitionEngineMsg",
+      "EPB :: frmEpbDiagReqMsg",
+      "ESC :: frmChassisDiagReqMsg, frmPedalInputCanMsg, frmSteeringCanMsg",
+      "FCAM :: frmFcamInputMsg",
+      "FRADAR :: frmFradarInputMsg",
+      "HUD :: frmHudDiagReqMsg",
+      "IVI :: frmIviDiagReqMsg, frmNavContextCanMsg",
+      "LDR :: frmLidarInputMsg",
+      "MDPS :: frmSteeringCanMsg",
+      "ODS :: frmOdsDiagReqMsg",
+      "OMS :: frmOmsDiagReqMsg",
+      "SAS :: frmSasDiagReqMsg",
+      "SCC :: frmSccDiagReqMsg",
+      "SMK :: frmSmkDiagReqMsg",
+      "SRR_FL :: frmSrrFlInputMsg",
+      "SRR_FR :: frmSrrFrInputMsg",
+      "SRR_RL :: frmSrrRlInputMsg",
+      "SRR_RR :: frmSrrRrInputMsg",
+      "TCU :: frmGearStateMsg",
+      "TMU :: frmTmuDiagReqMsg",
+      "TPMS :: frmTpmsDiagReqMsg",
+      "VCU :: frmPedalInputCanMsg, frmPtDiagReqMsg",
+      "VSM :: frmVsmDiagReqMsg",
+      "WIP :: frmWipDiagReqMsg"
+    ],
+    "inbound_dbc_sources": [
+      "adas_can.dbc",
+      "body_can.dbc",
+      "chassis_can.dbc",
+      "infotainment_can.dbc",
+      "powertrain_can.dbc"
+    ],
+    "outbound_dbc_sources": [
+      "adas_can.dbc",
+      "body_can.dbc",
+      "chassis_can.dbc",
+      "infotainment_can.dbc",
+      "powertrain_can.dbc"
+    ],
+    "sysvar_hints": [
+      "@Test::scenarioCommand",
+      "@Test::scenarioActiveId",
+      "@Test::scenarioResult"
+    ],
+    "test_assets": [],
+    "dbc_sources": [
+      "adas_can.dbc",
+      "body_can.dbc",
+      "chassis_can.dbc",
+      "infotainment_can.dbc",
+      "powertrain_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "Must stay scenario-focused and not silently become a normal feature owner.",
+    "runtime_note": "Scenario entry point for validation presets, stop/manual logic, and scenario verdict readback."
+  },
+  {
+    "ecu": "CGW",
+    "domain": "ETH_Backbone",
+    "group": "GROUP_06_BACKBONE_GATEWAY_DIAGNOSTICS",
+    "source_capl": "canoe/src/capl/ecu/CGW.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ETH_Backbone/CGW.can",
+    "role_hint": "Central gateway and gatekeeper",
+    "owner_seam": [
+      "CoreState::selectedAlertGateReason"
+    ],
+    "published_contracts": [],
+    "consumed_contracts": [
+      "frmAcuStateMsg",
+      "frmBodyHealthMsg",
+      "frmChassisHealthMsg",
+      "frmInfotainmentHealthMsg",
+      "frmOdsStateMsg"
+    ],
+    "linked_ecus": [
+      "ACU",
+      "BCM",
+      "ESC",
+      "IVI",
+      "ODS"
+    ],
+    "upstream_ecus": [
+      "ACU",
+      "BCM",
+      "ESC",
+      "IVI",
+      "ODS"
+    ],
+    "downstream_ecus": [],
+    "inbound_edges": [
+      "ACU :: frmAcuStateMsg",
+      "BCM :: frmBodyHealthMsg",
+      "ESC :: frmChassisHealthMsg",
+      "IVI :: frmInfotainmentHealthMsg",
+      "ODS :: frmOdsStateMsg"
+    ],
+    "outbound_edges": [],
+    "inbound_dbc_sources": [
+      "body_can.dbc",
+      "chassis_can.dbc",
+      "infotainment_can.dbc"
+    ],
+    "outbound_dbc_sources": [],
+    "sysvar_hints": [
+      "@CoreState::selectedAlertGateReason"
+    ],
+    "test_assets": [
+      "TC_CANOE_UT_CORE_001_CGW_CHS_GW",
+      "TC_CANOE_UT_CORE_002_CGW_INFOTAINMENT_GW",
+      "TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS"
+    ],
+    "dbc_sources": [
+      "body_can.dbc",
+      "chassis_can.dbc",
+      "infotainment_can.dbc"
+    ],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "Downstream display behavior depends heavily on gate reason consistency.",
+    "runtime_note": "Bridges domain outputs toward IVI, CLU, BCM, and AMP while enforcing gate logic."
+  },
+  {
+    "ecu": "DCM",
+    "domain": "ETH_Backbone",
+    "group": "GROUP_06_BACKBONE_GATEWAY_DIAGNOSTICS",
+    "source_capl": "canoe/src/capl/ecu/DCM.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ETH_Backbone/DCM.can",
+    "role_hint": "Gateway / backbone / diagnostic runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [],
+    "consumed_contracts": [],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [],
+    "outbound_edges": [],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE"
+    ],
+    "dbc_sources": [],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "EDR",
+    "domain": "ETH_Backbone",
+    "group": "GROUP_06_BACKBONE_GATEWAY_DIAGNOSTICS",
+    "source_capl": "canoe/src/capl/ecu/EDR.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ETH_Backbone/EDR.can",
+    "role_hint": "Gateway / backbone / diagnostic runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [],
+    "consumed_contracts": [],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [],
+    "outbound_edges": [],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "ETHB",
+    "domain": "ETH_Backbone",
+    "group": "GROUP_06_BACKBONE_GATEWAY_DIAGNOSTICS",
+    "source_capl": "canoe/src/capl/ecu/ETHB.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ETH_Backbone/ETHB.can",
+    "role_hint": "Gateway / backbone / diagnostic runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [],
+    "consumed_contracts": [],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [],
+    "outbound_edges": [],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_065_ETHB_INPUT"
+    ],
+    "dbc_sources": [],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "EXT_DIAG",
+    "domain": "ETH_Backbone",
+    "group": "GROUP_06_BACKBONE_GATEWAY_DIAGNOSTICS",
+    "source_capl": "canoe/src/capl/ecu/EXT_DIAG.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ETH_Backbone/EXT_DIAG.can",
+    "role_hint": "Gateway / backbone / diagnostic runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [],
+    "consumed_contracts": [],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [],
+    "outbound_edges": [],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [],
+    "sysvar_hints": [],
+    "test_assets": [],
+    "dbc_sources": [],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "IBOX",
+    "domain": "ETH_Backbone",
+    "group": "GROUP_06_BACKBONE_GATEWAY_DIAGNOSTICS",
+    "source_capl": "canoe/src/capl/ecu/IBOX.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ETH_Backbone/IBOX.can",
+    "role_hint": "Gateway / backbone / diagnostic runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [],
+    "consumed_contracts": [],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [],
+    "outbound_edges": [],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_INP_062_IBOX_INPUT"
+    ],
+    "dbc_sources": [],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "SGW",
+    "domain": "ETH_Backbone",
+    "group": "GROUP_06_BACKBONE_GATEWAY_DIAGNOSTICS",
+    "source_capl": "canoe/src/capl/ecu/SGW.can",
+    "mirror_capl": "canoe/cfg/channel_assign/ETH_Backbone/SGW.can",
+    "role_hint": "Gateway / backbone / diagnostic runtime ECU",
+    "owner_seam": [],
+    "published_contracts": [],
+    "consumed_contracts": [],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [],
+    "outbound_edges": [],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [],
+    "sysvar_hints": [],
+    "test_assets": [
+      "TC_CANOE_UT_EXT_063_SGW_SECURITY_STATE"
+    ],
+    "dbc_sources": [],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "No ECU-specific risk note is curated yet. Use the group overview and official appendix for deeper interpretation.",
+    "runtime_note": "Use this generated card as the first runtime reading layer, then drop into group view, appendix, and CAPL source."
+  },
+  {
+    "ecu": "V2X",
+    "domain": "ETH_Backbone",
+    "group": "GROUP_06_BACKBONE_GATEWAY_DIAGNOSTICS",
+    "source_capl": "-",
+    "mirror_capl": "canoe/cfg/channel_assign/ETH_Backbone/V2X.can",
+    "role_hint": "Emergency ingress and V2X alert controller",
+    "owner_seam": [
+      "V2X::v2xFrame",
+      "V2X::AmbFrame",
+      "V2X::MyCarFrame"
+    ],
+    "published_contracts": [],
+    "consumed_contracts": [],
+    "linked_ecus": [],
+    "upstream_ecus": [],
+    "downstream_ecus": [],
+    "inbound_edges": [],
+    "outbound_edges": [],
+    "inbound_dbc_sources": [],
+    "outbound_dbc_sources": [],
+    "sysvar_hints": [
+      "@V2X::v2xFrame",
+      "@V2X::AmbFrame",
+      "@V2X::MyCarFrame"
+    ],
+    "test_assets": [
+      "TC_CANOE_UT_CORE_004_V2X_EVENT_MAINTAIN"
+    ],
+    "dbc_sources": [],
+    "doc_sources": [
+      "0301",
+      "0302",
+      "0303",
+      "0304",
+      "04_SW_Implementation",
+      "ecu-flow-appendix"
+    ],
+    "current_gap_risk": "External ingress is stable; arbitration and output priority happen later.",
+    "runtime_note": "Owns emergency ingress context before ADAS and CGW perform prioritization."
+  }
+]

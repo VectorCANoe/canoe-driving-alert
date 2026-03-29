@@ -1,0 +1,54 @@
+@startuml object_risk_to_fca_request_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Object Risk To FCA Request Signal Flow\n(object risk + decel intent -> FCA FCW/AEB request publish)
+
+participant "ADAS / object-risk /\ndecel inputs" as RiskCtx #F4F7FB
+participant "FCA\ncollision warning owner" as FCA #E8F7E8
+participant "FCA state bus" as FcaBus #FFF4CC
+participant "Observers / downstream AEB users" as Obs #E8F0FE
+
+== Risk Inputs ==
+
+RiskCtx -> FCA : objectTrackValid\nobjectRiskClass\nobjectTtcMin\ndecelAssistReq\nfailSafeMode
+FCA -> FCA : if riskInputStale then\nobjectTrackValid = 0 / objectRiskClass = 0
+FCA -> FCA : if decelInputStale or failSafeMode >= 2\nthen decelAssistReq = 0
+FCA -> FCA : fcwState = calcFcwState(...)
+FCA -> FCA : aebRequest =\n(decelAssistReq == 1 and objectRiskClass >= 4 and failSafeMode < 2) ? 1 : 0
+note right of FCA
+Representative gating inputs
+- objectTrackValid
+- objectRiskClass
+- objectTtcMin
+- decelAssistReq / failSafeMode
+end note
+
+== FCA Publish ==
+
+FCA -> FcaBus : frmFcaStateMsg\nFcwState / AebRequest / DecelAssistReq
+FCA -> FcaBus : ObjectRiskClass / TtcBucket / SelectedAlertLevel
+note right of FCA
+Representative outputs
+- FcwState
+- AebRequest
+- SelectedAlertLevel
+end note
+
+== Downstream Visibility ==
+
+FcaBus -> Obs : collision-warning readback /\naeb-request consumers
+
+note over RiskCtx, Obs
+Representative runtime chain
+1. Object-risk and decel intent reach FCA
+2. FCA decides FCW state and whether AEB request is allowed
+3. FCA publishes collision warning and AEB request state
+4. Downstream consumers observe the effective collision request posture
+end note
+
+@enduml

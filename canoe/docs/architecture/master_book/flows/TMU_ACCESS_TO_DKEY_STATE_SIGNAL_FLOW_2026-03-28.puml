@@ -1,0 +1,61 @@
+@startuml tmu_access_to_dkey_state_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title TMU Access To DKEY State Signal Flow\n(TMU service / signal bars / drive state -> DKEY access publication)
+
+actor "Remote/User input\nTMU service request" as User #F4F7FB
+participant "TMU / Vehicle input\nservice mode + signal bars + drive" as Inp #E8F0FE
+participant "DKEY\ndigital key owner" as DKEY #E8F7E8
+participant "Door / SMK / PAK\naccess consumers" as Access #FFF4CC
+participant "TEST_SCN / observers" as Obs #FCE8FF
+
+== Access Inputs ==
+
+User -> Inp : service request / radio proximity update
+Inp -> DKEY : tmuServiceMode\nsignalBars\ndriveState
+activate DKEY
+DKEY -> DKEY : normalize stale TMU / vehicle inputs
+DKEY -> DKEY : derive DKeyState / AuthMode
+DKEY -> DKEY : derive VehicleAccessState / SecurityGrade
+DKEY -> DKEY : update KeySyncAge / KeyPresence
+note right of DKEY
+Representative inputs
+- tmuServiceMode
+- signalBars
+- driveState
+
+Representative internal outputs
+- DKeyState
+- AuthMode
+- VehicleAccessState
+- SecurityGrade
+- KeyPresence
+- KeySyncAge
+end note
+
+== Access Publish ==
+
+DKEY -> Access : frmDkeyStateMsg
+DKEY -> Obs : traceable DKEY state for\nscenario/test observation
+note right of Access
+Representative consumers
+- DOOR_FL / DOOR_FR / DOOR_RL / DOOR_RR
+- SMK
+- PAK
+end note
+deactivate DKEY
+
+note over User, Obs
+Representative runtime chain
+1. TMU service state and signal bars arrive with vehicle drive state
+2. DKEY derives access/auth/security state and sync age
+3. DKEY publishes frmDkeyStateMsg to door and key-related ECUs
+4. Test and observer paths can confirm access-state transitions
+end note
+
+@enduml

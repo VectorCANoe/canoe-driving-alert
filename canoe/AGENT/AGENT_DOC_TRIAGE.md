@@ -16,7 +16,7 @@ Promote by rewrite, not by copy.
 
 ### Architecture
 
-- `AGENT/canoe/docs/architecture/project_explained.md`
+- `canoe/docs/architecture/master_book/project_explained.md`
 - `AGENT/canoe/docs/operations/reference/OEM_4_LAYER_ECU_CLASSIFICATION_2026-03-10.md`
 
 ### Contracts

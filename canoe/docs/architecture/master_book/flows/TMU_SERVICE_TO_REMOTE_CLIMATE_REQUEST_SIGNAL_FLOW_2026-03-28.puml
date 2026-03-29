@@ -1,0 +1,51 @@
+@startuml tmu_service_to_remote_climate_request_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title TMU Service To Remote Climate Request Signal Flow\n(connectivity/IVI/drive context -> TMU service publish)
+
+participant "Connectivity / IVI /\ndrive context" as ConnCtx #F4F7FB
+participant "TMU\ntelematics owner" as TMU #E8F7E8
+participant "TMU service bus" as TmuBus #FFF4CC
+participant "Observers / HVAC consumers" as Obs #E8F0FE
+
+== TMU Inputs ==
+
+ConnCtx -> TMU : connType / signalBars\niviCpuLoad / iviMemLoad\ndriveState
+TMU -> TMU : derive linkState / serviceMode from connectivity and IVI health
+TMU -> TMU : remoteClimateReq = 1 only when\nserviceMode == 1 and connType == 1 and bars >= 3\nand IVI load is healthy and driveState == 0
+note right of TMU
+Representative gating inputs
+- connType / signalBars
+- iviCpuLoad / iviMemLoad
+- driveState
+end note
+
+== TMU Publish ==
+
+TMU -> TmuBus : frmTmuServiceMsg\nTmuLinkState / TmuServiceMode / RemoteClimateReq / SignalBars
+note right of TMU
+Representative outputs
+- TmuLinkState
+- TmuServiceMode
+- RemoteClimateReq
+- SignalBars
+end note
+
+== Downstream Visibility ==
+
+TmuBus -> Obs : remote-climate service readback /\nDATC and VCS consumers
+
+note over ConnCtx, Obs
+Representative runtime chain
+1. Connectivity, IVI load, and drive context reach TMU
+2. TMU derives service mode and remote-climate eligibility
+3. TMU publishes telematics service state and remote climate request
+4. HVAC/audio consumers observe the effective telematics service posture
+end note
+
+@enduml

@@ -1,0 +1,47 @@
+@startuml steering_input_to_sas_angle_raw_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Steering Input To SAS Angle Raw Signal Flow\n(steering input + vehicle speed -> SAS angle publication)
+
+participant "Steering input\nmanual/feature steering state" as Steer #F4F7FB
+participant "Vehicle state\nVehicleSpeed" as Veh #E8F0FE
+participant "SAS\nsteering-angle sensor owner" as SAS #FFF4CC
+participant "Chassis observers /\nconsumers" as Obs #FCE8FF
+
+== SAS Inputs ==
+
+Steer -> SAS : frmSteeringStateCanMsg\nor manual steering input
+Veh -> SAS : frmVehicleStateCanMsg\nVehicleSpeed
+activate SAS
+SAS -> SAS : normalize stale steering / vehicle inputs
+SAS -> SAS : in manual mode derive steering input\nfrom Chassis::steeringAngle
+SAS -> SAS : map steering input to SteeringAngleRaw
+note right of SAS
+Representative outputs
+- SteeringAngleRaw
+
+Representative inputs
+- steering input
+- vehicle speed
+end note
+
+== SAS Publish ==
+
+SAS -> Obs : frmSteeringAngleMsg
+SAS -> Obs : traceable raw steering-angle visibility
+deactivate SAS
+
+note over Steer, Obs
+Representative runtime chain
+1. Steering state arrives from chassis/manual context
+2. SAS combines it with vehicle speed
+3. SAS derives SteeringAngleRaw
+4. Chassis observers consume the raw steering-angle publication
+end note
+
+@enduml

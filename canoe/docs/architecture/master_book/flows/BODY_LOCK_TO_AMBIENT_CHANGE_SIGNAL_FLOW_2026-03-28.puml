@@ -1,0 +1,86 @@
+@startuml body_lock_to_ambient_change_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Body Lock To Ambient Change Signal Flow\n(Input_Console -> Router -> BCM -> IVI)
+
+actor "Driver\n(Input Console)" as Driver #F4F7FB
+participant "Input_Console\nVehicle > Body + Signals" as Panel #E8F0FE
+participant "INPUT_CONSOLE_ROUTER\nbutton pulse normalizer" as Router #FFF4CC
+participant "BCM\nbody / comfort owner" as BCM #E8F7E8
+participant "IVI\nambient render consumer" as IVI #E8F0FE
+
+== Manual Cabin Access Commands ==
+
+Driver -> Panel : Click UNLOCK / LOCK\nselect ambient mode
+activate Panel
+Panel -> Panel : Write Cmd::doorUnlock / Cmd::doorLock\nand Cmd::ambientModeCmd
+note right of Panel
+Input seams
+- Cmd::doorUnlock / doorLock / doorLockHold
+- Cmd::ambientModeCmd
+end note
+deactivate Panel
+
+== Router Normalization ==
+
+activate Router
+Panel -> Router : Cmd::* button pulses
+Router -> Router : doorUnlock -> Cmd::doorLockCmd = 1
+Router -> Router : doorLock -> Cmd::doorLockCmd = 2
+Router -> Router : clear one-shot pulse vars
+note right of Router
+Router keeps the panel UI simple
+while BCM consumes normalized
+doorLockCmd and ambientModeCmd.
+end note
+deactivate Router
+
+== BCM Ownership ==
+
+activate BCM
+Router -> BCM : Cmd::doorLockCmd\nCmd::ambientModeCmd
+BCM -> BCM : manualMode = (Test::scenarioActiveId == 0)
+BCM -> BCM : ambientMode = Cmd::ambientModeCmd\nwhen manualMode
+BCM -> BCM : deriveAmbientColorFromMode()
+BCM -> BCM : deriveAmbientPatternFromMode()
+BCM -> BCM : compute doorLockState / doorOpenWarn
+note right of BCM
+Representative BCM outputs
+- Body::ambientMode / ambientColor / ambientPattern
+- frmAmbientControlMsg
+- frmInteriorLightMsg
+- frmDoorStateMsg
+- frmBodyComfortStateMsg
+end note
+BCM -> IVI : Body::ambientMode / ambientColor / ambientPattern
+deactivate BCM
+
+== Visible Cabin Outcome ==
+
+activate IVI
+IVI -> IVI : renderMode / renderColor /\nrenderPattern from Body::ambient*
+IVI -> Panel : UiRender / Infotainment mirrors
+note right of IVI
+Ambient rendering follows
+BCM-owned body state, while
+door lock remains part of the
+same cabin-access interaction zone.
+end note
+deactivate IVI
+
+Driver <- Panel : Lock state / ambient scene\nappear as one body-access context
+
+note over Driver, IVI
+Representative runtime chain
+1. Input_Console emits door and ambient commands
+2. Router normalizes lock pulses into doorLockCmd
+3. BCM owns both door-state and ambient-state publication
+4. IVI consumes ambient outputs for cabin rendering
+end note
+
+@enduml

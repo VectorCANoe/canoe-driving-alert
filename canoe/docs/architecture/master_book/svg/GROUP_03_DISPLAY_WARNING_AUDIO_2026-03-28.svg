@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1020" viewBox="0 0 1500 1020">
+  <style>
+    .title { font: 700 28px 'Segoe UI', sans-serif; fill: #111827; }
+    .label { font: 700 19px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .node { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .box { rx: 18; ry: 18; stroke: #475569; stroke-width: 2; }
+    .arrow { stroke: #334155; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#334155"/>
+    </marker>
+  </defs>
+  <text x="36" y="44" class="title">Group 03 - Display / Warning / Audio Output</text>
+  <text x="36" y="72" class="small">Output ownership is mostly clean. Most user-visible issues usually start upstream in ADAS/AEB/CGW.</text>
+
+  <rect x="40" y="120" width="320" height="160" class="box" fill="#fee2e2"/>
+  <text x="62" y="156" class="label">Upstream decision</text>
+  <text x="62" y="184" class="node">ADAS effective state</text>
+  <text x="62" y="208" class="node">selected alert type / level</text>
+  <text x="62" y="232" class="small">after risk, assist, and arbitration</text>
+
+  <rect x="430" y="120" width="260" height="160" class="box" fill="#ede9fe"/>
+  <text x="452" y="156" class="label">CGW</text>
+  <text x="452" y="184" class="node">selectedAlertGateReason</text>
+  <text x="452" y="208" class="node">boundary / fail-safe / gate status</text>
+
+  <rect x="760" y="120" width="260" height="160" class="box" fill="#fde68a"/>
+  <text x="782" y="156" class="label">IVI</text>
+  <text x="782" y="184" class="node">text / route / map / service display</text>
+  <text x="782" y="208" class="small">warningTextCode, route display context</text>
+
+  <rect x="1090" y="120" width="260" height="160" class="box" fill="#fef3c7"/>
+  <text x="1112" y="156" class="label">CLU</text>
+  <text x="1112" y="184" class="node">cluster text / steering frame / base cluster</text>
+  <text x="1112" y="208" class="small">driver-facing instrument confirmation</text>
+
+  <rect x="260" y="390" width="300" height="170" class="box" fill="#dbeafe"/>
+  <text x="282" y="426" class="label">BCM</text>
+  <text x="282" y="454" class="node">ambient / lamp / body-linked warning surface</text>
+  <text x="282" y="478" class="small">blinkLeft, blinkRight, ambientMode</text>
+
+  <rect x="650" y="390" width="300" height="170" class="box" fill="#cffafe"/>
+  <text x="672" y="426" class="label">AMP</text>
+  <text x="672" y="454" class="node">audio focus / warning audio / render volume</text>
+  <text x="672" y="478" class="small">renderVolumLevel, baseVolume</text>
+
+  <rect x="1040" y="390" width="320" height="170" class="box" fill="#f8fafc"/>
+  <text x="1062" y="426" class="label">Reader note</text>
+  <text x="1062" y="454" class="node">If IVI / CLU / BCM / AMP disagree,</text>
+  <text x="1062" y="478" class="node">check CGW gate and ADAS effective state first.</text>
+
+  <rect x="40" y="650" width="1320" height="150" class="box" fill="#ffffff"/>
+  <text x="62" y="686" class="label">Why this group is lower priority than dynamics</text>
+  <text x="62" y="716" class="node">Perceived output issues usually come from upstream decision, assist, or gate reasons.</text>
+  <text x="62" y="740" class="node">Local output ownership is comparatively stable in the current runtime.</text>
+
+  <rect x="40" y="830" width="1320" height="130" class="box" fill="#f8fafc"/>
+  <text x="62" y="866" class="label">ECU roster in this group</text>
+  <text x="62" y="898" class="node">CGW</text>
+  <text x="150" y="898" class="node">IVI</text>
+  <text x="220" y="898" class="node">CLU</text>
+  <text x="300" y="898" class="node">BCM</text>
+  <text x="390" y="898" class="node">AMP</text>
+
+  <path class="arrow" d="M360 200 L430 200"/>
+  <path class="arrow" d="M690 200 L760 200"/>
+  <path class="arrow" d="M1020 200 L1090 200"/>
+  <path class="arrow" d="M560 260 L410 390"/>
+  <path class="arrow" d="M560 260 L800 390"/>
+  <path class="arrow" d="M560 260 L1180 390"/>
+</svg>

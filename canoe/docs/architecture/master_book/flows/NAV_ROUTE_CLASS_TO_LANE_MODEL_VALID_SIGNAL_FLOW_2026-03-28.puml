@@ -1,0 +1,50 @@
+@startuml nav_route_class_to_lane_model_valid_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Nav Route Class To Lane Model Valid Signal Flow\n(NAV route class + path readiness -> FCAM lane model validity)
+
+participant "NAV / path inputs" as NavCtx #F4F7FB
+participant "FCAM\nlane-model owner" as FCAM #E8F7E8
+participant "Camera/lane state bus" as LaneBus #FFF4CC
+participant "Observers / pilot consumers" as Obs #E8F0FE
+
+== Route And Path Inputs ==
+
+NavCtx -> FCAM : gNavRouteClass\nnavInputStale\npathReady
+FCAM -> FCAM : if pathReady == 0\nthen navRouteClass = 0
+FCAM -> FCAM : laneModelValid =\n(pathReady == 1 and navInputStale == 0 and navRouteClass in {2,3}) ? 1 : 0
+note right of FCAM
+Representative gating inputs
+- navRouteClass
+- navInputStale
+- pathReady
+end note
+
+== Lane Model Publish ==
+
+FCAM -> LaneBus : frmFcamInputMsg\nLaneModelValid / Confidence / route-class context
+note right of FCAM
+Representative outputs
+- LaneModelValid
+- Confidence
+- route-class-informed lane status
+end note
+
+== Downstream Visibility ==
+
+LaneBus -> Obs : lane-model readback /\nhighway pilot consumers
+
+note over NavCtx, Obs
+Representative runtime chain
+1. NAV route class and path freshness reach FCAM
+2. FCAM validates whether lane model is usable
+3. LaneModelValid is published on the FCAM state path
+4. Downstream pilot/observer consumers see lane readiness
+end note
+
+@enduml

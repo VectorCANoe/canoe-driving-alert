@@ -1,0 +1,70 @@
+@startuml v2x_priority_arbitration_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title V2X Priority Arbitration Signal Flow\n(TEST_SCN / external ingress -> V2X -> ADAS / IVI)
+
+actor "Emergency Sources\n(TEST_SCN / network ingress)" as Source #F4F7FB
+participant "V2X\ningress arbitration owner" as V2X #E8F7E8
+participant "ADAS\nemergency risk consumer" as ADAS #FCE8FF
+participant "IVI\nrender / sound consumer" as IVI #E8F0FE
+
+== Candidate Ingress ==
+
+Source -> V2X : emergency type / status / sourceId / eta / direction
+activate V2X
+V2X -> V2X : stageEmergencyIngress()
+V2X -> V2X : isHigherPriority(newType, newEta, newSourceId,\nactiveType, activeEta, activeSourceId)
+note right of V2X
+Priority rule
+- ambulance > police
+- shorter ETA first
+- lower sourceId on tie
+end note
+
+== Active Emergency Selection ==
+
+V2X -> V2X : select active emergency context
+V2X -> V2X : publishNormalizedEmergencyIngress()
+V2X -> V2X : publishActiveEmergencyToV2X()
+V2X -> V2X : pushEmergencyMonitor()
+V2X -> ADAS : Core::emergencyContext
+V2X -> ADAS : CoreState::emergencyIngressDirection
+V2X -> ADAS : CoreState::emergencyIngressEtaSec
+V2X -> ADAS : Core::timeoutClear
+V2X -> IVI : V2X::v2xFrame
+note right of V2X
+Representative outputs
+- emergencyContext
+- emergencyIngressDirection
+- emergencyIngressEtaSec
+- timeoutClear
+- v2xFrame
+end note
+deactivate V2X
+
+== Downstream Consumers ==
+
+activate ADAS
+V2X -> ADAS : normalized ingress seams
+ADAS -> ADAS : calcProximityRisk()
+deactivate ADAS
+
+activate IVI
+V2X -> IVI : v2xFrame / emergency context mirror
+IVI -> IVI : render emergency warning / sound state
+deactivate IVI
+
+note over Source, IVI
+Representative runtime chain
+1. Multiple emergency candidates arrive
+2. V2X arbitrates by type, ETA, and sourceId
+3. V2X publishes one normalized active emergency context
+4. ADAS and IVI consume the same selected ingress
+end note
+
+@enduml

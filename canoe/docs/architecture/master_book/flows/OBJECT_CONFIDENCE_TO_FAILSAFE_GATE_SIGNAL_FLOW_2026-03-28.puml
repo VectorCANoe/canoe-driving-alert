@@ -1,0 +1,61 @@
+@startuml object_confidence_to_failsafe_gate_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Object Confidence To Failsafe Gate Signal Flow\n(ADAS/AEB object confidence -> CGW fail-safe gate -> verification)
+
+participant "ADAS / AEB\nobject-risk producers" as RiskCtx #F4F7FB
+participant "CGW\neffective warning/fail-safe owner" as CGW #E8F7E8
+participant "CoreState / Core\nfail-safe seams" as Core #FFF4CC
+participant "TEST_SCN / evidence" as Evidence #E8F0FE
+
+== Object Confidence Inputs ==
+
+RiskCtx -> CGW : objectTrackValid\nobjectConfidence\nobjectEventCode\ndecelAssistDecisionReq
+CGW -> CGW : evaluate routingPolicy /\nwarningPathStatus / failSafeMode
+CGW -> CGW : if failSafeMode >= 1\nthen decel assist is gated
+note right of CGW
+Representative inputs
+- object confidence / track validity
+- decision decel request
+- boundary / warning-path health
+end note
+
+== Effective Gate Ownership ==
+
+CGW -> Core : CoreState::warningPathStatus
+CGW -> Core : Core::failSafeMode
+CGW -> Core : CoreState::selectedAlertEffectiveLevel / Type / GateReason
+CGW -> CGW : publishFailSafeState()\npublishGatewayState()\npublishObjectSafetyState()
+note right of CGW
+Representative outputs
+- failSafeMode
+- warningPathStatus
+- selectedAlertGateReason
+- decelAssistReq after gating
+end note
+
+== Verification / Evidence ==
+
+Core -> Evidence : failSafeMode / warningPathStatus /\ndeceled assist gate result
+Evidence -> Evidence : ST_046 / ST_043 /\nReq_127~129 blocked/degraded checks
+note right of Evidence
+Typical verdict conditions
+- failSafeMode >= 1
+- decelAssistReq == 0
+- blocked/degraded context observed
+end note
+
+note over RiskCtx, Evidence
+Representative runtime chain
+1. Object confidence and risk intent reach CGW
+2. CGW owns the effective fail-safe gate decision
+3. Core/CoreState expose the gated warning/decel seams
+4. TEST_SCN consumes those seams as fail-safe evidence
+end note
+
+@enduml

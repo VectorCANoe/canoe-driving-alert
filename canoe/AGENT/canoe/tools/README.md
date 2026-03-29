@@ -25,6 +25,14 @@ Utility scripts for CANoe project maintenance.
   - `0` = pass
   - `2` = gate failed
 
+## Master-book note
+- The old internal architecture build/render scripts were retired.
+- Official master-book build path is now:
+  - `canoe/docs/architecture/master_book/tools/build_master_book_asset_pack.py`
+  - `canoe/docs/architecture/master_book/tools/render_master_book_pdf.py`
+- Archived layout studies live under:
+  - `canoe/docs/architecture/master_book/prototypes/card_prototypes/`
+
 ## AI usage note
 - If an AI agent runs tools in this folder, it must verify document template compatibility first.
 - If an AI agent runs tools in this folder, it must treat generated files as draft artifacts.

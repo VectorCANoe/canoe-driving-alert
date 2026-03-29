@@ -1,0 +1,51 @@
+@startuml seat_comfort_to_massage_intensity_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Seat Comfort To Massage Intensity Signal Flow\n(BCM comfort commands -> MSC massage intensity)
+
+participant "BCM comfort commands" as BCM #F4F7FB
+participant "MSC\nseat massage owner" as MSC #E8F7E8
+participant "Seat massage bus" as SeatBus #FFF4CC
+participant "Observers / panels" as Obs #E8F0FE
+
+== Comfort Inputs ==
+
+BCM -> MSC : gSeatHeatLvl\ngSeatVentLvl\ndriveComfortMode\nseatDetail freshness
+MSC -> MSC : if seat detail stale\nthen seatHeatLvl = 0 / seatVentLvl = 0
+MSC -> MSC : if driveComfortMode >= 1\nmassageIntensity = 20 + driveComfortMode * 10
+MSC -> MSC : if seatHeatLvl >= 2 or seatVentLvl >= 2\nmassageIntensity = 30 + heat*12 + vent*8
+note right of MSC
+Representative intensity inputs
+- seatHeatLvl / seatVentLvl
+- driveComfortMode
+- seat-detail freshness
+end note
+
+== Massage Publish ==
+
+MSC -> MSC : clamp massageIntensity to 0..100
+MSC -> SeatBus : frmMassageStateMsg\nMassageIntensity / MassageState
+note right of MSC
+Representative outputs
+- MassageIntensity
+- MassageState
+end note
+
+== Downstream Visibility ==
+
+SeatBus -> Obs : seat comfort /\nmassage readback
+
+note over BCM, Obs
+Representative runtime chain
+1. BCM-derived seat comfort commands reach MSC
+2. MSC converts comfort demand into massage intensity
+3. Massage state is published on the seat comfort path
+4. Observers expose the comfort-to-massage coupling
+end note
+
+@enduml

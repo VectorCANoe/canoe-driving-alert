@@ -1,0 +1,69 @@
+@startuml failsafe_blocked_context_to_diag_path_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Failsafe Blocked Context To Diag Path Signal Flow\n(TEST_SCN -> CGW -> IVI / Test evidence)
+
+actor "Validation Harness\n(TEST_SCN)" as Harness #F4F7FB
+participant "TEST_SCN\nscenario/test driver" as TEST_SCN #FFE6E6
+participant "CGW\ngateway fail-safe owner" as CGW #FFF4CC
+participant "IVI\ninfo diagnostic mirror" as IVI #E8F0FE
+participant "Diag sysvars /\nEVIDENCE_OUT" as Evidence #E8F7E8
+
+== Fail-safe Stimulation ==
+
+Harness -> TEST_SCN : forceFailSafe = 1\nor blocked-context scenario phase
+activate TEST_SCN
+TEST_SCN -> CGW : Core::forceFailSafe\n/ gateway observer conditions
+note right of TEST_SCN
+Representative test anchors
+- ST_043 blocked context
+- UT_063 blocked SGW context
+- UT_064 blocked DCM context
+- IT_040 integrated blocked context
+end note
+deactivate TEST_SCN
+
+== CGW Blocked Context Decision ==
+
+activate CGW
+CGW -> CGW : derive warningPathStatus
+CGW -> CGW : derive failSafeMode
+CGW -> CGW : if failSafeMode >= 1\nthen decel assist gating applies
+CGW -> CGW : publishFailSafeState()\npublishGatewayState()\npublishObjectSafetyState()
+CGW -> CGW : CoreState::domainBoundaryStatus\nCoreState::warningPathStatus\nCore::failSafeMode
+note right of CGW
+Blocked context is represented by
+warningPathStatus / failSafeMode
+and exported over gateway/observer paths.
+end note
+CGW -> IVI : gateway / fail-safe state frames
+CGW -> Evidence : CoreState::* / Core::failSafeMode
+deactivate CGW
+
+== Diagnostic / Evidence Surface ==
+
+activate IVI
+IVI -> IVI : InfoDiagState = 1\nInfoFailCode = 0 in base health publish
+IVI -> Evidence : Diag::InfoDiagState\nDiag::InfoFailCode
+deactivate IVI
+
+activate Evidence
+Evidence -> Evidence : TEST_SCN monitors\nnominal / degraded / blocked context
+Evidence -> Evidence : gDiagCtxNominalSeen /\ngDiagCtxDegradedSeen /\ngDiagCtxBlockedSeen
+Evidence -> Evidence : EVIDENCE_OUT log line includes\nfailSafeMode / warningPath / render code
+deactivate Evidence
+
+note over Harness, Evidence
+Representative runtime chain
+1. TEST_SCN forces a blocked fail-safe condition
+2. CGW owns fail-safe mode and warning-path downgrade
+3. Gateway state is mirrored into diag/info surfaces
+4. TEST_SCN captures blocked-context evidence and verdict anchors
+end note
+
+@enduml

@@ -1,0 +1,47 @@
+@startuml dkey_access_to_door_fl_unlock_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title DKEY Access To DOOR_FL Unlock Signal Flow\n(DKEY + immobilizer + door command -> front-left door state)
+
+participant "Input_Console / command source\nDoor control command" as Cmd #F4F7FB
+participant "DKEY + SMK\naccess authorization context" as Auth #E8F0FE
+participant "DOOR_FL\nfront-left door owner" as Door #FFF4CC
+participant "Body observers /\npanel readback" as Obs #FCE8FF
+
+== Door Inputs ==
+
+Cmd -> Door : door command seam\n(open / close / lock intent)
+Auth -> Door : frmDigitalKeyStateMsg\nVehicleAccessState / KeyPresence
+Auth -> Door : frmImmobilizerStateMsg\nImmobilizerState / KeyAuthState
+activate Door
+Door -> Door : normalize stale command / DKEY / immo inputs
+Door -> Door : accessAuthorized when drive=0\nand key/access/auth conditions are met
+Door -> Door : derive DoorFlLockState / OpenState / WindowPos
+note right of Door
+Representative conditions
+- VehicleAccessState >= 1
+- KeyPresence == 1
+- immobilizer/key-auth valid
+- driveState == 0
+end note
+
+== Door Publish ==
+
+Door -> Obs : frmDoorFlStateMsg
+Door -> Obs : Body::windowPos readback
+deactivate Door
+
+note over Cmd, Obs
+Representative runtime chain
+1. Door command arrives with DKEY and immobilizer context
+2. DOOR_FL validates access authorization in park/manual conditions
+3. DOOR_FL derives lock/open/window state
+4. Body observers and panel readback reflect the resulting door state
+end note
+
+@enduml

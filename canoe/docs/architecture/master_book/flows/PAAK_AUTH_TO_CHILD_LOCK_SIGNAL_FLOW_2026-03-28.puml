@@ -1,0 +1,51 @@
+@startuml paak_auth_to_child_lock_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title PAAK Auth To Child Lock Signal Flow\n(PAAK/drive context -> BCM -> door child-lock enforcement)
+
+participant "PAAK / drive context" as AccessCtx #F4F7FB
+participant "BCM\nbody access owner" as BCM #E8F7E8
+participant "Rear door ECUs" as RearDoors #FFF4CC
+participant "Observers / panels" as Obs #E8F0FE
+
+== Access / Drive Inputs ==
+
+AccessCtx -> BCM : gPaakAuthLevel\ngPaakProximityState\ngPaakState\ngDriveState
+BCM -> BCM : evaluate door access and drive-state safety
+BCM -> BCM : childLockState =\n(manualMode == 0 and driveState > 0) ? 1 : 0
+note right of BCM
+Representative gating inputs
+- paakAuthLevel / proximity / state
+- driveState
+- manualMode
+end note
+
+== Child Lock Publish ==
+
+BCM -> RearDoors : frmDoorControlMsg\nChildLockCmd
+BCM -> BCM : mDoorState.ChildLockState\nfor body state publish
+note right of BCM
+Representative outputs
+- ChildLockCmd
+- ChildLockState
+end note
+
+== Door Enforcement ==
+
+RearDoors -> RearDoors : childLockActive blocks rear-door unlock/open
+RearDoors -> Obs : rear door status /\nchild-lock visibility
+
+note over AccessCtx, Obs
+Representative runtime chain
+1. Access and drive context reach BCM
+2. BCM decides whether child lock must be active
+3. BCM publishes ChildLockCmd on the door-control path
+4. Rear door ECUs enforce the lock and observers show the protected state
+end note
+
+@enduml

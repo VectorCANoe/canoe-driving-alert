@@ -1,0 +1,109 @@
+@startuml accel_brake_longitudinal_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Accel Brake Longitudinal Signal Flow\n(Input_Console -> VCU -> ESC -> EHB / VSM -> CLU)
+
+actor "Driver\n(Input Console)" as Driver #F4F7FB
+participant "Input_Console\nVehicle > Pedal + Cruise" as Panel #E8F0FE
+participant "VCU\nmanual target + speed owner" as VCU #E8F7E8
+participant "ESC\nbrake pressure owner" as ESC #FFE6E6
+participant "EHB\nhydraulic brake state" as EHB #FFF4CC
+participant "VSM\nstability intervention view" as VSM #FCE8FF
+participant "CLU\nspeed / brake readback" as CLU #E8F0FE
+
+== Driver Longitudinal Input ==
+
+Driver -> Panel : Press ACCEL / BRAKE\nor choose speed preset / cruise set
+activate Panel
+Panel -> Panel : Write Cmd::throttlePedalPct\nWrite Cmd::brakePedalPct
+Panel -> Panel : Optional Cmd::vehicleSpeedCmd\nOptional Powertrain::cruiseSetSpeed
+note right of Panel
+Primary seams
+- Cmd::throttlePedalPct
+- Cmd::brakePedalPct
+- Cmd::vehicleSpeedCmd
+- Cmd::driveStateCmd
+- Powertrain::cruiseState / cruiseSetSpeed
+end note
+deactivate Panel
+
+== VCU Manual Longitudinal Ownership ==
+
+activate VCU
+Panel -> VCU : Cmd::* longitudinal seams
+VCU -> VCU : latch manual drive/speed target\nwhen scenarioActiveId == 0
+VCU -> VCU : owner vehicle dynamics lead\nonce pedal input arrives
+VCU -> VCU : derive engineState / driveState / speed
+VCU -> ESC : frmVehicleStateCanMsg
+VCU -> ESC : frmWheelPulseMsg
+VCU -> VSM : frmVehicleStateCanMsg
+VCU -> CLU : Chassis::vehicleSpeed / driveState readback
+note right of VCU
+Representative owner logic
+- gManualVehicleSpeedTarget
+- manualCruiseActive
+- externalSpeedOverride
+- output frmVehicleStateCanMsg / frmWheelPulseMsg
+end note
+deactivate VCU
+
+== ESC Brake Pressure Ownership ==
+
+activate ESC
+Panel -> ESC : Cmd::brakePedalPct
+VCU -> ESC : frmVehicleStateCanMsg
+ESC -> ESC : appliedBrakePedal = Cmd::brakePedalPct\nmanual mode
+ESC -> ESC : Chassis::brakePressure = appliedBrakePedal
+ESC -> ESC : brakeLamp / absActive / espActive
+ESC -> EHB : frmBrakeStatusMsg
+ESC -> VSM : frmEscStateMsg
+ESC -> CLU : Chassis::brakePressure / brakeLamp / absActive
+note right of ESC
+Published outputs
+- frmBrakeStatusMsg
+- frmEscStateMsg
+- Chassis::brakePressure
+- Chassis::brakeLamp
+end note
+deactivate ESC
+
+== Brake / Stability Downstream ==
+
+activate EHB
+ESC -> EHB : frmBrakeStatusMsg
+EHB -> EHB : derive pressureCmd / ctrlState
+EHB -> EHB : output frmEhbStateMsg
+deactivate EHB
+
+activate VSM
+ESC -> VSM : frmEscStateMsg
+VCU -> VSM : frmVehicleStateCanMsg
+VSM -> VSM : derive intervention / alert level
+VSM -> VSM : output frmVsmStateMsg
+deactivate VSM
+
+== Visible Outcome ==
+
+activate CLU
+VCU -> CLU : Chassis::vehicleSpeed
+ESC -> CLU : Chassis::brakePressure
+CLU -> Panel : speed / brake readback
+deactivate CLU
+
+Driver <- Panel : Speed, meter, brake response move together
+
+note over Driver, CLU
+Representative runtime chain
+1. Driver sets accel / brake / speed aid from Input_Console
+2. VCU owns speed / drive-state dynamics
+3. ESC owns brake pressure and brake status
+4. EHB and VSM consume brake / vehicle state downstream
+5. CLU and Input_Console show speed/brake readback
+end note
+
+@enduml

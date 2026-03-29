@@ -1,0 +1,1323 @@
+[
+  {
+    "flow_id": "FLOW_01",
+    "slug": "STEERING_CONTROL_READBACK",
+    "title": "Steering Control Readback",
+    "category": "Dynamics",
+    "summary": "Manual steering input is normalized, published as steering state, and rendered back into the donor wheel image path.",
+    "participants": [
+      "Input_Console",
+      "ESC",
+      "MDPS",
+      "CGW",
+      "ADAS",
+      "CLU"
+    ],
+    "steps": [
+      [
+        "Input_Console",
+        "Capture steering request",
+        "Driver wheel or bar writes Cmd::steeringAngleCmd."
+      ],
+      [
+        "ESC",
+        "Normalize manual angle",
+        "Bridge command into legacy steering angle and manual readback seams."
+      ],
+      [
+        "MDPS",
+        "Publish steering state",
+        "Produce steering state, torque, and EPS state on the chassis lane."
+      ],
+      [
+        "CGW / ADAS",
+        "Consume steering freshness",
+        "Gateway and ADAS merge steering freshness and steeringInputNorm."
+      ],
+      [
+        "CLU",
+        "Render wheel feedback",
+        "Display::steeringFrame keeps the donor wheel image aligned with input."
+      ]
+    ],
+    "key_contracts": [
+      "Cmd::steeringAngleCmd",
+      "Chassis::steeringAngle",
+      "frmSteeringStateCanMsg",
+      "frmSteeringTorqueMsg",
+      "Display::steeringFrame"
+    ],
+    "key_files": [
+      "ESC.can",
+      "MDPS.can",
+      "CGW.can",
+      "ADAS.can",
+      "CLU.can"
+    ],
+    "user_outcome": "Steering bar, steering angle readback, and wheel image move together without drift.",
+    "related_ecus": [
+      "CGW",
+      "CLU",
+      "ESC",
+      "MDPS",
+      "RWS",
+      "SAS"
+    ]
+  },
+  {
+    "flow_id": "FLOW_02",
+    "slug": "BRAKE_STABILITY_RESPONSE",
+    "title": "Brake Stability Response",
+    "category": "Dynamics",
+    "summary": "Brake request, AEB pressure intent, and stability outputs are synchronized across chassis brake owners and downstream readers.",
+    "participants": [
+      "AEB / ADAS",
+      "ESC",
+      "ABS / EHB / VSM",
+      "VCU",
+      "CGW / CLU"
+    ],
+    "steps": [
+      [
+        "AEB / ADAS",
+        "Raise brake assist intent",
+        "Decel profile and stop request are emitted for chassis actuation."
+      ],
+      [
+        "ESC",
+        "Arbitrate brake pressure",
+        "Brake controller merges manual state, assist pressure, and stability state."
+      ],
+      [
+        "ABS / EHB / VSM",
+        "Reflect local intervention",
+        "Leaf brake and stability ECUs consume the same intervention window."
+      ],
+      [
+        "VCU",
+        "Consume vehicle state",
+        "Powertrain side reacts to brake and wheel speed state transitions."
+      ],
+      [
+        "CGW / CLU",
+        "Expose brake state",
+        "Gateway and display surfaces publish brake, stability, and health readback."
+      ]
+    ],
+    "key_contracts": [
+      "frmAebDomainStateMsg",
+      "frmBrakeStatusMsg",
+      "frmBrakeTempMsg",
+      "frmWheelSpeedMsg",
+      "Chassis::brakePressure"
+    ],
+    "key_files": [
+      "AEB.can",
+      "ADAS.can",
+      "ESC.can",
+      "EHB.can",
+      "VSM.can"
+    ],
+    "user_outcome": "Brake intervention feels coordinated and the driver sees consistent brake and stability state feedback.",
+    "related_ecus": [
+      "ABS",
+      "AEB",
+      "EHB",
+      "EPB",
+      "ESC",
+      "FCA",
+      "VCU",
+      "VSM"
+    ]
+  },
+  {
+    "flow_id": "FLOW_03",
+    "slug": "PROPULSION_ENERGY_STATUS",
+    "title": "Propulsion Energy Status",
+    "category": "Dynamics",
+    "summary": "Powertrain and energy ECUs consolidate drive, torque, battery, and charging state into the central propulsion state lane.",
+    "participants": [
+      "BAT_BMS / EMS",
+      "VCU",
+      "TCU / TRM",
+      "CGW / ADAS",
+      "CLU / IVI"
+    ],
+    "steps": [
+      [
+        "BAT_BMS / EMS",
+        "Publish energy inputs",
+        "Battery, engine, and power limits are produced into the propulsion lane."
+      ],
+      [
+        "VCU",
+        "Fuse drive state",
+        "Vehicle controller merges speed, drive, throttle, and energy conditions."
+      ],
+      [
+        "TCU / TRM",
+        "Propagate support state",
+        "Transmission and thermal support readers react to the central propulsion state."
+      ],
+      [
+        "CGW / ADAS",
+        "Expose runtime state",
+        "Gateway and ADAS consume propulsion status for visibility and control adaptation."
+      ],
+      [
+        "CLU / IVI",
+        "Render vehicle status",
+        "Display surfaces show mode, vehicle state, and support context."
+      ]
+    ],
+    "key_contracts": [
+      "frmBatBmsStateMsg",
+      "frmVehicleStateCanMsg",
+      "frmPowertrainGatewayMsg",
+      "Chassis::vehicleSpeed",
+      "Chassis::driveState"
+    ],
+    "key_files": [
+      "VCU.can",
+      "EMS.can",
+      "BAT_BMS.can",
+      "TCU.can",
+      "CGW.can"
+    ],
+    "user_outcome": "Vehicle mode, energy state, and propulsion readiness appear as one coherent status surface.",
+    "related_ecus": [
+      "BAT_BMS",
+      "CPC",
+      "DCDC",
+      "EMS",
+      "EOP",
+      "EWP",
+      "FPCM",
+      "INVERTER",
+      "ISG",
+      "LVR",
+      "MCU",
+      "OBC",
+      "TCU",
+      "VCU",
+      "_4WD"
+    ]
+  },
+  {
+    "flow_id": "FLOW_04",
+    "slug": "CRUISE_SPEED_SUPPORT",
+    "title": "Cruise Speed Support",
+    "category": "Dynamics",
+    "summary": "Cruise and longitudinal support state moves from support controllers into vehicle speed management and driver-facing outputs.",
+    "participants": [
+      "SCC",
+      "VCU",
+      "ADAS",
+      "CGW",
+      "CLU / IVI"
+    ],
+    "steps": [
+      [
+        "SCC",
+        "Publish cruise intent",
+        "Cruise set speed and support status are produced for vehicle control."
+      ],
+      [
+        "VCU",
+        "Merge longitudinal state",
+        "Vehicle controller fuses cruise state with propulsion and pedal context."
+      ],
+      [
+        "ADAS",
+        "Adapt support behavior",
+        "Longitudinal assist uses cruise state for warning and decel strategy."
+      ],
+      [
+        "CGW",
+        "Route cruise visibility",
+        "Gateway exposes cruise freshness and selected support state."
+      ],
+      [
+        "CLU / IVI",
+        "Render speed support",
+        "Cluster and IVI show speed support and drive-assist context."
+      ]
+    ],
+    "key_contracts": [
+      "Powertrain::cruiseSetSpeed",
+      "frmCruiseStateMsg",
+      "frmVehicleStateCanMsg",
+      "selected support state"
+    ],
+    "key_files": [
+      "SCC.can",
+      "VCU.can",
+      "ADAS.can",
+      "CGW.can",
+      "CLU.can"
+    ],
+    "user_outcome": "Cruise support state is readable, timely, and aligned between control and HMI.",
+    "related_ecus": [
+      "EMS",
+      "SCC",
+      "TCU",
+      "VCU"
+    ]
+  },
+  {
+    "flow_id": "FLOW_05",
+    "slug": "CHASSIS_SENSOR_HEALTH",
+    "title": "Chassis Sensor Health",
+    "category": "Dynamics",
+    "summary": "Wheel, angle, suspension, and chassis leaf signals are collected so downstream control and visibility stay health-aware.",
+    "participants": [
+      "SAS / TPMS / RWS",
+      "ESC / MDPS",
+      "VCU / ADAS",
+      "CGW",
+      "CLU"
+    ],
+    "steps": [
+      [
+        "SAS / TPMS / RWS",
+        "Produce chassis leaf state",
+        "Leaf chassis sensors publish angle, tire, and rear steer status."
+      ],
+      [
+        "ESC / MDPS",
+        "Normalize control inputs",
+        "Primary chassis controllers merge raw leaf state into central control state."
+      ],
+      [
+        "VCU / ADAS",
+        "Consume for behavior",
+        "Vehicle and ADAS logic use chassis state for stability and warning decisions."
+      ],
+      [
+        "CGW",
+        "Merge health visibility",
+        "Gateway tracks freshness and health across the chassis domain."
+      ],
+      [
+        "CLU",
+        "Display chassis readiness",
+        "Driver-visible status follows the normalized health and state lane."
+      ]
+    ],
+    "key_contracts": [
+      "frmSteeringAngleMsg",
+      "frmWheelSpeedMsg",
+      "frmTirePressureMsg",
+      "frmSuspensionStateMsg"
+    ],
+    "key_files": [
+      "SAS.can",
+      "TPMS.can",
+      "RWS.can",
+      "ESC.can",
+      "MDPS.can"
+    ],
+    "user_outcome": "Chassis sensing and readiness stay visible and synchronized across control and display surfaces.",
+    "related_ecus": [
+      "ABS",
+      "ACU",
+      "ASM",
+      "CDC",
+      "ECS",
+      "EHB",
+      "EPB",
+      "ESC",
+      "MDPS",
+      "ODS",
+      "RWS",
+      "SAS",
+      "TPMS",
+      "VCU",
+      "VSM"
+    ]
+  },
+  {
+    "flow_id": "FLOW_06",
+    "slug": "OBJECT_RISK_FUSION",
+    "title": "Object Risk Fusion",
+    "category": "ADAS",
+    "summary": "Radar, camera, lidar, and perception nodes are fused into one object-risk lane for ADAS warning and assist decisions.",
+    "participants": [
+      "FCAM / FRADAR / LDR",
+      "SRR_* / OMS",
+      "ADAS",
+      "CGW",
+      "CLU / IVI"
+    ],
+    "steps": [
+      [
+        "FCAM / FRADAR / LDR",
+        "Publish scene primitives",
+        "Front sensing ECUs emit object, lane, and range context."
+      ],
+      [
+        "SRR_* / OMS",
+        "Add side and occupant context",
+        "Side radar and occupant perception enrich the risk picture."
+      ],
+      [
+        "ADAS",
+        "Fuse object risk",
+        "ADAS turns multi-sensor state into warning, release, and assist candidates."
+      ],
+      [
+        "CGW",
+        "Route selected risk state",
+        "Gateway distributes the fused ADAS state toward HMI surfaces."
+      ],
+      [
+        "CLU / IVI",
+        "Expose warning context",
+        "Display surfaces show the selected risk interpretation."
+      ]
+    ],
+    "key_contracts": [
+      "frmObjectRiskMsg",
+      "frmLaneStateMsg",
+      "frmAdasDomainStateMsg",
+      "selected alert level"
+    ],
+    "key_files": [
+      "FCAM.can",
+      "FRADAR.can",
+      "LDR.can",
+      "ADAS.can",
+      "CGW.can"
+    ],
+    "user_outcome": "Object-risk interpretation is unified before any warning or assist output is shown to the driver.",
+    "related_ecus": [
+      "ADAS",
+      "AEB",
+      "AVM",
+      "BCW",
+      "DMS",
+      "FCA",
+      "FCAM",
+      "FRADAR",
+      "HWP",
+      "LCA",
+      "LDR",
+      "LDWS_LKAS",
+      "OMS",
+      "PKM",
+      "PUS",
+      "RPC",
+      "RRM",
+      "RSPA",
+      "SCC",
+      "SPAS",
+      "SPM",
+      "SRR_FL",
+      "SRR_FR",
+      "SRR_RL",
+      "SRR_RR",
+      "TRM"
+    ]
+  },
+  {
+    "flow_id": "FLOW_07",
+    "slug": "AEB_DECEL_INTERVENTION",
+    "title": "AEB Decel Intervention",
+    "category": "ADAS",
+    "summary": "AEB stop intent, decel profile, and downstream chassis response are connected as one intervention chain.",
+    "participants": [
+      "FCA",
+      "AEB",
+      "ESC / EHB / VSM",
+      "VCU / SCC",
+      "CGW / CLU"
+    ],
+    "steps": [
+      [
+        "FCA",
+        "Trigger collision intent",
+        "Forward collision logic raises the emergency intervention need."
+      ],
+      [
+        "AEB",
+        "Build intervention profile",
+        "AEB creates stop request, decel profile, and domain health state."
+      ],
+      [
+        "ESC / EHB / VSM",
+        "Execute braking response",
+        "Chassis intervention readers apply the shared decel profile."
+      ],
+      [
+        "VCU / SCC",
+        "Adapt longitudinal control",
+        "Vehicle and cruise controllers react to the intervention state."
+      ],
+      [
+        "CGW / CLU",
+        "Expose intervention outcome",
+        "Display and gateway surfaces reflect the active emergency braking state."
+      ]
+    ],
+    "key_contracts": [
+      "frmFcaStateMsg",
+      "frmAebDomainStateMsg",
+      "ethDecelAssistReqMsg",
+      "frmBrakeStatusMsg"
+    ],
+    "key_files": [
+      "FCA.can",
+      "AEB.can",
+      "ESC.can",
+      "EHB.can",
+      "VCU.can"
+    ],
+    "user_outcome": "AEB behavior reads as one intervention story instead of separate ECU reactions.",
+    "related_ecus": [
+      "ADAS",
+      "AEB",
+      "EHB",
+      "ESC",
+      "FCA",
+      "SCC",
+      "VSM"
+    ]
+  },
+  {
+    "flow_id": "FLOW_08",
+    "slug": "LANE_SURROUND_KEEPING",
+    "title": "Lane and Surround Keeping",
+    "category": "ADAS",
+    "summary": "Lane keeping, blind-spot, and surround sensing work together to support steering and warning decisions.",
+    "participants": [
+      "LDWS_LKAS / LCA / BCW",
+      "SRR_*",
+      "ADAS",
+      "MDPS",
+      "CLU / HUD"
+    ],
+    "steps": [
+      [
+        "LDWS_LKAS / LCA / BCW",
+        "Publish lane and surround state",
+        "Lane departure and blind-spot surfaces raise steering-side warnings."
+      ],
+      [
+        "SRR_*",
+        "Reinforce side context",
+        "Short-range radar confirms adjacent-lane occupancy and movement."
+      ],
+      [
+        "ADAS",
+        "Select steering-side alert",
+        "ADAS chooses whether steering-related warning or release logic should fire."
+      ],
+      [
+        "MDPS",
+        "Consume steering-side state",
+        "Steering controller reads the lane/surround state where needed."
+      ],
+      [
+        "CLU / HUD",
+        "Render lane-side warning",
+        "Cluster and HUD show the selected lane or surround cue."
+      ]
+    ],
+    "key_contracts": [
+      "frmLaneStateMsg",
+      "frmBlindSpotStateMsg",
+      "frmSteeringStateCanMsg",
+      "warning text code"
+    ],
+    "key_files": [
+      "LDWS_LKAS.can",
+      "LCA.can",
+      "BCW.can",
+      "ADAS.can",
+      "MDPS.can"
+    ],
+    "user_outcome": "Lane and surround warnings appear as one steering-side assistance behavior.",
+    "related_ecus": [
+      "ADAS",
+      "BCW",
+      "LCA",
+      "LDWS_LKAS",
+      "SRR_FL",
+      "SRR_FR",
+      "SRR_RL",
+      "SRR_RR"
+    ]
+  },
+  {
+    "flow_id": "FLOW_09",
+    "slug": "PARKING_SURROUND_ASSIST",
+    "title": "Parking and Surround Assist",
+    "category": "ADAS",
+    "summary": "Parking cameras, ultrasonic sensing, and parking controllers feed one parking-assist behavior chain.",
+    "participants": [
+      "AVM / PUS",
+      "RPC / RRM / PKM",
+      "RSPA / SPAS / SPM",
+      "ADAS",
+      "IVI / CLU"
+    ],
+    "steps": [
+      [
+        "AVM / PUS",
+        "Publish parking perception",
+        "Camera and ultrasonic surfaces emit parking scene context."
+      ],
+      [
+        "RPC / RRM / PKM",
+        "Propagate maneuver state",
+        "Parking controllers and key modules provide maneuver readiness and state."
+      ],
+      [
+        "RSPA / SPAS / SPM",
+        "Select parking support behavior",
+        "Parking-assist runtimes determine the active surround-assist action."
+      ],
+      [
+        "ADAS",
+        "Arbitrate with driving state",
+        "ADAS balances parking support against the wider warning context."
+      ],
+      [
+        "IVI / CLU",
+        "Render maneuver guidance",
+        "Display surfaces show parking or surround-assist status."
+      ]
+    ],
+    "key_contracts": [
+      "frmParkingStateMsg",
+      "frmUltrasonicStateMsg",
+      "frmCameraStateMsg",
+      "maneuver status"
+    ],
+    "key_files": [
+      "AVM.can",
+      "PUS.can",
+      "RPC.can",
+      "RSPA.can",
+      "IVI.can"
+    ],
+    "user_outcome": "Parking guidance and surround assistance feel like one guided maneuver story.",
+    "related_ecus": [
+      "ADAS",
+      "AVM",
+      "PKM",
+      "PUS",
+      "RPC",
+      "RRM",
+      "RSPA",
+      "SPAS",
+      "SPM"
+    ]
+  },
+  {
+    "flow_id": "FLOW_10",
+    "slug": "DRIVER_MONITOR_OCCUPANT",
+    "title": "Driver Monitor and Occupant Risk",
+    "category": "ADAS",
+    "summary": "Driver state and occupant perception are fed into the warning lane before output arbitration happens.",
+    "participants": [
+      "DMS / OMS",
+      "ADAS",
+      "CGW",
+      "CLU / IVI",
+      "AMP"
+    ],
+    "steps": [
+      [
+        "DMS / OMS",
+        "Publish human-state context",
+        "Driver and occupant monitoring raise attention and occupancy context."
+      ],
+      [
+        "ADAS",
+        "Merge human-state risk",
+        "ADAS combines human-state signals with the active warning picture."
+      ],
+      [
+        "CGW",
+        "Route selected human-state cue",
+        "Gateway exposes the chosen occupant-related warning state."
+      ],
+      [
+        "CLU / IVI",
+        "Render warning cue",
+        "Visual surfaces show the driver or occupant-related warning meaning."
+      ],
+      [
+        "AMP",
+        "Render audio cue",
+        "Audio alert follows the selected human-state warning severity."
+      ]
+    ],
+    "key_contracts": [
+      "frmDriverStateMsg",
+      "frmOccupantStateMsg",
+      "selected alert type",
+      "base volume"
+    ],
+    "key_files": [
+      "DMS.can",
+      "OMS.can",
+      "ADAS.can",
+      "CGW.can",
+      "AMP.can"
+    ],
+    "user_outcome": "Driver-state and occupant warnings are visible, audible, and consistent with the active context.",
+    "related_ecus": [
+      "DMS",
+      "OMS"
+    ]
+  },
+  {
+    "flow_id": "FLOW_11",
+    "slug": "NAV_ZONE_CONTEXT_INGRESS",
+    "title": "Navigation Zone Context Ingress",
+    "category": "Display and Alert",
+    "summary": "Map and telematics context enters the runtime and becomes zone-aware alert context for downstream selection and HMI.",
+    "participants": [
+      "NAV / TMU",
+      "IVI",
+      "CGW",
+      "ADAS",
+      "CLU / AMP"
+    ],
+    "steps": [
+      [
+        "NAV / TMU",
+        "Publish route and zone context",
+        "Navigation and telematics layers raise school-zone, highway, and route context."
+      ],
+      [
+        "IVI",
+        "Normalize HMI context",
+        "IVI converts map context into one runtime-visible navigation state lane."
+      ],
+      [
+        "CGW",
+        "Expose context to domain readers",
+        "Gateway forwards the selected navigation context to downstream domains."
+      ],
+      [
+        "ADAS",
+        "Blend zone context into alerts",
+        "ADAS uses zone context for warning prioritization and speed adjustment."
+      ],
+      [
+        "CLU / AMP",
+        "Render zone-aware warning",
+        "Cluster and audio surfaces express the selected zone-aware alert."
+      ]
+    ],
+    "key_contracts": [
+      "frmNavContextCanMsg",
+      "frmNavModuleStateMsg",
+      "frmRoadZoneStateMsg",
+      "selected alert type"
+    ],
+    "key_files": [
+      "NAV.can",
+      "TMU.can",
+      "IVI.can",
+      "CGW.can",
+      "ADAS.can"
+    ],
+    "user_outcome": "Zone-aware warning behavior is traceable from map context ingress to the final driver cue.",
+    "related_ecus": [
+      "AMP",
+      "CLU",
+      "HUD",
+      "IVI",
+      "NAV",
+      "RSE",
+      "TMU",
+      "VCS"
+    ]
+  },
+  {
+    "flow_id": "FLOW_12",
+    "slug": "V2X_EMERGENCY_INGRESS",
+    "title": "V2X Emergency Ingress",
+    "category": "Display and Alert",
+    "summary": "Emergency-vehicle ingress arrives through the V2X lane and is routed into the warning decision chain.",
+    "participants": [
+      "V2X",
+      "CGW / ETHB",
+      "ADAS",
+      "IVI / CLU",
+      "AMP / HUD"
+    ],
+    "steps": [
+      [
+        "V2X",
+        "Receive emergency context",
+        "Emergency vehicle and ETA information enters through the V2X runtime owner."
+      ],
+      [
+        "CGW / ETHB",
+        "Route backbone visibility",
+        "Backbone and gateway surfaces expose the ingress state to other domains."
+      ],
+      [
+        "ADAS",
+        "Prioritize emergency warning",
+        "ADAS compares emergency ingress against the current alert picture."
+      ],
+      [
+        "IVI / CLU",
+        "Render visual alert",
+        "Display surfaces present the prioritized emergency-warning context."
+      ],
+      [
+        "AMP / HUD",
+        "Emit final urgency cue",
+        "Audio and HUD outputs reinforce the selected emergency alert."
+      ]
+    ],
+    "key_contracts": [
+      "V2X::v2xFrame",
+      "ETH_EmergencyAlert",
+      "selected alert level",
+      "warning text code"
+    ],
+    "key_files": [
+      "V2X.can",
+      "CGW.can",
+      "ADAS.can",
+      "IVI.can",
+      "HUD.can"
+    ],
+    "user_outcome": "Emergency-vehicle alerts have a clear ingress point and an explainable output path.",
+    "related_ecus": [
+      "AMP",
+      "CGW",
+      "ETHB",
+      "HUD",
+      "V2X"
+    ]
+  },
+  {
+    "flow_id": "FLOW_13",
+    "slug": "ALERT_ARBITRATION_GATE",
+    "title": "Alert Arbitration and Gate",
+    "category": "Display and Alert",
+    "summary": "Multiple warning candidates are reduced into one selected alert with explicit gateway and display semantics.",
+    "participants": [
+      "ADAS",
+      "CGW",
+      "IVI",
+      "CLU",
+      "AMP"
+    ],
+    "steps": [
+      [
+        "ADAS",
+        "Select alert candidate",
+        "ADAS reduces zone, risk, and emergency inputs into selected alert type and level."
+      ],
+      [
+        "CGW",
+        "Apply gate reason",
+        "Gateway stores why the alert was allowed, blocked, or downgraded."
+      ],
+      [
+        "IVI",
+        "Prepare HMI payload",
+        "IVI converts the selected alert into display and audio-ready forms."
+      ],
+      [
+        "CLU",
+        "Render cluster meaning",
+        "Cluster uses the selected alert to show the final warning text and icon state."
+      ],
+      [
+        "AMP",
+        "Render sound priority",
+        "Audio lane follows the same selected alert and base-volume priority."
+      ]
+    ],
+    "key_contracts": [
+      "Core::selectedAlertType",
+      "Core::selectedAlertLevel",
+      "CoreState::selectedAlertGateReason",
+      "Cluster::warningTextCode"
+    ],
+    "key_files": [
+      "ADAS.can",
+      "CGW.can",
+      "IVI.can",
+      "CLU.can",
+      "AMP.can"
+    ],
+    "user_outcome": "Only one alert meaning survives to the user-facing surfaces, and the gate reason remains explainable.",
+    "related_ecus": [
+      "AMP",
+      "CGW",
+      "CLU",
+      "HUD",
+      "IVI",
+      "TMU",
+      "V2X",
+      "VCS"
+    ]
+  },
+  {
+    "flow_id": "FLOW_14",
+    "slug": "CLUSTER_HUD_AUDIO_OUTPUT",
+    "title": "Cluster, HUD, and Audio Output",
+    "category": "Display and Alert",
+    "summary": "Selected warning state is rendered into cluster, HUD, and audio output without diverging message semantics.",
+    "participants": [
+      "CGW / IVI",
+      "CLU",
+      "HUD",
+      "AMP",
+      "User"
+    ],
+    "steps": [
+      [
+        "CGW / IVI",
+        "Prepare output payload",
+        "Selected alert and supporting context are packaged for visible and audible output."
+      ],
+      [
+        "CLU",
+        "Render cluster text and icon",
+        "Cluster output turns the alert into the donor-facing warning surface."
+      ],
+      [
+        "HUD",
+        "Mirror critical cue",
+        "HUD surfaces present only the critical condensed cue."
+      ],
+      [
+        "AMP",
+        "Render sound level",
+        "Audio lane emits the final alert volume and sound intent."
+      ],
+      [
+        "User",
+        "Consume synchronized cue",
+        "Driver sees and hears one coherent alert story."
+      ]
+    ],
+    "key_contracts": [
+      "Cluster::warningTextCode",
+      "Display::steeringFrame",
+      "UiRender::renderVolumLevel",
+      "base volume"
+    ],
+    "key_files": [
+      "IVI.can",
+      "CLU.can",
+      "HUD.can",
+      "AMP.can",
+      "CGW.can"
+    ],
+    "user_outcome": "Visual and audio warning channels stay aligned instead of competing with each other.",
+    "related_ecus": [
+      "AMP",
+      "CLU",
+      "HUD",
+      "IVI",
+      "TMU",
+      "VCS"
+    ]
+  },
+  {
+    "flow_id": "FLOW_15",
+    "slug": "SERVICE_ACCESS_HMI",
+    "title": "Service and Access HMI",
+    "category": "Display and Alert",
+    "summary": "Digital-key, payment, OTA, and related service surfaces are orchestrated through one HMI-facing service chain.",
+    "participants": [
+      "DKEY / PAK / CPAY / OTA",
+      "IVI / TMU",
+      "IBOX / CGW",
+      "CLU / RSE / VCS",
+      "User"
+    ],
+    "steps": [
+      [
+        "DKEY / PAK / CPAY / OTA",
+        "Raise service surface",
+        "Service-facing runtimes publish access, payment, or update state."
+      ],
+      [
+        "IVI / TMU",
+        "Normalize service state",
+        "HMI and telematics layers convert service state into one readable lane."
+      ],
+      [
+        "IBOX / CGW",
+        "Bridge backbone/service context",
+        "Backbone services route the service state to the correct consumer surfaces."
+      ],
+      [
+        "CLU / RSE / VCS",
+        "Render service-facing UI",
+        "Display surfaces expose the current service or access state."
+      ],
+      [
+        "User",
+        "Read or act on service state",
+        "The user sees a consistent service and access surface."
+      ]
+    ],
+    "key_contracts": [
+      "service state",
+      "key presence",
+      "payment context",
+      "OTA readiness"
+    ],
+    "key_files": [
+      "DKEY.can",
+      "PAK.can",
+      "CPAY.can",
+      "OTA.can",
+      "IVI.can"
+    ],
+    "user_outcome": "Service-facing screens read like one digital-access ecosystem, not isolated widgets.",
+    "related_ecus": [
+      "CPAY",
+      "DKEY",
+      "IVI",
+      "NAV",
+      "OTA",
+      "PAK",
+      "PGS",
+      "RSE",
+      "TMU",
+      "VCS"
+    ]
+  },
+  {
+    "flow_id": "FLOW_16",
+    "slug": "BODY_AMBIENT_WARNING",
+    "title": "Body Ambient Warning Output",
+    "category": "Body and Comfort",
+    "summary": "Body lighting, ambient, wiper, and exterior cues amplify the selected warning state in the comfort domain.",
+    "participants": [
+      "CGW / BCM",
+      "AFLS / AHLS / HLM",
+      "WIP / MIR / SRF",
+      "IVI / CLU",
+      "User"
+    ],
+    "steps": [
+      [
+        "CGW / BCM",
+        "Route body-facing alert intent",
+        "Gateway and BCM expose selected warning meaning into the body domain."
+      ],
+      [
+        "AFLS / AHLS / HLM",
+        "Apply lighting response",
+        "Lighting controllers react to the selected body-facing alert cue."
+      ],
+      [
+        "WIP / MIR / SRF",
+        "Propagate exterior comfort state",
+        "Exterior comfort ECUs keep the body context visible and synchronized."
+      ],
+      [
+        "IVI / CLU",
+        "Mirror ambient warning status",
+        "Display surfaces show the same ambient or body warning meaning."
+      ],
+      [
+        "User",
+        "See ambient reinforcement",
+        "Driver perceives a reinforced warning through body and lighting behavior."
+      ]
+    ],
+    "key_contracts": [
+      "Body::ambientMode",
+      "Body::blinkLeft",
+      "Body::blinkRight",
+      "frontWiperAnimFrame"
+    ],
+    "key_files": [
+      "BCM.can",
+      "AFLS.can",
+      "AHLS.can",
+      "WIP.can",
+      "CLU.can"
+    ],
+    "user_outcome": "Ambient and body warning outputs reinforce the selected alert instead of acting independently.",
+    "related_ecus": [
+      "ADM",
+      "AFLS",
+      "AHLS",
+      "BCM",
+      "BIO",
+      "HLM",
+      "MIR",
+      "MSC",
+      "PTG",
+      "SRF",
+      "TGM",
+      "WIP"
+    ]
+  },
+  {
+    "flow_id": "FLOW_17",
+    "slug": "ACCESS_SECURITY_ENTRY",
+    "title": "Access, Security, and Entry",
+    "category": "Body and Comfort",
+    "summary": "Key, access, security, and door controllers are connected into one vehicle-entry behavior chain.",
+    "participants": [
+      "DKEY / PAK / PGS",
+      "SMK / BSEC / CSM",
+      "DOOR_*",
+      "BCM",
+      "IVI / User"
+    ],
+    "steps": [
+      [
+        "DKEY / PAK / PGS",
+        "Raise access request",
+        "Digital key and passive-entry surfaces publish vehicle-access context."
+      ],
+      [
+        "SMK / BSEC / CSM",
+        "Validate access state",
+        "Security owners determine whether the entry request is valid."
+      ],
+      [
+        "DOOR_*",
+        "Apply door action",
+        "Door controllers react to the accepted entry or lock state."
+      ],
+      [
+        "BCM",
+        "Consolidate body status",
+        "BCM reflects the resulting access and door state across body surfaces."
+      ],
+      [
+        "IVI / User",
+        "Render entry result",
+        "The user sees one coherent entry and lock result."
+      ]
+    ],
+    "key_contracts": [
+      "key presence",
+      "door lock state",
+      "entry authorization",
+      "body security state"
+    ],
+    "key_files": [
+      "DKEY.can",
+      "PAK.can",
+      "SMK.can",
+      "BSEC.can",
+      "BCM.can"
+    ],
+    "user_outcome": "Entry, lock, and security behavior can be read as one access story from request to result.",
+    "related_ecus": [
+      "BCM",
+      "BSEC",
+      "CSM",
+      "DKEY",
+      "DOOR_FL",
+      "DOOR_FR",
+      "DOOR_RL",
+      "DOOR_RR",
+      "PAK",
+      "PGS",
+      "SMK"
+    ]
+  },
+  {
+    "flow_id": "FLOW_18",
+    "slug": "COMFORT_CLIMATE_SEAT",
+    "title": "Comfort, Climate, and Seat",
+    "category": "Body and Comfort",
+    "summary": "Climate and seat controllers are orchestrated as one comfort-domain runtime surface with body and HMI visibility.",
+    "participants": [
+      "DATC / RATC",
+      "SEAT_DRV / SEAT_PASS",
+      "BCM",
+      "IVI / CLU",
+      "User"
+    ],
+    "steps": [
+      [
+        "DATC / RATC",
+        "Publish climate state",
+        "Climate controllers expose cabin and rear climate context."
+      ],
+      [
+        "SEAT_DRV / SEAT_PASS",
+        "Publish seat state",
+        "Seat ECUs provide local comfort and seat status."
+      ],
+      [
+        "BCM",
+        "Consolidate comfort visibility",
+        "BCM bridges comfort-domain state into shared body visibility."
+      ],
+      [
+        "IVI / CLU",
+        "Render comfort status",
+        "Display surfaces expose climate and seat state to the user."
+      ],
+      [
+        "User",
+        "Read comfort readiness",
+        "The user can interpret comfort and climate state from one surface."
+      ]
+    ],
+    "key_contracts": [
+      "climate state",
+      "seat state",
+      "comfort visibility",
+      "body comfort mode"
+    ],
+    "key_files": [
+      "DATC.can",
+      "RATC.can",
+      "SEAT_DRV.can",
+      "SEAT_PASS.can",
+      "BCM.can"
+    ],
+    "user_outcome": "Comfort-domain status is discoverable without hunting across separate climate and seat surfaces.",
+    "related_ecus": [
+      "BCM",
+      "DATC",
+      "RATC",
+      "SEAT_DRV",
+      "SEAT_PASS"
+    ]
+  },
+  {
+    "flow_id": "FLOW_19",
+    "slug": "VALIDATION_SCENARIO_CONTROL",
+    "title": "Validation Scenario Control",
+    "category": "Validation",
+    "summary": "Scenario command, injected state, and verdict readback are kept inside a dedicated validation control story.",
+    "participants": [
+      "TEST_SCN",
+      "feature owners",
+      "CGW / IVI / CLU",
+      "TEST_BAS",
+      "Engineer"
+    ],
+    "steps": [
+      [
+        "TEST_SCN",
+        "Inject scenario command",
+        "Scenario harness writes the exogenous test-world input seams."
+      ],
+      [
+        "feature owners",
+        "Consume injected state",
+        "Owner ECUs react to the scenario as if it were live runtime input."
+      ],
+      [
+        "CGW / IVI / CLU",
+        "Expose runtime reaction",
+        "Gateway and HMI surfaces show the resulting runtime behavior."
+      ],
+      [
+        "TEST_BAS",
+        "Collect verdict summary",
+        "Baseline harness reads back summarized validation state."
+      ],
+      [
+        "Engineer",
+        "Interpret scenario result",
+        "Scenario result and readback stay explicitly separated from product ownership."
+      ]
+    ],
+    "key_contracts": [
+      "Test::scenarioCommand",
+      "Test::scenarioActiveId",
+      "Test::scenarioResult",
+      "validation summary seams"
+    ],
+    "key_files": [
+      "TEST_SCN.can",
+      "TEST_BAS.can",
+      "CGW.can",
+      "IVI.can",
+      "CLU.can"
+    ],
+    "user_outcome": "Validation control remains an explicit harness story instead of leaking into product ownership.",
+    "related_ecus": [
+      "TEST_BAS",
+      "TEST_SCN"
+    ]
+  },
+  {
+    "flow_id": "FLOW_20",
+    "slug": "BACKBONE_DIAGNOSTIC_SERVICE",
+    "title": "Backbone, Diagnostic, and Service Routing",
+    "category": "Backbone",
+    "summary": "Gateway, backbone, diagnostics, and service-facing surfaces route runtime state without becoming hidden feature owners.",
+    "participants": [
+      "ETHB / IBOX",
+      "CGW / SGW",
+      "DCM / EXT_DIAG / EDR",
+      "IVI / service surfaces",
+      "Engineer / tool"
+    ],
+    "steps": [
+      [
+        "ETHB / IBOX",
+        "Bridge backbone state",
+        "Backbone owners surface transport-level service and routing state."
+      ],
+      [
+        "CGW / SGW",
+        "Route feature visibility",
+        "Gateway lanes expose cross-domain runtime state to the right consumers."
+      ],
+      [
+        "DCM / EXT_DIAG / EDR",
+        "Handle diagnostic path",
+        "Diagnostic and recorder surfaces maintain the service and evidence chain."
+      ],
+      [
+        "IVI / service surfaces",
+        "Render service result",
+        "User-facing service surfaces show the routed service outcome."
+      ],
+      [
+        "Engineer / tool",
+        "Read diagnostic evidence",
+        "Service and diagnostic paths remain explainable from request to readback."
+      ]
+    ],
+    "key_contracts": [
+      "diagnostic request",
+      "diagnostic response",
+      "gateway state",
+      "service routing state"
+    ],
+    "key_files": [
+      "ETHB.can",
+      "IBOX.can",
+      "CGW.can",
+      "DCM.can",
+      "EXT_DIAG.can"
+    ],
+    "user_outcome": "Backbone and diagnostic behavior is readable as one routing story instead of scattered support nodes.",
+    "related_ecus": [
+      "CGW",
+      "DCM",
+      "EDR",
+      "ETHB",
+      "EXT_DIAG",
+      "IBOX",
+      "SGW",
+      "TEST_BAS",
+      "TEST_SCN",
+      "V2X"
+    ]
+  }
+]

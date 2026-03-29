@@ -1,0 +1,64 @@
+@startuml cluster_text_render_path_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Cluster Text Render Path Signal Flow\n(CGW -> IVI -> CLU)
+
+participant "CGW\neffective alert gate" as CGW #FFF4CC
+participant "IVI\nwarning text generator" as IVI #E8F0FE
+participant "CLU\ncluster text owner" as CLU #E8F0FE
+
+== Effective Alert Intake ==
+
+activate CGW
+CGW -> IVI : CoreState::selectedAlertEffectiveLevel / Type
+CGW -> IVI : Core::timeoutClear
+CGW -> IVI : Core::emergencyContext
+CGW -> IVI : CoreState::emergencyIngressDirection / Eta
+note right of CGW
+Representative source seams
+- selectedAlertEffectiveLevel
+- selectedAlertEffectiveType
+- timeoutClear
+- emergency ingress context
+end note
+deactivate CGW
+
+== IVI Warning Text Generation ==
+
+activate IVI
+CGW -> IVI : effective alert seams
+IVI -> IVI : deriveWarningTextCode()
+IVI -> IVI : warningTextCode
+IVI -> CLU : frmClusterWarningMsg
+IVI -> CLU : frmClusterNotifMsg
+note right of IVI
+Representative outputs
+- frmClusterWarningMsg.WarningTextCode
+- notif companion state
+- UiRender::warningBeepState
+end note
+deactivate IVI
+
+== CLU Cluster Text Ownership ==
+
+activate CLU
+IVI -> CLU : frmClusterWarningMsg
+IVI -> CLU : frmClusterNotifMsg
+CLU -> CLU : Cluster::warningTextCode = code
+CLU -> CLU : clusterNotifType / clusterNotifPrio
+deactivate CLU
+
+note over CGW, CLU
+Representative runtime chain
+1. CGW exposes effective alert state
+2. IVI converts alert context into WarningTextCode
+3. IVI sends cluster warning + notification frames
+4. CLU stores and displays Cluster::warningTextCode
+end note
+
+@enduml

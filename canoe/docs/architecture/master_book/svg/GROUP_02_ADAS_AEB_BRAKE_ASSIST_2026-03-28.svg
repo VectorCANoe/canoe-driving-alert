@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="1100" viewBox="0 0 1520 1100">
+  <style>
+    .title { font: 700 28px 'Segoe UI', sans-serif; fill: #111827; }
+    .label { font: 700 19px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .node { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .box { rx: 18; ry: 18; stroke: #475569; stroke-width: 2; }
+    .arrow { stroke: #334155; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    .risk { font: 700 15px 'Segoe UI', sans-serif; fill: #991b1b; }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#334155"/>
+    </marker>
+  </defs>
+  <text x="36" y="44" class="title">Group 02 - ADAS / AEB / Brake Assist</text>
+  <text x="36" y="72" class="small">Most likely source of stepped or intermittent brake feel. This is the first coupled trace cluster to verify.</text>
+
+  <rect x="40" y="120" width="300" height="180" class="box" fill="#e0f2fe"/>
+  <text x="62" y="156" class="label">Risk inputs</text>
+  <text x="62" y="184" class="node">route context</text>
+  <text x="62" y="208" class="node">vehicle state</text>
+  <text x="62" y="232" class="node">V2X ingress</text>
+  <text x="62" y="256" class="node">perception objects</text>
+
+  <rect x="400" y="120" width="250" height="180" class="box" fill="#fee2e2"/>
+  <text x="422" y="156" class="label">ADAS</text>
+  <text x="422" y="184" class="node">selected alert</text>
+  <text x="422" y="208" class="node">decel assist request</text>
+  <text x="422" y="232" class="small">ethDecelAssistReqMsg</text>
+
+  <rect x="720" y="120" width="250" height="180" class="box" fill="#fecaca"/>
+  <text x="742" y="156" class="label">AEB</text>
+  <text x="742" y="184" class="node">StopReq</text>
+  <text x="742" y="208" class="node">DecelProfile</text>
+  <text x="742" y="232" class="node">DomainHealth</text>
+  <text x="742" y="256" class="small">frmAebDomainStateMsg</text>
+
+  <rect x="1080" y="80" width="340" height="260" class="box" fill="#fff7ed"/>
+  <text x="1102" y="116" class="label">Simultaneous consumers</text>
+  <text x="1102" y="148" class="node">ESC</text>
+  <text x="1102" y="172" class="small">assistPressureFloor 25/35/45/55</text>
+  <text x="1102" y="208" class="node">EHB</text>
+  <text x="1102" y="232" class="small">local brake assist reaction</text>
+  <text x="1102" y="268" class="node">VSM</text>
+  <text x="1102" y="292" class="small">intervention / stability reaction</text>
+
+  <rect x="260" y="430" width="300" height="180" class="box" fill="#fde68a"/>
+  <text x="282" y="466" class="label">CGW / output path</text>
+  <text x="282" y="494" class="node">gate reason</text>
+  <text x="282" y="518" class="small">effective warning path after assist state</text>
+
+  <rect x="650" y="430" width="300" height="180" class="box" fill="#fef3c7"/>
+  <text x="672" y="466" class="label">IVI / CLU / AMP / BCM</text>
+  <text x="672" y="494" class="node">text / cluster / audio / ambient output</text>
+  <text x="672" y="518" class="small">perceived warning side effects live here</text>
+
+  <rect x="1040" y="430" width="380" height="180" class="box" fill="#f8fafc"/>
+  <text x="1062" y="466" class="label">Trace first</text>
+  <text x="1062" y="494" class="node">AEB StopReq</text>
+  <text x="1062" y="518" class="node">AEB DecelProfile</text>
+  <text x="1062" y="542" class="node">AEB DomainHealth</text>
+  <text x="1062" y="566" class="node">ESC assistPressureFloor</text>
+  <text x="1062" y="590" class="node">Chassis::brakePressure</text>
+
+  <rect x="40" y="680" width="1380" height="180" class="box" fill="#fff1f2"/>
+  <text x="62" y="716" class="label">Current risk read</text>
+  <text x="62" y="748" class="risk">One AEB profile step can cause multiple ECU reactions at once.</text>
+  <text x="62" y="776" class="node">If the driver feels red brake stutter, check this cluster before changing panel UX or base pedal logic.</text>
+  <text x="62" y="804" class="node">This is a coupled intervention problem, not a donor image problem.</text>
+
+  <rect x="40" y="890" width="1380" height="150" class="box" fill="#ffffff"/>
+  <text x="62" y="926" class="label">ECU roster in this group</text>
+  <text x="62" y="958" class="node">ADAS</text>
+  <text x="160" y="958" class="node">SCC</text>
+  <text x="240" y="958" class="node">V2X</text>
+  <text x="330" y="958" class="node">AEB</text>
+  <text x="420" y="958" class="node">ESC</text>
+  <text x="510" y="958" class="node">EHB</text>
+  <text x="600" y="958" class="node">VSM</text>
+  <text x="700" y="958" class="small">coupled output readers often checked with this group: CGW, IVI, CLU, BCM, AMP</text>
+
+  <path class="arrow" d="M340 210 L400 210"/>
+  <path class="arrow" d="M650 210 L720 210"/>
+  <path class="arrow" d="M970 210 L1080 210"/>
+  <path class="arrow" d="M845 300 L410 430"/>
+  <path class="arrow" d="M845 300 L800 430"/>
+  <path class="arrow" d="M1250 340 L1230 430"/>
+</svg>

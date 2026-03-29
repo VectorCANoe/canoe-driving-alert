@@ -1,0 +1,50 @@
+@startuml ambient_mode_to_bcm_cabin_light_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Ambient Mode To BCM Cabin Light Signal Flow\n(ambient mode -> BCM light publish)
+
+participant "Ambient command /\nbody context" as AmbientCtx #F4F7FB
+participant "BCM\nbody/light owner" as BCM #E8F7E8
+participant "Body light bus" as LightBus #FFF4CC
+participant "Observers / ambient users" as Obs #E8F0FE
+
+== Light Inputs ==
+
+AmbientCtx -> BCM : Cmd::ambientModeCmd / Body::ambientMode\ndriveState / scenario manual mode
+BCM -> BCM : ambientMode = manual ? Cmd::ambientModeCmd : Body::ambientMode
+BCM -> BCM : CabinLightMode = ambientMode & 0x7
+BCM -> BCM : DomeLightLevel = (ambientMode > 0) ? 20 : 4
+note right of BCM
+Representative gating inputs
+- Cmd::ambientModeCmd
+- Body::ambientMode
+- manualMode / driveState
+end note
+
+== Light Publish ==
+
+BCM -> LightBus : frmLightStateMsg\nCabinLightMode / DomeLightLevel
+note right of BCM
+Representative outputs
+- CabinLightMode
+- DomeLightLevel
+end note
+
+== Downstream Visibility ==
+
+LightBus -> Obs : cabin-light readback /\nambient consumers
+
+note over AmbientCtx, Obs
+Representative runtime chain
+1. Ambient mode reaches BCM from manual or body-owned state
+2. BCM translates ambient mode into cabin light state
+3. BCM publishes cabin light mode and dome light level
+4. Observers expose the effective body-light ambient posture
+end note
+
+@enduml

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1460" height="980" viewBox="0 0 1460 980">
+  <style>
+    .title { font: 700 28px 'Segoe UI', sans-serif; fill: #111827; }
+    .label { font: 700 19px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .node { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .box { rx: 18; ry: 18; stroke: #475569; stroke-width: 2; }
+    .arrow { stroke: #334155; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#334155"/>
+    </marker>
+  </defs>
+  <text x="36" y="44" class="title">Group 05 - Validation / Scenario Overlay</text>
+  <text x="36" y="72" class="small">Validation nodes must stay visible overlays, not hidden owners of normal product behavior.</text>
+
+  <rect x="40" y="120" width="280" height="150" class="box" fill="#e0f2fe"/>
+  <text x="62" y="156" class="label">Input surface</text>
+  <text x="62" y="184" class="node">Scenario tab</text>
+  <text x="62" y="208" class="small">Test::scenarioCommand / stop/manual</text>
+
+  <rect x="390" y="100" width="280" height="190" class="box" fill="#dbeafe"/>
+  <text x="412" y="136" class="label">TEST_SCN</text>
+  <text x="412" y="164" class="node">scenario accept / active / result / ack</text>
+  <text x="412" y="188" class="small">scenario-only owner</text>
+  <text x="412" y="212" class="small">should not be normal vehicle command router</text>
+
+  <rect x="740" y="100" width="280" height="190" class="box" fill="#cffafe"/>
+  <text x="762" y="136" class="label">TEST_BAS</text>
+  <text x="762" y="164" class="node">baseline validation overlay</text>
+  <text x="762" y="188" class="small">summary / routing / validation support</text>
+  <text x="762" y="212" class="small">must stay separate from product ECU ownership</text>
+
+  <rect x="1090" y="120" width="320" height="150" class="box" fill="#fee2e2"/>
+  <text x="1112" y="156" class="label">Product ECUs</text>
+  <text x="1112" y="184" class="node">VCU / ESC / MDPS / ADAS / BCM / IVI / CLU ...</text>
+  <text x="1112" y="208" class="small">actual feature owners</text>
+
+  <rect x="150" y="420" width="420" height="180" class="box" fill="#ffffff"/>
+  <text x="172" y="456" class="label">Correct rule</text>
+  <text x="172" y="484" class="node">scenario command -&gt; TEST_SCN</text>
+  <text x="172" y="508" class="node">normal vehicle/context input -&gt; product Cmd/Inject owner path</text>
+
+  <rect x="640" y="420" width="300" height="180" class="box" fill="#fff7ed"/>
+  <text x="662" y="456" class="label">Why this matters</text>
+  <text x="662" y="484" class="node">if validation overlay becomes hidden owner,</text>
+  <text x="662" y="508" class="node">architecture looks correct but runtime meaning drifts</text>
+
+  <rect x="1010" y="420" width="360" height="180" class="box" fill="#f8fafc"/>
+  <text x="1032" y="456" class="label">Current healthy boundary</text>
+  <text x="1032" y="484" class="node">general input moved out of TEST_SCN</text>
+  <text x="1032" y="508" class="node">TEST_SCN remains scenario-focused</text>
+
+  <rect x="40" y="690" width="1370" height="120" class="box" fill="#f8fafc"/>
+  <text x="62" y="726" class="label">Reading note</text>
+  <text x="62" y="754" class="node">When reviewer asks whether TEST nodes are product owners, this sheet should answer &quot;no&quot; immediately.</text>
+
+  <rect x="40" y="830" width="1370" height="100" class="box" fill="#ffffff"/>
+  <text x="62" y="866" class="label">ECU roster in this group</text>
+  <text x="62" y="898" class="node">TEST_SCN</text>
+  <text x="172" y="898" class="node">TEST_BAS</text>
+
+  <path class="arrow" d="M320 195 L390 195"/>
+  <path class="arrow" d="M670 195 L740 195"/>
+  <path class="arrow" d="M1020 195 L1090 195"/>
+  <path class="arrow" d="M530 290 L360 420"/>
+  <path class="arrow" d="M850 290 L790 420"/>
+  <path class="arrow" d="M850 290 L1190 420"/>
+</svg>

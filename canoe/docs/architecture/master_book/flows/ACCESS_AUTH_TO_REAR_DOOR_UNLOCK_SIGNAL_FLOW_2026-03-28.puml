@@ -1,0 +1,53 @@
+@startuml access_auth_to_rear_door_unlock_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Access Auth To Rear Door Unlock Signal Flow\n(door control + key auth -> DOOR_RL lock-state enforcement)
+
+participant "Door control / key auth /\ndrive context" as AccessCtx #F4F7FB
+participant "DOOR_RL\nrear-left door owner" as DoorRL #E8F7E8
+participant "Rear door state bus" as DoorBus #FFF4CC
+participant "Observers / panels" as Obs #E8F0FE
+
+== Rear Door Inputs ==
+
+AccessCtx -> DoorRL : gDoorControlCmd / gChildLockCmd\ngKeyPresence / gDkeyAccessState\ngImmobilizerState / gKeyAuthState\ndriveState
+DoorRL -> DoorRL : if driveState == 0 and key auth is valid\nthen accessAuthorized = 1
+DoorRL -> DoorRL : unlockRequest = (gDoorControlCmd > 0)
+DoorRL -> DoorRL : childLockActive = (gChildLockCmd > 0)
+note right of DoorRL
+Representative gating inputs
+- DoorControlCmd
+- ChildLockCmd
+- key access / immobilizer auth
+- driveState
+end note
+
+== Lock-state Publish ==
+
+DoorRL -> DoorRL : if accessAuthorized and unlockRequest and childLockActive == 0\nthen lockState = 0 else lockState = 1
+DoorRL -> DoorBus : frmDoorStateMsg\nDoorRlLockState / DoorRlOpenState / DoorRlWindowPos
+note right of DoorRL
+Representative outputs
+- DoorRlLockState
+- DoorRlOpenState
+- DoorRlWindowPos
+end note
+
+== Downstream Visibility ==
+
+DoorBus -> Obs : rear-door lock/open readback
+
+note over AccessCtx, Obs
+Representative runtime chain
+1. Access authorization and door command reach DOOR_RL
+2. DOOR_RL checks drive-state and child-lock constraints
+3. Rear-left door lock state is enforced and published
+4. Panels show whether rear-door unlock was permitted
+end note
+
+@enduml

@@ -1,0 +1,83 @@
+@startuml cruise_set_to_longitudinal_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Cruise Set To Longitudinal Signal Flow\n(Input_Console -> SCC -> VCU -> ESC / CLU)
+
+actor "Driver\n(Input Console)" as Driver #F4F7FB
+participant "Input_Console\nVehicle > Cruise" as Panel #E8F0FE
+participant "SCC\ncruise state owner" as SCC #FCE8FF
+participant "VCU\nlongitudinal speed owner" as VCU #E8F7E8
+participant "ESC\nbrake pressure owner" as ESC #FFE6E6
+participant "CLU\nspeed / set readback" as CLU #E8F0FE
+
+== Cruise Input ==
+
+Driver -> Panel : Select cruise mode and target speed
+activate Panel
+Panel -> Panel : Write Cmd::cruiseStateCmd
+Panel -> Panel : Write Cmd::cruiseSetSpeedCmd
+deactivate Panel
+
+== SCC Cruise Ownership ==
+
+activate SCC
+Panel -> SCC : Cmd::cruiseStateCmd / Cmd::cruiseSetSpeedCmd
+SCC -> SCC : clamp command and apply speed-limit cap
+SCC -> SCC : derive cruiseState / cruiseSetSpeed
+SCC -> VCU : Powertrain::cruiseState
+SCC -> VCU : Powertrain::cruiseSetSpeed
+note right of SCC
+Representative rules
+- ON/DECEL command normalization
+- lower bound 30 when cruise active
+- upper bound by speed limit
+end note
+deactivate SCC
+
+== VCU Longitudinal Ownership ==
+
+activate VCU
+SCC -> VCU : Powertrain::cruiseState / cruiseSetSpeed
+VCU -> VCU : manualCruiseActive when\nignition on, gear >= D,\nno pedal input, cruise state > 0
+VCU -> VCU : release manual panel speed target\nwhen cruise becomes active
+VCU -> VCU : derive speed / drive state
+VCU -> ESC : frmVehicleStateCanMsg
+VCU -> CLU : Chassis::vehicleSpeed / driveState
+note right of VCU
+Representative logic
+- manualCruiseActive
+- gManualVehicleSpeedTarget reset
+- externalSpeedOverride / owner vehicle speed
+end note
+deactivate VCU
+
+== Brake / Readback Side ==
+
+activate ESC
+VCU -> ESC : frmVehicleStateCanMsg
+ESC -> ESC : update brake response only if brake pedal or assist floor applies
+deactivate ESC
+
+activate CLU
+SCC -> CLU : Powertrain::cruiseSetSpeed readback
+VCU -> CLU : Chassis::vehicleSpeed
+CLU -> Panel : meter / live set / speed readback
+deactivate CLU
+
+Driver <- Panel : Cruise set and vehicle speed move in one longitudinal chain
+
+note over Driver, CLU
+Representative runtime chain
+1. Driver sets cruise mode and set-speed
+2. SCC owns cruise state and set-speed normalization
+3. VCU owns longitudinal speed response
+4. ESC follows downstream brake dynamics only when needed
+5. CLU and panel show live set-speed and vehicle speed
+end note
+
+@enduml
