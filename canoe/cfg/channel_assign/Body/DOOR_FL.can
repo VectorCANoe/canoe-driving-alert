@@ -35,6 +35,8 @@ on timer tDoorFlCycle
 
   if ((int)@Test::testScenario == 0)
   {
+    lockState = clampRange((int)@Body::doorLockCmd, 0, 1);
+    openState = clampRange((int)@Body::doorOpenCmd, 0, 1);
     cmd = (int)@Body::windowCmd;
     if (cmd == 1)
     {
