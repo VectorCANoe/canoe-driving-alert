@@ -154,7 +154,15 @@ on timer tEhbCycle
   if (mEhb.EhbCtrlState != gLastCtrlState ||
       mEhb.EhbPressureCmd != gLastPressureCmd)
   {
-    write("[EHB] state=%d pressure=%d", mEhb.EhbCtrlState, mEhb.EhbPressureCmd);
+    write("[DYN-BRAKE][EHB] t=%lu brake=%d aeb=%d/%d/%d aebCmd=%d pressure=%d state=%d",
+          getSimulationTimeMs(),
+          brakePressure,
+          aebStopReq,
+          aebDecelProfile,
+          aebDomainHealth,
+          aebPressureCmd,
+          mEhb.EhbPressureCmd,
+          mEhb.EhbCtrlState);
     gLastCtrlState = mEhb.EhbCtrlState;
     gLastPressureCmd = mEhb.EhbPressureCmd;
   }

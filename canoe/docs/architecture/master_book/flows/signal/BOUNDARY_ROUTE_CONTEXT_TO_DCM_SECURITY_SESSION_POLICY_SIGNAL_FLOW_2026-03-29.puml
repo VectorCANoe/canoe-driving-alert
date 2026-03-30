@@ -1,0 +1,64 @@
+@startuml boundary_route_context_to_dcm_security_session_policy_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Boundary Route Context To DCM Security Session Policy Signal Flow\n(route/alert + boundary/fail-safe context -> DCM security session and policy)
+
+participant "Navigation context" as Nav #F4F7FB
+participant "Alert / boundary context" as Boundary #E8F0FE
+participant "DCM\ndiagnostic owner" as DCM #E8F7E8
+participant "DCM runtime state" as DcmState #FFF4CC
+participant "Observers /\ndiag readers" as Obs #FCE8FF
+
+== DCM Inputs ==
+
+Nav -> DCM : frmNavModuleStateMsg\nNavSessionState / NavRouteClass
+Boundary -> DCM : frmClusterNotifMsg\nClusterNotifArg
+Boundary -> DCM : CoreState::domainBoundaryStatus /\nwarningPathStatus and Core::failSafeMode
+activate DCM
+DCM -> DCM : routeActive = recent nav session/route class
+DCM -> DCM : alertLevel = recent cluster-notif arg
+DCM -> DCM : serviceContext =\nethHasBoundaryServiceContext(routeActive, alertLevel)
+DCM -> DCM : diagStage = ethDiagBoundaryStage(...)\nfrom route/alert/boundary/fail-safe context
+DCM -> DCM : securitySession = 1 when serviceContext,\n2 when diagStage == 1 and routeActive
+DCM -> DCM : authState = 1 when serviceContext,\n2 when diagStage == 1
+DCM -> DCM : securityFault = ethDiagStageToSecurityFault(diagStage)
+DCM -> DCM : securityPolicy = ethDiagStageToPolicy(diagStage)
+note right of DCM
+Representative gating inputs
+- NavSessionState / NavRouteClass
+- ClusterNotifArg
+- domainBoundaryStatus
+- warningPathStatus
+- failSafeMode
+end note
+
+== Runtime Visibility ==
+
+DCM -> DcmState : securitySession / authState /\nsecurityFault / securityPolicy
+note right of DCM
+Representative outputs
+- securitySession
+- authState
+- securityFault
+- securityPolicy
+end note
+
+== Downstream Visibility ==
+
+DcmState -> Obs : diagnostic security visibility /\nservice observers
+deactivate DCM
+
+note over Nav, Obs
+Representative runtime chain
+1. Route, alert, and boundary context reach DCM
+2. DCM derives service context and diagnostic stage
+3. DCM maps the stage into security session and policy
+4. Diagnostic readers observe the effective security posture
+end note
+
+@enduml

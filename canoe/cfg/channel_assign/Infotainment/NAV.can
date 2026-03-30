@@ -105,7 +105,8 @@ void publishNavLaneFrame()
   int manualMode;
   int period;
 
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   if (manualMode == 1)
   {
     roadZone = clampRange((int)@Inject::roadZone, 0, 3);
@@ -164,7 +165,8 @@ void publishNavState()
   int navDirection;
   int zoneDistance;
 
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   if (manualMode == 1)
   {
     navInputStale = 0;

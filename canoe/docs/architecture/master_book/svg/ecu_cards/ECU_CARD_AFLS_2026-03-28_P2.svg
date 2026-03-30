@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1092" viewBox="0 0 1600 1092">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1086" viewBox="0 0 1600 1086">
   <defs>
     <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#dcfce7"/>
@@ -11,73 +11,64 @@
   <style>
     .bg { fill: #f7f7f5; }
     .title { font: 700 32px 'Segoe UI', sans-serif; fill: #0f172a; }
-    .sub { font: 500 15px 'Segoe UI', sans-serif; fill: #475569; }
-    .label { font: 700 18px 'Segoe UI', sans-serif; fill: #0f172a; }
-    .text { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
-    .small { font: 500 13px 'Segoe UI', sans-serif; fill: #475569; }
+    .sub { font: 500 16px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 19px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 16px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .heroRole { font: 700 23px 'Segoe UI', sans-serif; fill: #111827; }
     .statement { font: 700 26px 'Segoe UI', sans-serif; fill: #111827; }
-    .node { font: 700 18px 'Segoe UI', sans-serif; fill: #111827; }
+    .node { font: 700 19px 'Segoe UI', sans-serif; fill: #111827; }
     .box { rx: 22; ry: 22; stroke: #334155; stroke-width: 1.6; }
     .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
   </style>
-  <rect x="0" y="0" width="1600" height="1092" class="bg"/>
-  <text x="34" y="44" class="title">ECU Reference Card - AFLS</text>
-  <text x="34" y="72" class="sub">page 2 | grouped reference bank with balanced network layout</text>
-  <rect x="30" y="100" width="1540" height="142" class="box" fill="url(#heroGradient)"/> <text x="52" y="134" class="small">Reference bank | page 2</text> <text x="52" y="172" class="title">AFLS</text> <text x="52" y="202" class="text">Group 04 Body Comfort Ambient | Body</text> <text x="52" y="226" class="text">Primary flow: FLOW_16</text>
-  <rect x="30" y="266" width="1540" height="180" class="box" fill="#eff6ff"/>
-<text x="52" y="302" class="label">Linked ECU bank</text>
-<text x="52" y="330" class="small">Linked ECU visible: 1</text>
-<text x="52" y="350" class="small">Upstream 1 | Downstream 1 | Peer 0</text>
-<rect x="52" y="388" width="366" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
-<text x="235.0" y="410" text-anchor="middle" class="small">TEST_SCN</text>
-  <rect x="550" y="464" width="500" height="578" class="box" fill="#ffffff"/>
-<text x="572" y="500" class="label">Reference snapshot</text>
-<rect x="572" y="526" width="222" height="82" rx="18" ry="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="590" y="554" class="small">Flows</text>
-<text x="590" y="584" class="node">1</text>
-<rect x="806" y="526" width="222" height="82" rx="18" ry="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="824" y="554" class="small">Owner seams</text>
-<text x="824" y="584" class="node">0</text>
-<rect x="572" y="620" width="222" height="82" rx="18" ry="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="590" y="648" class="small">Sysvars</text>
-<text x="590" y="678" class="node">0</text>
-<rect x="806" y="620" width="222" height="82" rx="18" ry="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="824" y="648" class="small">Tests</text>
-<text x="824" y="678" class="node">1</text>
-<text x="572" y="724" class="small">Primary flow</text>
-<rect x="572" y="738" width="456" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="586" y="760" class="small">FLOW_16</text>
-<text x="572" y="786" class="small">Support pack</text>
-<rect x="572" y="800" width="456" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="586" y="822" class="small">0 supporting flows</text>
-<text x="572" y="848" class="small">Key seam</text>
-<rect x="572" y="862" width="456" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="586" y="884" class="small">-</text>
-<text x="572" y="910" class="small">Verification</text>
-<rect x="572" y="924" width="456" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="586" y="946" class="small">TC_CANOE_UT_INP_043_AFLS_INPUT</text>
-<text x="572" y="972" class="small">Source pack</text>
-<rect x="572" y="986" width="456" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="586" y="1008" class="small">2 CAPL / 6 docs</text>
-  <rect x="30" y="464" width="500" height="172" class="box" fill="#fff7ed"/>
-<text x="52" y="498" class="small">What this ECU does</text>
-<text x="52" y="542" class="statement">Publishes adaptive front-lighting state for</text>
-<text x="52" y="570" class="statement">body lighting and driver-visibility</text>
-<text x="52" y="598" class="statement">consumers</text>
-  <rect x="1070" y="464" width="500" height="180" class="box" fill="#ffffff"/>
-<text x="1092" y="498" class="small">Interaction sketch</text>
-<rect x="1092" y="530" width="140" height="88" rx="18" ry="18" fill="#e0f2fe" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1110" y="556" class="small">Input</text>
-<text x="1110" y="582" class="node">1 inbound</text>
-<text x="1110" y="604" class="small">TEST_SCN</text>
-<rect x="1250" y="530" width="140" height="88" rx="18" ry="18" fill="#dcfce7" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1268" y="556" class="small">ECU</text>
-<text x="1268" y="582" class="node">AFLS</text>
-<text x="1268" y="604" class="small">Publishes adaptive fr…</text>
-<rect x="1408" y="530" width="140" height="88" rx="18" ry="18" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1426" y="556" class="small">Output</text>
-<text x="1426" y="582" class="node">1 outbound</text>
-<text x="1426" y="604" class="small">TEST_SCN</text>
-<line x1="1232" y1="574" x2="1250" y2="574" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>
-<line x1="1390" y1="574" x2="1408" y2="574" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="0" y="0" width="1600" height="1086" class="bg"/>
+  <text x="34" y="44" class="title">ECU Reference - AFLS</text>
+  <text x="34" y="72" class="sub">p2 | runtime inventory, anchors, and linked ECU bank</text>
+  <rect x="30" y="100" width="1540" height="232" class="box" fill="url(#heroGradient)"/> <text x="52" y="134" class="small">Reference | p2</text> <text x="52" y="172" class="title">AFLS</text> <text x="52" y="202" class="text">Group 04 Body Comfort Ambient | Body</text> <text x="52" y="228" class="small">Role focus</text> <text x="52" y="248" class="heroRole">adaptive front-lighting state</text> <rect x="1034" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1052" y="162" class="small">Rx msgs</text>
+<text x="1052" y="192" class="node">2</text> <rect x="1298" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1316" y="162" class="small">Tx msgs</text>
+<text x="1316" y="192" class="node">2</text> <rect x="1034" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1052" y="256" class="small">Linked ECU</text>
+<text x="1052" y="286" class="node">1</text> <rect x="1298" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1316" y="256" class="small">Owner seams</text>
+<text x="1316" y="286" class="node">0</text>
+  <rect x="30" y="350" width="1540" height="142" class="box" fill="#fff7ed"/>
+<text x="52" y="384" class="small">What this ECU does</text>
+<text x="52" y="426" class="statement">Publishes adaptive front-lighting state for body lighting and</text>
+<text x="52" y="452" class="statement">driver-visibility consumers</text>
+  <rect x="30" y="510" width="760" height="202" class="box" fill="#e0f2fe"/>
+<text x="52" y="546" class="label">Inbound / Rx messages</text>
+<text x="52" y="582" class="text">AFLS Diagnostic Request</text>
+<text x="52" y="604" class="small">frmAflsDiagReqMsg</text>
+<line x1="52" y1="626" x2="768" y2="626" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="636" class="text">AFLS State</text>
+<text x="52" y="658" class="small">frmAflsStateMsg</text>
+<rect x="810" y="510" width="760" height="202" class="box" fill="#dbeafe"/>
+<text x="832" y="546" class="label">Outbound / Tx messages</text>
+<text x="832" y="582" class="text">AFLS Diagnostic Res</text>
+<text x="832" y="604" class="small">frmAflsDiagResMsg</text>
+<line x1="832" y1="626" x2="1548" y2="626" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="832" y="636" class="text">AFLS State</text>
+<text x="832" y="658" class="small">frmAflsStateMsg</text>
+<rect x="30" y="730" width="630" height="306" class="box" fill="#ffffff"/>
+<text x="52" y="766" class="label">Runtime anchors</text>
+<rect x="52" y="784" width="284" height="110" rx="18" ry="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="70" y="812" class="small">Lead test asset</text>
+<text x="70" y="838" class="small">UT_INP_043_AFLS</text>
+<text x="70" y="856" class="small">covers body ambient warning</text>
+<rect x="354" y="784" width="284" height="110" rx="18" ry="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="372" y="812" class="small">Owner seam</text>
+<text x="372" y="836" class="small">-</text>
+<rect x="52" y="912" width="586" height="102" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="70" y="940" class="small">Linked sysvars</text>
+<text x="70" y="964" class="small">-</text>
+<rect x="680" y="730" width="890" height="250" class="box" fill="#eff6ff"/>
+<text x="702" y="766" class="label">Linked ECU bank</text>
+<text x="702" y="794" class="small">1 linked ECU</text>
+<text x="702" y="814" class="small">Upstream 1 | Downstream 1</text>
+<rect x="702" y="852" width="846" height="106" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="720" y="880" class="small">ETH Backbone · 1 ECU</text>
+<rect x="995" y="896" width="260" height="34" rx="14" ry="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="1.2"/>
+<text x="1125.0" y="918" text-anchor="middle" class="small">TEST_SCN</text>
 </svg>

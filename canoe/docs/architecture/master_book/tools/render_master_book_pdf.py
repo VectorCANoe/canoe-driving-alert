@@ -7,6 +7,7 @@ import markdown
 
 
 DATE_STAMP = "2026-03-28"
+BOOK_TITLE = "Vehicle ECU Architecture and Interaction Reference"
 REPO_ROOT = Path(__file__).resolve().parents[5]
 ARCH_ROOT = Path(__file__).resolve().parents[1]
 MASTER_BOOK = ARCH_ROOT / f"ECU_METADATA_BOOK_{DATE_STAMP}.md"
@@ -43,7 +44,7 @@ def build_html(markdown_text: str) -> str:
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CANoe Runtime ECU Master Book ({DATE_STAMP})</title>
+  <title>{BOOK_TITLE} ({DATE_STAMP})</title>
   <style>
     @page {{
       size: A4;

@@ -1,5 +1,9 @@
 # ECU Action Flow Matrix (2026-03-28)
 
+Subtitle: ECU-to-flow lookup across the full runtime surface.
+
+Use this matrix to find the primary action flow for one ECU and to see its supporting flow family.
+
 | ECU | Domain | Group | Primary action flow | Supporting action flows |
 | --- | --- | --- | --- | --- |
 | `ABS` | `Chassis` | `Group 01 Base Vehicle Dynamics` | `FLOW_02` | FLOW_05 |

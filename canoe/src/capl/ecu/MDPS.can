@@ -133,7 +133,8 @@ on timer tMdpsCycle
 
   steeringInput = gSteeringInput;
   speedNorm = gSpeedNorm;
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   if (steeringInputStale == 1)
   {
     steeringInput = 0;

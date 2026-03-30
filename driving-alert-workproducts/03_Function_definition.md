@@ -15,6 +15,8 @@
 
 - 본 문서는 기능(What/How) 관점의 상위 정의를 유지한다.
 - 메시지/신호/변수의 로컬 정합 기준 명칭은 `0302/0303/0304`를 따른다.
+- `driveState`는 P/R/N/D 변속 선택 상태를 뜻하며 실제 이동 여부는 `vehicleSpeed`로 해석한다.
+- `DriveMode`는 가감속/속도 기반 동적 주행 모드를 뜻하며 `driveState`와 별도 의미로 사용한다.
 - legacy alias(`ETH_EmergencyAlert`, `*ReqId/*ReqAct` 구식 진단 신호명 등)는 본 사이클 기준으로 사용하지 않는다.
 
 ---

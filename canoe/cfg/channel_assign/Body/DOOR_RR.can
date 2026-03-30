@@ -151,7 +151,8 @@ on timer tDoorRrCycle
   int windowPos;
   int manualMode;
 
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   doorCtrlInputStale = (ethIsRecentTick(gDoorCtrlRxMs, 300) == 1) ? 0 : 1;
   vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
   dkeyInputStale = (ethIsRecentTick(gDkeyRxMs, 300) == 1) ? 0 : 1;

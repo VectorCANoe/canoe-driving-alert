@@ -1,0 +1,50 @@
+@startuml nav_state_to_ivi_backbone_nav_context_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Nav State To IVI Backbone Nav Context Signal Flow\n(CAN navigation state + route ETA -> IVI backbone nav-context publication)
+
+participant "Navigation CAN state" as NavCan #F4F7FB
+participant "Route ETA bus" as Route #E8F0FE
+participant "IVI\nbackbone nav-context packager" as IVI #E8F7E8
+participant "ETH nav-context frame" as EthNav #FFF4CC
+participant "CGW / IBOX /\nbackbone consumers" as Consumers #FFF4CC
+
+== IVI Inputs ==
+
+NavCan -> IVI : frmNavModuleStateMsg\nNavRouteClass / NavGuideType /\nNavSpeedLimit / NavEtaMinutes
+Route -> IVI : frmNavigationRouteMsg\nEtaMinutes
+activate IVI
+IVI -> IVI : roadZone = clamp(NavRouteClass)
+IVI -> IVI : navDirection = clamp(NavGuideType)
+IVI -> IVI : baseZoneContext =\nderiveBaseZoneContextFromNavState(roadZone, navDirection)
+IVI -> IVI : zoneDistance =\nderiveZoneDistanceFromEtaMinutes(EtaMinutes)
+IVI -> IVI : if roadZone > 0 and speedLimit == 0\nthen speedLimit = 30
+note right of IVI
+Representative derived fields
+- roadZone
+- navDirection
+- zoneDistance
+- speedLimit
+- baseZoneContext
+end note
+
+== Backbone Publish ==
+
+IVI -> EthNav : ethMsgNavContext\n(byte0 roadZone/navDirection,\nbyte1 zoneDistance,\nbyte2 speedLimit)
+EthNav -> Consumers : backbone nav-context distribution
+deactivate IVI
+
+note over NavCan, Consumers
+Representative runtime chain
+1. CAN navigation state and route ETA reach IVI
+2. IVI normalizes road zone, direction, speed limit, and zone distance
+3. IVI publishes a compact backbone nav-context frame
+4. CGW and downstream Ethernet consumers use the nav-context surface
+end note
+
+@enduml

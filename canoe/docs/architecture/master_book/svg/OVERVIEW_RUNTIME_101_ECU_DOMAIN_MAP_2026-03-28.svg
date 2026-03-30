@@ -14,104 +14,118 @@
     </marker>
   </defs>
 
-  <text x="34" y="42" class="title">Overview Runtime 101 ECU Domain Map</text>
-  <text x="34" y="70" class="subtitle">Internal engineering overview. Use with the master matrix and group view, then drop to 0301~0304 for SoT wording.</text>
+  <text x="34" y="42" class="title">Runtime Architecture Opening</text>
+  <text x="34" y="70" class="subtitle">Start here to see the 101-ECU surface before moving into group views, action flows, and per-ECU cards.</text>
 
   <rect x="30" y="110" width="280" height="340" class="box" fill="#fee2e2"/>
   <text x="50" y="142" class="section">ADAS (26)</text>
-  <text x="50" y="168" class="small">AEB, assist, parking, radar, camera, driver monitoring</text>
-  <text x="50" y="198" class="node">ADAS, AEB, AVM, BCW, DMS, FCA, FCAM</text>
-  <text x="50" y="220" class="node">FRADAR, HWP, LCA, LDR, LDWS_LKAS, OMS</text>
-  <text x="50" y="242" class="node">PKM, PUS, RPC, RRM, RSPA, SCC, SPAS</text>
-  <text x="50" y="264" class="node">SPM, SRR_FL, SRR_FR, SRR_RL, SRR_RR, TRM</text>
-  <text x="50" y="308" class="small">Primary flow</text>
-  <text x="50" y="330" class="node">context + vehicle + V2X/perception</text>
-  <text x="50" y="352" class="node">-&gt; ADAS risk/decel -&gt; AEB domain state</text>
-  <text x="50" y="374" class="node">-&gt; ESC / EHB / VSM / CLU / IVI</text>
+  <text x="50" y="168" class="small">AEB, assist, parking, radar,</text>
+  <text x="50" y="188" class="small">camera, and driver monitoring</text>
+  <text x="50" y="214" class="node">ADAS, AEB, AVM, BCW,</text>
+  <text x="50" y="234" class="node">DMS, FCA, FCAM</text>
+  <text x="50" y="256" class="node">FRADAR, HWP, LCA, LDR,</text>
+  <text x="50" y="276" class="node">LDWS_LKAS, OMS</text>
+  <text x="50" y="298" class="node">PKM, PUS, RPC, RRM,</text>
+  <text x="50" y="318" class="node">RSPA, SCC, SPAS</text>
+  <text x="50" y="340" class="node">SPM, SRR_FL, SRR_FR,</text>
+  <text x="50" y="360" class="node">SRR_RL, SRR_RR, TRM</text>
+  <text x="50" y="392" class="small">Representative behavior</text>
+  <text x="50" y="414" class="node">context + vehicle +</text>
+  <text x="50" y="434" class="node">V2X / perception fusion</text>
 
   <rect x="340" y="110" width="280" height="340" class="box" fill="#dbeafe"/>
   <text x="360" y="142" class="section">Body (23)</text>
-  <text x="360" y="168" class="small">ambient, comfort, access, climate, wiper, seat, lighting</text>
-  <text x="360" y="198" class="node">ADM, AFLS, AHLS, BCM, BIO, BSEC, CSM</text>
-  <text x="360" y="220" class="node">DATC, DOOR_FL, DOOR_FR, DOOR_RL, DOOR_RR</text>
-  <text x="360" y="242" class="node">HLM, MIR, MSC, PTG, RATC, SEAT_DRV</text>
-  <text x="360" y="264" class="node">SEAT_PASS, SMK, SRF, TGM, WIP</text>
-  <text x="360" y="308" class="small">Primary flow</text>
-  <text x="360" y="330" class="node">Cmd body inputs -&gt; BCM / leaves</text>
-  <text x="360" y="352" class="node">-&gt; body state/readback -&gt; ambient/display</text>
+  <text x="360" y="168" class="small">ambient, comfort, access, climate,</text>
+  <text x="360" y="188" class="small">wiper, seat, and lighting</text>
+  <text x="360" y="214" class="node">ADM, AFLS, AHLS, BCM,</text>
+  <text x="360" y="234" class="node">BIO, BSEC, CSM</text>
+  <text x="360" y="256" class="node">DATC, DOOR_FL, DOOR_FR,</text>
+  <text x="360" y="276" class="node">DOOR_RL, DOOR_RR</text>
+  <text x="360" y="298" class="node">HLM, MIR, MSC, PTG,</text>
+  <text x="360" y="318" class="node">RATC, SEAT_DRV</text>
+  <text x="360" y="340" class="node">SEAT_PASS, SMK, SRF,</text>
+  <text x="360" y="360" class="node">TGM, WIP</text>
+  <text x="360" y="392" class="small">Representative behavior</text>
+  <text x="360" y="414" class="node">body command input -&gt; BCM</text>
+  <text x="360" y="434" class="node">-&gt; leaf readback and ambient output</text>
 
   <rect x="650" y="110" width="280" height="340" class="box" fill="#dcfce7"/>
   <text x="670" y="142" class="section">Chassis (15)</text>
-  <text x="670" y="168" class="small">brake, steering, suspension, yaw, tire, airbag</text>
-  <text x="670" y="198" class="node">ABS, ACU, ASM, CDC, ECS, EHB, EPB</text>
-  <text x="670" y="220" class="node">ESC, MDPS, ODS, RWS, SAS, TPMS, VCU, VSM</text>
-  <text x="670" y="308" class="small">Primary flow</text>
-  <text x="670" y="330" class="node">pedal / steering / vehicle state</text>
-  <text x="670" y="352" class="node">-&gt; VCU / ESC / MDPS -&gt; CGW / ADAS / CLU / IVI</text>
+  <text x="670" y="168" class="small">brake, steering, suspension, yaw,</text>
+  <text x="670" y="188" class="small">tire, and airbag state</text>
+  <text x="670" y="214" class="node">ABS, ACU, ASM, CDC,</text>
+  <text x="670" y="234" class="node">ECS, EHB, EPB</text>
+  <text x="670" y="256" class="node">ESC, MDPS, ODS, RWS,</text>
+  <text x="670" y="276" class="node">SAS, TPMS, VCU, VSM</text>
+  <text x="670" y="392" class="small">Representative behavior</text>
+  <text x="670" y="414" class="node">pedal / steering / vehicle state</text>
+  <text x="670" y="434" class="node">-&gt; core motion readers</text>
 
   <rect x="960" y="110" width="280" height="340" class="box" fill="#ede9fe"/>
-  <text x="980" y="142" class="section">ETH_Backbone (10)</text>
-  <text x="980" y="168" class="small">gateway, diagnostics, validation, backbone edge</text>
+  <text x="980" y="142" class="section">ETH Backbone (10)</text>
+  <text x="980" y="168" class="small">gateway, diagnostics, validation,</text>
+  <text x="980" y="188" class="small">and backbone edge</text>
   <text x="980" y="198" class="node">CGW, DCM, EDR, ETHB, EXT_DIAG</text>
   <text x="980" y="220" class="node">IBOX, SGW, TEST_BAS, TEST_SCN, V2X</text>
-  <text x="980" y="308" class="small">Primary flow</text>
+  <text x="980" y="308" class="small">Representative behavior</text>
   <text x="980" y="330" class="node">route/gate/diag/scenario orchestration</text>
   <text x="980" y="352" class="node">across all major domains</text>
 
   <rect x="1270" y="110" width="280" height="340" class="box" fill="#fde68a"/>
   <text x="1290" y="142" class="section">Infotainment (13)</text>
-  <text x="1290" y="168" class="small">IVI, CLU, HUD, AMP, TMU and service surfaces</text>
+  <text x="1290" y="168" class="small">IVI, CLU, HUD, AMP, TMU,</text>
+  <text x="1290" y="188" class="small">and service surfaces</text>
   <text x="1290" y="198" class="node">AMP, CLU, CPAY, DKEY, HUD, IVI, NAV</text>
   <text x="1290" y="220" class="node">OTA, PAK, PGS, RSE, TMU, VCS</text>
-  <text x="1290" y="308" class="small">Primary flow</text>
-  <text x="1290" y="330" class="node">selected alert / body / vehicle state</text>
-  <text x="1290" y="352" class="node">-&gt; text / ambient / display / audio render</text>
+  <text x="1290" y="308" class="small">Representative behavior</text>
+  <text x="1290" y="330" class="node">selected alert / body /</text>
+  <text x="1290" y="350" class="node">vehicle state</text>
+  <text x="1290" y="372" class="node">-&gt; text / ambient / display</text>
+  <text x="1290" y="392" class="node">/ audio render</text>
 
   <rect x="1580" y="110" width="280" height="340" class="box" fill="#cffafe"/>
   <text x="1600" y="142" class="section">Powertrain (14)</text>
-  <text x="1600" y="168" class="small">engine, transmission, charging, energy, thermal</text>
-  <text x="1600" y="198" class="node">BAT_BMS, CPC, DCDC, EMS, EOP, EWP, FPCM</text>
-  <text x="1600" y="220" class="node">INVERTER, ISG, LVR, MCU, OBC, TCU, _4WD</text>
-  <text x="1600" y="308" class="small">Primary flow</text>
-  <text x="1600" y="330" class="node">powertrain state / gear / torque / thermal</text>
+  <text x="1600" y="168" class="small">engine, transmission, charging,</text>
+  <text x="1600" y="188" class="small">energy, and thermal state</text>
+  <text x="1600" y="214" class="node">BAT_BMS, CPC, DCDC, EMS,</text>
+  <text x="1600" y="234" class="node">EOP, EWP, FPCM</text>
+  <text x="1600" y="256" class="node">INVERTER, ISG, LVR, MCU,</text>
+  <text x="1600" y="276" class="node">OBC, TCU, _4WD</text>
+  <text x="1600" y="308" class="small">Representative behavior</text>
+  <text x="1600" y="330" class="node">powertrain state / gear /</text>
+  <text x="1600" y="350" class="node">torque / thermal</text>
   <text x="1600" y="352" class="node">-&gt; VCU / EMS / TCU / CGW / IVI</text>
 
   <rect x="30" y="520" width="1830" height="300" class="box" fill="#f8fafc"/>
-  <text x="52" y="554" class="section">Cross-domain runtime trunks</text>
-  <text x="52" y="584" class="node">1. Input_Console -&gt; Cmd::* / Inject::* / Test::*</text>
-  <text x="52" y="608" class="node">2. Base vehicle state trunk: VCU / ESC / MDPS -&gt; vehicle, brake, steering, wheel-speed</text>
-  <text x="52" y="632" class="node">3. ADAS assist trunk: route context + V2X + perception + vehicle state -&gt; ADAS -&gt; AEB StopReq/DecelProfile/DomainHealth</text>
-  <text x="52" y="656" class="node">4. Coupled brake consumers: AEB domain state -&gt; ESC / EHB / VSM</text>
-  <text x="52" y="680" class="node">5. Output trunk: ADAS effective state -&gt; CGW gate reason -&gt; IVI / CLU / BCM / AMP</text>
-  <text x="52" y="704" class="node">6. Validation overlay: TEST_SCN for scenario control, TEST_BAS for baseline validation routing</text>
-  <text x="52" y="746" class="small">Use this as a breadth map. Use the master matrix for exact owner/message/sysvar/test rows.</text>
+  <text x="52" y="554" class="section">Cross-domain behavior</text>
+  <text x="52" y="584" class="node">1. Driver, service, and scenario input enter the runtime through domain owners.</text>
+  <text x="52" y="608" class="node">2. VCU, ESC, and MDPS establish the shared vehicle-motion baseline.</text>
+  <text x="52" y="632" class="node">3. Route context, V2X, and perception are fused into ADAS intervention decisions.</text>
+  <text x="52" y="656" class="node">4. Gateway, cluster, IVI, body, and audio surfaces render one coherent warning story.</text>
+  <text x="52" y="680" class="node">5. Validation overlay remains separate from normal product ownership.</text>
+  <text x="52" y="722" class="small">Use this page as a breadth map. Exact runtime names appear later in the ECU reference pages and signal appendix.</text>
 
   <rect x="30" y="890" width="620" height="500" class="box" fill="#ffffff"/>
-  <text x="50" y="924" class="section">Immediate focus clusters</text>
-  <text x="50" y="954" class="node">A. Base Vehicle Dynamics</text>
-  <text x="50" y="978" class="small">VCU, ESC, MDPS, TCU, EMS</text>
-  <text x="50" y="1012" class="node">B. ADAS / AEB / Brake Assist</text>
-  <text x="50" y="1036" class="small">ADAS, SCC, V2X, AEB, ESC, EHB, VSM</text>
-  <text x="50" y="1070" class="node">C. Display / Warning / Audio</text>
-  <text x="50" y="1094" class="small">CGW, IVI, CLU, BCM, AMP</text>
-  <text x="50" y="1128" class="node">D. Body / Comfort / Ambient</text>
-  <text x="50" y="1152" class="small">BCM, DATC, WIP, DOOR_*, SEAT_*, SRF, AHLS, AFLS</text>
-  <text x="50" y="1186" class="node">E. Validation / Scenario Overlay</text>
-  <text x="50" y="1210" class="small">TEST_SCN, TEST_BAS</text>
-  <text x="50" y="1252" class="small">Detailed cluster SVGs exist for all five groups in this folder.</text>
+  <text x="50" y="924" class="section">Reading sequence</text>
+  <text x="50" y="956" class="node">1. Overview map</text>
+  <text x="50" y="980" class="small">See the full 101-ECU surface at once.</text>
+  <text x="50" y="1014" class="node">2. Group snapshot</text>
+  <text x="50" y="1038" class="small">Move into the six grouped architecture sheets.</text>
+  <text x="50" y="1072" class="node">3. Action-flow pack</text>
+  <text x="50" y="1096" class="small">Follow behavior chains that cross multiple ECU.</text>
+  <text x="50" y="1130" class="node">4. ECU catalog</text>
+  <text x="50" y="1154" class="small">Read overview and reference pages per ECU.</text>
+  <text x="50" y="1188" class="node">5. Detailed signal appendix</text>
+  <text x="50" y="1212" class="small">Use it only when exact runtime names are needed.</text>
 
   <rect x="690" y="890" width="1170" height="500" class="box" fill="#fff7ed"/>
-  <text x="710" y="924" class="section">Primary current architecture risk</text>
-  <text x="710" y="954" class="node">The runtime is not broadly broken by domain ownership.</text>
-  <text x="710" y="978" class="node">The most likely felt dynamics issue is the coupled AEB assist path:</text>
-  <text x="710" y="1012" class="node">ADAS -&gt; AEB domain state -&gt; ESC / EHB / VSM simultaneous reaction</text>
-  <text x="710" y="1046" class="node">Trace first:</text>
-  <text x="740" y="1070" class="node">- StopReq</text>
-  <text x="740" y="1094" class="node">- DecelProfile</text>
-  <text x="740" y="1118" class="node">- DomainHealth</text>
-  <text x="740" y="1142" class="node">- assist pressure floor</text>
-  <text x="740" y="1166" class="node">- brake pressure</text>
-  <text x="710" y="1204" class="node">If this cluster is stable, then move outward to powertrain and display clusters.</text>
+  <text x="710" y="924" class="section">What this opening shows</text>
+  <text x="710" y="956" class="node">A. Vehicle motion is established once and then reused across many readers.</text>
+  <text x="710" y="990" class="node">B. ADAS behavior crosses gateway, brake, display, and body output layers.</text>
+  <text x="710" y="1024" class="node">C. Body and infotainment layers amplify the selected warning state.</text>
+  <text x="710" y="1058" class="node">D. Backbone nodes route, diagnose, and expose service traffic.</text>
+  <text x="710" y="1092" class="node">E. Validation nodes stay separate so test control does not distort product behavior.</text>
+  <text x="710" y="1140" class="small">The following chapters unpack these same ideas through grouped views, action flows, and ECU cards.</text>
 
   <path class="arrow" d="M310 280 L340 280"/>
   <path class="arrow" d="M620 280 L650 280"/>

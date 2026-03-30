@@ -1,0 +1,61 @@
+@startuml obc_bms_temp_to_cpc_target_soc_thermal_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title OBC BMS Temp To CPC Target SOC Thermal Signal Flow\n(OBC state + BMS thermal context + vehicle state -> CPC thermal state and charge-target SOC)
+
+participant "OBC state bus" as OBC #F4F7FB
+participant "BAT_BMS state bus" as BMS #E8F0FE
+participant "Vehicle state bus" as Veh #FCE8FF
+participant "CPC\ncharge-port owner" as CPC #E8F7E8
+participant "Charge-port state bus" as CpcBus #FFF4CC
+participant "Observers /\ncharge readers" as Obs #FFF4CC
+
+== CPC Inputs ==
+
+OBC -> CPC : frmObcStateMsg\nObcState / AcPlugState
+BMS -> CPC : frmBatBmsStateMsg\nBmsState / PackSoc / PackTemp
+Veh -> CPC : frmVehicleStateCanMsg\ngDriveState
+activate CPC
+CPC -> CPC : obc/bms/vehicle freshness lease checks
+CPC -> CPC : if OBC stale then\nobcState = 0 / acPlugState = 0
+CPC -> CPC : if BMS stale then\nbmsState = 7 / packSoc = 50 / packTemp = 28
+CPC -> CPC : chargeEnable =\n(obcState == 2 and bmsState <= 2 and driveState == 0)
+CPC -> CPC : thermalState =\npackTemp >= 45 ? 2 : packTemp >= 35 ? 1 : 0
+CPC -> CPC : chargeTargetSoc =\n80 when thermalState == 2,\n90 when packSoc >= 90,\n70 when bmsState >= 3
+note right of CPC
+Representative gating inputs
+- ObcState / AcPlugState
+- BmsState / PackSoc / PackTemp
+- gDriveState
+end note
+
+== CPC Publish ==
+
+CPC -> CpcBus : frmChargePortCtrlStateMsg\nPortLockState / PlugState / ChargeEnable /\nThermalState / ChargeTargetSoc
+note right of CPC
+Representative outputs
+- ChargeEnable
+- ThermalState
+- ChargeTargetSoc
+- PortLockState
+end note
+
+== Downstream Visibility ==
+
+CpcBus -> Obs : charge-port visibility /\ncharging observers
+deactivate CPC
+
+note over OBC, Obs
+Representative runtime chain
+1. OBC, BMS, and vehicle state reach CPC
+2. CPC evaluates charge-enable posture and thermal condition
+3. CPC derives target SOC under thermal and pack-state constraints
+4. CPC publishes charge-port control and target-SOC state
+end note
+
+@enduml

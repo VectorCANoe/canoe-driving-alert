@@ -13,58 +13,68 @@
     </marker>
   </defs>
   <text x="36" y="44" class="title">Group 05 - Validation / Scenario Overlay</text>
-  <text x="36" y="72" class="small">Validation nodes must stay visible overlays, not hidden owners of normal product behavior.</text>
+  <text x="36" y="72" class="small">This layer keeps scenario orchestration and verdict readback separate from product ownership.</text>
 
-  <rect x="40" y="120" width="280" height="150" class="box" fill="#e0f2fe"/>
+  <rect x="40" y="120" width="280" height="172" class="box" fill="#e0f2fe"/>
   <text x="62" y="156" class="label">Input surface</text>
   <text x="62" y="184" class="node">Scenario tab</text>
-  <text x="62" y="208" class="small">Test::scenarioCommand / stop/manual</text>
+  <text x="62" y="208" class="small">scenario start, stop, and</text>
+  <text x="62" y="230" class="small">manual-mode control</text>
 
-  <rect x="390" y="100" width="280" height="190" class="box" fill="#dbeafe"/>
+  <rect x="390" y="100" width="280" height="228" class="box" fill="#dbeafe"/>
   <text x="412" y="136" class="label">TEST_SCN</text>
-  <text x="412" y="164" class="node">scenario accept / active / result / ack</text>
-  <text x="412" y="188" class="small">scenario-only owner</text>
-  <text x="412" y="212" class="small">should not be normal vehicle command router</text>
+  <text x="412" y="164" class="node">scenario accept, active,</text>
+  <text x="412" y="188" class="node">result, and ack</text>
+  <text x="412" y="216" class="small">scenario-only controller</text>
+  <text x="412" y="240" class="small">stays separate from normal</text>
+  <text x="412" y="262" class="small">feature ownership</text>
 
-  <rect x="740" y="100" width="280" height="190" class="box" fill="#cffafe"/>
+  <rect x="740" y="100" width="280" height="228" class="box" fill="#cffafe"/>
   <text x="762" y="136" class="label">TEST_BAS</text>
   <text x="762" y="164" class="node">baseline validation overlay</text>
-  <text x="762" y="188" class="small">summary / routing / validation support</text>
-  <text x="762" y="212" class="small">must stay separate from product ECU ownership</text>
+  <text x="762" y="192" class="small">summary, routing, and</text>
+  <text x="762" y="216" class="small">validation support</text>
+  <text x="762" y="240" class="small">stays separate from product</text>
+  <text x="762" y="262" class="small">ECU ownership</text>
 
-  <rect x="1090" y="120" width="320" height="150" class="box" fill="#fee2e2"/>
+  <rect x="1090" y="108" width="320" height="178" class="box" fill="#fee2e2"/>
   <text x="1112" y="156" class="label">Product ECUs</text>
-  <text x="1112" y="184" class="node">VCU / ESC / MDPS / ADAS / BCM / IVI / CLU ...</text>
-  <text x="1112" y="208" class="small">actual feature owners</text>
+  <text x="1112" y="184" class="node">VCU / ESC / MDPS / ADAS</text>
+  <text x="1112" y="208" class="node">BCM / IVI / CLU and peers</text>
+  <text x="1112" y="234" class="small">actual feature owners</text>
 
   <rect x="150" y="420" width="420" height="180" class="box" fill="#ffffff"/>
   <text x="172" y="456" class="label">Correct rule</text>
   <text x="172" y="484" class="node">scenario command -&gt; TEST_SCN</text>
-  <text x="172" y="508" class="node">normal vehicle/context input -&gt; product Cmd/Inject owner path</text>
+  <text x="172" y="508" class="node">normal vehicle and context input</text>
+  <text x="172" y="532" class="node">-&gt; product owner path</text>
 
   <rect x="640" y="420" width="300" height="180" class="box" fill="#fff7ed"/>
   <text x="662" y="456" class="label">Why this matters</text>
-  <text x="662" y="484" class="node">if validation overlay becomes hidden owner,</text>
-  <text x="662" y="508" class="node">architecture looks correct but runtime meaning drifts</text>
+  <text x="662" y="484" class="node">if validation overlay becomes</text>
+  <text x="662" y="508" class="node">a hidden owner,</text>
+  <text x="662" y="536" class="node">runtime meaning drifts</text>
+  <text x="662" y="560" class="node">even when screens still look correct</text>
 
   <rect x="1010" y="420" width="360" height="180" class="box" fill="#f8fafc"/>
   <text x="1032" y="456" class="label">Current healthy boundary</text>
   <text x="1032" y="484" class="node">general input moved out of TEST_SCN</text>
   <text x="1032" y="508" class="node">TEST_SCN remains scenario-focused</text>
 
-  <rect x="40" y="690" width="1370" height="120" class="box" fill="#f8fafc"/>
-  <text x="62" y="726" class="label">Reading note</text>
-  <text x="62" y="754" class="node">When reviewer asks whether TEST nodes are product owners, this sheet should answer &quot;no&quot; immediately.</text>
+  <rect x="40" y="690" width="1370" height="132" class="box" fill="#f8fafc"/>
+  <text x="62" y="726" class="label">Reading focus</text>
+  <text x="62" y="754" class="node">Use this sheet to confirm validation remains an overlay,</text>
+  <text x="62" y="778" class="node">not a hidden product owner.</text>
 
-  <rect x="40" y="830" width="1370" height="100" class="box" fill="#ffffff"/>
-  <text x="62" y="866" class="label">ECU roster in this group</text>
-  <text x="62" y="898" class="node">TEST_SCN</text>
-  <text x="172" y="898" class="node">TEST_BAS</text>
+  <rect x="40" y="842" width="1370" height="88" class="box" fill="#ffffff"/>
+  <text x="62" y="878" class="label">ECU</text>
+  <text x="62" y="906" class="node">TEST_SCN</text>
+  <text x="172" y="906" class="node">TEST_BAS</text>
 
   <path class="arrow" d="M320 195 L390 195"/>
   <path class="arrow" d="M670 195 L740 195"/>
   <path class="arrow" d="M1020 195 L1090 195"/>
-  <path class="arrow" d="M530 290 L360 420"/>
-  <path class="arrow" d="M850 290 L790 420"/>
-  <path class="arrow" d="M850 290 L1190 420"/>
+  <path class="arrow" d="M530 328 L360 420"/>
+  <path class="arrow" d="M850 328 L790 420"/>
+  <path class="arrow" d="M850 328 L1190 420"/>
 </svg>

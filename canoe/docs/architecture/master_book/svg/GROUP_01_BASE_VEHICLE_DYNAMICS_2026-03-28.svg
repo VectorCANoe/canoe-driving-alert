@@ -13,77 +13,93 @@
     </marker>
   </defs>
   <text x="36" y="44" class="title">Group 01 - Base Vehicle Dynamics</text>
-  <text x="36" y="72" class="small">Cmd-driven base motion producers. If this group is noisy, every downstream ADAS/HMI judgment is noisy.</text>
+  <text x="36" y="72" class="small">Steering, braking, propulsion, and chassis state become one</text>
+  <text x="36" y="94" class="small">shared vehicle-motion baseline here.</text>
 
-  <rect x="40" y="120" width="230" height="110" class="box" fill="#e0f2fe"/>
+  <rect x="40" y="120" width="230" height="132" class="box" fill="#e0f2fe"/>
   <text x="62" y="156" class="label">Input surface</text>
   <text x="62" y="184" class="node">Input_Console</text>
-  <text x="62" y="208" class="small">Cmd::speed, Cmd::gear, Cmd::steering, Cmd::pedal</text>
+  <text x="62" y="208" class="small">speed, gear, steering, and</text>
+  <text x="62" y="230" class="small">pedal commands</text>
 
-  <rect x="340" y="120" width="240" height="160" class="box" fill="#dcfce7"/>
+  <rect x="340" y="120" width="240" height="198" class="box" fill="#dcfce7"/>
   <text x="362" y="156" class="label">VCU</text>
-  <text x="362" y="184" class="node">vehicleSpeed / driveState / throttlePosition</text>
-  <text x="362" y="208" class="small">frmVehicleStateCanMsg</text>
-  <text x="362" y="230" class="small">frmAccelStatusMsg</text>
-  <text x="362" y="252" class="small">frmWheelPulseMsg</text>
+  <text x="362" y="184" class="node">vehicle motion and</text>
+  <text x="362" y="206" class="node">propulsion state</text>
+  <text x="362" y="232" class="small">speed, drive mode, and</text>
+  <text x="362" y="254" class="small">pedal response</text>
+  <text x="362" y="278" class="small">propulsion readiness and</text>
+  <text x="362" y="300" class="small">wheel pulse readback</text>
 
-  <rect x="640" y="120" width="240" height="160" class="box" fill="#dcfce7"/>
+  <rect x="640" y="120" width="240" height="198" class="box" fill="#dcfce7"/>
   <text x="662" y="156" class="label">ESC</text>
-  <text x="662" y="184" class="node">brakePressure / brakeLamp / absActive</text>
-  <text x="662" y="208" class="small">frmBrakeStatusMsg</text>
-  <text x="662" y="230" class="small">frmEscStateMsg</text>
-  <text x="662" y="252" class="small">frmWheelSpeedMsg / frmYawAccelMsg</text>
+  <text x="662" y="184" class="node">brake and stability state</text>
+  <text x="662" y="208" class="small">brake pressure, wheel speed,</text>
+  <text x="662" y="230" class="small">and yaw readback</text>
+  <text x="662" y="254" class="small">ABS and stability status</text>
+  <text x="662" y="278" class="small">core chassis response for</text>
+  <text x="662" y="300" class="small">assist layers</text>
 
-  <rect x="940" y="120" width="220" height="160" class="box" fill="#dcfce7"/>
+  <rect x="940" y="120" width="220" height="198" class="box" fill="#dcfce7"/>
   <text x="962" y="156" class="label">MDPS</text>
-  <text x="962" y="184" class="node">steeringAngle / steering torque</text>
-  <text x="962" y="208" class="small">frmSteeringTorqueMsg</text>
-  <text x="962" y="230" class="small">frmEpsStateMsg</text>
+  <text x="962" y="184" class="node">steering angle and</text>
+  <text x="962" y="206" class="node">steering effort</text>
+  <text x="962" y="232" class="small">steering state and</text>
+  <text x="962" y="254" class="small">assist feedback</text>
+  <text x="962" y="278" class="small">core steering readback for</text>
+  <text x="962" y="300" class="small">vehicle control</text>
 
-  <rect x="1220" y="120" width="220" height="160" class="box" fill="#cffafe"/>
+  <rect x="1220" y="120" width="220" height="198" class="box" fill="#cffafe"/>
   <text x="1242" y="156" class="label">Powertrain support</text>
   <text x="1242" y="184" class="node">TCU / EMS</text>
-  <text x="1242" y="208" class="small">gear / torque / thermal / engine state</text>
-  <text x="1242" y="230" class="small">support VCU baseline dynamics</text>
+  <text x="1242" y="208" class="small">gear, torque, thermal,</text>
+  <text x="1242" y="230" class="small">and engine readiness</text>
+  <text x="1242" y="254" class="small">supports the shared</text>
+  <text x="1242" y="276" class="small">vehicle-motion baseline</text>
 
   <rect x="240" y="390" width="300" height="180" class="box" fill="#ede9fe"/>
   <text x="262" y="426" class="label">CGW / boundary</text>
-  <text x="262" y="454" class="node">gateway state, health, boundary status</text>
-  <text x="262" y="478" class="small">consumes base chassis/powertrain state</text>
-  <text x="262" y="502" class="small">feeds gate and health downstream</text>
+  <text x="262" y="454" class="node">boundary health and routed state</text>
+  <text x="262" y="478" class="small">consumes the core motion baseline</text>
+  <text x="262" y="502" class="small">feeds downstream gate and health cues</text>
 
-  <rect x="620" y="390" width="300" height="180" class="box" fill="#fee2e2"/>
+  <rect x="620" y="390" width="300" height="192" class="box" fill="#fee2e2"/>
   <text x="642" y="426" class="label">ADAS / assist readers</text>
   <text x="642" y="454" class="node">ADAS / SCC</text>
-  <text x="642" y="478" class="small">consume vehicle, brake, steering, speed</text>
-  <text x="642" y="502" class="small">use base state as context for risk and assist</text>
+  <text x="642" y="478" class="small">consume speed, steering,</text>
+  <text x="642" y="502" class="small">and brake context</text>
+  <text x="642" y="526" class="small">use the motion baseline</text>
+  <text x="642" y="548" class="small">before assist decisions</text>
 
-  <rect x="1000" y="390" width="300" height="180" class="box" fill="#fde68a"/>
+  <rect x="1000" y="390" width="300" height="192" class="box" fill="#fde68a"/>
   <text x="1022" y="426" class="label">Display readers</text>
   <text x="1022" y="454" class="node">IVI / CLU</text>
-  <text x="1022" y="478" class="small">speed, gear, steering frame, vehicle state</text>
-  <text x="1022" y="502" class="small">driver-facing baseline readback</text>
+  <text x="1022" y="478" class="small">speed, gear, steering, and</text>
+  <text x="1022" y="502" class="small">vehicle-state readback</text>
+  <text x="1022" y="526" class="small">driver-facing baseline confirmation</text>
 
-  <rect x="40" y="650" width="1400" height="150" class="box" fill="#f8fafc"/>
-  <text x="62" y="686" class="label">Current focus</text>
-  <text x="62" y="716" class="node">1. steering command/readback unification</text>
-  <text x="62" y="740" class="node">2. speed preset vs throttle ownership separation</text>
-  <text x="62" y="764" class="node">3. brake pressure stability before AEB assist overlay</text>
+  <rect x="40" y="650" width="1400" height="178" class="box" fill="#f8fafc"/>
+  <text x="62" y="686" class="label">Reading focus</text>
+  <text x="62" y="716" class="node">1. steering command and steering readback stay aligned</text>
+  <text x="62" y="740" class="node">2. propulsion state and speed state</text>
+  <text x="62" y="764" class="node">tell one coherent story</text>
+  <text x="62" y="792" class="node">3. brake pressure and stability state</text>
+  <text x="62" y="816" class="node">remain clean before assist overlays</text>
 
-  <rect x="40" y="830" width="1400" height="150" class="box" fill="#ffffff"/>
-  <text x="62" y="866" class="label">ECU roster in this group</text>
-  <text x="62" y="898" class="node">VCU</text>
-  <text x="150" y="898" class="node">ESC</text>
-  <text x="238" y="898" class="node">MDPS</text>
-  <text x="350" y="898" class="node">TCU</text>
-  <text x="430" y="898" class="node">EMS</text>
-  <text x="530" y="898" class="small">linked readers often checked with this group: CGW, ADAS, SCC, IVI, CLU</text>
+  <rect x="40" y="858" width="1400" height="122" class="box" fill="#ffffff"/>
+  <text x="62" y="894" class="label">ECU</text>
+  <text x="62" y="926" class="node">VCU</text>
+  <text x="150" y="926" class="node">ESC</text>
+  <text x="238" y="926" class="node">MDPS</text>
+  <text x="350" y="926" class="node">TCU</text>
+  <text x="430" y="926" class="node">EMS</text>
+  <text x="530" y="926" class="small">Common readers: CGW, ADAS, SCC, IVI, CLU</text>
 
   <path class="arrow" d="M270 175 L340 175"/>
   <path class="arrow" d="M580 195 L640 195"/>
   <path class="arrow" d="M880 195 L940 195"/>
   <path class="arrow" d="M1160 195 L1220 195"/>
-  <path class="arrow" d="M460 280 L390 390"/>
-  <path class="arrow" d="M760 280 L770 390"/>
-  <path class="arrow" d="M1050 280 L1150 390"/>
+  <path class="arrow" d="M460 318 L390 390"/>
+  <path class="arrow" d="M760 318 L770 390"/>
+  <path class="arrow" d="M1050 318 L1150 390"/>
 </svg>

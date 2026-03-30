@@ -1,0 +1,55 @@
+@startuml tmu_bars_to_dkey_security_grade_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title TMU Bars To DKEY Security Grade Signal Flow\n(TMU service mode + signal bars + drive state -> DKEY security grade and presence)
+
+participant "TMU service bus" as TMU #F4F7FB
+participant "Vehicle state bus" as Veh #E8F0FE
+participant "DKEY\ndigital key owner" as DKEY #E8F7E8
+participant "Digital key state bus" as DKeyBus #FFF4CC
+participant "SMK / Door / PAK\naccess consumers" as Consumers #FFF4CC
+
+== DKEY Inputs ==
+
+TMU -> DKEY : frmTmuServiceStateMsg\nTmuServiceMode / SignalBars
+Veh -> DKEY : frmVehicleStateCanMsg\ngDriveState
+activate DKEY
+DKEY -> DKEY : normalize stale TMU / vehicle inputs
+DKEY -> DKEY : if dkeyState == 2 and signalBars >= 3\nthen SecurityGrade = 2
+DKEY -> DKEY : else if tmuServiceMode > 0 and signalBars >= 1\nthen SecurityGrade = 1
+DKEY -> DKEY : KeyPresence = (tmuServiceMode > 0 and signalBars > 0)
+DKEY -> DKEY : derive DKeyState / AuthMode /\nVehicleAccessState / KeySyncAge
+note right of DKEY
+Representative inputs
+- TmuServiceMode
+- SignalBars
+- gDriveState
+
+Representative derived outputs
+- SecurityGrade
+- KeyPresence
+- DKeyState
+- AuthMode
+- VehicleAccessState
+end note
+
+== DKEY Publish ==
+
+DKEY -> DKeyBus : frmDigitalKeyStateMsg\nSecurityGrade / KeyPresence /\nDKeyState / AuthMode / VehicleAccessState
+DKeyBus -> Consumers : digital key access and immobilizer consumers
+deactivate DKEY
+
+note over TMU, Consumers
+Representative runtime chain
+1. TMU service mode and signal bars reach DKEY with drive state
+2. DKEY converts signal strength and service posture into security grade and presence
+3. DKEY publishes the consolidated digital-key state
+4. SMK, doors, and proximity access consumers use the resulting access posture
+end note
+
+@enduml

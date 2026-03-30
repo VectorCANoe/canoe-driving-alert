@@ -1,0 +1,63 @@
+@startuml child_lock_and_access_auth_to_door_rl_unlock_gate_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Child Lock And Access Auth To Door RL Unlock Gate Signal Flow\n(door control + child-lock + access authorization -> DOOR_RL unlock gate)
+
+participant "Door-control bus" as DoorCtl #F4F7FB
+participant "Vehicle state bus" as Veh #E8F0FE
+participant "Digital-key /\nimmobilizer buses" as Access #FCE8FF
+participant "DOOR_RL\nrear-left door owner" as DoorRL #E8F7E8
+participant "Door RL state bus" as DoorBus #FFF4CC
+participant "Observers /\nbody readers" as Obs #FFF4CC
+
+== Door RL Inputs ==
+
+DoorCtl -> DoorRL : frmDoorControlMsg\nDoorControlCmd / ChildLockCmd
+Veh -> DoorRL : frmVehicleStateCanMsg\ngDriveState
+Access -> DoorRL : frmDigitalKeyStateMsg\nVehicleAccessState / KeyPresence
+Access -> DoorRL : frmImmobilizerStateMsg\nImmobilizerState / KeyAuthState
+activate DoorRL
+DoorRL -> DoorRL : freshness checks for\ndoor control, vehicle, dkey, immo
+DoorRL -> DoorRL : manualMode may read\nChassis::driveState directly
+DoorRL -> DoorRL : accessAuthorized =\nparked vehicle and dkey/immo auth valid
+DoorRL -> DoorRL : unlockRequest =\nDoorControlCmd > 0
+DoorRL -> DoorRL : childLockActive =\nChildLockCmd > 0
+DoorRL -> DoorRL : unlock only when\nauthorized and requested and child-lock == 0
+note right of DoorRL
+Representative gating inputs
+- DoorControlCmd
+- ChildLockCmd
+- gDriveState
+- VehicleAccessState / KeyPresence
+- ImmobilizerState / KeyAuthState
+end note
+
+== Door RL Publish ==
+
+DoorRL -> DoorBus : frmDoorRlStateMsg\nDoorRlLockState / DoorRlOpenState / DoorRlWindowPos
+note right of DoorRL
+Representative outputs
+- DoorRlLockState
+- DoorRlOpenState
+- DoorRlWindowPos
+end note
+
+== Downstream Visibility ==
+
+DoorBus -> Obs : rear-left door lock visibility /\nbody observers
+deactivate DoorRL
+
+note over DoorCtl, Obs
+Representative runtime chain
+1. Door control, vehicle, digital-key, and immobilizer context reach DOOR_RL
+2. DOOR_RL resolves access authorization and child-lock posture
+3. Unlock request is gated by park state and child-lock release
+4. DOOR_RL publishes final rear-left door lock state
+end note
+
+@enduml

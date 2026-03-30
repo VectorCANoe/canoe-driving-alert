@@ -1,0 +1,59 @@
+@startuml driver_seat_cmd_to_seat_drv_position_comfort_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Driver Seat Cmd To SEAT DRV Position Comfort Signal Flow\n(seat-control command + vehicle state -> driver seat position / heat / ventilation state)
+
+participant "Seat-control bus" as SeatCtl #F4F7FB
+participant "Vehicle state bus" as Veh #E8F0FE
+participant "SEAT_DRV\ndriver-seat owner" as SeatDrv #E8F7E8
+participant "Driver-seat state bus" as SeatBus #FFF4CC
+participant "Observers /\ncomfort readers" as Obs #FCE8FF
+
+== Driver Seat Inputs ==
+
+SeatCtl -> SeatDrv : frmSeatControlMsg\nDriverSeatCmd / SeatHeatLevel / SeatVentLevel
+Veh -> SeatDrv : frmVehicleStateCanMsg\ngDriveState
+activate SeatDrv
+SeatDrv -> SeatDrv : seatCtrlInputStale =\nethIsRecentTick(gSeatCtrlRxMs, 300)
+SeatDrv -> SeatDrv : vehicleInputStale =\nethIsRecentTick(gVehicleRxMs, 300)
+SeatDrv -> SeatDrv : if seat-control stale then\nseatCmd = 0 / heat = 0 / vent = 0
+SeatDrv -> SeatDrv : if vehicle stale then\ndriveState = 3
+SeatDrv -> SeatDrv : position changes only when\ndriveState == 0
+SeatDrv -> SeatDrv : applySeatDelta() moves\nSeatDrvPos by +/-5 per command step
+note right of SeatDrv
+Representative gating inputs
+- DriverSeatCmd
+- SeatHeatLevel
+- SeatVentLevel
+- gDriveState
+end note
+
+== Driver Seat Publish ==
+
+SeatDrv -> SeatBus : frmSeatDrvStateMsg\nSeatDrvPos / SeatDrvHeatLvl / SeatDrvVentLvl
+note right of SeatDrv
+Representative outputs
+- SeatDrvPos
+- SeatDrvHeatLvl
+- SeatDrvVentLvl
+end note
+
+== Downstream Visibility ==
+
+SeatBus -> Obs : driver-seat comfort visibility /\nseat and cabin observers
+deactivate SeatDrv
+
+note over SeatCtl, Obs
+Representative runtime chain
+1. Driver seat-control command and vehicle state reach SEAT_DRV
+2. SEAT_DRV applies freshness gates and parked-only motion rule
+3. SEAT_DRV updates seat position and comfort levels
+4. SEAT_DRV publishes driver-seat state for downstream readers
+end note
+
+@enduml

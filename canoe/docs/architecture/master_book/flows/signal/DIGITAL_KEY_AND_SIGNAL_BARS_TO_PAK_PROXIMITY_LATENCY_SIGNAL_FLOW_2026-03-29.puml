@@ -1,0 +1,61 @@
+@startuml digital_key_and_signal_bars_to_pak_proximity_latency_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Digital Key And Signal Bars To PAK Proximity Latency Signal Flow\n(digital-key + TMU signal bars + vehicle state -> PAK proximity and sync-latency publication)
+
+participant "Digital-key bus" as DKey #F4F7FB
+participant "TMU service bus" as TMU #E8F0FE
+participant "Vehicle state bus" as Veh #FCE8FF
+participant "PAK\nphone-as-key owner" as PAK #E8F7E8
+participant "PAK state bus" as PakBus #FFF4CC
+participant "Observers /\naccess readers" as Obs #FFF4CC
+
+== PAK Inputs ==
+
+DKey -> PAK : frmDigitalKeyStateMsg\nDKeyState / AuthMode
+TMU -> PAK : frmTmuServiceStateMsg\nSignalBars
+Veh -> PAK : frmVehicleStateCanMsg\ngDriveState
+activate PAK
+PAK -> PAK : dkey/tmu/vehicle staleness lease checks
+PAK -> PAK : if stale then clear\ndkey auth or signal bars
+PAK -> PAK : ProximityState = 1 when\nSignalBars >= 2
+PAK -> PAK : ProximityState = 2 when\nSignalBars >= 4 and driveState == 0
+PAK -> PAK : SyncLatency = clamp(200 - bars*30, 20..255)
+note right of PAK
+Representative gating inputs
+- DKeyState
+- AuthMode
+- SignalBars
+- gDriveState
+end note
+
+== PAK Publish ==
+
+PAK -> PakBus : frmPhoneAsKeyStateMsg\nPaakState / AuthLevel /\nProximityState / SyncLatency
+note right of PAK
+Representative outputs
+- PaakState
+- AuthLevel
+- ProximityState
+- SyncLatency
+end note
+
+== Downstream Visibility ==
+
+PakBus -> Obs : access visibility /\nPAAK and keyless readers
+deactivate PAK
+
+note over DKey, Obs
+Representative runtime chain
+1. Digital-key state, TMU signal bars, and vehicle state reach PAK
+2. PAK checks freshness and access posture
+3. PAK derives proximity state and sync latency
+4. PAK publishes phone-as-key state for downstream access readers
+end note
+
+@enduml

@@ -1,0 +1,66 @@
+@startuml nav_alert_context_to_dcm_request_response_observation_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Nav Alert Context To DCM Request Response Observation Signal Flow\n(nav/session + alert context -> DCM diagnostic request/response observation seams)
+
+participant "Navigation /\ncluster-notif context" as NavCtx #F4F7FB
+participant "Boundary state /\nfail-safe context" as Boundary #E8F0FE
+participant "DCM\ndiagnostic owner" as DCM #E8F7E8
+participant "Diag sysvar seams" as DiagBus #FFF4CC
+participant "Observers /\nservice readers" as Obs #FCE8FF
+
+== DCM Inputs ==
+
+NavCtx -> DCM : frmNavModuleStateMsg\nNavSessionState / NavRouteClass
+NavCtx -> DCM : frmClusterNotifMsg\nClusterNotifArg
+Boundary -> DCM : CoreState::domainBoundaryStatus\nCoreState::warningPathStatus\nCore::failSafeMode
+activate DCM
+DCM -> DCM : routeActive = recent nav session/route class
+DCM -> DCM : alertLevel = recent cluster-notif arg
+DCM -> DCM : serviceContext =\nethHasBoundaryServiceContext(routeActive, alertLevel)
+DCM -> DCM : diagStage = ethDiagBoundaryStage(...)\nfrom route/alert/boundary/fail-safe context
+DCM -> DCM : securitySession / authState /\nsecurityFault / securityPolicy
+DCM -> DCM : serviceState / responseKind /\nreasonCode / responseCode
+note right of DCM
+Representative gating inputs
+- NavSessionState
+- NavRouteClass
+- ClusterNotifArg
+- domainBoundaryStatus
+- warningPathStatus
+- failSafeMode
+end note
+
+== Diag Observation Publish ==
+
+DCM -> DiagBus : Diag::ServiceState / ResponseKind / ReasonCode
+DCM -> DiagBus : Diag::LastRequest* / RequestCounter
+DCM -> DiagBus : Diag::LastResponse* / ResponseCounter
+note right of DCM
+Representative outputs
+- ServiceState
+- ResponseKind
+- LastRequestSid
+- LastResponseCode
+- RequestCounter / ResponseCounter
+end note
+
+== Downstream Visibility ==
+
+DiagBus -> Obs : diagnostic observation /\nservice and reviewer-facing readers
+deactivate DCM
+
+note over NavCtx, Obs
+Representative runtime chain
+1. Navigation and alert context reach DCM
+2. DCM combines them with boundary and fail-safe state
+3. DCM derives diagnostic stage and request/response posture
+4. DCM publishes request/response observation seams on Diag
+end note
+
+@enduml

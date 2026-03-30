@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1388" viewBox="0 0 1600 1388">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1496" viewBox="0 0 1600 1496">
   <defs>
     <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#dbeafe"/>
@@ -19,109 +19,115 @@
     .box { rx: 22; ry: 22; stroke: #334155; stroke-width: 1.6; }
     .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
   </style>
-  <rect x="0" y="0" width="1600" height="1388" class="bg"/>
-  <text x="34" y="44" class="title">ECU Overview Card - SAS</text>
-  <text x="34" y="72" class="sub">page 1 | hierarchy-first overview with action rail and network footprint</text>
-  <rect x="30" y="100" width="1540" height="208" class="box" fill="url(#heroGradient)"/>
-<text x="52" y="134" class="small">Story overview</text>
+  <rect x="0" y="0" width="1600" height="1496" class="bg"/>
+  <text x="34" y="44" class="title">ECU Overview - SAS</text>
+  <text x="34" y="72" class="sub">p1 | overview, action rail, signal path, and domain footprint</text>
+  <rect x="30" y="100" width="1540" height="252" class="box" fill="url(#heroGradient)"/>
+<text x="52" y="134" class="small">Overview | p1</text>
 <text x="52" y="172" class="title">SAS</text>
 <text x="52" y="204" class="text">Group 01 Base Vehicle Dynamics | Chassis</text>
 <text x="52" y="224" class="text"></text>
-<text x="52" y="244" class="text">Publishes steering-angle sensor state</text>
+<text x="52" y="244" class="text">steering-angle sensor state</text>
 <text x="52" y="264" class="text"></text>
 <text x="52" y="284" class="text">Primary action flow</text>
-<text x="52" y="304" class="text">FLOW_01 Steering Control Readback</text>
-<rect x="940" y="134" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="958" y="162" class="small">Inbound actors</text>
+<text x="52" y="304" class="text">Steering readback</text>
+<rect x="940" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="958" y="162" class="small">Inbound</text>
 <text x="958" y="192" class="node">1</text>
-<rect x="1261" y="134" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1279" y="162" class="small">Outbound actors</text>
-<text x="1279" y="192" class="node">3</text>
-<rect x="940" y="228" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="958" y="256" class="small">Linked ECU</text>
+<rect x="1204" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1222" y="162" class="small">Outbound</text>
+<text x="1222" y="192" class="node">3</text>
+<rect x="940" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="958" y="256" class="small">Domains</text>
 <text x="958" y="286" class="node">3</text>
-<rect x="1261" y="228" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1279" y="256" class="small">Native Tests</text>
-<text x="1279" y="286" class="node">0</text>
-  <rect x="30" y="332" width="1540" height="194" class="box" fill="#ffffff"/>
-<text x="52" y="368" class="label">ECU metadata</text>
-<rect x="52" y="386" width="363" height="118" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="70" y="414" class="small">Key seam</text>
-<text x="70" y="440" class="small">-</text>
-<rect x="429" y="386" width="363" height="118" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="447" y="414" class="small">Runtime contract</text>
-<text x="447" y="440" class="small">Publish: frmSasDiagResMsg</text>
-<text x="447" y="458" class="small">Consume: frmSasDiagReqMsg</text>
-<rect x="806" y="386" width="363" height="118" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="824" y="414" class="small">Verification</text>
-<text x="824" y="440" class="small">No direct test asset</text>
-<rect x="1183" y="386" width="363" height="118" rx="18" ry="18" fill="#fff7ed" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1201" y="414" class="small">Risk focus</text>
-<text x="1201" y="440" class="small">Steering-angle sensor</text>
-<text x="1201" y="458" class="small">freshness is critical for</text>
-<text x="1201" y="476" class="small">ESC and MDPS consumers</text>
-  <rect x="30" y="550" width="1540" height="276" class="box" fill="#ffffff"/>
-<text x="52" y="586" class="label">Action rail</text>
-<rect x="52" y="616" width="484" height="188" rx="20" ry="20" fill="#e0f2fe" stroke="#bfdbfe" stroke-width="1.6"/>
-<text x="70" y="646" class="small">Inbound</text>
-<text x="70" y="672" class="text">1 upstream actor / 1 reads</text>
-<rect x="70" y="700" width="219" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="179.5" y="722" text-anchor="middle" class="small">TEST_SCN</text>
-<rect x="558" y="616" width="484" height="188" rx="20" ry="20" fill="#dcfce7" stroke="#86efac" stroke-width="1.6"/>
-<text x="576" y="646" class="small">ECU Core</text>
-<text x="576" y="672" class="text">FLOW_01</text>
-<rect x="576" y="700" width="219" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="685.5" y="722" text-anchor="middle" class="small">Publishes steering-angle se…</text>
-<rect x="805" y="700" width="219" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="914.5" y="722" text-anchor="middle" class="small">-</text>
-<rect x="1064" y="616" width="484" height="188" rx="20" ry="20" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.6"/>
-<text x="1082" y="646" class="small">Outbound</text>
-<text x="1082" y="672" class="text">3 downstream actor / 2 writes</text>
-<rect x="1082" y="700" width="219" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1191.5" y="722" text-anchor="middle" class="small">ADAS</text>
-<rect x="1311" y="700" width="219" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1420.5" y="722" text-anchor="middle" class="small">ESC</text>
-<rect x="1082" y="744" width="219" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1191.5" y="766" text-anchor="middle" class="small">TEST_SCN</text>
-<line x1="536" y1="710.0" x2="558" y2="710.0" class="lane"/>
-<line x1="1042" y1="710.0" x2="1064" y2="710.0" class="lane"/>
-  <rect x="30" y="850" width="1540" height="206" class="box" fill="#eff6ff"/>
-<text x="52" y="886" class="label">Representative signal flow</text>
-<rect x="58" y="920" width="220" height="58" rx="16" ry="16" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5"/>
-<text x="76" y="954" class="node">TEST_SCN</text>
-<rect x="690" y="920" width="220" height="58" rx="16" ry="16" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="800" y="954" text-anchor="middle" class="node">SAS</text>
-<rect x="1322" y="920" width="220" height="58" rx="16" ry="16" fill="#ffffff" stroke="#86efac" stroke-width="1.5"/>
-<text x="1340" y="954" class="node">ADAS</text>
-<line x1="278" y1="949" x2="690" y2="949" class="lane"/>
-<text x="294" y="982" class="small">Rx frmSasDiagReqMsg</text>
-<line x1="910" y1="949" x2="1322" y2="949" class="lane"/>
-<text x="926" y="982" class="small">Tx frmSteeringAngleMsg</text>
-<text x="52" y="1032" class="text">TEST_SCN -&gt; SAS -&gt; ADAS</text>
-  <rect x="30" y="1080" width="1540" height="258" class="box" fill="#eff6ff"/>
-<text x="52" y="1116" class="label">Network footprint</text>
-<rect x="52" y="1146" width="486" height="170" rx="20" ry="20" fill="#e0f2fe" stroke="#bfdbfe" stroke-width="1.4"/>
-<text x="70" y="1174" class="small">Upstream</text>
-<text x="70" y="1202" class="node">1</text>
-<text x="140" y="1202" class="small">Domain clusters</text>
-<rect x="70" y="1220" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
-<text x="180.0" y="1242" text-anchor="middle" class="small">Backbone · 1</text>
-<rect x="556" y="1146" width="486" height="170" rx="20" ry="20" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.4"/>
-<text x="574" y="1174" class="small">Peer / linked</text>
-<text x="574" y="1202" class="node">0</text>
-<text x="644" y="1202" class="small">Domain clusters</text>
-<rect x="574" y="1220" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
-<text x="684.0" y="1242" text-anchor="middle" class="small">-</text>
-<rect x="1060" y="1146" width="486" height="170" rx="20" ry="20" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.4"/>
-<text x="1078" y="1174" class="small">Downstream</text>
-<text x="1078" y="1202" class="node">3</text>
-<text x="1148" y="1202" class="small">Domain clusters</text>
-<rect x="1078" y="1220" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
-<text x="1188.0" y="1242" text-anchor="middle" class="small">ADAS · 1</text>
-<rect x="1308" y="1220" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
-<text x="1418.0" y="1242" text-anchor="middle" class="small">Backbone · 1</text>
-<rect x="1078" y="1264" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
-<text x="1188.0" y="1286" text-anchor="middle" class="small">Chassis · 1</text>
-<line x1="538" y1="1231.0" x2="556" y2="1231.0" class="lane"/>
-<line x1="1042" y1="1231.0" x2="1060" y2="1231.0" class="lane"/>
+<rect x="1204" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1222" y="256" class="small">Runtime</text>
+<text x="1222" y="286" class="node">Route</text>
+  <rect x="30" y="376" width="1540" height="194" class="box" fill="#ffffff"/>
+<text x="52" y="412" class="label">ECU metadata</text>
+<rect x="52" y="430" width="741" height="118" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="70" y="458" class="small">Key seam</text>
+<text x="70" y="482" class="small">-</text>
+<rect x="807" y="430" width="741" height="118" rx="18" ry="18" fill="#fff7ed" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="825" y="458" class="small">Risk focus</text>
+<text x="825" y="484" class="small">Steering-angle sensor</text>
+<text x="825" y="502" class="small">freshness is critical for</text>
+<text x="825" y="520" class="small">ESC and MDPS consumers</text>
+  <rect x="30" y="594" width="1540" height="320" class="box" fill="#ffffff"/>
+<text x="52" y="630" class="label">Action rail</text>
+<rect x="52" y="660" width="484" height="232" rx="20" ry="20" fill="#e0f2fe" stroke="#bfdbfe" stroke-width="1.6"/>
+<text x="70" y="690" class="small">Inbound</text>
+<text x="70" y="718" class="text">1 upstream actor / 1 reads</text>
+<rect x="70" y="764" width="218" height="52" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="179.0" y="782" text-anchor="middle" class="small">TEST_SCN</text>
+<rect x="558" y="660" width="484" height="232" rx="20" ry="20" fill="#dcfce7" stroke="#86efac" stroke-width="1.6"/>
+<text x="576" y="690" class="small">ECU Core</text>
+<text x="576" y="718" class="text">Steering readback</text>
+<rect x="576" y="764" width="218" height="52" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="685.0" y="782" text-anchor="middle" class="small">steering-angle sensor</text>
+<text x="685.0" y="797" text-anchor="middle" class="small">state</text>
+<rect x="806" y="764" width="218" height="52" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="915.0" y="782" text-anchor="middle" class="small">-</text>
+<rect x="576" y="828" width="218" height="52" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="685.0" y="846" text-anchor="middle" class="small">No direct test asset</text>
+<rect x="1064" y="660" width="484" height="232" rx="20" ry="20" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="1082" y="690" class="small">Outbound</text>
+<text x="1082" y="718" class="text">3 downstream actor / 2</text>
+<text x="1082" y="738" class="text">writes</text>
+<rect x="1082" y="764" width="218" height="52" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1191.0" y="782" text-anchor="middle" class="small">ADAS</text>
+<rect x="1312" y="764" width="218" height="52" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1421.0" y="782" text-anchor="middle" class="small">ESC</text>
+<rect x="1082" y="828" width="218" height="52" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1191.0" y="846" text-anchor="middle" class="small">TEST_SCN</text>
+<line x1="536" y1="776.0" x2="558" y2="776.0" class="lane"/>
+<line x1="1042" y1="776.0" x2="1064" y2="776.0" class="lane"/>
+  <rect x="30" y="938" width="1540" height="226" class="box" fill="#eff6ff"/>
+<text x="52" y="974" class="label">Signal path</text>
+<rect x="58" y="1020" width="220" height="58" rx="16" ry="16" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="76" y="1054" class="node">TEST_SCN</text>
+<rect x="690" y="1020" width="220" height="58" rx="16" ry="16" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="800" y="1054" text-anchor="middle" class="node">SAS</text>
+<rect x="1322" y="1020" width="220" height="58" rx="16" ry="16" fill="#ffffff" stroke="#86efac" stroke-width="1.5"/>
+<text x="1340" y="1054" class="node">ADAS</text>
+<line x1="278" y1="1049" x2="690" y2="1049" class="lane"/>
+<rect x="304" y="1014" width="160" height="70" rx="12" ry="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="384.0" y="1030" text-anchor="middle" class="small">SAS Diagnostic</text>
+<text x="384.0" y="1044" text-anchor="middle" class="small">Request</text>
+<text x="384.0" y="1060" text-anchor="middle" class="small">frmSasDiagReqMsg</text>
+<line x1="910" y1="1049" x2="1322" y2="1049" class="lane"/>
+<rect x="936" y="1014" width="160" height="70" rx="12" ry="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="1016.0" y="1030" text-anchor="middle" class="small">Steering Angle</text>
+<text x="1016.0" y="1046" text-anchor="middle" class="small">frmSteeringAngleMsg</text>
+<text x="52" y="1118" class="small">Path · TEST_SCN -&gt; SAS -&gt; ADAS</text>
+  <rect x="30" y="1188" width="1540" height="258" class="box" fill="#eff6ff"/>
+<text x="52" y="1224" class="label">Domain footprint</text>
+<rect x="52" y="1254" width="486" height="170" rx="20" ry="20" fill="#e0f2fe" stroke="#bfdbfe" stroke-width="1.4"/>
+<text x="70" y="1282" class="small">Upstream domains</text>
+<text x="70" y="1310" class="node">1</text>
+<text x="140" y="1310" class="small">upstream ECU</text>
+<rect x="70" y="1328" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="180.0" y="1350" text-anchor="middle" class="small">ETH Backbone · 1</text>
+<rect x="556" y="1254" width="486" height="170" rx="20" ry="20" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="574" y="1282" class="small">Linked domains</text>
+<text x="574" y="1310" class="node">3</text>
+<text x="644" y="1310" class="small">linked ECU</text>
+<rect x="574" y="1328" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="684.0" y="1350" text-anchor="middle" class="small">ADAS · 1</text>
+<rect x="804" y="1328" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="914.0" y="1350" text-anchor="middle" class="small">Chassis · 1</text>
+<rect x="574" y="1372" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="684.0" y="1394" text-anchor="middle" class="small">ETH Backbone · 1</text>
+<rect x="1060" y="1254" width="486" height="170" rx="20" ry="20" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.4"/>
+<text x="1078" y="1282" class="small">Downstream domains</text>
+<text x="1078" y="1310" class="node">3</text>
+<text x="1148" y="1310" class="small">downstream ECU</text>
+<rect x="1078" y="1328" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="1188.0" y="1350" text-anchor="middle" class="small">ADAS · 1</text>
+<rect x="1308" y="1328" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="1418.0" y="1350" text-anchor="middle" class="small">Chassis · 1</text>
+<rect x="1078" y="1372" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="1188.0" y="1394" text-anchor="middle" class="small">ETH Backbone · 1</text>
+<line x1="538" y1="1339.0" x2="556" y2="1339.0" class="lane"/>
+<line x1="1042" y1="1339.0" x2="1060" y2="1339.0" class="lane"/>
 </svg>

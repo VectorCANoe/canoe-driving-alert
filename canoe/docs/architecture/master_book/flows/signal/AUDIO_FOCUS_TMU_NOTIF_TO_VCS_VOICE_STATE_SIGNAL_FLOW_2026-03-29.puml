@@ -1,0 +1,64 @@
+@startuml audio_focus_tmu_notif_to_vcs_voice_state_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Audio Focus TMU Notif To VCS Voice State Signal Flow\n(audio focus + TMU service + cluster notification -> VCS voice and TTS state)
+
+participant "Audio focus bus" as Audio #F4F7FB
+participant "TMU service bus" as TMU #E8F0FE
+participant "Cluster notif bus" as Notif #FCE8FF
+participant "VCS\nvoice-assist owner" as VCS #E8F7E8
+participant "Voice/TTS bus" as VoiceBus #FFF4CC
+participant "Observers /\naudio consumers" as Obs #FFF4CC
+
+== VCS Inputs ==
+
+Audio -> VCS : frmAudioFocusMsg\nAudioFocusOwner / AudioDuckingLvl
+TMU -> VCS : frmTmuServiceStateMsg\nTmuServiceMode / SignalBars
+Notif -> VCS : frmClusterNotifMsg\nClusterNotifType / ClusterNotifArg
+activate VCS
+VCS -> VCS : clear stale inputs using 300 ms lease windows
+VCS -> VCS : voiceAssistState =\nTMU service ? 1 : audio focus ? 2 : 0
+VCS -> VCS : wakeWordState =\nTMU service mode 1 and signal bars >= 2
+VCS -> VCS : ttsState =\ncluster notif active and audio focus owner > 0
+VCS -> VCS : ttsPriority = clusterNotifArg,\nraised to 4 when ducking >= 4
+note right of VCS
+Representative gating inputs
+- AudioFocusOwner
+- AudioDuckingLvl
+- TmuServiceMode
+- SignalBars
+- ClusterNotifType / Arg
+end note
+
+== VCS Publish ==
+
+VCS -> VoiceBus : frmVoiceAssistStateMsg\nVoiceAssistState / WakeWordState
+VCS -> VoiceBus : frmSpeechTtsStateMsg\nTtsState / TtsPriority / TtsQueueDepth
+note right of VCS
+Representative outputs
+- VoiceAssistState
+- WakeWordState
+- TtsState
+- TtsPriority
+- TtsQueueDepth
+end note
+
+== Downstream Visibility ==
+
+VoiceBus -> Obs : voice/TTS visibility /\nAMP and audio observers
+deactivate VCS
+
+note over Audio, Obs
+Representative runtime chain
+1. Audio focus, TMU service, and cluster notification reach VCS
+2. VCS resolves voice-assist posture and wake-word availability
+3. VCS derives TTS activation and priority
+4. VCS publishes voice and TTS state for downstream audio consumers
+end note
+
+@enduml

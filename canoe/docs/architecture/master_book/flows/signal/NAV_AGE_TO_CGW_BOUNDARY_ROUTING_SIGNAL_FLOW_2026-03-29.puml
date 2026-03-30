@@ -1,0 +1,56 @@
+@startuml nav_age_to_cgw_boundary_routing_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Nav Age To CGW Boundary Routing Signal Flow\n(vehicle/nav/steering freshness -> CGW boundary status, warning path, and routing policy)
+
+participant "Vehicle / steering health" as Veh #F4F7FB
+participant "Infotainment / nav context" as Nav #E8F0FE
+participant "CGW\nboundary and routing owner" as CGW #E8F7E8
+participant "CoreState / fail-safe buses" as CoreBus #FFF4CC
+participant "Gateway / diag consumers" as Consumers #FFF4CC
+
+== Boundary Inputs ==
+
+Veh -> CGW : frmVehicleStateCanMsg\nfrmSteeringStateCanMsg\nfrmChassisHealthMsg
+Nav -> CGW : frmInfotainmentHealthMsg\nfrmNavigationRouteMsg
+activate CGW
+CGW -> CGW : calc vehicle, steering, info, and nav ages
+CGW -> CGW : gVehicleStateAgeMs =\npickFresherAgeMs(vehicleSignalAgeMs, chassisAgeMs)
+CGW -> CGW : gNavContextAgeMs =\npickFresherAgeMs(navSignalAgeMs, infoAgeMs)
+CGW -> CGW : boundaryAlive = 1 only when\nchassis/body/info ages <= 300
+CGW -> CGW : warningPathStatus = 0/1/2 by\nvehicle/nav/steering freshness and emergency path
+CGW -> CGW : failSafeMode from warningPathStatus\nand forceFailSafe override
+CGW -> CGW : routingPolicy =\n0 fail-safe / 2 emergency / 1 nominal
+note right of CGW
+Representative age gates
+- gVehicleStateAgeMs
+- gNavContextAgeMs
+- gSteeringAgeMs
+
+Representative outputs
+- domainBoundaryStatus
+- warningPathStatus
+- routingPolicy
+- failSafeMode
+end note
+
+== Boundary Publish ==
+
+CGW -> CoreBus : CoreState::domainBoundaryStatus /\nwarningPathStatus / routingPolicy
+CGW -> Consumers : fail-safe and gateway state\npublication for downstream consumers
+deactivate CGW
+
+note over Veh, Consumers
+Representative runtime chain
+1. Vehicle, steering, infotainment, and nav freshness converge in CGW
+2. CGW computes boundaryAlive and warningPathStatus from age windows
+3. CGW derives fail-safe mode and final routing policy
+4. CoreState and gateway consumers receive the boundary-routing posture
+end note
+
+@enduml

@@ -23,6 +23,9 @@ variables
   int gLastLockState;
   int gLastOpenState;
   int gLastWindowPos;
+  int gLastManualTraceLockCmd;
+  int gLastManualTraceOpenCmd;
+  int gLastManualTraceWindowCmd;
 }
 
 void traceDoorFlInputHealth(int doorCtrlInputStale,
@@ -102,6 +105,9 @@ on start
   gLastLockState = -1;
   gLastOpenState = -1;
   gLastWindowPos = -1;
+  gLastManualTraceLockCmd = -1;
+  gLastManualTraceOpenCmd = -1;
+  gLastManualTraceWindowCmd = -1;
   setTimer(tDoorFlCycle, 100);
   write("[DOOR_FL] start");
 }
@@ -150,7 +156,8 @@ on timer tDoorFlCycle
   int manualLockCmd;
   int manualOpenCmd;
 
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   doorCtrlInputStale = (ethIsRecentTick(gDoorCtrlRxMs, 300) == 1) ? 0 : 1;
   vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
   dkeyInputStale = (ethIsRecentTick(gDkeyRxMs, 300) == 1) ? 0 : 1;
@@ -198,6 +205,7 @@ on timer tDoorFlCycle
   }
   manualLockCmd = 0;
   manualOpenCmd = 0;
+  windowCmd = 0;
 
   lockState = 1;
   openState = 0;
@@ -268,6 +276,24 @@ on timer tDoorFlCycle
     gLastLockState = mDoor.DoorFlLockState;
     gLastOpenState = mDoor.DoorFlOpenState;
     gLastWindowPos = mDoor.DoorFlWindowPos;
+  }
+
+  if (manualMode == 1 &&
+      (manualLockCmd != gLastManualTraceLockCmd ||
+       manualOpenCmd != gLastManualTraceOpenCmd ||
+       windowCmd != gLastManualTraceWindowCmd))
+  {
+    write("[MANUAL-CORE][DOOR_FL] lockCmd=%d openCmd=%d windowCmd=%d out=%d/%d/%d drive=%d",
+          manualLockCmd,
+          manualOpenCmd,
+          windowCmd,
+          mDoor.DoorFlLockState,
+          mDoor.DoorFlOpenState,
+          mDoor.DoorFlWindowPos,
+          driveState);
+    gLastManualTraceLockCmd = manualLockCmd;
+    gLastManualTraceOpenCmd = manualOpenCmd;
+    gLastManualTraceWindowCmd = windowCmd;
   }
 
   setTimer(tDoorFlCycle, 100);

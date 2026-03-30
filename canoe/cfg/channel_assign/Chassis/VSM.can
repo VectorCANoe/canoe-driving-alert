@@ -212,7 +212,8 @@ on timer tVsmCycle
       mVsm.VsmAlertLevel != gLastAlertLevel ||
       mVsm.VsmIntervention != gLastIntervention)
   {
-    write("[VSM] state=%d alert=%d intervention=%d esc=%d/%d aeb=%d/%d/%d health=%d speed=%d",
+    write("[DYN-BRAKE][VSM] t=%lu state=%d alert=%d intervention=%d esc=%d/%d aeb=%d/%d/%d health=%d speed=%d",
+          getSimulationTimeMs(),
           mVsm.VsmCtrlState,
           mVsm.VsmAlertLevel,
           mVsm.VsmIntervention,

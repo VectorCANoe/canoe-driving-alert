@@ -1,0 +1,58 @@
+@startuml fuel_battery_state_to_obc_charge_power_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Fuel Battery State To OBC Charge Power Signal Flow\n(fuel/battery state + vehicle state -> OBC state, plug state, and charge power)
+
+participant "Fuel/battery bus" as FuelBat #F4F7FB
+participant "Vehicle state bus" as Veh #E8F0FE
+participant "OBC\non-board charger owner" as OBC #E8F7E8
+participant "OBC state bus" as ObcBus #FFF4CC
+participant "Observers /\ncharge readers" as Obs #FCE8FF
+
+== OBC Inputs ==
+
+FuelBat -> OBC : frmFuelBatteryStateMsg\nBatterySoc / ChargingState
+Veh -> OBC : frmVehicleStateCanMsg\ngDriveState
+activate OBC
+OBC -> OBC : inputStale / vehicleInputStale\nlease checks
+OBC -> OBC : if stale then\nbatterySoc = 50 / chargingState = 0
+OBC -> OBC : vehicleParked =\n(driveState == 0) or (chargingState > 0)
+OBC -> OBC : acPlugState =\nchargingState in {1,3} and vehicleParked
+OBC -> OBC : obcState = 3 when paused,\n2 when active AC charge, else 0
+OBC -> OBC : chargePowerKw =\n(100 - batterySoc) / 2 under active charge
+note right of OBC
+Representative gating inputs
+- BatterySoc
+- ChargingState
+- gDriveState
+end note
+
+== OBC Publish ==
+
+OBC -> ObcBus : frmObcStateMsg\nObcState / AcPlugState / ChargePowerKw
+note right of OBC
+Representative outputs
+- ObcState
+- AcPlugState
+- ChargePowerKw
+end note
+
+== Downstream Visibility ==
+
+ObcBus -> Obs : OBC visibility /\nCPC and charging observers
+deactivate OBC
+
+note over FuelBat, Obs
+Representative runtime chain
+1. Fuel/battery and vehicle state reach OBC
+2. OBC evaluates plug posture and active charging state
+3. OBC derives effective charge power from SOC gap
+4. OBC publishes charger state for downstream charging consumers
+end note
+
+@enduml

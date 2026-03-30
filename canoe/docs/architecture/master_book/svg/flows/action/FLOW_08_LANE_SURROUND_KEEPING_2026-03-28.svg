@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1340" viewBox="0 0 1600 1340">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #f8fafc; }
+    .title { font: 700 30px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .sub { font: 500 15px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 18px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .node { font: 700 16px 'Segoe UI', sans-serif; fill: #111827; }
+    .box { rx: 20; ry: 20; stroke: #475569; stroke-width: 2; }
+    .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <rect x="0" y="0" width="1600" height="1340" class="bg"/>
+  <text x="34" y="44" class="title">FLOW_08 - Lane and Surround Keeping</text>
+  <text x="34" y="72" class="sub">ADAS | canonical action flow</text>
+
+  <rect x="30" y="100" width="1540" height="318" class="box" fill="#fee2e2"/>
+  <text x="52" y="136" class="label">Flow overview</text>
+  <text x="52" y="166" class="text">Lane keeping, blind-spot, and surround sensing work together to support steering and warning decisions.</text>
+  <text x="52" y="202" class="small">Participants</text>
+  <rect x="52" y="214" width="220" height="54" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/><text x="70" y="246" class="node">LDWS_LKAS / LCA / BCW</text><rect x="292" y="214" width="220" height="54" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/><text x="310" y="246" class="node">SRR_*</text><rect x="532" y="214" width="220" height="54" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/><text x="550" y="246" class="node">ADAS</text><rect x="772" y="214" width="220" height="54" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/><text x="790" y="246" class="node">MDPS</text><rect x="52" y="298" width="220" height="54" rx="16" ry="16" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/><text x="70" y="330" class="node">CLU / HUD</text>
+
+  <rect x="30" y="462" width="1540" height="472" class="box" fill="#ffffff"/>
+  <text x="52" y="498" class="label">Action sequence</text>
+  <rect x="52" y="526" width="280" height="128" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/><text x="72" y="554" class="small">LDWS_LKAS / LCA / BCW</text><text x="72" y="582" class="label">Publish lane and surround state</text><text x="72" y="610" class="text">Lane departure and blind-spot</text>
+<text x="72" y="630" class="text">surfaces raise steering-side</text>
+<text x="72" y="650" class="text">warnings.</text><line x1="332" y1="590" x2="356" y2="590" class="lane"/><rect x="356" y="526" width="280" height="128" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/><text x="376" y="554" class="small">SRR_*</text><text x="376" y="582" class="label">Reinforce side context</text><text x="376" y="610" class="text">Short-range radar confirms</text>
+<text x="376" y="630" class="text">adjacent-lane occupancy and</text>
+<text x="376" y="650" class="text">movement.</text><line x1="636" y1="590" x2="660" y2="590" class="lane"/><rect x="660" y="526" width="280" height="128" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/><text x="680" y="554" class="small">ADAS</text><text x="680" y="582" class="label">Select steering-side alert</text><text x="680" y="610" class="text">ADAS chooses whether</text>
+<text x="680" y="630" class="text">steering-related warning or</text>
+<text x="680" y="650" class="text">release logic should fire.</text><rect x="52" y="704" width="280" height="128" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/><text x="72" y="732" class="small">MDPS</text><text x="72" y="760" class="label">Consume steering-side state</text><text x="72" y="788" class="text">Steering controller reads the</text>
+<text x="72" y="808" class="text">lane/surround state where</text>
+<text x="72" y="828" class="text">needed.</text><line x1="332" y1="768" x2="356" y2="768" class="lane"/><rect x="356" y="704" width="280" height="128" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/><text x="376" y="732" class="small">CLU / HUD</text><text x="376" y="760" class="label">Render lane-side warning</text><text x="376" y="788" class="text">Cluster and HUD show the</text>
+<text x="376" y="808" class="text">selected lane or surround cue.</text>
+
+  <rect x="30" y="958" width="500" height="300" class="box" fill="#eff6ff"/>
+  <text x="52" y="994" class="label">Related ECU bank</text>
+  <text x="52" y="1024" class="text">- ADAS</text>
+<text x="52" y="1044" class="text">- BCW</text>
+<text x="52" y="1064" class="text">- LCA</text>
+<text x="52" y="1084" class="text">- LDWS_LKAS</text>
+<text x="52" y="1104" class="text">- SRR_FL</text>
+<text x="52" y="1124" class="text">- SRR_FR</text>
+<text x="52" y="1144" class="text">- SRR_RL</text>
+<text x="52" y="1164" class="text">- SRR_RR</text>
+
+  <rect x="550" y="958" width="500" height="300" class="box" fill="#ffffff"/>
+  <text x="572" y="994" class="label">Representative signals</text>
+  <text x="572" y="1024" class="text">- Lane State</text>
+<text x="572" y="1044" class="text">- Blind Spot State</text>
+<text x="572" y="1064" class="text">- Steering State Can</text>
+<text x="572" y="1084" class="text">- Warning Text Code</text>
+
+  <rect x="1070" y="958" width="500" height="300" class="box" fill="#fff7ed"/>
+  <text x="1092" y="994" class="label">Why this flow matters</text>
+  <text x="1092" y="1024" class="text">Lane and surround warnings appear as one</text>
+<text x="1092" y="1044" class="text">steering-side assistance behavior.</text>
+</svg>

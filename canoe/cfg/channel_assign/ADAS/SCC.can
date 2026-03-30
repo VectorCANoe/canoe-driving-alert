@@ -26,6 +26,12 @@ variables
   int gLastInternalCruiseState;
   int gLastInternalCruiseSetSpeed;
   dword gLastInternalCruiseTxMs;
+  int gLastManualTraceCruiseCmdState;
+  int gLastManualTraceCruiseCmdSetSpeed;
+  int gLastManualTraceCruiseSticky;
+  int gLastManualTraceCruiseOutState;
+  int gLastManualTraceCruiseGap;
+  int gLastManualTraceCruiseOutSetSpeed;
 }
 
 void publishCruiseState()
@@ -79,7 +85,8 @@ void publishCruiseState()
 
   manualCruiseStateCmd = clampRange((int)@Cmd::cruiseStateCmd, 0, 2);
   manualCruiseSetSpeedCmd = clampRange((int)@Cmd::cruiseSetSpeedCmd, 0, 255);
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   if (manualMode == 0)
   {
     gPanelCruiseSticky = 0;
@@ -87,17 +94,26 @@ void publishCruiseState()
     gPanelCruiseSetSpeedCmd = 0;
   }
 
-  if (manualMode == 1 && gPanelCruiseSticky == 1)
+  if (manualMode == 1)
   {
-    cruiseState = clampRange(gPanelCruiseStateCmd, 0, 3);
-    gapLevel = (cruiseState >= 2) ? 3 : 2;
-    cruiseSetSpeed = (gPanelCruiseSetSpeedCmd > 0) ? gPanelCruiseSetSpeedCmd : speedLimit;
-  }
-  else if (manualCruiseStateCmd > 0)
-  {
-    cruiseState = manualCruiseStateCmd;
-    gapLevel = (manualCruiseStateCmd >= 2) ? 3 : 2;
-    cruiseSetSpeed = (manualCruiseSetSpeedCmd > 0) ? manualCruiseSetSpeedCmd : speedLimit;
+    if (gPanelCruiseSticky == 1)
+    {
+      cruiseState = clampRange(gPanelCruiseStateCmd, 0, 3);
+      gapLevel = (cruiseState >= 2) ? 3 : 2;
+      cruiseSetSpeed = (gPanelCruiseSetSpeedCmd > 0) ? gPanelCruiseSetSpeedCmd : speedLimit;
+    }
+    else if (manualCruiseStateCmd > 0)
+    {
+      cruiseState = manualCruiseStateCmd;
+      gapLevel = (manualCruiseStateCmd >= 2) ? 3 : 2;
+      cruiseSetSpeed = (manualCruiseSetSpeedCmd > 0) ? manualCruiseSetSpeedCmd : speedLimit;
+    }
+    else
+    {
+      cruiseState = 0;
+      gapLevel = 2;
+      cruiseSetSpeed = 0;
+    }
   }
   else
   {
@@ -128,7 +144,7 @@ void publishCruiseState()
   {
     cruiseSetSpeed = 30;
   }
-  if (cruiseSetSpeed > speedLimit)
+  if (manualMode == 0 && cruiseSetSpeed > speedLimit)
   {
     cruiseSetSpeed = speedLimit;
   }
@@ -161,6 +177,32 @@ void publishCruiseState()
     gLastGapLevel = gapLevel;
     gLastCruiseSetSpeed = cruiseSetSpeed;
   }
+
+  if (manualMode == 1 &&
+      (manualCruiseStateCmd != gLastManualTraceCruiseCmdState ||
+       manualCruiseSetSpeedCmd != gLastManualTraceCruiseCmdSetSpeed ||
+       gPanelCruiseSticky != gLastManualTraceCruiseSticky ||
+       cruiseState != gLastManualTraceCruiseOutState ||
+       gapLevel != gLastManualTraceCruiseGap ||
+       cruiseSetSpeed != gLastManualTraceCruiseOutSetSpeed))
+  {
+    write("[MANUAL-CORE][SCC] cmd=%d/%d sticky=%d out=%d/%d gap=%d speed=%d risk=%d fs=%d",
+          manualCruiseStateCmd,
+          manualCruiseSetSpeedCmd,
+          gPanelCruiseSticky,
+          cruiseState,
+          cruiseSetSpeed,
+          gapLevel,
+          gVehicleSpeed,
+          riskLevel,
+          failSafeMode);
+    gLastManualTraceCruiseCmdState = manualCruiseStateCmd;
+    gLastManualTraceCruiseCmdSetSpeed = manualCruiseSetSpeedCmd;
+    gLastManualTraceCruiseSticky = gPanelCruiseSticky;
+    gLastManualTraceCruiseOutState = cruiseState;
+    gLastManualTraceCruiseGap = gapLevel;
+    gLastManualTraceCruiseOutSetSpeed = cruiseSetSpeed;
+  }
 }
 
 on start
@@ -185,6 +227,12 @@ on start
   gLastInternalCruiseState = -1;
   gLastInternalCruiseSetSpeed = -1;
   gLastInternalCruiseTxMs = 0;
+  gLastManualTraceCruiseCmdState = -1;
+  gLastManualTraceCruiseCmdSetSpeed = -1;
+  gLastManualTraceCruiseSticky = -1;
+  gLastManualTraceCruiseOutState = -1;
+  gLastManualTraceCruiseGap = -1;
+  gLastManualTraceCruiseOutSetSpeed = -1;
   /* Preserve donor pedal-panel command seams across measurement start.
      SCC owns cruise state/readback, not the panel command values themselves. */
   @Powertrain::cruiseState = 0;

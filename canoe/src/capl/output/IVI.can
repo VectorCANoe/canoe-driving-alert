@@ -33,6 +33,15 @@ variables
   dword gVehicleStateRxMs;
   dword gNavStateRxMs;
   dword gRouteRxMs;
+  int gLastDynSourceMode;
+  int gLastDynAlertLevel;
+  int gLastDynAlertType;
+  int gLastDynPresentationMode;
+  int gLastDynRenderMode;
+  int gLastDynRenderTextCode;
+  int gLastDynEffectiveVolume;
+  int gLastDynBaseZoneContext;
+  int gLastDynDriveState;
 }
 
 int getIviTxPort()
@@ -150,7 +159,7 @@ int deriveRenderDirection(int renderTextCode, int alertType)
 {
   if (renderTextCode >= 100 && renderTextCode <= 203)
   {
-    return clampRange(renderTextCode % 100, 0, 3);
+    return clampRange(renderTextCode % 10, 0, 3);
   }
   if (alertType == 5)
   {
@@ -456,6 +465,15 @@ on start
   gCanNavSpeedLimit = 0;
   gCanRouteEtaMinutes = 0;
   gCanRouteProgress = 0;
+  gLastDynSourceMode = -1;
+  gLastDynAlertLevel = -1;
+  gLastDynAlertType = -1;
+  gLastDynPresentationMode = -1;
+  gLastDynRenderMode = -1;
+  gLastDynRenderTextCode = -1;
+  gLastDynEffectiveVolume = -1;
+  gLastDynBaseZoneContext = -1;
+  gLastDynDriveState = -1;
   gVehicleStateRxMs = 0;
   gNavStateRxMs = 0;
   gRouteRxMs = 0;
@@ -554,7 +572,8 @@ on timer tIviCycle
     alertType = 0;
     timeoutClear = 0;
   }
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   manualAlertOverride = clampRange((int)@Inject::manualAlertOverrideCmd, 0, 255);
   manualAlertMode = (manualMode == 1 &&
                      (manualAlertOverride > 0 ||
@@ -668,6 +687,7 @@ on timer tIviBase50
   int useBackbone;
   int useDecision;
   int useEffective;
+  int sourceMode;
   int manualMode;
   int manualAlertOverride;
   int manualAlertMode;
@@ -684,7 +704,8 @@ on timer tIviBase50
     speed = 0;
     driveState = 0;
   }
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   manualAlertOverride = clampRange((int)@Inject::manualAlertOverrideCmd, 0, 255);
   if (manualAlertOverride == 0 && (((int)@Inject::emergencyActiveCmd) > 0))
   {
@@ -732,6 +753,23 @@ on timer tIviBase50
     alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
     alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
   }
+  sourceMode = 0;
+  if (useEffective == 1)
+  {
+    sourceMode = 1;
+  }
+  else if (useDecision == 1)
+  {
+    sourceMode = 2;
+  }
+  else if (useBackbone == 1)
+  {
+    sourceMode = 3;
+  }
+  if (manualAlertMode == 1)
+  {
+    sourceMode = 4;
+  }
   emergencyType = clampRange((int)@Core::emergencyContext, 0, 2);
   emergencyDirection = clampRange((int)@CoreState::emergencyIngressDirection, 0, 3);
   emergencyEta = clampRange((int)@CoreState::emergencyIngressEtaSec, 0, 255);
@@ -765,6 +803,41 @@ on timer tIviBase50
   if (alertLevel > 0 && volumeOverride > 0)
   {
     effectiveVolume = volumeOverride;
+  }
+
+  if (sourceMode != gLastDynSourceMode ||
+      alertLevel != gLastDynAlertLevel ||
+      alertType != gLastDynAlertType ||
+      presentationMode != gLastDynPresentationMode ||
+      renderMode != gLastDynRenderMode ||
+      renderTextCode != gLastDynRenderTextCode ||
+      effectiveVolume != gLastDynEffectiveVolume ||
+      baseZoneContext != gLastDynBaseZoneContext ||
+      driveState != gLastDynDriveState)
+  {
+    write("[DYN-ALERT][IVI] src=%d manual=%d alert=%d/%d zone=%d drive=%d render=%d/%d/%d text=%d present=%d vol=%d eta=%d",
+          sourceMode,
+          manualAlertMode,
+          alertLevel,
+          alertType,
+          baseZoneContext,
+          driveState,
+          renderMode,
+          renderColor,
+          renderPattern,
+          renderTextCode,
+          presentationMode,
+          effectiveVolume,
+          emergencyEta);
+    gLastDynSourceMode = sourceMode;
+    gLastDynAlertLevel = alertLevel;
+    gLastDynAlertType = alertType;
+    gLastDynPresentationMode = presentationMode;
+    gLastDynRenderMode = renderMode;
+    gLastDynRenderTextCode = renderTextCode;
+    gLastDynEffectiveVolume = effectiveVolume;
+    gLastDynBaseZoneContext = baseZoneContext;
+    gLastDynDriveState = driveState;
   }
 
   /* CLU owns the mirrored display state after consuming these frames. */

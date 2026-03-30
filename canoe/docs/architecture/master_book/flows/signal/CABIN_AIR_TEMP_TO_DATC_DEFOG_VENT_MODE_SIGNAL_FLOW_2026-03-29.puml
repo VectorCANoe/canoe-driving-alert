@@ -1,0 +1,64 @@
+@startuml cabin_air_temp_to_datc_defog_vent_mode_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Cabin Air Temp To DATC Defog Vent Mode Signal Flow\n(cabin-air temperature -> DATC local HVAC defog and vent-mode decision)
+
+participant "Cabin-air sensor bus" as Cabin #F4F7FB
+participant "TMU service bus" as TMU #E8F0FE
+participant "DATC\nHVAC owner" as DATC #E8F7E8
+participant "HVAC state/actuator bus" as HvacBus #FFF4CC
+participant "Observers /\ncomfort readers" as Obs #FCE8FF
+
+== DATC Inputs ==
+
+Cabin -> DATC : frmCabinAirStateMsg\nCabinTemp
+TMU -> DATC : frmTmuServiceStateMsg\nRemoteClimateReq / TmuLinkState /\nTmuServiceMode / SignalBars
+activate DATC
+DATC -> DATC : cabinAirInputStale =\nethIsRecentTick(gCabinAirRxMs, 300)
+DATC -> DATC : tmuInputStale =\nethIsRecentTick(gTmuServiceRxMs, 300)
+DATC -> DATC : if cabin-air stale then\nCabinTemp = 24
+DATC -> DATC : if TMU remote climate active and link healthy\nthen remote profile wins
+DATC -> DATC : else derive local HVAC posture from CabinTemp
+DATC -> DATC : cold cabin -> DefogMode=1,\nVentMode=1, warmer set temp
+DATC -> DATC : hot cabin -> AC on,\nVentMode=2, higher blower
+note right of DATC
+Representative gating inputs
+- CabinTemp
+- RemoteClimateReq
+- TmuLinkState
+- TmuServiceMode
+- SignalBars
+end note
+
+== DATC Publish ==
+
+DATC -> HvacBus : frmHvacStateMsg\nCabinSetTemp / BlowerLevel / AcCompressorOn
+DATC -> HvacBus : frmHvacActuatorMsg\nVentMode / DefogMode / FanRpmStep
+note right of DATC
+Representative outputs
+- CabinSetTemp
+- BlowerLevel
+- VentMode
+- DefogMode
+- FanRpmStep
+end note
+
+== Downstream Visibility ==
+
+HvacBus -> Obs : HVAC actuator visibility /\ncomfort observers
+deactivate DATC
+
+note over Cabin, Obs
+Representative runtime chain
+1. Cabin-air temperature and TMU service context reach DATC
+2. DATC checks source freshness and remote-climate gating
+3. DATC derives local defog / vent / blower posture
+4. DATC publishes HVAC state and actuator outputs
+end note
+
+@enduml

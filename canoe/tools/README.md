@@ -47,6 +47,47 @@ Active utility scripts for CANoe maintenance.
   - fallback vendored jar: `canoe/tools/20_VERIFICATION/vendor/plantuml-1.2024.8.jar`
   - Java runtime on PATH, or `C:\Program Files\Java\jdk1.8.0_261\bin\java.exe`
 
+### `20_VERIFICATION/20_probe_runtime_couplings.py`
+- capture reproducible runtime coupling evidence from an active CANoe session
+- requires:
+  - CANoe already open with the intended cfg
+  - measurement already running
+- supports named probe profiles:
+  - `alert`
+  - `body`
+  - `access`
+  - `brake`
+  - `all`
+- optional scenario trigger:
+  - `--scenario-id <id>`
+- output path:
+  - `canoe/tmp/runtime_probes/<timestamp>_<profile>[_scnN]/`
+- writes:
+  - `probe.json`
+  - `probe.csv`
+  - `README.txt`
+
+### `20_VERIFICATION/20_verify_manual_core_vehicle.py`
+- verify the owner-ECU manual baseline car from an active CANoe session
+- checks:
+  - `P/N/D/R` selector behavior
+  - throttle / brake
+  - steering extremes
+  - manual cruise set
+  - ambient command reflection
+  - door unlock/open standstill path
+  - window down path
+  - turn signal reflection
+  - wiper animation path
+- requires:
+  - CANoe already open with the intended cfg
+  - measurement already running
+- output path:
+  - `canoe/tmp/manual_core_vehicle_smoke/<timestamp>_manual_core_vehicle/`
+- writes:
+  - `result.json`
+  - `README.txt`
+
 ## Policy
 
 - `driving-alert-workproducts` documents remain the source of truth

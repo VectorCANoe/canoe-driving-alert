@@ -1,0 +1,61 @@
+@startuml object_safety_to_ldr_health_range_bucket_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Object Safety To LDR Health Range Bucket Signal Flow\n(object-safety input + ADAS domain state -> LDR health and range-bucket publication)
+
+participant "Lidar input bus" as LidarIn #F4F7FB
+participant "ADAS domain state" as AdasDom #E8F0FE
+participant "LDR\nlidar-state owner" as LDR #E8F7E8
+participant "Lidar state bus" as LdrBus #FFF4CC
+participant "Observers /\nperception readers" as Obs #FCE8FF
+
+== LDR Inputs ==
+
+LidarIn -> LDR : frmLidarInputMsg\nTargetDetected / Confidence / EventCode
+AdasDom -> LDR : frmAdasDomainStateMsg\nWarningPathStatus / E2eHealthState / FailSafeMode
+activate LDR
+LDR -> LDR : objectSafetyInputStale =\nethIsRecentTick(gObjectSafetyRxTsMs, 300)
+LDR -> LDR : pathReady = lidarPathReady()\nfrom warning path / E2E / fail-safe
+LDR -> LDR : if stale or path blocked then\nconfidence/event/track = 0
+LDR -> LDR : derive health from\npathReady, fail-safe, track-valid, confidence
+LDR -> LDR : derive freeSpaceClass and rangeBucket
+note right of LDR
+Representative gating inputs
+- TargetDetected
+- Confidence
+- EventCode
+- WarningPathStatus
+- E2eHealthState
+- FailSafeMode
+end note
+
+== LDR Publish ==
+
+LDR -> LdrBus : frmLidarStateMsg\nLidarHealth / TargetDetected /\nFreeSpaceClass / Confidence / RangeBucket
+note right of LDR
+Representative outputs
+- LidarHealth
+- TargetDetected
+- Confidence
+- RangeBucket
+end note
+
+== Downstream Visibility ==
+
+LdrBus -> Obs : perception visibility /\nADAS and observer consumption
+deactivate LDR
+
+note over LidarIn, Obs
+Representative runtime chain
+1. Object-safety input and ADAS domain state reach LDR
+2. LDR checks path readiness and fail-safe posture
+3. LDR derives health, confidence class, and range bucket
+4. LDR publishes frmLidarStateMsg for downstream readers
+end note
+
+@enduml

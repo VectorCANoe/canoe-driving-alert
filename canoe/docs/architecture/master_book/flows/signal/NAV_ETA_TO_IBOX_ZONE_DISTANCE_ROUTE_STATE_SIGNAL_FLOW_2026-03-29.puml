@@ -1,0 +1,59 @@
+@startuml nav_eta_to_ibox_zone_distance_route_state_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Nav ETA To IBOX Zone Distance Route State Signal Flow\n(navigation ETA + route activity -> IBOX zone-distance derivation and route-state aggregation)
+
+participant "Nav module bus" as NavMod #F4F7FB
+participant "Navigation route bus" as NavRoute #E8F0FE
+participant "IBOX\nconnectivity aggregator" as IBOX #E8F7E8
+participant "IBOX runtime state" as IboxState #FFF4CC
+participant "Observers /\nroute readers" as Obs #FFF4CC
+
+== IBOX Inputs ==
+
+NavMod -> IBOX : frmNavModuleStateMsg\nNavRouteClass / NavGuideType /\nNavEtaMinutes / NavSpeedLimit
+NavRoute -> IBOX : frmNavigationRouteMsg\nEtaMinutes
+activate IBOX
+IBOX -> IBOX : nav freshness windows
+IBOX -> IBOX : etaMinutes = Route Eta when fresh,\nelse Nav Eta when fresh
+IBOX -> IBOX : deriveZoneDistanceFromEtaMinutes()
+IBOX -> IBOX : roadZone = NavRouteClass
+IBOX -> IBOX : routeState = 1 when roadZone>0,\n2 when navDirection>0 and zoneDistance>0
+note right of IBOX
+Representative gating inputs
+- NavRouteClass
+- NavGuideType
+- NavEtaMinutes
+- EtaMinutes
+end note
+
+== IBOX Runtime Publication ==
+
+IBOX -> IboxState : runtime zoneDistance / routeState /\nroadZone / navDirection
+note right of IBOX
+Representative outputs
+- zoneDistance
+- routeState
+- roadZone
+- navDirection
+end note
+
+== Downstream Visibility ==
+
+IboxState -> Obs : route-distance visibility /\nroute observers
+deactivate IBOX
+
+note over NavMod, Obs
+Representative runtime chain
+1. Navigation module and route ETA context reach IBOX
+2. IBOX selects the freshest ETA source
+3. IBOX derives zone distance from ETA buckets
+4. IBOX updates route-state aggregation for downstream readers
+end note
+
+@enduml

@@ -24,6 +24,15 @@ variables
   int gLastAebInputStale;
   int gLastBrakePedal;
   int gLastAssistReq;
+  int gLastAssistPressureFloor;
+  int gLastTraceAebStopReq;
+  int gLastTraceAebDecelProfile;
+  int gLastTraceAebDomainHealth;
+  int gLastManualTraceSteeringCmd;
+  int gLastManualTraceSteeringReadback;
+  int gLastManualTraceBrakeCmd;
+  int gLastManualTraceAppliedBrake;
+  int gLastManualTraceBrakePressure;
 }
 
 int deriveManualSteeringInputFromAngle(int steeringAngle)
@@ -150,6 +159,15 @@ on start
   gLastAebInputStale = 0;
   gLastBrakePedal = -1;
   gLastAssistReq = -1;
+  gLastAssistPressureFloor = -1;
+  gLastTraceAebStopReq = -1;
+  gLastTraceAebDecelProfile = -1;
+  gLastTraceAebDomainHealth = -1;
+  gLastManualTraceSteeringCmd = -10000;
+  gLastManualTraceSteeringReadback = -10000;
+  gLastManualTraceBrakeCmd = -1;
+  gLastManualTraceAppliedBrake = -1;
+  gLastManualTraceBrakePressure = -1;
   setTimer(tEscCycle, 100);
   write("[ESC] start");
 }
@@ -205,6 +223,7 @@ on timer tEscCycle
   int driveState;
   int manualMode;
   int steeringInput;
+  int inputBrakePedal;
   int appliedBrakePedal;
   int brakePressure;
   int absActive;
@@ -212,6 +231,8 @@ on timer tEscCycle
   int absSlip;
   int yawRate;
   int latAccel;
+  int steeringAngleCmd;
+  int steeringAngleReadback;
 
   vehicleStateInputStale = (ethIsRecentTick(gVehicleStateRxMs, 300) == 1) ? 0 : 1;
   steeringInputStale = (ethIsRecentTick(gSteeringRxMs, 300) == 1) ? 0 : 1;
@@ -233,8 +254,10 @@ on timer tEscCycle
   speedNorm = gSpeedNorm;
   driveState = gDriveState;
   steeringInput = gSteeringInput;
-  appliedBrakePedal = gBrakePedal;
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  inputBrakePedal = gBrakePedal;
+  appliedBrakePedal = inputBrakePedal;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   if (vehicleStateInputStale == 1)
   {
     speedNorm = 0;
@@ -246,17 +269,20 @@ on timer tEscCycle
   }
   if (pedalInputStale == 1)
   {
+    inputBrakePedal = 0;
     appliedBrakePedal = 0;
   }
   if (manualMode == 1)
   {
     publishManualSteeringReadback((int)@Cmd::steeringAngleCmd);
     steeringInput = deriveManualSteeringInputFromAngle((int)@Chassis::steeringAngle);
-    appliedBrakePedal = clampRange((int)@Cmd::brakePedalPct, 0, 100);
+    inputBrakePedal = clampRange((int)@Cmd::brakePedalPct, 0, 100);
+    appliedBrakePedal = inputBrakePedal;
     @Chassis::brakePressure = appliedBrakePedal;
   }
   else
   {
+    appliedBrakePedal = inputBrakePedal;
     @Chassis::brakePressure = clampRange(appliedBrakePedal, 0, 100);
   }
   if (assistPressureFloor > 0 && appliedBrakePedal < assistPressureFloor)
@@ -273,6 +299,8 @@ on timer tEscCycle
   latAccel = speedNorm;
   @Chassis::brakeLamp = (appliedBrakePedal > 5) ? 1 : 0;
   @Chassis::absActive = absActive;
+  steeringAngleCmd = clampRange((int)@Cmd::steeringAngleCmd, -540, 540);
+  steeringAngleReadback = clampRange((int)@Chassis::steeringAngle, -540, 540);
 
   mWheelSpd.WheelSpdFL = speedNorm;
   mWheelSpd.WheelSpdFR = speedNorm;
@@ -328,12 +356,54 @@ on timer tEscCycle
   mFriction.RoadFrictionCoef = 80;
   output(mFriction);
 
-  if (appliedBrakePedal != gLastBrakePedal || decelAssistReq != gLastAssistReq)
+  if (appliedBrakePedal != gLastBrakePedal ||
+      decelAssistReq != gLastAssistReq ||
+      assistPressureFloor != gLastAssistPressureFloor ||
+      aebStopReq != gLastTraceAebStopReq ||
+      aebDecelProfile != gLastTraceAebDecelProfile ||
+      aebDomainHealth != gLastTraceAebDomainHealth)
   {
-    write("[ESC] speed=%d pedal=%d assist=%d pressure=%d abs=%d esp=%d",
-          speedNorm, appliedBrakePedal, decelAssistReq, brakePressure, absActive, espActive);
+    write("[DYN-BRAKE][ESC] t=%lu speed=%d input=%d applied=%d floor=%d assist=%d aeb=%d/%d/%d pressure=%d abs=%d esp=%d",
+          getSimulationTimeMs(),
+          speedNorm,
+          inputBrakePedal,
+          appliedBrakePedal,
+          assistPressureFloor,
+          decelAssistReq,
+          aebStopReq,
+          aebDecelProfile,
+          aebDomainHealth,
+          brakePressure,
+          absActive,
+          espActive);
     gLastBrakePedal = appliedBrakePedal;
     gLastAssistReq = decelAssistReq;
+    gLastAssistPressureFloor = assistPressureFloor;
+    gLastTraceAebStopReq = aebStopReq;
+    gLastTraceAebDecelProfile = aebDecelProfile;
+    gLastTraceAebDomainHealth = aebDomainHealth;
+  }
+
+  if (manualMode == 1 &&
+      (steeringAngleCmd != gLastManualTraceSteeringCmd ||
+       steeringAngleReadback != gLastManualTraceSteeringReadback ||
+       inputBrakePedal != gLastManualTraceBrakeCmd ||
+       appliedBrakePedal != gLastManualTraceAppliedBrake ||
+       brakePressure != gLastManualTraceBrakePressure))
+  {
+    write("[MANUAL-CORE][ESC] steerCmd=%d steer=%d brakeCmd=%d applied=%d pressure=%d abs=%d esp=%d",
+          steeringAngleCmd,
+          steeringAngleReadback,
+          inputBrakePedal,
+          appliedBrakePedal,
+          brakePressure,
+          absActive,
+          espActive);
+    gLastManualTraceSteeringCmd = steeringAngleCmd;
+    gLastManualTraceSteeringReadback = steeringAngleReadback;
+    gLastManualTraceBrakeCmd = inputBrakePedal;
+    gLastManualTraceAppliedBrake = appliedBrakePedal;
+    gLastManualTraceBrakePressure = brakePressure;
   }
 
   setTimer(tEscCycle, 100);

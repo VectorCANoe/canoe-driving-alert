@@ -41,6 +41,7 @@ variables
   int gCanVehicleSpeed;
   int gCanDriveState;
   int gCanSteeringInput;
+  int gCanBrakePedal;
   int gCanBrakePressure;
   int gCanBrakeMode;
   int gCanAccelPedal;
@@ -66,6 +67,13 @@ variables
   dword gLastAcceptedObjectSrcPort;
   dword gLastRejectedObjectSrcIp;
   dword gLastRejectedObjectSrcPort;
+  int gLastTraceManualAlertMode;
+  int gLastTraceBaseZoneContext;
+  int gLastTraceDriveState;
+  int gLastTraceDuplicatePopupGuard;
+  int gLastTraceBoundaryStatus;
+  int gLastTraceAlertLevel;
+  int gLastTraceAlertType;
 }
 
 int getAdasTxPort()
@@ -562,7 +570,8 @@ void runArbiter()
   int directSelectedAlertLevelHint;
   int directSelectedAlertTypeHint;
 
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   manualAlertOverride = clampRange((int)@Inject::manualAlertOverrideCmd, 0, 255);
   manualAlertMode = (manualMode == 1 &&
                      (manualAlertOverride > 0 ||
@@ -612,7 +621,11 @@ void runArbiter()
   {
     steeringInput = 0;
   }
-  if (ethIsRecentTick(gBrakeStatusRxMs, 300) == 1)
+  if (ethIsRecentTick(gPedalInputRxMs, 300) == 1)
+  {
+    brakePedal = clampRange(gCanBrakePedal, 0, 100);
+  }
+  else if (ethIsRecentTick(gBrakeStatusRxMs, 300) == 1)
   {
     brakePedal = clampRange(gCanBrakePressure / 2, 0, 100);
     if (gCanBrakeMode > 0 && brakePedal == 0)
@@ -820,9 +833,6 @@ void runArbiter()
     }
   }
 
-  selectedAlertDecisionLevel = selectedAlertLevel;
-  selectedAlertDecisionType = selectedAlertType;
-
   if (timeoutClear == 1)
   {
     staleInput = 1;
@@ -942,12 +952,45 @@ void runArbiter()
     }
   }
 
+  selectedAlertDecisionLevel = selectedAlertLevel;
+  selectedAlertDecisionType = selectedAlertType;
+
   if (staleInput != gLastStaleInputState || fallbackApplied != gLastFallbackState)
   {
     write("[ADAS] robust stale=%d fallback=%d timeout=%d boundary=%d failSafe=%d lastRx=%d",
           staleInput, fallbackApplied, timeoutClear, boundaryStatus, failSafeMode, (int)lastEmergencyRxMs);
     gLastStaleInputState = staleInput;
     gLastFallbackState = fallbackApplied;
+  }
+
+  if (manualAlertMode != gLastTraceManualAlertMode ||
+      baseZoneContext != gLastTraceBaseZoneContext ||
+      driveState != gLastTraceDriveState ||
+      duplicatePopupGuard != gLastTraceDuplicatePopupGuard ||
+      boundaryStatus != gLastTraceBoundaryStatus ||
+      selectedAlertLevel != gLastTraceAlertLevel ||
+      selectedAlertType != gLastTraceAlertType)
+  {
+    write("[DYN-ALERT][ADAS] manual=%d zone=%d drive=%d alert=%d/%d stale=%d fallback=%d dup=%d boundary=%d timeout=%d emergency=%d risk=%d",
+          manualAlertMode,
+          baseZoneContext,
+          driveState,
+          selectedAlertLevel,
+          selectedAlertType,
+          staleInput,
+          fallbackApplied,
+          duplicatePopupGuard,
+          boundaryStatus,
+          timeoutClear,
+          emergencyContext,
+          proximityRiskLevel);
+    gLastTraceManualAlertMode = manualAlertMode;
+    gLastTraceBaseZoneContext = baseZoneContext;
+    gLastTraceDriveState = driveState;
+    gLastTraceDuplicatePopupGuard = duplicatePopupGuard;
+    gLastTraceBoundaryStatus = boundaryStatus;
+    gLastTraceAlertLevel = selectedAlertLevel;
+    gLastTraceAlertType = selectedAlertType;
   }
 
   @Core::decelAssistDecisionReq = decelDecisionReq;
@@ -1047,7 +1090,8 @@ void updateWarningState()
     speedLimit = 30;
     baseZoneContext = 0;
   }
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   manualAlertOverride = clampRange((int)@Inject::manualAlertOverrideCmd, 0, 255);
   manualAlertMode = (manualMode == 1 &&
                      (manualAlertOverride > 0 ||
@@ -1457,6 +1501,7 @@ on message frmBrakeStatusMsg
 
 on message frmPedalInputCanMsg
 {
+  gCanBrakePedal = clampRange((int)this.BrakePedal, 0, 100);
   gCanAccelPedal = clampRange((int)this.AccelPedal, 0, 100);
   gPedalInputRxMs = getSimulationTimeMs();
 }
@@ -1526,6 +1571,7 @@ on start
   gCanVehicleSpeed = 0;
   gCanDriveState = 0;
   gCanSteeringInput = 0;
+  gCanBrakePedal = 0;
   gCanBrakePressure = 0;
   gCanBrakeMode = 0;
   gCanAccelPedal = 0;
@@ -1551,6 +1597,13 @@ on start
   gLastAcceptedObjectSrcPort = 0;
   gLastRejectedObjectSrcIp = 0;
   gLastRejectedObjectSrcPort = 0;
+  gLastTraceManualAlertMode = -1;
+  gLastTraceBaseZoneContext = -1;
+  gLastTraceDriveState = -1;
+  gLastTraceDuplicatePopupGuard = -1;
+  gLastTraceBoundaryStatus = -1;
+  gLastTraceAlertLevel = -1;
+  gLastTraceAlertType = -1;
   @Core::accelGroupFlag = 0;
   @Core::steerGroupFlag = 0;
   @Core::proximityRiskLevel = 0;

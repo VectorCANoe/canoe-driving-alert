@@ -4,7 +4,7 @@
     "slug": "STEERING_CONTROL_READBACK",
     "title": "Steering Control Readback",
     "category": "Dynamics",
-    "summary": "Manual steering input is normalized, published as steering state, and rendered back into the donor wheel image path.",
+    "summary": "Manual steering input is normalized, published as steering state, and rendered back into the steering readback path.",
     "participants": [
       "Input_Console",
       "ESC",
@@ -37,7 +37,7 @@
       [
         "CLU",
         "Render wheel feedback",
-        "Display::steeringFrame keeps the donor wheel image aligned with input."
+        "Display::steeringFrame keeps steering feedback aligned with input."
       ]
     ],
     "key_contracts": [
@@ -54,7 +54,7 @@
       "ADAS.can",
       "CLU.can"
     ],
-    "user_outcome": "Steering bar, steering angle readback, and wheel image move together without drift.",
+    "user_outcome": "Steering bar, steering angle readback, and wheel feedback move together without drift.",
     "related_ecus": [
       "CGW",
       "CLU",
@@ -887,7 +887,7 @@
       [
         "CLU",
         "Render cluster text and icon",
-        "Cluster output turns the alert into the donor-facing warning surface."
+        "Cluster output turns the alert into the main warning surface."
       ],
       [
         "HUD",

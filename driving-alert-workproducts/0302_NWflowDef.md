@@ -18,6 +18,8 @@
 ## 네트워크 플로우 표 (공식 표준 양식)
 
 - 표의 노드 열은 표면 ECU를 먼저 쓰고, 괄호 안 이름은 CANoe 내부 노드명으로 읽는다.
+- `driveState` 행은 실제 차속이 아니라 P/R/N/D 변속 선택 상태를 뜻한다.
+- 실제 이동 여부와 동적 주행 성격은 `vehicleSpeed`, `DriveMode`와 함께 해석한다.
 
 | Channel | ID hex | Symbolic Name(message name) | Byte no. | Function | Bit no. | signal name | Validation Harness (`VAL_SCENARIO_CTRL`) | CGW (`CHS_GW`) | IVI (`INFOTAINMENT_GW`) | CGW (`DOMAIN_ROUTER`) | ETHB | ADAS (`ADAS_WARN_CTRL`) | IVI (`NAV_CTX_MGR`) | V2X Police Tx (`EMS_POLICE_TX`) | V2X Ambulance Tx (`EMS_AMB_TX`) | V2X Rx (`EMS_ALERT_RX`) | ADAS (`WARN_ARB_MGR`) | BCM (`BODY_GW`) | IVI (`IVI_GW`) | BCM (`AMBIENT_CTRL`) | CLU (`CLU_HMI_CTRL`) | EMS (`ENG_CTRL`) | TCU | VCU (`ACCEL_CTRL`) | ESC (`BRK_CTRL`) | MDPS (`STEER_CTRL`) | BCM (`HAZARD_CTRL`) | BCM (`WINDOW_CTRL`) | BCM (`DRV_STATE_MGR`) | CLU (`CLU_BASE_CTRL`) | Validation Harness (`VAL_BASELINE_CTRL`) | [비고] |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|

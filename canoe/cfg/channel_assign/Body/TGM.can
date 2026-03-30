@@ -183,7 +183,7 @@ on timer tTailgateCycle
       mTailgate.TailgatePowerState != gLastPowerState ||
       mTailgate.TailgatePosition != gLastPosition)
   {
-    write("[TGM] lock=%d open=%d power=%d pos=%d mode=%d req=%d cmd=%d auth=%d drive=%d",
+    write("[DYN-ACCESS][TGM] lock=%d open=%d power=%d pos=%d mode=%d req=%d cmd=%d auth=%d drive=%d stale=%d/%d/%d manual=%d",
           mTailgate.TailgateLockState,
           mTailgate.TailgateOpenState,
           mTailgate.TailgatePowerState,
@@ -192,7 +192,11 @@ on timer tTailgateCycle
           gOpenRequestState,
           gActuatorCmd,
           accessAuthorized,
-          driveState);
+          driveState,
+          vehicleInputStale,
+          ctrlInputStale,
+          dkeyInputStale,
+          manualMode);
     gLastLockState = mTailgate.TailgateLockState;
     gLastOpenState = mTailgate.TailgateOpenState;
     gLastPowerState = mTailgate.TailgatePowerState;

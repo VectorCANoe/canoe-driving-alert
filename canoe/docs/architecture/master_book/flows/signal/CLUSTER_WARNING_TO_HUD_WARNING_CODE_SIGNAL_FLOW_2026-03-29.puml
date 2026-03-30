@@ -1,0 +1,59 @@
+@startuml cluster_warning_to_hud_warning_code_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Cluster Warning To HUD Warning Code Signal Flow\n(cluster warning + theme context -> HUD warning and brightness state)
+
+participant "IVI / CLU warning source" as WarnSrc #F4F7FB
+participant "Theme source" as ThemeSrc #E8F0FE
+participant "HUD\nwarning-render owner" as HUD #E8F7E8
+participant "HUD state bus" as HudBus #FFF4CC
+participant "Observers /\nvisual readers" as Obs #FCE8FF
+
+== HUD Inputs ==
+
+WarnSrc -> HUD : frmClusterWarningMsg\nWarningTextCode
+ThemeSrc -> HUD : frmClusterThemeMsg\nThemeMode / ClusterBrightness
+activate HUD
+HUD -> HUD : warningInputExpired =\nethIsRecentTick(gWarningRxMs, 1500)
+HUD -> HUD : themeInputExpired =\nethIsRecentTick(gThemeRxMs, 1500)
+HUD -> HUD : if warning expired then\nwarningCode = 0
+HUD -> HUD : if theme expired then\nthemeMode = 0 / brightness = 18
+HUD -> HUD : hudMode = popup ? 2 :\nwarningCode > 0 ? 1 : guideType > 0 ? 3 : 0
+HUD -> HUD : enforce minimum HUD brightness
+note right of HUD
+Representative gating inputs
+- WarningTextCode
+- ThemeMode
+- ClusterBrightness
+- HUD lease / hold windows
+end note
+
+== HUD Publish ==
+
+HUD -> HudBus : frmHudStateMsg\nHudMode / HudWarningCode / HudBrightness
+note right of HUD
+Representative outputs
+- HudMode
+- HudWarningCode
+- HudBrightness
+end note
+
+== Downstream Visibility ==
+
+HudBus -> Obs : HUD render visibility /\nwarning and theme observers
+deactivate HUD
+
+note over WarnSrc, Obs
+Representative runtime chain
+1. Cluster warning and theme context reach HUD
+2. HUD applies lease/hold windows to warning and theme sources
+3. HUD derives warning mode and final brightness
+4. HUD publishes frmHudStateMsg for visual observers
+end note
+
+@enduml

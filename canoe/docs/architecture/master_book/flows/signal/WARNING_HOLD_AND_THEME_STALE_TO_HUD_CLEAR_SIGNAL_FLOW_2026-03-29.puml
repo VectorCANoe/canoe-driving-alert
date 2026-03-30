@@ -1,0 +1,58 @@
+@startuml warning_hold_and_theme_stale_to_hud_clear_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Warning Hold And Theme Stale To HUD Clear Signal Flow\n(cluster warning + theme hold windows -> HUD warning clear and default brightness)
+
+participant "Cluster warning bus" as Warn #F4F7FB
+participant "Cluster theme bus" as Theme #E8F0FE
+participant "HUD\nwarning-render owner" as HUD #E8F7E8
+participant "HUD state bus" as HudBus #FFF4CC
+participant "Observers /\nvisual readers" as Obs #FCE8FF
+
+== HUD Inputs ==
+
+Warn -> HUD : frmClusterWarningMsg\nWarningTextCode
+Theme -> HUD : frmClusterThemeMsg\nThemeMode / ClusterBrightness
+activate HUD
+HUD -> HUD : warningInputExpired =\nethIsRecentTick(gWarningRxMs, 1500)
+HUD -> HUD : themeInputExpired =\nethIsRecentTick(gThemeRxMs, 1500)
+HUD -> HUD : if warning expired then\nwarningCode = 0
+HUD -> HUD : if theme expired then\nthemeMode = 0 / hudBrightness = 18
+HUD -> HUD : hudMode falls back to 0\nwhen warningCode == 0 and no popup/guide override
+note right of HUD
+Representative gating inputs
+- WarningTextCode
+- ThemeMode
+- ClusterBrightness
+- warning/theme hold windows
+end note
+
+== HUD Publish ==
+
+HUD -> HudBus : frmHudStateMsg\nHudMode / HudWarningCode / HudBrightness
+note right of HUD
+Representative outputs
+- HudMode
+- HudWarningCode
+- HudBrightness
+end note
+
+== Downstream Visibility ==
+
+HudBus -> Obs : HUD clear/default visibility /\nvisual observers
+deactivate HUD
+
+note over Warn, Obs
+Representative runtime chain
+1. Warning and theme context reach HUD
+2. HUD evaluates hold-window expiry for warning and theme sources
+3. HUD clears warning state and restores default brightness when sources expire
+4. HUD publishes the cleared/default visual posture
+end note
+
+@enduml

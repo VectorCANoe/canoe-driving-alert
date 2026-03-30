@@ -30,6 +30,13 @@ variables
   int gLastPanelVehicleSpeedCmd;
   int gLastPublishedDriveState;
   int gLastPublishedVehicleSpeed;
+  int gLastManualTraceIgnitionCmd;
+  int gLastManualTraceDriveCmd;
+  int gLastManualTraceSpeedCmd;
+  int gLastManualTraceAccelPedal;
+  int gLastManualTraceBrakePedal;
+  int gLastManualTraceCruiseState;
+  int gLastManualTraceCruiseSetSpeed;
   dword gPedalRxMs;
   dword gIgnitionRxMs;
   dword gGearRxMs;
@@ -52,6 +59,8 @@ dword getVcuLocalIp()
 
 int deriveDriveMode(int driveState, int speed, int accelPedal, int brakePedal)
 {
+  /* driveMode is a dynamic operating mode derived from selector state,
+     speed, and pedal input. It is separate from the PRND selector value. */
   if (driveState == 0)
   {
     return 0;
@@ -73,6 +82,10 @@ int deriveDriveMode(int driveState, int speed, int accelPedal, int brakePedal)
 
 int deriveDriveState(int gearState, int currentSpeed)
 {
+  /* driveState is the project-wide PRND selector abstraction.
+     Actual motion is represented by vehicleSpeed; if speed remains positive
+     while gear input is unavailable, keep downstream consumers out of Park
+     by falling back to D(3). */
   gearState = clampRange(gearState, 0, 7);
 
   if (gearState == 1)
@@ -101,6 +114,19 @@ int deriveManualPowertrainState(int ignitionCmd, int gearState, int speed, int a
     return 2;
   }
   return 0;
+}
+
+int deriveMotionState(int driveState, int currentSpeed)
+{
+  if (currentSpeed <= 0)
+  {
+    return 0;
+  }
+  if (driveState == 1)
+  {
+    return 2;
+  }
+  return 1;
 }
 
 int deriveTorqueRequest(int driveMode, int accelPedal, int speedLimit)
@@ -132,28 +158,28 @@ int deriveTargetSpeed(int currentSpeed,
 
   if (gearState == 1)
   {
-    targetSpeed = 4 + (accelPedal / 6);
+    targetSpeed = 3 + (accelPedal / 4);
     if (brakePedal >= 20)
     {
       targetSpeed = 0;
     }
-    return clampRange(targetSpeed, 0, 18);
+    return clampRange(targetSpeed, 0, 28);
   }
 
   if (accelPedal > 0)
   {
-    targetSpeed = accelPedal * 2;
+    targetSpeed = 10 + accelPedal;
     if (currentSpeed < 15 && accelPedal >= 30)
     {
-      targetSpeed = targetSpeed + 6;
+      targetSpeed = targetSpeed + 8;
     }
     if (driveMode == 2)
     {
-      targetSpeed = targetSpeed + 10 + (accelPedal / 10);
+      targetSpeed = targetSpeed + 12;
     }
     else if (driveMode == 1)
     {
-      targetSpeed = targetSpeed - 4;
+      targetSpeed = targetSpeed - 6;
     }
     if (speedLimit > 0 && speedLimit < 255 && targetSpeed > speedLimit + 25)
     {
@@ -180,16 +206,16 @@ int deriveAccelStep(int gearState, int driveMode, int accelPedal, int currentSpe
 {
   int step;
 
-  step = 2;
+  step = 1;
   if (accelPedal > 0)
   {
-    step = 1 + (accelPedal / 25);
+    step = 1 + (accelPedal / 30);
   }
   if (currentSpeed < 12 && accelPedal >= 30)
   {
-    step = step + 2;
+    step = step + 1;
   }
-  if (driveMode == 2 && accelPedal >= 40)
+  if (driveMode == 2 && accelPedal >= 70)
   {
     step = step + 1;
   }
@@ -198,7 +224,25 @@ int deriveAccelStep(int gearState, int driveMode, int accelPedal, int currentSpe
     step = 3;
   }
 
-  return clampRange(step, 1, 12);
+  return clampRange(step, 1, 6);
+}
+
+int deriveDynamicsSpeedLimit(int manualMode, int navStateFresh, int navSpeedLimit)
+{
+  if (manualMode == 1)
+  {
+    /* Manual baseline vehicle dynamics must remain driver-owned even when
+       no route context is active. Do not reuse the fallback nav limit as a
+       propulsion cap for the manual car model. */
+    return 255;
+  }
+
+  if (navStateFresh == 1)
+  {
+    return clampRange(navSpeedLimit, 0, 255);
+  }
+
+  return 30;
 }
 
 int deriveDecelStep(int gearState, int brakePedal, int currentSpeed)
@@ -345,6 +389,56 @@ void publishBackboneVehicleState(int vehicleSpeed, int driveState)
   ethSendFrame(gEthTxSocket, gEthTargetIp, ethMsgVehicleState(), frame, 2);
 }
 
+void traceManualCoreVehicle(int manualMode,
+                            int ignitionCmd,
+                            int driveCmd,
+                            int speedCmd,
+                            int accelPedal,
+                            int brakePedal,
+                            int cruiseState,
+                            int cruiseSetSpeed,
+                            int outVehicleSpeed,
+                            int outDriveState,
+                            int driveMode,
+                            int motionState)
+{
+  if (manualMode != 1)
+  {
+    return;
+  }
+
+  if (ignitionCmd != gLastManualTraceIgnitionCmd ||
+      driveCmd != gLastManualTraceDriveCmd ||
+      speedCmd != gLastManualTraceSpeedCmd ||
+      accelPedal != gLastManualTraceAccelPedal ||
+      brakePedal != gLastManualTraceBrakePedal ||
+      cruiseState != gLastManualTraceCruiseState ||
+      cruiseSetSpeed != gLastManualTraceCruiseSetSpeed ||
+      outVehicleSpeed != gLastPublishedVehicleSpeed ||
+      outDriveState != gLastPublishedDriveState)
+  {
+    write("[MANUAL-CORE][VCU] ign=%d gearCmd=%d speedCmd=%d accel=%d brake=%d cruise=%d/%d out=%d/%d mode=%d motion=%d",
+          ignitionCmd,
+          driveCmd,
+          speedCmd,
+          accelPedal,
+          brakePedal,
+          cruiseState,
+          cruiseSetSpeed,
+          outVehicleSpeed,
+          outDriveState,
+          driveMode,
+          motionState);
+    gLastManualTraceIgnitionCmd = ignitionCmd;
+    gLastManualTraceDriveCmd = driveCmd;
+    gLastManualTraceSpeedCmd = speedCmd;
+    gLastManualTraceAccelPedal = accelPedal;
+    gLastManualTraceBrakePedal = brakePedal;
+    gLastManualTraceCruiseState = cruiseState;
+    gLastManualTraceCruiseSetSpeed = cruiseSetSpeed;
+  }
+}
+
 on start
 {
   gEthTxSocket = ethOpenPreferredNodeSocket(getVcuLocalIp(), getVcuTxPort());
@@ -371,6 +465,13 @@ on start
   gLastPanelVehicleSpeedCmd = 0;
   gLastPublishedDriveState = 0;
   gLastPublishedVehicleSpeed = 0;
+  gLastManualTraceIgnitionCmd = -1;
+  gLastManualTraceDriveCmd = -1;
+  gLastManualTraceSpeedCmd = -1;
+  gLastManualTraceAccelPedal = -1;
+  gLastManualTraceBrakePedal = -1;
+  gLastManualTraceCruiseState = -1;
+  gLastManualTraceCruiseSetSpeed = -1;
   gPedalRxMs = 0;
   gIgnitionRxMs = 0;
   gGearRxMs = 0;
@@ -447,6 +548,7 @@ on timer tVcuCycle
   int delta;
   int driveState;
   int driveMode;
+  int motionState;
   int energyFlowMode;
   int regenLevel;
   int powerBalance;
@@ -459,6 +561,7 @@ on timer tVcuCycle
   int ignitionInputStale;
   int gearInputStale;
   int manualMode;
+  int navStateFresh;
   int manualDriveStateCmd;
   int manualVehicleSpeedCmd;
   int manualCruiseState;
@@ -509,7 +612,8 @@ on timer tVcuCycle
     gearState = 0;
   }
 
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   manualDriveStateCmd = 0;
   manualVehicleSpeedCmd = 0;
   manualCruiseState = 0;
@@ -601,9 +705,17 @@ on timer tVcuCycle
       accelPedal == 0 &&
       brakePedal == 0 &&
       manualCruiseActive == 0 &&
-      gearState >= 3)
+      manualIgnitionCmd == 1 &&
+      gearState > 0)
   {
     externalSpeedOverride = 1;
+  }
+  else if (manualMode == 1)
+  {
+    /* In manual baseline mode, do not let residual wheel-speed hints or
+       pre-reset message echoes hold the car in a moving state. Only the
+       explicit manual speed seam may override vehicle speed. */
+    externalSpeedOverride = 0;
   }
   else
   {
@@ -650,15 +762,10 @@ on timer tVcuCycle
 
   driveState = deriveDriveState(gearState, gSpeed);
   driveMode = deriveDriveMode(driveState, gSpeed, accelPedal, brakePedal);
+  motionState = deriveMotionState(driveState, gSpeed);
   gDriveMode = clampRange(driveMode, 0, 7);
-  if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
-  {
-    gSpeedLimitNorm = clampRange(gNavSpeedLimit, 0, 255);
-  }
-  else
-  {
-    gSpeedLimitNorm = 30;
-  }
+  navStateFresh = ethIsRecentTick(gNavStateRxMs, 300);
+  gSpeedLimitNorm = deriveDynamicsSpeedLimit(manualMode, navStateFresh, gNavSpeedLimit);
   gBoundaryStatus = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
   gFailSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
   gEmergencyContext = clampRange((int)@Core::emergencyContext, 0, 2);
@@ -759,6 +866,19 @@ on timer tVcuCycle
   mCtrlAuth.CtrlAuthLevel = (gBoundaryStatus == 1) ? 3 : 1;
   mCtrlAuth.CtrlAuthSource = 1;
   output(mCtrlAuth);
+
+  traceManualCoreVehicle(manualMode,
+                         manualIgnitionCmd,
+                         manualDriveStateCmd,
+                         manualVehicleSpeedCmd,
+                         accelPedal,
+                         brakePedal,
+                         manualCruiseState,
+                         manualCruiseSetSpeed,
+                         gSpeed,
+                         driveState,
+                         gDriveMode,
+                         motionState);
 
   setTimer(tVcuCycle, 100);
 }

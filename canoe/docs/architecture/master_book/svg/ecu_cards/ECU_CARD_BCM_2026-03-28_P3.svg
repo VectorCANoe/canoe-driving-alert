@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1156" viewBox="0 0 1600 1156">
+  <defs>
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dcfce7"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #f7f7f5; }
+    .title { font: 700 32px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .sub { font: 500 16px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 19px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 16px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .heroRole { font: 700 23px 'Segoe UI', sans-serif; fill: #111827; }
+    .statement { font: 700 26px 'Segoe UI', sans-serif; fill: #111827; }
+    .node { font: 700 19px 'Segoe UI', sans-serif; fill: #111827; }
+    .box { rx: 22; ry: 22; stroke: #334155; stroke-width: 1.6; }
+    .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <rect x="0" y="0" width="1600" height="1156" class="bg"/>
+  <text x="34" y="44" class="title">ECU Reference - BCM</text>
+  <text x="34" y="72" class="sub">p3 | inbound runtime inventory</text>
+  <rect x="30" y="100" width="1540" height="232" class="box" fill="url(#heroGradient)"/> <text x="52" y="134" class="small">Inbound inventory | p3</text> <text x="52" y="172" class="title">BCM</text> <text x="52" y="202" class="text">Group 04 Body Comfort Ambient | Body</text> <text x="52" y="228" class="small">Role focus</text> <text x="52" y="248" class="heroRole">Body output and ambient control</text> <rect x="1034" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1052" y="162" class="small">Rx msgs</text>
+<text x="1052" y="192" class="node">25</text> <rect x="1298" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1316" y="162" class="small">Tx msgs</text>
+<text x="1316" y="192" class="node">17</text> <rect x="1034" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1052" y="256" class="small">Linked ECU</text>
+<text x="1052" y="286" class="node">11</text> <rect x="1298" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1316" y="256" class="small">Owner seams</text>
+<text x="1316" y="286" class="node">4</text>
+  <rect x="30" y="350" width="1540" height="142" class="box" fill="#fff7ed"/>
+<text x="52" y="384" class="small">What this ECU does</text>
+<text x="52" y="426" class="statement">Owns comfort and ambient outputs while bridging body leaf ECU state back</text>
+<text x="52" y="452" class="statement">to HMI</text>
+  <rect x="30" y="510" width="1540" height="596" class="box" fill="#e0f2fe"/>
+<text x="52" y="546" class="label">Inbound / Rx messages</text>
+<text x="52" y="572" class="small">25 rx messages</text>
+<text x="52" y="598" class="text">Object Scenario Alert</text>
+<text x="52" y="620" class="small">ethObjectScenarioAlertMsg</text>
+<line x1="52" y1="642" x2="538" y2="642" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="652" class="text">Alert</text>
+<text x="52" y="674" class="small">ethSelectedAlertMsg</text>
+<line x1="52" y1="696" x2="538" y2="696" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="706" class="text">ACU State</text>
+<text x="52" y="728" class="small">frmAcuStateMsg</text>
+<line x1="52" y1="750" x2="538" y2="750" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="760" class="text">ADAS Domain State</text>
+<text x="52" y="782" class="small">frmAdasDomainStateMsg</text>
+<line x1="52" y1="804" x2="538" y2="804" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="814" class="text">Ambient Control</text>
+<text x="52" y="836" class="small">frmAmbientControlMsg</text>
+<line x1="52" y1="858" x2="538" y2="858" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="868" class="text">BCM Diagnostic Request</text>
+<text x="52" y="890" class="small">frmBcmDiagReqMsg</text>
+<line x1="52" y1="912" x2="538" y2="912" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="922" class="text">Cabin Air State</text>
+<text x="52" y="944" class="small">frmCabinAirStateMsg</text>
+<line x1="52" y1="966" x2="538" y2="966" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="976" class="text">Door Control</text>
+<text x="52" y="998" class="small">frmDoorControlMsg</text>
+<line x1="52" y1="1020" x2="538" y2="1020" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1030" class="text">Door State</text>
+<text x="52" y="1052" class="small">frmDoorStateMsg</text>
+<text x="556" y="598" class="text">Hazard Control</text>
+<text x="556" y="620" class="small">frmHazardControlMsg</text>
+<line x1="556" y1="642" x2="1042" y2="642" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="652" class="text">Hvac Actuator</text>
+<text x="556" y="674" class="small">frmHvacActuatorMsg</text>
+<line x1="556" y1="696" x2="1042" y2="696" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="706" class="text">Hvac State</text>
+<text x="556" y="728" class="small">frmHvacStateMsg</text>
+<line x1="556" y1="750" x2="1042" y2="750" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="760" class="text">Interior Light</text>
+<text x="556" y="782" class="small">frmInteriorLightMsg</text>
+<line x1="556" y1="804" x2="1042" y2="804" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="814" class="text">Lamp Control</text>
+<text x="556" y="836" class="small">frmLampControlMsg</text>
+<line x1="556" y1="858" x2="1042" y2="858" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="868" class="text">Massage Seat Ctrl State</text>
+<text x="556" y="890" class="small">frmMassageSeatCtrlStateMsg</text>
+<line x1="556" y1="912" x2="1042" y2="912" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="922" class="text">Mirror State</text>
+<text x="556" y="944" class="small">frmMirrorStateMsg</text>
+<line x1="556" y1="966" x2="1042" y2="966" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="976" class="text">ODS State</text>
+<text x="556" y="998" class="small">frmOdsStateMsg</text>
+<line x1="556" y1="1020" x2="1042" y2="1020" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1030" class="text">OMS State</text>
+<text x="556" y="1052" class="small">frmOmsStateMsg</text>
+<text x="1060" y="598" class="text">Park Ultrasonic State</text>
+<text x="1060" y="620" class="small">frmParkUltrasonicStateMsg</text>
+<line x1="1060" y1="642" x2="1546" y2="642" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="652" class="text">Rain Light Auto</text>
+<text x="1060" y="674" class="small">frmRainLightAutoMsg</text>
+<line x1="1060" y1="696" x2="1546" y2="696" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="706" class="text">Seat Belt State</text>
+<text x="1060" y="728" class="small">frmSeatBeltStateMsg</text>
+<line x1="1060" y1="750" x2="1546" y2="750" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="760" class="text">Seat Control</text>
+<text x="1060" y="782" class="small">frmSeatControlMsg</text>
+<line x1="1060" y1="804" x2="1546" y2="804" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="814" class="text">Seat State</text>
+<text x="1060" y="836" class="small">frmSeatStateMsg</text>
+<line x1="1060" y1="858" x2="1546" y2="858" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="868" class="text">Turn Lamp Input</text>
+<text x="1060" y="890" class="small">frmTurnLampInputMsg</text>
+<line x1="1060" y1="912" x2="1546" y2="912" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="922" class="text">Window Control</text>
+<text x="1060" y="944" class="small">frmWindowControlMsg</text>
+</svg>

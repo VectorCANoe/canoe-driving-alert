@@ -1,0 +1,56 @@
+@startuml digital_key_and_drive_state_to_smk_auth_gate_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Digital Key And Drive State To SMK Auth Gate Signal Flow\n(digital-key access + drive state -> SMK key-auth and immobilizer gate)
+
+participant "Digital-key bus" as DKey #F4F7FB
+participant "Vehicle state bus" as Veh #E8F0FE
+participant "SMK\nsmart-key owner" as SMK #E8F7E8
+participant "Immobilizer state bus" as ImmoBus #FFF4CC
+participant "Observers /\naccess readers" as Obs #FCE8FF
+
+== SMK Inputs ==
+
+DKey -> SMK : frmDigitalKeyStateMsg\nVehicleAccessState / KeyPresence
+Veh -> SMK : frmVehicleStateCanMsg\ngDriveState
+activate SMK
+SMK -> SMK : dkeyInputStale / vehicleInputStale\nlease checks
+SMK -> SMK : if vehicle stale then\ndriveState = 3
+SMK -> SMK : accessAuthorized =\ndkey fresh and KeyPresence == 1\nand VehicleAccessState >= 1
+SMK -> SMK : immobilizerState = 1 by default,\n0 when vehicle input fresh and driveState > 0
+SMK -> SMK : keyAuthState = accessAuthorized
+note right of SMK
+Representative gating inputs
+- VehicleAccessState
+- KeyPresence
+- gDriveState
+end note
+
+== SMK Publish ==
+
+SMK -> ImmoBus : frmImmobilizerStateMsg\nImmobilizerState / KeyAuthState
+note right of SMK
+Representative outputs
+- ImmobilizerState
+- KeyAuthState
+end note
+
+== Downstream Visibility ==
+
+ImmoBus -> Obs : immobilizer/auth visibility /\ndoor and access observers
+deactivate SMK
+
+note over DKey, Obs
+Representative runtime chain
+1. Digital-key state and drive state reach SMK
+2. SMK applies freshness and parked/drive gating
+3. SMK derives key-auth and immobilizer posture
+4. SMK publishes immobilizer and auth state for downstream readers
+end note
+
+@enduml

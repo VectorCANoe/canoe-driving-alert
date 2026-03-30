@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1392" viewBox="0 0 1600 1392">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1502" viewBox="0 0 1600 1502">
   <defs>
     <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#dbeafe"/>
@@ -19,11 +19,11 @@
     .box { rx: 22; ry: 22; stroke: #334155; stroke-width: 1.6; }
     .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
   </style>
-  <rect x="0" y="0" width="1600" height="1392" class="bg"/>
-  <text x="34" y="44" class="title">ECU Overview Card - EHB</text>
-  <text x="34" y="72" class="sub">page 1 | hierarchy-first overview with action rail and network footprint</text>
-  <rect x="30" y="100" width="1540" height="228" class="box" fill="url(#heroGradient)"/>
-<text x="52" y="134" class="small">Story overview</text>
+  <rect x="0" y="0" width="1600" height="1502" class="bg"/>
+  <text x="34" y="44" class="title">ECU Overview - EHB</text>
+  <text x="34" y="72" class="sub">p1 | overview, action rail, signal path, and domain footprint</text>
+  <rect x="30" y="100" width="1540" height="272" class="box" fill="url(#heroGradient)"/>
+<text x="52" y="134" class="small">Overview | p1</text>
 <text x="52" y="172" class="title">EHB</text>
 <text x="52" y="204" class="text">Group 01 Base Vehicle Dynamics | Chassis</text>
 <text x="52" y="224" class="text"></text>
@@ -31,94 +31,100 @@
 <text x="52" y="264" class="text">an independent decision origin</text>
 <text x="52" y="284" class="text"></text>
 <text x="52" y="304" class="text">Primary action flow</text>
-<text x="52" y="324" class="text">FLOW_02 Brake Stability Response</text>
-<rect x="940" y="134" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="958" y="162" class="small">Inbound actors</text>
+<text x="52" y="324" class="text">Brake stability</text>
+<rect x="940" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="958" y="162" class="small">Inbound</text>
 <text x="958" y="192" class="node">1</text>
-<rect x="1261" y="134" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1279" y="162" class="small">Outbound actors</text>
-<text x="1279" y="192" class="node">2</text>
-<rect x="940" y="228" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="958" y="256" class="small">Linked ECU</text>
+<rect x="1204" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1222" y="162" class="small">Outbound</text>
+<text x="1222" y="192" class="node">2</text>
+<rect x="940" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="958" y="256" class="small">Domains</text>
 <text x="958" y="286" class="node">2</text>
-<rect x="1261" y="228" width="309" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1279" y="256" class="small">Native Tests</text>
-<text x="1279" y="286" class="node">1</text>
-  <rect x="30" y="352" width="1540" height="194" class="box" fill="#ffffff"/>
-<text x="52" y="388" class="label">ECU metadata</text>
-<rect x="52" y="406" width="363" height="118" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="70" y="434" class="small">Key seam</text>
-<text x="70" y="460" class="small">local brake assist state</text>
-<rect x="429" y="406" width="363" height="118" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="447" y="434" class="small">Runtime contract</text>
-<text x="447" y="460" class="small">Publish: frmEhbDiagResMsg</text>
-<text x="447" y="478" class="small">Consume: frmEhbDiagReqMsg</text>
-<rect x="806" y="406" width="363" height="118" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="824" y="434" class="small">Verification</text>
-<text x="824" y="460" class="small">TC_CANOE_UT_INP_032_EHB_INPUT</text>
-<rect x="1183" y="406" width="363" height="118" rx="18" ry="18" fill="#fff7ed" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1201" y="434" class="small">Risk focus</text>
-<text x="1201" y="460" class="small">Shares the same decel</text>
-<text x="1201" y="478" class="small">profile thresholds as</text>
-<text x="1201" y="496" class="small">ESC/VSM and can amplify</text>
-  <rect x="30" y="570" width="1540" height="276" class="box" fill="#ffffff"/>
-<text x="52" y="606" class="label">Action rail</text>
-<rect x="52" y="636" width="484" height="188" rx="20" ry="20" fill="#e0f2fe" stroke="#bfdbfe" stroke-width="1.6"/>
-<text x="70" y="666" class="small">Inbound</text>
-<text x="70" y="692" class="text">1 upstream actor / 1 reads</text>
-<rect x="70" y="720" width="219" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="179.5" y="742" text-anchor="middle" class="small">TEST_SCN</text>
-<rect x="558" y="636" width="484" height="188" rx="20" ry="20" fill="#dcfce7" stroke="#86efac" stroke-width="1.6"/>
-<text x="576" y="666" class="small">ECU Core</text>
-<text x="576" y="692" class="text">FLOW_02</text>
-<rect x="576" y="720" width="219" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="685.5" y="742" text-anchor="middle" class="small">Coupled consumer of AEB sta…</text>
-<rect x="805" y="720" width="219" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="914.5" y="742" text-anchor="middle" class="small">local brake assist state</text>
-<rect x="1064" y="636" width="484" height="188" rx="20" ry="20" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.6"/>
-<text x="1082" y="666" class="small">Outbound</text>
-<text x="1082" y="692" class="text">2 downstream actor / 2 writes</text>
-<rect x="1082" y="720" width="219" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1191.5" y="742" text-anchor="middle" class="small">ADAS</text>
-<rect x="1311" y="720" width="219" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="1420.5" y="742" text-anchor="middle" class="small">TEST_SCN</text>
-<line x1="536" y1="730.0" x2="558" y2="730.0" class="lane"/>
-<line x1="1042" y1="730.0" x2="1064" y2="730.0" class="lane"/>
-  <rect x="30" y="870" width="1540" height="206" class="box" fill="#eff6ff"/>
-<text x="52" y="906" class="label">Representative signal flow</text>
-<rect x="58" y="940" width="220" height="58" rx="16" ry="16" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5"/>
-<text x="76" y="974" class="node">TEST_SCN</text>
-<rect x="690" y="940" width="220" height="58" rx="16" ry="16" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="800" y="974" text-anchor="middle" class="node">EHB</text>
-<rect x="1322" y="940" width="220" height="58" rx="16" ry="16" fill="#ffffff" stroke="#86efac" stroke-width="1.5"/>
-<text x="1340" y="974" class="node">ADAS</text>
-<line x1="278" y1="969" x2="690" y2="969" class="lane"/>
-<text x="294" y="1002" class="small">Rx frmEhbDiagReqMsg</text>
-<line x1="910" y1="969" x2="1322" y2="969" class="lane"/>
-<text x="926" y="1002" class="small">Tx frmEhbStateMsg</text>
-<text x="52" y="1052" class="text">TEST_SCN -&gt; EHB -&gt; ADAS</text>
-  <rect x="30" y="1100" width="1540" height="242" class="box" fill="#eff6ff"/>
-<text x="52" y="1136" class="label">Network footprint</text>
-<rect x="52" y="1166" width="486" height="154" rx="20" ry="20" fill="#e0f2fe" stroke="#bfdbfe" stroke-width="1.4"/>
-<text x="70" y="1194" class="small">Upstream</text>
-<text x="70" y="1222" class="node">1</text>
-<text x="140" y="1222" class="small">Domain clusters</text>
-<rect x="70" y="1240" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
-<text x="180.0" y="1262" text-anchor="middle" class="small">Backbone · 1</text>
-<rect x="556" y="1166" width="486" height="154" rx="20" ry="20" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.4"/>
-<text x="574" y="1194" class="small">Peer / linked</text>
-<text x="574" y="1222" class="node">0</text>
-<text x="644" y="1222" class="small">Domain clusters</text>
-<rect x="574" y="1240" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
-<text x="684.0" y="1262" text-anchor="middle" class="small">-</text>
-<rect x="1060" y="1166" width="486" height="154" rx="20" ry="20" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.4"/>
-<text x="1078" y="1194" class="small">Downstream</text>
-<text x="1078" y="1222" class="node">2</text>
-<text x="1148" y="1222" class="small">Domain clusters</text>
-<rect x="1078" y="1240" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
-<text x="1188.0" y="1262" text-anchor="middle" class="small">ADAS · 1</text>
-<rect x="1308" y="1240" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
-<text x="1418.0" y="1262" text-anchor="middle" class="small">Backbone · 1</text>
-<line x1="538" y1="1243.0" x2="556" y2="1243.0" class="lane"/>
-<line x1="1042" y1="1243.0" x2="1060" y2="1243.0" class="lane"/>
+<rect x="1204" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1222" y="256" class="small">Runtime</text>
+<text x="1222" y="286" class="node">Route</text>
+  <rect x="30" y="396" width="1540" height="196" class="box" fill="#ffffff"/>
+<text x="52" y="432" class="label">ECU metadata</text>
+<rect x="52" y="450" width="741" height="120" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="70" y="478" class="small">Key seam</text>
+<text x="70" y="502" class="text">Brake Assist State</text>
+<text x="70" y="524" class="small">local brake assist state</text>
+<rect x="807" y="450" width="741" height="120" rx="18" ry="18" fill="#fff7ed" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="825" y="478" class="small">Risk focus</text>
+<text x="825" y="504" class="small">Shares the same decel</text>
+<text x="825" y="522" class="small">profile thresholds as</text>
+<text x="825" y="540" class="small">ESC/VSM and can amplify</text>
+  <rect x="30" y="616" width="1540" height="320" class="box" fill="#ffffff"/>
+<text x="52" y="652" class="label">Action rail</text>
+<rect x="52" y="682" width="484" height="232" rx="20" ry="20" fill="#e0f2fe" stroke="#bfdbfe" stroke-width="1.6"/>
+<text x="70" y="712" class="small">Inbound</text>
+<text x="70" y="740" class="text">1 upstream actor / 1 reads</text>
+<rect x="70" y="786" width="218" height="52" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="179.0" y="804" text-anchor="middle" class="small">TEST_SCN</text>
+<rect x="558" y="682" width="484" height="232" rx="20" ry="20" fill="#dcfce7" stroke="#86efac" stroke-width="1.6"/>
+<text x="576" y="712" class="small">ECU Core</text>
+<text x="576" y="740" class="text">Brake stability</text>
+<rect x="576" y="786" width="218" height="52" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="685.0" y="804" text-anchor="middle" class="small">Coupled consumer of AEB</text>
+<text x="685.0" y="819" text-anchor="middle" class="small">state rather than an</text>
+<rect x="806" y="786" width="218" height="52" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="915.0" y="804" text-anchor="middle" class="small">Brake Assist State</text>
+<rect x="576" y="850" width="218" height="52" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="685.0" y="868" text-anchor="middle" class="small">UT_INP_032_EHB</text>
+<text x="685.0" y="883" text-anchor="middle" class="small">covers brake stability</text>
+<rect x="1064" y="682" width="484" height="232" rx="20" ry="20" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.6"/>
+<text x="1082" y="712" class="small">Outbound</text>
+<text x="1082" y="740" class="text">2 downstream actor / 2</text>
+<text x="1082" y="760" class="text">writes</text>
+<rect x="1082" y="786" width="218" height="52" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1191.0" y="804" text-anchor="middle" class="small">ADAS</text>
+<rect x="1312" y="786" width="218" height="52" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1421.0" y="804" text-anchor="middle" class="small">TEST_SCN</text>
+<line x1="536" y1="798.0" x2="558" y2="798.0" class="lane"/>
+<line x1="1042" y1="798.0" x2="1064" y2="798.0" class="lane"/>
+  <rect x="30" y="960" width="1540" height="226" class="box" fill="#eff6ff"/>
+<text x="52" y="996" class="label">Signal path</text>
+<rect x="58" y="1042" width="220" height="58" rx="16" ry="16" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="76" y="1076" class="node">TEST_SCN</text>
+<rect x="690" y="1042" width="220" height="58" rx="16" ry="16" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="800" y="1076" text-anchor="middle" class="node">EHB</text>
+<rect x="1322" y="1042" width="220" height="58" rx="16" ry="16" fill="#ffffff" stroke="#86efac" stroke-width="1.5"/>
+<text x="1340" y="1076" class="node">ADAS</text>
+<line x1="278" y1="1071" x2="690" y2="1071" class="lane"/>
+<rect x="304" y="1036" width="160" height="70" rx="12" ry="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="384.0" y="1052" text-anchor="middle" class="small">EHB Diagnostic</text>
+<text x="384.0" y="1066" text-anchor="middle" class="small">Request</text>
+<text x="384.0" y="1082" text-anchor="middle" class="small">frmEhbDiagReqMsg</text>
+<line x1="910" y1="1071" x2="1322" y2="1071" class="lane"/>
+<rect x="936" y="1036" width="160" height="70" rx="12" ry="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="1016.0" y="1052" text-anchor="middle" class="small">EHB State</text>
+<text x="1016.0" y="1068" text-anchor="middle" class="small">frmEhbStateMsg</text>
+<text x="52" y="1140" class="small">Path · TEST_SCN -&gt; EHB -&gt; ADAS</text>
+  <rect x="30" y="1210" width="1540" height="242" class="box" fill="#eff6ff"/>
+<text x="52" y="1246" class="label">Domain footprint</text>
+<rect x="52" y="1276" width="486" height="154" rx="20" ry="20" fill="#e0f2fe" stroke="#bfdbfe" stroke-width="1.4"/>
+<text x="70" y="1304" class="small">Upstream domains</text>
+<text x="70" y="1332" class="node">1</text>
+<text x="140" y="1332" class="small">upstream ECU</text>
+<rect x="70" y="1350" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="180.0" y="1372" text-anchor="middle" class="small">ETH Backbone · 1</text>
+<rect x="556" y="1276" width="486" height="154" rx="20" ry="20" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.4"/>
+<text x="574" y="1304" class="small">Linked domains</text>
+<text x="574" y="1332" class="node">2</text>
+<text x="644" y="1332" class="small">linked ECU</text>
+<rect x="574" y="1350" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="684.0" y="1372" text-anchor="middle" class="small">ADAS · 1</text>
+<rect x="804" y="1350" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="914.0" y="1372" text-anchor="middle" class="small">ETH Backbone · 1</text>
+<rect x="1060" y="1276" width="486" height="154" rx="20" ry="20" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.4"/>
+<text x="1078" y="1304" class="small">Downstream domains</text>
+<text x="1078" y="1332" class="node">2</text>
+<text x="1148" y="1332" class="small">downstream ECU</text>
+<rect x="1078" y="1350" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="1188.0" y="1372" text-anchor="middle" class="small">ADAS · 1</text>
+<rect x="1308" y="1350" width="220" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>
+<text x="1418.0" y="1372" text-anchor="middle" class="small">ETH Backbone · 1</text>
+<line x1="538" y1="1353.0" x2="556" y2="1353.0" class="lane"/>
+<line x1="1042" y1="1353.0" x2="1060" y2="1353.0" class="lane"/>
 </svg>

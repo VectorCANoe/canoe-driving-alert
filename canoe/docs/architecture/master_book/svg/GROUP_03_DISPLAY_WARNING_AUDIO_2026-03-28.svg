@@ -13,56 +13,62 @@
     </marker>
   </defs>
   <text x="36" y="44" class="title">Group 03 - Display / Warning / Audio Output</text>
-  <text x="36" y="72" class="small">Output ownership is mostly clean. Most user-visible issues usually start upstream in ADAS/AEB/CGW.</text>
+  <text x="36" y="72" class="small">This group turns selected alert state into visible,</text>
+  <text x="36" y="94" class="small">audible, and cabin-facing output.</text>
 
   <rect x="40" y="120" width="320" height="160" class="box" fill="#fee2e2"/>
   <text x="62" y="156" class="label">Upstream decision</text>
   <text x="62" y="184" class="node">ADAS effective state</text>
-  <text x="62" y="208" class="node">selected alert type / level</text>
+  <text x="62" y="208" class="node">selected alert type and level</text>
   <text x="62" y="232" class="small">after risk, assist, and arbitration</text>
 
   <rect x="430" y="120" width="260" height="160" class="box" fill="#ede9fe"/>
   <text x="452" y="156" class="label">CGW</text>
-  <text x="452" y="184" class="node">selectedAlertGateReason</text>
-  <text x="452" y="208" class="node">boundary / fail-safe / gate status</text>
+  <text x="452" y="184" class="node">gate reason</text>
+  <text x="452" y="208" class="node">boundary and fail-safe status</text>
 
-  <rect x="760" y="120" width="260" height="160" class="box" fill="#fde68a"/>
+  <rect x="760" y="120" width="260" height="176" class="box" fill="#fde68a"/>
   <text x="782" y="156" class="label">IVI</text>
-  <text x="782" y="184" class="node">text / route / map / service display</text>
-  <text x="782" y="208" class="small">warningTextCode, route display context</text>
+  <text x="782" y="184" class="node">text, route, and service display</text>
+  <text x="782" y="208" class="small">driver-facing map and</text>
+  <text x="782" y="230" class="small">service context</text>
 
   <rect x="1090" y="120" width="260" height="160" class="box" fill="#fef3c7"/>
   <text x="1112" y="156" class="label">CLU</text>
-  <text x="1112" y="184" class="node">cluster text / steering frame / base cluster</text>
-  <text x="1112" y="208" class="small">driver-facing instrument confirmation</text>
+  <text x="1112" y="184" class="node">cluster text and steering frame</text>
+  <text x="1112" y="208" class="small">instrument-cluster confirmation</text>
 
-  <rect x="260" y="390" width="300" height="170" class="box" fill="#dbeafe"/>
+  <rect x="260" y="390" width="300" height="194" class="box" fill="#dbeafe"/>
   <text x="282" y="426" class="label">BCM</text>
-  <text x="282" y="454" class="node">ambient / lamp / body-linked warning surface</text>
-  <text x="282" y="478" class="small">blinkLeft, blinkRight, ambientMode</text>
+  <text x="282" y="454" class="node">ambient and lamp-linked</text>
+  <text x="282" y="476" class="node">warning surface</text>
+  <text x="282" y="502" class="small">body-side reinforcement</text>
+  <text x="282" y="524" class="small">of warning state</text>
 
   <rect x="650" y="390" width="300" height="170" class="box" fill="#cffafe"/>
   <text x="672" y="426" class="label">AMP</text>
-  <text x="672" y="454" class="node">audio focus / warning audio / render volume</text>
-  <text x="672" y="478" class="small">renderVolumLevel, baseVolume</text>
+  <text x="672" y="454" class="node">warning audio focus and volume</text>
+  <text x="672" y="478" class="small">audible confirmation of the selected alert</text>
 
   <rect x="1040" y="390" width="320" height="170" class="box" fill="#f8fafc"/>
-  <text x="1062" y="426" class="label">Reader note</text>
-  <text x="1062" y="454" class="node">If IVI / CLU / BCM / AMP disagree,</text>
-  <text x="1062" y="478" class="node">check CGW gate and ADAS effective state first.</text>
+  <text x="1062" y="426" class="label">Reading focus</text>
+  <text x="1062" y="454" class="node">If outputs disagree, confirm ADAS state</text>
+  <text x="1062" y="478" class="node">and gateway gate reason first.</text>
 
-  <rect x="40" y="650" width="1320" height="150" class="box" fill="#ffffff"/>
-  <text x="62" y="686" class="label">Why this group is lower priority than dynamics</text>
-  <text x="62" y="716" class="node">Perceived output issues usually come from upstream decision, assist, or gate reasons.</text>
-  <text x="62" y="740" class="node">Local output ownership is comparatively stable in the current runtime.</text>
+  <rect x="40" y="650" width="1320" height="176" class="box" fill="#ffffff"/>
+  <text x="62" y="686" class="label">Why this layer follows decision</text>
+  <text x="62" y="716" class="node">Most perceived output issues start upstream</text>
+  <text x="62" y="740" class="node">in ADAS, AEB, or gateway gating.</text>
+  <text x="62" y="768" class="node">Local output ownership is comparatively stable</text>
+  <text x="62" y="792" class="node">in the current runtime.</text>
 
-  <rect x="40" y="830" width="1320" height="130" class="box" fill="#f8fafc"/>
-  <text x="62" y="866" class="label">ECU roster in this group</text>
-  <text x="62" y="898" class="node">CGW</text>
-  <text x="150" y="898" class="node">IVI</text>
-  <text x="220" y="898" class="node">CLU</text>
-  <text x="300" y="898" class="node">BCM</text>
-  <text x="390" y="898" class="node">AMP</text>
+  <rect x="40" y="856" width="1320" height="104" class="box" fill="#f8fafc"/>
+  <text x="62" y="892" class="label">ECU</text>
+  <text x="62" y="924" class="node">CGW</text>
+  <text x="150" y="924" class="node">IVI</text>
+  <text x="220" y="924" class="node">CLU</text>
+  <text x="300" y="924" class="node">BCM</text>
+  <text x="390" y="924" class="node">AMP</text>
 
   <path class="arrow" d="M360 200 L430 200"/>
   <path class="arrow" d="M690 200 L760 200"/>

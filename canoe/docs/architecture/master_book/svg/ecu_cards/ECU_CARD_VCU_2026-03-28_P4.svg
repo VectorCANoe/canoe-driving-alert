@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="994" viewBox="0 0 1600 994">
+  <defs>
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dbeafe"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #f7f7f5; }
+    .title { font: 700 32px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .sub { font: 500 16px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 19px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 16px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .heroRole { font: 700 23px 'Segoe UI', sans-serif; fill: #111827; }
+    .statement { font: 700 26px 'Segoe UI', sans-serif; fill: #111827; }
+    .node { font: 700 19px 'Segoe UI', sans-serif; fill: #111827; }
+    .box { rx: 22; ry: 22; stroke: #334155; stroke-width: 1.6; }
+    .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <rect x="0" y="0" width="1600" height="994" class="bg"/>
+  <text x="34" y="44" class="title">ECU Reference - VCU</text>
+  <text x="34" y="72" class="sub">p4 | outbound runtime inventory</text>
+  <rect x="30" y="100" width="1540" height="232" class="box" fill="url(#heroGradient)"/> <text x="52" y="134" class="small">Outbound inventory | p4</text> <text x="52" y="172" class="title">VCU</text> <text x="52" y="202" class="text">Group 01 Base Vehicle Dynamics | Chassis</text> <text x="52" y="228" class="small">Role focus</text> <text x="52" y="248" class="heroRole">Drive and propulsion coordination</text> <rect x="1034" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1052" y="162" class="small">Rx msgs</text>
+<text x="1052" y="192" class="node">24</text> <rect x="1298" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1316" y="162" class="small">Tx msgs</text>
+<text x="1316" y="192" class="node">11</text> <rect x="1034" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1052" y="256" class="small">Linked ECU</text>
+<text x="1052" y="286" class="node">18</text> <rect x="1298" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1316" y="256" class="small">Owner seams</text>
+<text x="1316" y="286" class="node">3</text>
+  <rect x="30" y="350" width="1540" height="142" class="box" fill="#fff7ed"/>
+<text x="52" y="384" class="small">What this ECU does</text>
+<text x="52" y="426" class="statement">Primary dynamics producer for speed, drive state, and throttle</text>
+<text x="52" y="452" class="statement">interpretation</text>
+  <rect x="30" y="510" width="1540" height="434" class="box" fill="#dbeafe"/>
+<text x="52" y="546" class="label">Outbound / Tx messages</text>
+<text x="52" y="572" class="small">11 tx messages</text>
+<text x="52" y="598" class="text">Accel Status</text>
+<text x="52" y="620" class="small">frmAccelStatusMsg</text>
+<line x1="52" y1="642" x2="791" y2="642" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="652" class="text">Energy Flow State</text>
+<text x="52" y="674" class="small">frmEnergyFlowStateMsg</text>
+<line x1="52" y1="696" x2="791" y2="696" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="706" class="text">Power Limit</text>
+<text x="52" y="728" class="small">frmPowerLimitMsg</text>
+<line x1="52" y1="750" x2="791" y2="750" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="760" class="text">Powertrain Ctrl Auth</text>
+<text x="52" y="782" class="small">frmPowertrainCtrlAuthMsg</text>
+<line x1="52" y1="804" x2="791" y2="804" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="814" class="text">Powertrain Gateway</text>
+<text x="52" y="836" class="small">frmPowertrainGatewayMsg</text>
+<line x1="52" y1="858" x2="791" y2="858" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="868" class="text">Powertrain Health</text>
+<text x="52" y="890" class="small">frmPowertrainHealthMsg</text>
+<text x="809" y="598" class="text">Pt Diagnostic Res</text>
+<text x="809" y="620" class="small">frmPtDiagResMsg</text>
+<line x1="809" y1="642" x2="1548" y2="642" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="809" y="652" class="text">Tcs State</text>
+<text x="809" y="674" class="small">frmTcsStateMsg</text>
+<line x1="809" y1="696" x2="1548" y2="696" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="809" y="706" class="text">Mode</text>
+<text x="809" y="728" class="small">frmVehicleModeMsg</text>
+<line x1="809" y1="750" x2="1548" y2="750" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="809" y="760" class="text">State Can</text>
+<text x="809" y="782" class="small">frmVehicleStateCanMsg</text>
+<line x1="809" y1="804" x2="1548" y2="804" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="809" y="814" class="text">Wheel Pulse</text>
+<text x="809" y="836" class="small">frmWheelPulseMsg</text>
+</svg>

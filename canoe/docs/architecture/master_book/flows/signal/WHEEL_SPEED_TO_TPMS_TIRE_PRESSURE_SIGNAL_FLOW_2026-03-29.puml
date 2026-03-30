@@ -1,0 +1,56 @@
+@startuml wheel_speed_to_tpms_tire_pressure_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Wheel Speed To TPMS Tire Pressure Signal Flow\n(wheel-speed input -> TPMS tire-pressure publication)
+
+participant "Wheel-speed bus\nFL / FR / RL / RR" as Wheel #F4F7FB
+participant "TPMS\ntire-pressure owner" as TPMS #E8F7E8
+participant "TPMS state bus" as TireBus #FFF4CC
+participant "Observers /\nservice readers" as Obs #E8F0FE
+
+== TPMS Inputs ==
+
+Wheel -> TPMS : frmWheelSpeedMsg\nWheelSpdFL / FR / RL / RR
+activate TPMS
+TPMS -> TPMS : wheelInputStale =\nethIsRecentTick(gWheelSpeedRxMs, 300)
+TPMS -> TPMS : if stale then\nwheel speeds = 0
+TPMS -> TPMS : dropFront = (FL + FR > 220) ? 4 : 0
+TPMS -> TPMS : dropRear = (RL + RR > 220) ? 4 : 0
+TPMS -> TPMS : TirePressFL/FR/RL/RR =\nbase pressure - dynamic drop
+note right of TPMS
+Representative gating inputs
+- WheelSpdFL / WheelSpdFR
+- WheelSpdRL / WheelSpdRR
+- wheel-speed staleness lease
+end note
+
+== TPMS Publish ==
+
+TPMS -> TireBus : frmTirePressureMsg\nTirePressFL / FR / RL / RR
+note right of TPMS
+Representative outputs
+- TirePressFL
+- TirePressFR
+- TirePressRL
+- TirePressRR
+end note
+
+== Downstream Visibility ==
+
+TireBus -> Obs : tire-pressure visibility /\nservice and observer consumption
+deactivate TPMS
+
+note over Wheel, Obs
+Representative runtime chain
+1. Wheel-speed samples arrive on frmWheelSpeedMsg
+2. TPMS checks the wheel-speed lease window
+3. TPMS derives dynamic tire-pressure values from wheel-speed posture
+4. TPMS publishes frmTirePressureMsg for observers and service readers
+end note
+
+@enduml

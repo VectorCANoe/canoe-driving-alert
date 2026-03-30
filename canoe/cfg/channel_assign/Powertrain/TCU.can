@@ -142,7 +142,8 @@ on timer tTransCycle
 
   gearState = gGearState;
   driveMode = gDriveMode;
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   if (gearInputStale == 1)
   {
     gearState = 0;

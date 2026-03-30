@@ -20,7 +20,7 @@
 | Message | Identifier | DLC | Signal | signal bit position | Data 설명 | Data 범위 | Data 사용 |
 |---|---|---|---|---|---|---|---|
 | frmVehicleStateCanMsg | 0x2A0 | 2 | vehicleSpeed | 0~7 | 차량 속도 | 0~255 km/h | Validation Harness에서 CGW에 전달 |
-|  |  |  | driveState | 8~9 | 주행 상태(PRND) | 0~3 | Validation Harness에서 CGW에 전달 |
+|  |  |  | driveState | 8~9 | 변속 선택 상태(PRND) | 0~3 | Validation Harness에서 CGW에 전달 |
 | frmSteeringCanMsg | 0x2A1 | 1 | steeringInput | 0 | 조향 입력 여부 | 0~1 | Validation Harness에서 CGW에 전달 |
 | frmPedalInputCanMsg | 0x2A2 | 2 | AccelPedal | 0~7 | 가속 페달 입력 | 0~100 % | Validation Harness에서 VCU에 전달 |
 |  |  |  | BrakePedal | 8~15 | 브레이크 페달 입력 | 0~100 % | Validation Harness에서 ESC에 전달 |
@@ -125,7 +125,7 @@
 |  |  |  | ThrottleReq | 8~15 | 스로틀 요청 | 0~100 % | EMS에서 TCU, CGW에 전달 |
 | frmTransmissionTempMsg | 0x12D | 2 | TransOilTemp | 0~7 | 변속기 오일 온도 | 0~255 degC | TCU에서 EMS, CGW에 전달 |
 |  |  |  | ClutchTemp | 8~15 | 클러치 온도 | 0~255 degC | TCU에서 EMS, CGW에 전달 |
-| frmVehicleModeMsg | 0x10A | 2 | DriveMode | 0~2 | 주행 모드 | 0~7 | CGW에서 EMS, TCU에 전달 |
+| frmVehicleModeMsg | 0x10A | 2 | DriveMode | 0~2 | 가감속 기반 동적 주행 모드 | 0~7 | CGW에서 EMS, TCU에 전달 |
 |  |  |  | EcoMode | 3 | 에코 모드 | 0~1 | CGW에서 EMS, TCU에 전달 |
 |  |  |  | SportMode | 4 | 스포츠 모드 | 0~1 | CGW에서 EMS, TCU에 전달 |
 |  |  |  | SnowMode | 5 | 스노우 모드 | 0~1 | CGW에서 EMS, TCU에 전달 |
@@ -139,7 +139,7 @@
 |  |  |  | PtDiagState | 8~11 | Powertrain 진단 상태 | 0~15 | CGW에서 Validation Harness에 전달 |
 |  |  |  | PtFailCode | 12~15 | Powertrain 오류 코드 | 0~15 | CGW에서 Validation Harness에 전달 |
 | ethVehicleStateMsg | 0x510 | 2 | vehicleSpeed | 0~7 | 차량 속도 | 0~255 km/h | CGW에서 ADAS에 전달 (UDP) |
-|  |  |  | driveState | 8~9 | 주행 상태(PRND) | 0~3 | CGW에서 ADAS에 전달 (UDP) |
+|  |  |  | driveState | 8~9 | 변속 선택 상태(PRND) | 0~3 | CGW에서 ADAS에 전달 (UDP) |
 | ethSteeringMsg | 0x511 | 1 | steeringInput | 0 | 조향 입력 여부 | 0~1 | CGW에서 ADAS에 전달 (UDP) |
 | ethNavContextMsg | 0x512 | 3 | roadZone | 0~1 | 구간 타입 | 0~3 | IVI에서 구간 판단과 경고 중재에 전달 (UDP) |
 |  |  |  | navDirection | 2~3 | 유도 방향 | 0~3 | IVI에서 구간 판단과 경고 중재에 전달 (UDP) |

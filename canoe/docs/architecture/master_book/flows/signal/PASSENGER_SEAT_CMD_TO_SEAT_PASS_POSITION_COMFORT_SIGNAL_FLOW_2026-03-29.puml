@@ -1,0 +1,59 @@
+@startuml passenger_seat_cmd_to_seat_pass_position_comfort_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Passenger Seat Cmd To SEAT PASS Position Comfort Signal Flow\n(passenger seat-control command + vehicle state -> passenger seat position / heat / ventilation state)
+
+participant "Seat-control bus" as SeatCtl #F4F7FB
+participant "Vehicle state bus" as Veh #E8F0FE
+participant "SEAT_PASS\npassenger-seat owner" as SeatPass #E8F7E8
+participant "Passenger-seat state bus" as SeatBus #FFF4CC
+participant "Observers /\ncomfort readers" as Obs #FCE8FF
+
+== Passenger Seat Inputs ==
+
+SeatCtl -> SeatPass : frmSeatControlMsg\nPassengerSeatCmd / SeatHeatLevel / SeatVentLevel
+Veh -> SeatPass : frmVehicleStateCanMsg\ngDriveState
+activate SeatPass
+SeatPass -> SeatPass : seatCtrlInputStale =\nethIsRecentTick(gSeatCtrlRxMs, 300)
+SeatPass -> SeatPass : vehicleInputStale =\nethIsRecentTick(gVehicleRxMs, 300)
+SeatPass -> SeatPass : if seat-control stale then\nseatCmd = 0 / heat = 0 / vent = 0
+SeatPass -> SeatPass : if vehicle stale then\ndriveState = 3
+SeatPass -> SeatPass : position changes only when\ndriveState == 0
+SeatPass -> SeatPass : applySeatDelta() moves\nSeatPassPos by +/-5 per command step
+note right of SeatPass
+Representative gating inputs
+- PassengerSeatCmd
+- SeatHeatLevel
+- SeatVentLevel
+- gDriveState
+end note
+
+== Passenger Seat Publish ==
+
+SeatPass -> SeatBus : frmSeatPassStateMsg\nSeatPassPos / SeatPassHeatLvl / SeatPassVentLvl
+note right of SeatPass
+Representative outputs
+- SeatPassPos
+- SeatPassHeatLvl
+- SeatPassVentLvl
+end note
+
+== Downstream Visibility ==
+
+SeatBus -> Obs : passenger-seat comfort visibility /\nseat and cabin observers
+deactivate SeatPass
+
+note over SeatCtl, Obs
+Representative runtime chain
+1. Passenger seat-control command and vehicle state reach SEAT_PASS
+2. SEAT_PASS applies freshness gates and parked-only motion rule
+3. SEAT_PASS updates seat position and comfort levels
+4. SEAT_PASS publishes passenger-seat state for downstream readers
+end note
+
+@enduml

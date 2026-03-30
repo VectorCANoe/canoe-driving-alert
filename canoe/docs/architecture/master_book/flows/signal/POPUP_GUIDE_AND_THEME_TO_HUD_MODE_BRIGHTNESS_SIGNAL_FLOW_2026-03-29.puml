@@ -1,0 +1,61 @@
+@startuml popup_guide_and_theme_to_hud_mode_brightness_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Popup Guide And Theme To HUD Mode Brightness Signal Flow\n(HMI popup + navigation guide + cluster theme -> HUD mode and brightness)
+
+participant "HMI popup bus" as Popup #F4F7FB
+participant "Navigation route bus" as Nav #E8F0FE
+participant "Cluster theme bus" as Theme #FCE8FF
+participant "HUD\nwarning-render owner" as HUD #E8F7E8
+participant "HUD state bus" as HudBus #FFF4CC
+participant "Observers /\nvisual readers" as Obs #FFF4CC
+
+== HUD Inputs ==
+
+Popup -> HUD : frmHmiPopupStateMsg\nPopupPriority / PopupActive
+Nav -> HUD : frmNavigationRouteMsg\nGuideType
+Theme -> HUD : frmClusterThemeMsg\nThemeMode / ClusterBrightness
+activate HUD
+HUD -> HUD : popup/guide/theme lease + hold windows
+HUD -> HUD : if popup expired then\nPopupPriority = 0 / PopupActive = 0
+HUD -> HUD : if guide expired then\nGuideType = 0
+HUD -> HUD : if theme expired then\nThemeMode = 0 / Brightness = 18
+HUD -> HUD : hudMode =\npopup active & priority>=5 ? 2 :\nguideType>0 ? 3 : 0
+HUD -> HUD : if popupActive == 1 and brightness < 24\nthen brightness = 24
+note right of HUD
+Representative gating inputs
+- PopupPriority / PopupActive
+- GuideType
+- ThemeMode
+- ClusterBrightness
+end note
+
+== HUD Publish ==
+
+HUD -> HudBus : frmHudStateMsg\nHudMode / HudGuideType / HudBrightness
+note right of HUD
+Representative outputs
+- HudMode
+- HudGuideType
+- HudBrightness
+end note
+
+== Downstream Visibility ==
+
+HudBus -> Obs : HUD mode and brightness visibility /\nvisual observers
+deactivate HUD
+
+note over Popup, Obs
+Representative runtime chain
+1. Popup, guide, and theme context reach HUD
+2. HUD applies freshness and hold windows for each source
+3. HUD derives final mode and brightness floor
+4. HUD publishes the effective HUD mode/brightness state
+end note
+
+@enduml

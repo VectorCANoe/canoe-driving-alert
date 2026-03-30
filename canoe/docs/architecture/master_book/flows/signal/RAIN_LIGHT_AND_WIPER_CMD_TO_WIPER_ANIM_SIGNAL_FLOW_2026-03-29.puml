@@ -1,0 +1,59 @@
+@startuml rain_light_and_wiper_cmd_to_wiper_anim_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Rain Light And Wiper Cmd To Wiper Anim Signal Flow\n(rain/light input + manual wiper command -> WIP state and animation frame)
+
+participant "Rain / light sensor bus" as Rain #F4F7FB
+participant "Manual control\nCmd::wiperCmd" as Manual #E8F0FE
+participant "WIP\nwiper owner" as WIP #E8F7E8
+participant "Body seams /\nwiper state bus" as BodyBus #FFF4CC
+participant "Observers /\npanel renderers" as Obs #FCE8FF
+
+== Wiper Inputs ==
+
+Rain -> WIP : frmRainLightAutoMsg\nRainSenseLevel / AutoLightState
+Manual -> WIP : Cmd::wiperCmd\n(when scenarioActiveId == 0)
+activate WIP
+WIP -> WIP : rainInputStale =\nethIsRecentTick(gRainRxMs, 300)
+WIP -> WIP : if stale then\nrainSenseLevel = 0 / autoLightState = 0
+WIP -> WIP : derive FrontWiperState /\nRearWiperState / WiperInterval
+WIP -> WIP : advance gWiperPos using\nstate-derived step and direction
+note right of WIP
+Representative gating inputs
+- RainSenseLevel
+- AutoLightState
+- Cmd::wiperCmd
+- scenarioActiveId gate
+end note
+
+== Wiper Publish ==
+
+WIP -> BodyBus : frmWiperStateMsg\nFrontWiperState / RearWiperState / WiperInterval
+WIP -> BodyBus : Body::wiperPos\nBody::frontWiperAnimFrame
+note right of WIP
+Representative outputs
+- FrontWiperState
+- RearWiperState
+- WiperInterval
+- frontWiperAnimFrame
+end note
+
+== Downstream Visibility ==
+
+BodyBus -> Obs : body readback /\nwiper animation and panel observers
+deactivate WIP
+
+note over Rain, Obs
+Representative runtime chain
+1. Rain/light state and manual wiper command reach WIP
+2. WIP chooses manual or sensed wiper posture
+3. WIP derives interval and animation position
+4. WIP publishes frmWiperStateMsg and Body animation seams
+end note
+
+@enduml

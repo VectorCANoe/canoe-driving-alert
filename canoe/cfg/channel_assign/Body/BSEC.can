@@ -101,7 +101,8 @@ void publishSecurityState()
   traceBsecInputHealth(apertureInputStale, vehicleInputStale, immoInputStale);
 
   driveState = gDriveState;
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   if (vehicleInputStale == 1)
   {
     driveState = 3;

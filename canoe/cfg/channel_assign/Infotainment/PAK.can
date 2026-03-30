@@ -168,12 +168,16 @@ on timer tPaakCycle
       mPaak.ProximityState != gLastProx ||
       mPaak.SyncLatency != gLastLatency)
   {
-    write("[PAK] state=%d auth=%d prox=%d latency=%d bars=%d",
+    write("[DYN-ACCESS][PAK] state=%d auth=%d prox=%d latency=%d bars=%d drive=%d stale=%d/%d/%d",
           mPaak.PaakState,
           mPaak.AuthLevel,
           mPaak.ProximityState,
           mPaak.SyncLatency,
-          signalBars);
+          signalBars,
+          driveState,
+          dkeyInputStale,
+          tmuInputStale,
+          vehicleInputStale);
     gLastState = mPaak.PaakState;
     gLastAuth = mPaak.AuthLevel;
     gLastProx = mPaak.ProximityState;
@@ -187,4 +191,3 @@ on stopMeasurement
 {
   cancelTimer(tPaakCycle);
 }
-

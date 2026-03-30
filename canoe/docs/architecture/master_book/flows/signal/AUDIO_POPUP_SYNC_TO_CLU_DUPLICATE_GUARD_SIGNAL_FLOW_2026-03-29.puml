@@ -1,0 +1,60 @@
+@startuml audio_popup_sync_to_clu_duplicate_guard_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Audio Popup Sync To CLU Duplicate Guard Signal Flow\n(audio focus + popup + sync state + cluster warning -> CLU duplicate-guarded warning text)
+
+participant "Cluster warning bus" as Warn #F4F7FB
+participant "Popup / audio / sync buses" as Aux #E8F0FE
+participant "CLU\ncluster-render owner" as CLU #E8F7E8
+participant "Cluster/Core seams" as CluBus #FFF4CC
+participant "Observers /\ncluster readers" as Obs #FFF4CC
+
+== CLU Inputs ==
+
+Warn -> CLU : frmClusterWarningMsg\nWarningTextCode
+Aux -> CLU : frmHmiPopupStateMsg / frmAudioFocusMsg /\nfrmSpeechTtsStateMsg / frmClusterSyncStateMsg
+activate CLU
+CLU -> CLU : applyDisplayPolicy(rawCode)
+CLU -> CLU : applyRobustPolicy(code)\nusing popup/audio/tts/sync/backbone alert state
+CLU -> CLU : if same warning repeats within 1000 ms\nthen duplicatePopupGuard remains active
+CLU -> CLU : if code changes then pushHistory() /\nrespondHistoryQuery()
+note right of CLU
+Representative gating inputs
+- WarningTextCode
+- PopupPriority / PopupActive
+- AudioFocusOwner / AudioDuckingLvl
+- TtsState
+- ClusterSyncState / ClusterSyncAge
+end note
+
+== CLU Publish ==
+
+CLU -> CluBus : Cluster::warningTextCode
+CLU -> CluBus : CoreState::duplicatePopupGuard /\nclusterNotifType / clusterNotifPrio
+note right of CLU
+Representative outputs
+- warningTextCode
+- duplicatePopupGuard
+- clusterNotifType
+- clusterNotifPrio
+end note
+
+== Downstream Visibility ==
+
+CluBus -> Obs : cluster text visibility /\nduplicate-popup guard observers
+deactivate CLU
+
+note over Warn, Obs
+Representative runtime chain
+1. Cluster warning and auxiliary popup/audio/sync context reach CLU
+2. CLU applies robust policy and duplicate-popup suppression
+3. CLU updates warning text and duplicate guard seams
+4. Cluster observers read the guarded warning presentation state
+end note
+
+@enduml

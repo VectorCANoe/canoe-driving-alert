@@ -267,7 +267,8 @@ void updateWarningFrame()
   }
 
   if (crossSceneAlertFrame < 0 &&
-      ((int)@Test::scenarioActiveId) == 0 &&
+      ((((int)@Test::scenarioActiveId) == 0) ||
+       (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) &&
       gEngineState == 0)
   {
     @Display::animFrame = 0;
@@ -341,7 +342,8 @@ on timer tHighwayEntry
   {
     return;
   }
-  if (((int)@Test::scenarioActiveId) > 0)
+  if (((int)@Test::scenarioActiveId) > 0 &&
+      (clampRange((int)@Test::nativeExecTierCode, 0, 4) > 0))
   {
     return;
   }
@@ -407,7 +409,8 @@ on timer tEngineCycle
   accelPedal = gAccelPedal;
   brakePedal = gBrakePedal;
   speed = gVehicleSpeed;
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   if (ignitionInputStale == 1)
   {
     ignitionState = 0;
@@ -569,7 +572,8 @@ on sysvar Infotainment::roadZone
     return;
   }
   zone = clampRange((int)@Infotainment::roadZone, 0, 3);
-  if (((int)@Test::scenarioActiveId) > 0)
+  if (((int)@Test::scenarioActiveId) > 0 &&
+      (clampRange((int)@Test::nativeExecTierCode, 0, 4) > 0))
   {
     gLastRoadZone = zone;
     return;
@@ -594,7 +598,8 @@ on sysvar Inject::roadZone
     return;
   }
   zone = clampRange((int)@Inject::roadZone, 0, 3);
-  if (((int)@Test::scenarioActiveId) > 0)
+  if (((int)@Test::scenarioActiveId) > 0 &&
+      (clampRange((int)@Test::nativeExecTierCode, 0, 4) > 0))
   {
     gLastRoadZone = zone;
     return;

@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1588" viewBox="0 0 1600 1588">
+  <defs>
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ede9fe"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #f7f7f5; }
+    .title { font: 700 32px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .sub { font: 500 16px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 19px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 16px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .heroRole { font: 700 23px 'Segoe UI', sans-serif; fill: #111827; }
+    .statement { font: 700 26px 'Segoe UI', sans-serif; fill: #111827; }
+    .node { font: 700 19px 'Segoe UI', sans-serif; fill: #111827; }
+    .box { rx: 22; ry: 22; stroke: #334155; stroke-width: 1.6; }
+    .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <rect x="0" y="0" width="1600" height="1588" class="bg"/>
+  <text x="34" y="44" class="title">ECU Reference - CLU</text>
+  <text x="34" y="72" class="sub">p3 | inbound runtime inventory</text>
+  <rect x="30" y="100" width="1540" height="232" class="box" fill="url(#heroGradient)"/> <text x="52" y="134" class="small">Inbound inventory | p3</text> <text x="52" y="172" class="title">CLU</text> <text x="52" y="202" class="text">Group 03 Display Warning Audio | Infotainment</text> <text x="52" y="228" class="small">Role focus</text> <text x="52" y="248" class="heroRole">Warning and drive-status display</text> <rect x="1034" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1052" y="162" class="small">Rx msgs</text>
+<text x="1052" y="192" class="node">49</text> <rect x="1298" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1316" y="162" class="small">Tx msgs</text>
+<text x="1316" y="192" class="node">1</text> <rect x="1034" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1052" y="256" class="small">Linked ECU</text>
+<text x="1052" y="286" class="node">38</text> <rect x="1298" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1316" y="256" class="small">Owner seams</text>
+<text x="1316" y="286" class="node">2</text>
+  <rect x="30" y="350" width="1540" height="142" class="box" fill="#fff7ed"/>
+<text x="52" y="384" class="small">What this ECU does</text>
+<text x="52" y="426" class="statement">Consumes selected alert state and vehicle state to build cluster-facing</text>
+<text x="52" y="452" class="statement">output</text>
+  <rect x="30" y="510" width="1540" height="1028" class="box" fill="#e0f2fe"/>
+<text x="52" y="546" class="label">Inbound / Rx messages</text>
+<text x="52" y="572" class="small">49 rx messages</text>
+<text x="52" y="598" class="text">ADAS Domain State</text>
+<text x="52" y="620" class="small">frmAdasDomainStateMsg</text>
+<line x1="52" y1="642" x2="538" y2="642" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="652" class="text">AEB Domain State</text>
+<text x="52" y="674" class="small">frmAebDomainStateMsg</text>
+<line x1="52" y1="696" x2="538" y2="696" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="706" class="text">AMP State</text>
+<text x="52" y="728" class="small">frmAmpStateMsg</text>
+<line x1="52" y1="750" x2="538" y2="750" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="760" class="text">Audio Focus</text>
+<text x="52" y="782" class="small">frmAudioFocusMsg</text>
+<line x1="52" y1="804" x2="538" y2="804" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="814" class="text">AVM State</text>
+<text x="52" y="836" class="small">frmAvmStateMsg</text>
+<line x1="52" y1="858" x2="538" y2="858" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="868" class="text">BCW State</text>
+<text x="52" y="890" class="small">frmBcwStateMsg</text>
+<line x1="52" y1="912" x2="538" y2="912" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="922" class="text">Call State</text>
+<text x="52" y="944" class="small">frmCallStateMsg</text>
+<line x1="52" y1="966" x2="538" y2="966" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="976" class="text">CLU Diagnostic Request</text>
+<text x="52" y="998" class="small">frmCluDiagReqMsg</text>
+<line x1="52" y1="1020" x2="538" y2="1020" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1030" class="text">Cluster Base State</text>
+<text x="52" y="1052" class="small">frmClusterBaseStateMsg</text>
+<line x1="52" y1="1074" x2="538" y2="1074" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1084" class="text">Cluster Notif</text>
+<text x="52" y="1106" class="small">frmClusterNotifMsg</text>
+<line x1="52" y1="1128" x2="538" y2="1128" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1138" class="text">Cluster Sync State</text>
+<text x="52" y="1160" class="small">frmClusterSyncStateMsg</text>
+<line x1="52" y1="1182" x2="538" y2="1182" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1192" class="text">Cluster Theme</text>
+<text x="52" y="1214" class="small">frmClusterThemeMsg</text>
+<line x1="52" y1="1236" x2="538" y2="1236" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1246" class="text">Cluster Warning</text>
+<text x="52" y="1268" class="small">frmClusterWarningMsg</text>
+<line x1="52" y1="1290" x2="538" y2="1290" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1300" class="text">Digital Key State</text>
+<text x="52" y="1322" class="small">frmDigitalKeyStateMsg</text>
+<line x1="52" y1="1344" x2="538" y2="1344" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1354" class="text">DMS State</text>
+<text x="52" y="1376" class="small">frmDmsStateMsg</text>
+<line x1="52" y1="1398" x2="538" y2="1398" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1408" class="text">EPB State</text>
+<text x="52" y="1430" class="small">frmEpbStateMsg</text>
+<line x1="52" y1="1452" x2="538" y2="1452" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1462" class="text">FCA State</text>
+<text x="52" y="1484" class="small">frmFcaStateMsg</text>
+<text x="556" y="598" class="text">FCAM State</text>
+<text x="556" y="620" class="small">frmFcamStateMsg</text>
+<line x1="556" y1="642" x2="1042" y2="642" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="652" class="text">FRADAR State</text>
+<text x="556" y="674" class="small">frmFradarStateMsg</text>
+<line x1="556" y1="696" x2="1042" y2="696" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="706" class="text">Highway Pilot State</text>
+<text x="556" y="728" class="small">frmHighwayPilotStateMsg</text>
+<line x1="556" y1="750" x2="1042" y2="750" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="760" class="text">Hmi Popup State</text>
+<text x="556" y="782" class="small">frmHmiPopupStateMsg</text>
+<line x1="556" y1="804" x2="1042" y2="804" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="814" class="text">HUD State</text>
+<text x="556" y="836" class="small">frmHudStateMsg</text>
+<line x1="556" y1="858" x2="1042" y2="858" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="868" class="text">LCA State</text>
+<text x="556" y="890" class="small">frmLcaStateMsg</text>
+<line x1="556" y1="912" x2="1042" y2="912" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="922" class="text">Ldws Lkas State</text>
+<text x="556" y="944" class="small">frmLdwsLkasStateMsg</text>
+<line x1="556" y1="966" x2="1042" y2="966" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="976" class="text">Lidar State</text>
+<text x="556" y="998" class="small">frmLidarStateMsg</text>
+<line x1="556" y1="1020" x2="1042" y2="1020" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1030" class="text">Massage Seat Ctrl State</text>
+<text x="556" y="1052" class="small">frmMassageSeatCtrlStateMsg</text>
+<line x1="556" y1="1074" x2="1042" y2="1074" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1084" class="text">Media Meta</text>
+<text x="556" y="1106" class="small">frmMediaMetaMsg</text>
+<line x1="556" y1="1128" x2="1042" y2="1128" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1138" class="text">Media State</text>
+<text x="556" y="1160" class="small">frmMediaStateMsg</text>
+<line x1="556" y1="1182" x2="1042" y2="1182" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1192" class="text">Navigation Module State</text>
+<text x="556" y="1214" class="small">frmNavModuleStateMsg</text>
+<line x1="556" y1="1236" x2="1042" y2="1236" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1246" class="text">OMS State</text>
+<text x="556" y="1268" class="small">frmOmsStateMsg</text>
+<line x1="556" y1="1290" x2="1042" y2="1290" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1300" class="text">OTA Master State</text>
+<text x="556" y="1322" class="small">frmOtaMasterStateMsg</text>
+<line x1="556" y1="1344" x2="1042" y2="1344" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1354" class="text">Park Master State</text>
+<text x="556" y="1376" class="small">frmParkMasterStateMsg</text>
+<line x1="556" y1="1398" x2="1042" y2="1398" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1408" class="text">Park Ultrasonic State</text>
+<text x="556" y="1430" class="small">frmParkUltrasonicStateMsg</text>
+<line x1="556" y1="1452" x2="1042" y2="1452" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1462" class="text">PGS State</text>
+<text x="556" y="1484" class="small">frmPgsStateMsg</text>
+<text x="1060" y="598" class="text">Phone Projection</text>
+<text x="1060" y="620" class="small">frmPhoneProjectionMsg</text>
+<line x1="1060" y1="642" x2="1546" y2="642" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="652" class="text">Rear Radar Master State</text>
+<text x="1060" y="674" class="small">frmRearRadarMasterStateMsg</text>
+<line x1="1060" y1="696" x2="1546" y2="696" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="706" class="text">Road Preview Camera State</text>
+<text x="1060" y="728" class="small">frmRoadPreviewCameraStateMsg</text>
+<line x1="1060" y1="750" x2="1546" y2="750" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="760" class="text">RSE State</text>
+<text x="1060" y="782" class="small">frmRseStateMsg</text>
+<line x1="1060" y1="804" x2="1546" y2="804" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="814" class="text">RSPA State</text>
+<text x="1060" y="836" class="small">frmRspaStateMsg</text>
+<line x1="1060" y1="858" x2="1546" y2="858" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="868" class="text">SPAS State</text>
+<text x="1060" y="890" class="small">frmSpasStateMsg</text>
+<line x1="1060" y1="912" x2="1546" y2="912" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="922" class="text">Speech Tts State</text>
+<text x="1060" y="944" class="small">frmSpeechTtsStateMsg</text>
+<line x1="1060" y1="966" x2="1546" y2="966" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="976" class="text">Srr Fl State</text>
+<text x="1060" y="998" class="small">frmSrrFlStateMsg</text>
+<line x1="1060" y1="1020" x2="1546" y2="1020" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="1030" class="text">Srr Fr State</text>
+<text x="1060" y="1052" class="small">frmSrrFrStateMsg</text>
+<line x1="1060" y1="1074" x2="1546" y2="1074" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="1084" class="text">Srr Rl State</text>
+<text x="1060" y="1106" class="small">frmSrrRlStateMsg</text>
+<line x1="1060" y1="1128" x2="1546" y2="1128" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="1138" class="text">Srr Rr State</text>
+<text x="1060" y="1160" class="small">frmSrrRrStateMsg</text>
+<line x1="1060" y1="1182" x2="1546" y2="1182" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="1192" class="text">Surround Park Master State</text>
+<text x="1060" y="1214" class="small">frmSurroundParkMasterStateMsg</text>
+<line x1="1060" y1="1236" x2="1546" y2="1236" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="1246" class="text">TMU Service State</text>
+<text x="1060" y="1268" class="small">frmTmuServiceStateMsg</text>
+<line x1="1060" y1="1290" x2="1546" y2="1290" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="1300" class="text">Trailer Ctrl State</text>
+<text x="1060" y="1322" class="small">frmTrailerCtrlStateMsg</text>
+<line x1="1060" y1="1344" x2="1546" y2="1344" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="1354" class="text">Voice Assist State</text>
+<text x="1060" y="1376" class="small">frmVoiceAssistStateMsg</text>
+</svg>

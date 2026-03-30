@@ -20,7 +20,7 @@
 | ID | Namespace | Name | Data type | Min | Max | Initial Value | Description |
 |---|---|---|---|---|---|---|---|
 | 1 | Chassis | vehicleSpeed | uint32 | 0 | 255 | 0 | 차량 속도 입력값 |
-| 2 | Chassis | driveState | uint32 | 0 | 3 | 0 | 주행 상태(P/R/N/D) 입력값 |
+| 2 | Chassis | driveState | uint32 | 0 | 3 | 0 | 변속 선택 상태(P/R/N/D) |
 | 3 | Chassis | steeringInput | uint32 | 0 | 1 | 0 | 조향 입력 여부 |
 | 4 | Infotainment | roadZone | uint32 | 0 | 3 | 0 | 구간 타입 입력값 |
 | 5 | Infotainment | navDirection | uint32 | 0 | 3 | 0 | 내비게이션 방향 정보 |
@@ -31,7 +31,7 @@
 | 10 | V2X | SourceId | uint32 | 0 | 255 | 0 | 긴급 메시지 Source ID |
 | 11 | V2X | Status | uint32 | 0 | 1 | 0 | 긴급 메시지 Active/Clear 상태 |
 | 12 | Core | vehicleSpeedNorm | uint32 | 0 | 255 | 0 | 게이트웨이 정규화 후 차량 속도 |
-| 13 | Core | driveStateNorm | uint32 | 0 | 3 | 0 | 게이트웨이 정규화 후 주행 상태 |
+| 13 | Core | driveStateNorm | uint32 | 0 | 3 | 0 | 게이트웨이 정규화 후 변속 선택 상태(P/R/N/D) |
 | 14 | Core | steeringInputNorm | uint32 | 0 | 1 | 0 | 게이트웨이 정규화 후 조향 입력 |
 | 15 | Core | baseZoneContext | uint32 | 0 | 255 | 0 | 구간 컨텍스트 계산 결과 |
 | 16 | Core | warningState | uint32 | 0 | 255 | 0 | 경고 조건 판정 상태 |
@@ -177,7 +177,7 @@
 | 188 | Powertrain | ThrottleReq | uint32 | 0 | 100 | 0 | 스로틀 요청 |
 | 189 | Powertrain | TransOilTemp | uint32 | 0 | 255 | 0 | 변속기 오일 온도 |
 | 190 | Powertrain | ClutchTemp | uint32 | 0 | 255 | 0 | 클러치 온도 |
-| 191 | Powertrain | DriveMode | uint32 | 0 | 7 | 0 | 주행 모드 |
+| 191 | Powertrain | DriveMode | uint32 | 0 | 7 | 0 | 가감속/속도 기반 동적 주행 모드 |
 | 192 | Powertrain | EcoMode | uint32 | 0 | 1 | 0 | 에코 모드 |
 | 193 | Powertrain | SportMode | uint32 | 0 | 1 | 0 | 스포츠 모드 |
 | 194 | Powertrain | SnowMode | uint32 | 0 | 1 | 0 | 스노우 모드 |

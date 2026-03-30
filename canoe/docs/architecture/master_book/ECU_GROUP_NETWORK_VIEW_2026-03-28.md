@@ -1,9 +1,11 @@
 # ECU Group Network View (2026-03-28)
 
+Subtitle: Grouped reading layer between the full overview map and the per-ECU catalog.
+
 ## Purpose
 
-This note groups the current runtime into clusters that actually move together at runtime.
-It is not a replacement for `0302`; it is a runtime reading layer.
+This note groups the current runtime into clusters that move together in one vehicle story.
+Use it as the grouped reading layer between the overview map and the ECU cards.
 
 ## Group 1. Base Vehicle Dynamics
 
@@ -17,14 +19,14 @@ It is not a replacement for `0302`; it is a runtime reading layer.
 
 ### Main path
 
-`Input_Console -> Cmd::* -> VCU / ESC / MDPS -> frmVehicleStateCanMsg / frmBrakeStatusMsg / frmSteeringTorqueMsg -> CGW / ADAS / IVI / CLU`
+`Input surface -> vehicle motion owners -> gateway, assist, and display readers`
 
 ### Why this group matters
 
 - This is the base vehicle state producer set.
-- If this group is unstable, every ADAS/HMI judgment becomes noisy.
+- If this group drifts, downstream assist and display behavior also drifts.
 
-### Current focus
+### Reading focus
 
 - steering command/readback unification
 - speed preset vs real pedal ownership
@@ -44,14 +46,14 @@ It is not a replacement for `0302`; it is a runtime reading layer.
 
 ### Main path
 
-`route context + vehicle state + V2X/perception -> ADAS -> decel assist / risk -> AEB StopReq/DecelProfile/DomainHealth -> ESC/EHB/VSM`
+`route, vehicle, V2X, and object context -> ADAS -> AEB -> chassis intervention`
 
 ### Why this group matters
 
-- This is the strongest current coupled-intervention cluster.
-- It is the most likely source of "red brake stutter" or stepped intervention feel.
+- This is the main intervention and warning-decision cluster.
+- It is the main cluster to read when multiple assist reactions appear at once.
 
-### Current risk read
+### Reading focus
 
 - `AEB` is the producer
 - `ESC`, `EHB`, `VSM` are simultaneous consumers
@@ -69,7 +71,7 @@ It is not a replacement for `0302`; it is a runtime reading layer.
 
 ### Main path
 
-`ADAS effective/gated state -> CGW gate reason -> IVI / CLU / BCM / AMP -> text / ambient / audio / display`
+`selected alert state -> gateway gating -> IVI / CLU / BCM / AMP`
 
 ### Why this group matters
 
@@ -90,13 +92,13 @@ It is not a replacement for `0302`; it is a runtime reading layer.
 
 ### Main path
 
-`Cmd::* / body state -> BCM/body leaves -> body readback -> ambient / comfort / cabin display`
+`body and comfort input -> BCM / body leaves -> ambient and cabin response`
 
 ### Why this group matters
 
 - Wider than the current input surface
 - important for comfort/context consistency
-- lower priority than dynamics/AEB for immediate runtime stabilization
+- lower priority than dynamics/AEB for first-pass runtime stabilization
 
 ## Group 5. Validation / Scenario Overlay
 
@@ -133,7 +135,7 @@ It is not a replacement for `0302`; it is a runtime reading layer.
 - This group is easy to under-document because it is less visible than dynamics or ADAS.
 - But external service, diagnostic, and gateway reasoning become unreadable if this cluster is omitted.
 
-## Immediate Debug Priority
+## Reading Priority
 
 1. `ADAS / AEB / ESC / EHB / VSM`
 2. `VCU / ESC / MDPS`
@@ -141,7 +143,7 @@ It is not a replacement for `0302`; it is a runtime reading layer.
 4. body/comfort breadth surfaces
 5. gateway / diagnostic / service surfaces
 
-## Immediate Artifact Link
+## Companion Assets
 
 - matrix: `ECU_NETWORK_MASTER_MATRIX_2026-03-28.md`
 - full overview: `svg/OVERVIEW_RUNTIME_101_ECU_DOMAIN_MAP_2026-03-28.svg`
@@ -154,5 +156,5 @@ It is not a replacement for `0302`; it is a runtime reading layer.
 - backbone/diagnostics: `svg/GROUP_06_BACKBONE_GATEWAY_DIAGNOSTICS_2026-03-28.svg`
 - master book: `ECU_METADATA_BOOK_2026-03-28.md`
 - generated ECU network flow cards: `ECU_CARD_INDEX_2026-03-28.md`
-- action signal flow sample: `flows/STEERING_TURN_SIGNAL_FLOW_2026-03-28.puml`
-- action signal flow preview: `svg/flows/STEERING_TURN_SIGNAL_FLOW_2026-03-28.svg`
+- detailed signal-flow source: `flows/signal/STEERING_TURN_SIGNAL_FLOW_2026-03-28.puml`
+- detailed signal-flow preview: `svg/flows/signal/STEERING_TURN_SIGNAL_FLOW_2026-03-28.svg`

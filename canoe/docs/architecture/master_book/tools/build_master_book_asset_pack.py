@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import json
+import math
 import re
+import shutil
+import subprocess
 import textwrap
 from collections import Counter, defaultdict
 from dataclasses import asdict, dataclass, field
@@ -11,6 +14,7 @@ from xml.sax.saxutils import escape
 
 
 DATE_STAMP = "2026-03-28"
+BOOK_TITLE = "Vehicle ECU Architecture and Interaction Reference"
 REPO_ROOT = Path(__file__).resolve().parents[5]
 
 SRC_CAPL_ROOT = REPO_ROOT / "canoe" / "src" / "capl"
@@ -19,14 +23,18 @@ DBC_ROOT = REPO_ROOT / "canoe" / "databases"
 OWNERSHIP_MATRIX = REPO_ROOT / "canoe" / "tmp" / "runtime_message_ownership_matrix.md"
 TEST_UNIT_ROOT = REPO_ROOT / "canoe" / "tests" / "modules" / "test_units"
 
-INTERNAL_ARCH_ROOT = REPO_ROOT / "canoe" / "AGENT" / "canoe" / "docs" / "architecture"
 ARCH_ROOT = Path(__file__).resolve().parents[1]
 DATA_ROOT = ARCH_ROOT / "data"
-FLOW_ROOT = ARCH_ROOT / "flows"
+FLOW_ROOT = ARCH_ROOT / "flows" / "signal"
 SVG_ROOT = ARCH_ROOT / "svg"
+PNG_ROOT = ARCH_ROOT / "png"
 CARD_ROOT = SVG_ROOT / "ecu_cards"
-FLOW_SVG_ROOT = SVG_ROOT / "flows"
-PROTOTYPE_ROOT = INTERNAL_ARCH_ROOT / "svg" / "card_prototypes"
+FLOW_SVG_ROOT = SVG_ROOT / "flows" / "action"
+SIGNAL_FLOW_SVG_ROOT = SVG_ROOT / "flows" / "signal"
+SIGNAL_FLOW_PNG_ROOT = PNG_ROOT / "flows" / "signal"
+PROTOTYPE_ROOT = ARCH_ROOT / "prototypes" / "card_prototypes"
+GLOBAL_PLANTUML_JAR = Path(r"C:/PlantUML/plantuml-1.2024.8.jar")
+VENDORED_PLANTUML_JAR = REPO_ROOT / "canoe" / "tools" / "20_VERIFICATION" / "vendor" / "plantuml-1.2024.8.jar"
 
 METADATA_JSON = DATA_ROOT / f"ECU_METADATA_DATASET_{DATE_STAMP}.json"
 ACTION_FLOW_JSON = DATA_ROOT / f"ACTION_FLOW_DATASET_{DATE_STAMP}.json"
@@ -35,6 +43,7 @@ RISK_NOTES_JSON = DATA_ROOT / "ECU_RISK_NOTES.json"
 MASTER_BOOK = ARCH_ROOT / f"ECU_METADATA_BOOK_{DATE_STAMP}.md"
 CARD_INDEX = ARCH_ROOT / f"ECU_CARD_INDEX_{DATE_STAMP}.md"
 ACTION_FLOW_INDEX = ARCH_ROOT / f"ACTION_FLOW_INDEX_{DATE_STAMP}.md"
+SIGNAL_FLOW_INDEX = ARCH_ROOT / f"SIGNAL_FLOW_INDEX_{DATE_STAMP}.md"
 ECU_FLOW_MATRIX = ARCH_ROOT / f"ECU_ACTION_FLOW_MATRIX_{DATE_STAMP}.md"
 GROUP06_SVG = SVG_ROOT / f"GROUP_06_BACKBONE_GATEWAY_DIAGNOSTICS_{DATE_STAMP}.svg"
 ECU_DOMAIN_LOOKUP: dict[str, str] = {}
@@ -203,7 +212,7 @@ CURATED_HINTS: dict[str, dict[str, object]] = {
         "owner_seam": ["validation summary seams", "Input_Console router entry"],
         "sysvar_hints": ["validation summary seams"],
         "current_gap_risk": "Should remain validation-focused and not drift back into scenario ownership.",
-        "runtime_note": "Receives internal input router helpers and publishes baseline validation summaries.",
+        "runtime_note": "Aggregates scenario results and publishes baseline validation summaries.",
     },
 }
 
@@ -267,6 +276,29 @@ PAGE_BREAK = '<div style="page-break-before: always;"></div>'
 
 PROTOTYPE_CARD_ECUS = {"AFLS", "AEB", "VCU", "CGW", "TEST_SCN"}
 
+ACTION_FLOW_BADGES = {
+    "FLOW_01": "Steering readback",
+    "FLOW_02": "Brake stability",
+    "FLOW_03": "Propulsion status",
+    "FLOW_04": "Cruise support",
+    "FLOW_05": "Chassis health",
+    "FLOW_06": "Object risk fusion",
+    "FLOW_07": "AEB intervention",
+    "FLOW_08": "Lane surround keeping",
+    "FLOW_09": "Parking surround assist",
+    "FLOW_10": "Driver and occupant risk",
+    "FLOW_11": "Zone context ingress",
+    "FLOW_12": "V2X emergency ingress",
+    "FLOW_13": "Alert arbitration",
+    "FLOW_14": "Cluster HUD audio output",
+    "FLOW_15": "Service access HMI",
+    "FLOW_16": "Body ambient warning",
+    "FLOW_17": "Access and security entry",
+    "FLOW_18": "Comfort climate seat",
+    "FLOW_19": "Validation scenario control",
+    "FLOW_20": "Backbone diagnostic routing",
+}
+
 
 def build_action_flows() -> dict[str, ActionFlow]:
     flows = [
@@ -275,18 +307,18 @@ def build_action_flows() -> dict[str, ActionFlow]:
             slug="STEERING_CONTROL_READBACK",
             title="Steering Control Readback",
             category="Dynamics",
-            summary="Manual steering input is normalized, published as steering state, and rendered back into the donor wheel image path.",
+            summary="Manual steering input is normalized, published as steering state, and rendered back into the steering readback path.",
             participants=["Input_Console", "ESC", "MDPS", "CGW", "ADAS", "CLU"],
             steps=[
                 ("Input_Console", "Capture steering request", "Driver wheel or bar writes Cmd::steeringAngleCmd."),
                 ("ESC", "Normalize manual angle", "Bridge command into legacy steering angle and manual readback seams."),
                 ("MDPS", "Publish steering state", "Produce steering state, torque, and EPS state on the chassis lane."),
                 ("CGW / ADAS", "Consume steering freshness", "Gateway and ADAS merge steering freshness and steeringInputNorm."),
-                ("CLU", "Render wheel feedback", "Display::steeringFrame keeps the donor wheel image aligned with input."),
+                ("CLU", "Render wheel feedback", "Display::steeringFrame keeps steering feedback aligned with input."),
             ],
             key_contracts=["Cmd::steeringAngleCmd", "Chassis::steeringAngle", "frmSteeringStateCanMsg", "frmSteeringTorqueMsg", "Display::steeringFrame"],
             key_files=["ESC.can", "MDPS.can", "CGW.can", "ADAS.can", "CLU.can"],
-            user_outcome="Steering bar, steering angle readback, and wheel image move together without drift.",
+            user_outcome="Steering bar, steering angle readback, and wheel feedback move together without drift.",
         ),
         ActionFlow(
             flow_id="FLOW_02",
@@ -513,7 +545,7 @@ def build_action_flows() -> dict[str, ActionFlow]:
             participants=["CGW / IVI", "CLU", "HUD", "AMP", "User"],
             steps=[
                 ("CGW / IVI", "Prepare output payload", "Selected alert and supporting context are packaged for visible and audible output."),
-                ("CLU", "Render cluster text and icon", "Cluster output turns the alert into the donor-facing warning surface."),
+                ("CLU", "Render cluster text and icon", "Cluster output turns the alert into the main warning surface."),
                 ("HUD", "Mirror critical cue", "HUD surfaces present only the critical condensed cue."),
                 ("AMP", "Render sound level", "Audio lane emits the final alert volume and sound intent."),
                 ("User", "Consume synchronized cue", "Driver sees and hears one coherent alert story."),
@@ -640,6 +672,196 @@ ACTION_FLOW_ORDER = list(ACTION_FLOWS)
 
 def action_flow_filename(flow: ActionFlow) -> str:
     return f"{flow.flow_id}_{flow.slug}_{DATE_STAMP}.svg"
+
+
+def signal_flow_source_relpath(source: Path) -> str:
+    return f"flows/signal/{source.name}"
+
+
+def signal_flow_svg_relpath(source: Path) -> str:
+    return f"svg/flows/signal/{source.with_suffix('.svg').name}"
+
+
+def signal_flow_png_relpath(source: Path) -> str:
+    return f"png/flows/signal/{source.with_suffix('.png').name}"
+
+
+def resolve_plantuml_jar() -> Path:
+    if GLOBAL_PLANTUML_JAR.exists():
+        return GLOBAL_PLANTUML_JAR
+    if VENDORED_PLANTUML_JAR.exists():
+        return VENDORED_PLANTUML_JAR
+    raise RuntimeError("PlantUML jar not found for master_book signal-flow render.")
+
+
+def resolve_java_runtime() -> str:
+    preferred = Path(r"C:/Program Files/Java/jdk1.8.0_261/bin/java.exe")
+    if preferred.exists():
+        return str(preferred)
+    resolved = shutil.which("java")
+    if resolved:
+        return resolved
+    raise RuntimeError("Java runtime not found for master_book signal-flow render.")
+
+
+def render_signal_flow_triplets() -> list[Path]:
+    jar = resolve_plantuml_jar()
+    java = resolve_java_runtime()
+    sources = sorted(FLOW_ROOT.glob("*.puml"))
+    for source in sources:
+        svg_out = SIGNAL_FLOW_SVG_ROOT / source.with_suffix(".svg").name
+        png_out = SIGNAL_FLOW_PNG_ROOT / source.with_suffix(".png").name
+        needs_render = (
+            not svg_out.exists()
+            or not png_out.exists()
+            or svg_out.stat().st_mtime < source.stat().st_mtime
+            or png_out.stat().st_mtime < source.stat().st_mtime
+        )
+        if not needs_render:
+            continue
+        payload = source.read_bytes()
+        for flag, dest in (("-tsvg", svg_out), ("-tpng", png_out)):
+            proc = subprocess.run(
+                [java, "-jar", str(jar), "-pipe", "-charset", "UTF-8", flag],
+                input=payload,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+            if proc.returncode != 0 or not proc.stdout:
+                raise RuntimeError(
+                    f"PlantUML render failed for {source.name} ({flag}): {proc.stderr.decode('utf-8', errors='ignore')}"
+                )
+            dest.write_bytes(proc.stdout)
+    return sources
+
+
+def render_signal_flow_index(signal_sources: list[Path]) -> str:
+    lines = [
+        f"# Signal Flow Index ({DATE_STAMP})",
+        "",
+        "Subtitle: Appendix index for detailed signal-flow triplets.",
+        "",
+        "This index lists the detailed signal-flow triplet layer used as appendix/reference material.",
+        "The canonical body of the book still uses the `FLOW_01~20` action-flow summary SVG set.",
+        "Use this index only when exact runtime names, per-signal routes, or appendix drill-down is needed.",
+        "",
+    ]
+    for source in signal_sources:
+        lines.extend(
+            [
+                f"## `{source.stem}`",
+                "",
+                f"- PUML: `{signal_flow_source_relpath(source)}`",
+                f"- SVG: `{signal_flow_svg_relpath(source)}`",
+                f"- PNG: `{signal_flow_png_relpath(source)}`",
+                "",
+            ]
+        )
+    return "\n".join(lines).rstrip() + "\n"
+
+
+SIGNAL_FLOW_GENERIC_TOKENS = {
+    "SIGNAL",
+    "FLOW",
+    "2026",
+    "03",
+    "28",
+    "29",
+    "TO",
+    "AND",
+    "STATE",
+    "MODE",
+    "INPUT",
+    "OUTPUT",
+    "PATH",
+    "REQUEST",
+    "RESPONSE",
+    "RAW",
+    "READY",
+    "CONTEXT",
+    "LEVEL",
+    "WARNING",
+    "ALERT",
+    "SERVICE",
+    "ACCESS",
+    "ROUTE",
+}
+
+
+def signal_flow_sources() -> list[Path]:
+    return sorted(FLOW_ROOT.glob("*.puml"))
+
+
+def signal_flow_text_cache() -> dict[Path, str]:
+    return {source: source.read_text(encoding="utf-8").upper() for source in signal_flow_sources()}
+
+
+def signal_flow_stem_tokens(source: Path) -> set[str]:
+    return {
+        token
+        for token in source.stem.upper().split("_")
+        if token and token not in SIGNAL_FLOW_GENERIC_TOKENS
+    }
+
+
+def extract_signal_hint_tokens(values: Iterable[str]) -> set[str]:
+    tokens: set[str] = set()
+    for value in values:
+        for token in re.findall(r"[A-Z0-9_]{3,}", str(value).upper()):
+            if token not in SIGNAL_FLOW_GENERIC_TOKENS:
+                tokens.add(token)
+    return tokens
+
+
+def group_signal_flow_fallback(meta: EcuMeta) -> str:
+    fallback = {
+        "GROUP_01_BASE_VEHICLE_DYNAMICS": "ACCEL_BRAKE_LONGITUDINAL_SIGNAL_FLOW_2026-03-28",
+        "GROUP_02_ADAS_AEB_BRAKE_ASSIST": "OBJECT_RISK_TO_WARNING_SIGNAL_FLOW_2026-03-28",
+        "GROUP_03_DISPLAY_WARNING_AUDIO": "ROUTE_WARNING_TO_HMI_SIGNAL_FLOW_2026-03-28",
+        "GROUP_04_BODY_COMFORT_AMBIENT": "AMBIENT_LIGHTING_SIGNAL_FLOW_2026-03-28",
+        "GROUP_05_VALIDATION_SCENARIO": "SCENARIO_START_STOP_SIGNAL_FLOW_2026-03-28",
+        "GROUP_06_BACKBONE_GATEWAY_DIAGNOSTICS": "DIAG_ROUTE_OWNER_TO_GATEWAY_OPEN_SIGNAL_FLOW_2026-03-28",
+    }
+    return fallback[meta.group]
+
+
+def representative_signal_flow_sources(meta: EcuMeta, limit: int = 1) -> list[Path]:
+    ecu_tokens = {token for token in meta.ecu.upper().split("_") if token and token not in SIGNAL_FLOW_GENERIC_TOKENS}
+    linked_tokens = {
+        token
+        for candidate in ordered_unique([*meta.linked_ecus, *meta.upstream_ecus, *meta.downstream_ecus])
+        for token in candidate.upper().split("_")
+        if token and token not in SIGNAL_FLOW_GENERIC_TOKENS
+    }
+    hint_tokens = extract_signal_hint_tokens([*meta.owner_seam, *meta.sysvar_hints])
+    cached_text = signal_flow_text_cache()
+    candidates: list[tuple[int, str, Path]] = []
+
+    for source in signal_flow_sources():
+        text_upper = cached_text[source]
+        stem_tokens = signal_flow_stem_tokens(source)
+        score = 0
+
+        if meta.ecu.upper() in source.stem.upper():
+            score += 220
+        if re.search(rf"(?<![A-Z0-9_]){re.escape(meta.ecu.upper())}(?![A-Z0-9_])", text_upper):
+            score += 180
+
+        score += 90 * len(ecu_tokens & stem_tokens)
+        score += 30 * len(linked_tokens & stem_tokens)
+        score += 10 * len(hint_tokens & stem_tokens)
+
+        if score > 0:
+            candidates.append((score, source.stem, source))
+
+    if candidates:
+        candidates.sort(key=lambda item: (-item[0], item[1]))
+        return [source for _, _, source in candidates[:limit]]
+
+    fallback_stem = group_signal_flow_fallback(meta)
+    fallback_source = FLOW_ROOT / f"{fallback_stem}.puml"
+    return [fallback_source] if fallback_source.exists() else []
 
 
 def add_flow_id(target: list[str], *flow_ids: str) -> None:
@@ -963,6 +1185,15 @@ def render_multiline_text(x: int, y: int, lines: list[str], css_class: str, line
     return "\n".join(parts)
 
 
+def render_centered_multiline_text(x: float, y: int, lines: list[str], css_class: str, line_height: int = 24) -> str:
+    parts = []
+    for idx, line in enumerate(lines):
+        parts.append(
+            f'<text x="{x:.1f}" y="{y + idx * line_height}" text-anchor="middle" class="{css_class}">{escape(line)}</text>'
+        )
+    return "\n".join(parts)
+
+
 def clean_items(items: Iterable[str]) -> list[str]:
     return [item.strip() for item in items if item and item.strip() and item.strip() != "-"]
 
@@ -1015,6 +1246,115 @@ def render_section_card(
     )
 
 
+def render_trace_pair_card(
+    x: int,
+    y: int,
+    width: int,
+    title: str,
+    items: Iterable[str],
+    *,
+    kind: str,
+    noun: str,
+    fill: str = "#ffffff",
+    limit: int | None = 3,
+    show_overflow_note: bool = True,
+) -> tuple[str, int]:
+    cleaned = clean_items(items)
+    if limit is None:
+        preview, overflow_note = cleaned, None
+    else:
+        preview, overflow_note = preview_items(cleaned, limit=limit, noun=noun, show_overflow_note=show_overflow_note)
+    parts = [
+        f'<rect x="{x}" y="{y}" width="{width}" height="10" class="box" fill="{fill}"/>',
+        f'<text x="{x + 22}" y="{y + 36}" class="label">{escape(title)}</text>',
+    ]
+    inner_x = x + 22
+    max_chars = max(20, min(38, (width - 44) // 9))
+    current_y = y + 72
+
+    if not preview:
+        parts.append(render_multiline_text(inner_x, current_y, ["-"], "small", 18))
+        height = 132
+    else:
+        for idx, item in enumerate(preview):
+            if idx > 0:
+                parts.append(
+                    f'<line x1="{inner_x}" y1="{current_y - 10}" x2="{x + width - 22}" y2="{current_y - 10}" stroke="#e2e8f0" stroke-width="1.0"/>'
+                )
+            label_lines = wrap_lines(trace_display_label(item, kind), max_chars)
+            exact_lines = wrap_lines(trace_exact_label(item), max_chars)
+            parts.append(render_multiline_text(inner_x, current_y, label_lines, "text", 18))
+            current_y += block_height(label_lines, 18) + 4
+            parts.append(render_multiline_text(inner_x, current_y, exact_lines, "small", 16))
+            current_y += block_height(exact_lines, 16) + 16
+        if overflow_note:
+            parts.append(render_multiline_text(inner_x, current_y, [overflow_note], "small", 18))
+            current_y += block_height([overflow_note], 18)
+        height = max(140, current_y - y + 22)
+
+    parts[0] = f'<rect x="{x}" y="{y}" width="{width}" height="{height}" class="box" fill="{fill}"/>'
+    return "\n".join(parts), height
+
+
+def render_trace_inventory_card(
+    x: int,
+    y: int,
+    width: int,
+    title: str,
+    items: Iterable[str],
+    *,
+    kind: str,
+    noun: str,
+    fill: str = "#ffffff",
+) -> tuple[str, int]:
+    cleaned = clean_items(items)
+    parts = [
+        f'<rect x="{x}" y="{y}" width="{width}" height="10" class="box" fill="{fill}"/>',
+        f'<text x="{x + 22}" y="{y + 36}" class="label">{escape(title)}</text>',
+        f'<text x="{x + 22}" y="{y + 62}" class="small">{len(cleaned)} {escape(noun)}</text>' if cleaned else f'<text x="{x + 22}" y="{y + 62}" class="small">0 {escape(noun)}</text>',
+    ]
+    inner_x = x + 22
+    inner_w = width - 44
+    col_gap = 18
+    if width >= 700 and len(cleaned) >= 18:
+        cols = 3
+    elif width >= 560 and len(cleaned) >= 8:
+        cols = 2
+    else:
+        cols = 1
+    col_w = (inner_w - col_gap * (cols - 1)) // cols if cols > 1 else inner_w
+    max_chars = max(18, min(34, (col_w - 18) // 8))
+    start_y = y + 88
+    if not cleaned:
+        parts.append(render_multiline_text(inner_x, start_y, ["-"], "small", 18))
+        height = 140
+    else:
+        per_col = max(1, math.ceil(len(cleaned) / cols))
+        bottom_edges: list[int] = []
+        for col_idx in range(cols):
+            col_items = cleaned[col_idx * per_col : (col_idx + 1) * per_col]
+            if not col_items:
+                continue
+            col_x = inner_x + col_idx * (col_w + col_gap)
+            current_y = start_y
+            for idx, item in enumerate(col_items):
+                if idx > 0:
+                    parts.append(
+                        f'<line x1="{col_x}" y1="{current_y - 10}" x2="{col_x + col_w}" y2="{current_y - 10}" stroke="#e2e8f0" stroke-width="1.0"/>'
+                    )
+                label_lines = wrap_lines(trace_display_label(item, kind), max_chars)[:2]
+                exact_lines = wrap_lines(trace_exact_label(item), max_chars)[:2]
+                parts.append(render_multiline_text(col_x, current_y, label_lines, "text", 18))
+                current_y += block_height(label_lines, 18) + 4
+                parts.append(render_multiline_text(col_x, current_y, exact_lines, "small", 16))
+                current_y += block_height(exact_lines, 16) + 16
+            bottom_edges.append(current_y)
+        height = max(160, max(bottom_edges, default=start_y) - y + 22)
+
+    parts[0] = f'<rect x="{x}" y="{y}" width="{width}" height="{height}" class="box" fill="{fill}"/>'
+    return "\n".join(parts), height
+
+
 def render_chip_grid_card(
     x: int,
     y: int,
@@ -1033,7 +1373,14 @@ def render_chip_grid_card(
     note_lines = normalize_lines(lead_lines or [])
     inner_width = width - 44
     gap = 10
-    cols = 4 if width >= 700 else 3
+    if width >= 1400 and len(cleaned) >= 18:
+        cols = 6
+    elif width >= 1100 and len(cleaned) >= 10:
+        cols = 5
+    elif width >= 700:
+        cols = 4
+    else:
+        cols = 3
     chip_width = max(120, (inner_width - gap * (cols - 1)) // cols)
     chip_height = 34
     start_y = y + 70 + block_height(note_lines, 20) + 12
@@ -1055,6 +1402,117 @@ def render_chip_grid_card(
         )
     rows = max(1, (len(cleaned) + cols - 1) // cols)
     height = max(156, start_y - y + rows * (chip_height + gap) + 14)
+    parts[0] = f'<rect x="{x}" y="{y}" width="{width}" height="{height}" class="box" fill="{fill}"/>'
+    return "\n".join(parts), height
+
+
+def render_grouped_link_bank_card(
+    x: int,
+    y: int,
+    width: int,
+    title: str,
+    items: Iterable[str],
+    *,
+    fill: str = "#eff6ff",
+    chip_fill: str = "#ffffff",
+    chip_stroke: str = "#bfdbfe",
+    lead_lines: Iterable[str] | None = None,
+) -> tuple[str, int]:
+    cleaned = clean_items(items)
+    if not cleaned:
+        cleaned = ["-"]
+    note_lines = normalize_lines(lead_lines or [])
+    inner_x = x + 22
+    inner_width = width - 44
+    group_gap_x = 16
+    group_gap_y = 16
+    start_y = y + 70 + block_height(note_lines, 20) + 12
+
+    domain_order = {
+        "Powertrain": 0,
+        "Chassis": 1,
+        "ADAS": 2,
+        "Body": 3,
+        "Infotainment": 4,
+        "ETH Backbone": 5,
+        "Unknown": 9,
+    }
+    grouped: dict[str, list[str]] = {}
+    for ecu in cleaned:
+        domain = domain_label(ECU_DOMAIN_LOOKUP.get(ecu, "Unknown")) if ecu != "-" else "Unknown"
+        grouped.setdefault(domain, []).append(ecu)
+    ordered_groups = sorted(grouped.items(), key=lambda item: (domain_order.get(item[0], 8), item[0]))
+    group_count = len(ordered_groups)
+    if width >= 1400 and group_count >= 5:
+        cols = 3
+    elif width >= 1000 and group_count >= 2:
+        cols = 2
+    else:
+        cols = 1
+    panel_width = (inner_width - group_gap_x * (cols - 1)) // cols
+
+    parts = [
+        f'<rect x="{x}" y="{y}" width="{width}" height="10" class="box" fill="{fill}"/>',
+        f'<text x="{x + 22}" y="{y + 36}" class="label">{escape(title)}</text>',
+        render_multiline_text(x + 22, y + 64, note_lines, "small", 20),
+    ]
+
+    current_y = start_y
+    idx = 0
+    while idx < len(ordered_groups):
+        row_groups = ordered_groups[idx : idx + cols]
+        row_height = 0
+        row_svgs: list[str] = []
+        for col, (domain_name, ecus) in enumerate(row_groups):
+            panel_x = inner_x + col * (panel_width + group_gap_x)
+            chip_gap = 10
+            min_chip_width = 108 if panel_width >= 620 else 102 if panel_width >= 420 else 96
+            max_chip_cols = max(1, min(6, (panel_width - 36 + chip_gap) // (min_chip_width + chip_gap)))
+            if len(ecus) <= max_chip_cols:
+                desired_rows = 1
+            elif len(ecus) <= max_chip_cols * 2:
+                desired_rows = 2
+            else:
+                desired_rows = 3
+            chip_cols = max(1, min(max_chip_cols, (len(ecus) + desired_rows - 1) // desired_rows))
+            chip_width = max(min_chip_width, (panel_width - 36 - chip_gap * (chip_cols - 1)) // chip_cols)
+            if len(ecus) == 1:
+                chip_width = min(260, panel_width - 36)
+            elif len(ecus) == 2 and chip_cols == 2:
+                chip_width = min(max(180, chip_width), 240)
+            chip_height = 34
+            panel_parts = [
+                f'<rect x="{panel_x}" y="{current_y}" width="{panel_width}" height="10" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>',
+                f'<text x="{panel_x + 18}" y="{current_y + 28}" class="small">{escape(domain_name)} · {len(ecus)} ECU</text>',
+            ]
+            chip_start_y = current_y + 44
+            for item_idx, ecu in enumerate(ecus):
+                row = item_idx // chip_cols
+                chip_col = item_idx % chip_cols
+                if len(ecus) == 1:
+                    chip_x = panel_x + (panel_width - chip_width) // 2
+                elif len(ecus) == 2 and chip_cols == 2:
+                    total_chip_span = chip_width * 2 + chip_gap
+                    chip_x = panel_x + (panel_width - total_chip_span) // 2 + chip_col * (chip_width + chip_gap)
+                else:
+                    chip_x = panel_x + 18 + chip_col * (chip_width + chip_gap)
+                chip_y = chip_start_y + row * (chip_height + chip_gap)
+                panel_parts.append(
+                    f'<rect x="{chip_x}" y="{chip_y}" width="{chip_width}" height="{chip_height}" rx="14" ry="14" fill="{chip_fill}" stroke="{chip_stroke}" stroke-width="1.2"/>'
+                )
+                panel_parts.append(
+                    f'<text x="{chip_x + chip_width / 2:.1f}" y="{chip_y + 22}" text-anchor="middle" class="small">{escape(ecu)}</text>'
+                )
+            rows = max(1, (len(ecus) + chip_cols - 1) // chip_cols)
+            panel_height = 62 + rows * (chip_height + chip_gap)
+            panel_parts[0] = f'<rect x="{panel_x}" y="{current_y}" width="{panel_width}" height="{panel_height}" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>'
+            row_svgs.append("\n".join(panel_parts))
+            row_height = max(row_height, panel_height)
+        parts.extend(row_svgs)
+        current_y += row_height + group_gap_y
+        idx += cols
+
+    height = max(170, current_y - y + 6)
     parts[0] = f'<rect x="{x}" y="{y}" width="{width}" height="{height}" class="box" fill="{fill}"/>'
     return "\n".join(parts), height
 
@@ -1121,12 +1579,11 @@ def render_action_flow_svg(flow: ActionFlow, members: list[str]) -> str:
     step_band_height = 116 + step_rows * 178
 
     member_lines = render_bullets(members, width=42)
-    contract_lines = render_bullets(flow.key_contracts, width=46)
-    file_lines = render_bullets(flow.key_files, width=42)
-    outcome_lines = wrap_lines(flow.user_outcome, 48)
+    contract_lines = render_bullets(representative_contract_labels(flow.key_contracts, limit=4), width=38)
+    outcome_lines = wrap_lines(flow.user_outcome, 44)
     footer_height = max(
-        320,
-        96 + max(block_height(member_lines, 20), block_height(contract_lines, 20), block_height(file_lines + [""] + outcome_lines, 20)),
+        300,
+        96 + max(block_height(member_lines, 20), block_height(contract_lines, 20), block_height(outcome_lines, 20)),
     )
 
     total_height = 130 + participant_band_height + step_band_height + footer_height + 120
@@ -1186,7 +1643,7 @@ def render_action_flow_svg(flow: ActionFlow, members: list[str]) -> str:
   </style>
   <rect x="0" y="0" width="1600" height="{total_height}" class="bg"/>
   <text x="34" y="44" class="title">{escape(flow.flow_id)} - {escape(flow.title)}</text>
-  <text x="34" y="72" class="sub">{escape(flow.category)} | generated canonical action-flow companion for the internal ECU master book</text>
+  <text x="34" y="72" class="sub">{escape(flow.category)} | canonical action flow</text>
 
   <rect x="30" y="100" width="1540" height="{participant_band_height}" class="box" fill="{accent}"/>
   <text x="52" y="136" class="label">Flow overview</text>
@@ -1203,12 +1660,12 @@ def render_action_flow_svg(flow: ActionFlow, members: list[str]) -> str:
   {render_multiline_text(52, footer_y + 66, member_lines, "text", 20)}
 
   <rect x="550" y="{footer_y}" width="500" height="{footer_height}" class="box" fill="#ffffff"/>
-  <text x="572" y="{footer_y + 36}" class="label">Key contracts</text>
+  <text x="572" y="{footer_y + 36}" class="label">Representative signals</text>
   {render_multiline_text(572, footer_y + 66, contract_lines, "text", 20)}
 
   <rect x="1070" y="{footer_y}" width="500" height="{footer_height}" class="box" fill="#fff7ed"/>
-  <text x="1092" y="{footer_y + 36}" class="label">Files and user outcome</text>
-  {render_multiline_text(1092, footer_y + 66, file_lines + [""] + outcome_lines, "text", 20)}
+  <text x="1092" y="{footer_y + 36}" class="label">Why this flow matters</text>
+  {render_multiline_text(1092, footer_y + 66, outcome_lines, "text", 20)}
 </svg>
 """
 
@@ -1217,7 +1674,11 @@ def render_action_flow_index(flow_members: dict[str, list[str]]) -> str:
     lines = [
         f"# Action Flow Index ({DATE_STAMP})",
         "",
-        "This is the canonical action-flow pack for the internal ECU master book.",
+        "Subtitle: Canonical behavior index for the 20 action-flow chapters.",
+        "",
+        "This is the canonical action-flow summary pack for the official ECU master book.",
+        "It covers only the `FLOW_01~20` SVG-only behavior chapters used by the master-book body.",
+        "It is intentionally separate from the detailed signal-flow triplet layer under `flows/signal/*.puml`, `svg/flows/signal/<signal-flow>.svg`, and `png/flows/signal/*.png`.",
         "Each flow is behavior-first and can be reused by multiple ECU sections in the book.",
         "",
     ]
@@ -1232,7 +1693,7 @@ def render_action_flow_index(flow_members: dict[str, list[str]]) -> str:
                 [
                     f"### `{flow.flow_id}` {flow.title}",
                     "",
-                    f"- SVG: `svg/flows/{action_flow_filename(flow)}`",
+                    f"- SVG: `svg/flows/action/{action_flow_filename(flow)}`",
                     f"- Related ECU count: `{len(members)}`",
                     f"- Related ECU bank: `{', '.join(members) if members else '-'}`",
                     f"- Summary: {flow.summary}",
@@ -1245,6 +1706,10 @@ def render_action_flow_index(flow_members: dict[str, list[str]]) -> str:
 def render_ecu_flow_matrix(metadata: list[EcuMeta]) -> str:
     lines = [
         f"# ECU Action Flow Matrix ({DATE_STAMP})",
+        "",
+        "Subtitle: ECU-to-flow lookup across the full runtime surface.",
+        "",
+        "Use this matrix to find the primary action flow for one ECU and to see its supporting flow family.",
         "",
         "| ECU | Domain | Group | Primary action flow | Supporting action flows |",
         "| --- | --- | --- | --- | --- |",
@@ -1269,6 +1734,14 @@ def card_page_filename(ecu: str, page: int) -> str:
 
 def prototype_card_filename(ecu: str, version: str = "layout_v2") -> str:
     return f"ECU_CARD_{ecu}_{DATE_STAMP}_{version}.svg"
+
+
+def reference_detail_pages(meta: EcuMeta) -> list[int]:
+    rx_count = len(clean_items(meta.consumed_contracts))
+    tx_count = len(clean_items(meta.published_contracts))
+    if max(rx_count, tx_count) > 12 or (rx_count + tx_count) > 20:
+        return [2, 3, 4]
+    return [2]
 
 
 def group_fill(group: str) -> str:
@@ -1377,6 +1850,53 @@ def render_metric_tile(
     )
 
 
+def render_metric_note_tile(
+    x: int,
+    y: int,
+    width: int,
+    title: str,
+    value: str,
+    note: str,
+    *,
+    fill: str = "#ffffff",
+    height: int | None = None,
+) -> tuple[str, int]:
+    note_chars = max(16, min(34, (width - 36) // 8))
+    note_lines = wrap_lines(note, note_chars)[:2]
+    tile_height = height or max(96, 72 + block_height(note_lines, 16))
+    return (
+        "\n".join(
+            [
+                f'<rect x="{x}" y="{y}" width="{width}" height="{tile_height}" rx="18" ry="18" fill="{fill}" stroke="#cbd5e1" stroke-width="1.2"/>',
+                f'<text x="{x + 18}" y="{y + 28}" class="small">{escape(title)}</text>',
+                f'<text x="{x + 18}" y="{y + 58}" class="node">{escape(value)}</text>',
+                render_multiline_text(x + 18, y + 76, note_lines, "small", 16),
+            ]
+        ),
+        tile_height,
+    )
+
+
+def render_story_note_tile(
+    x: int,
+    y: int,
+    width: int,
+    title: str,
+    lines: Iterable[str],
+    *,
+    fill: str = "#ffffff",
+    height: int = 96,
+) -> str:
+    content_lines = normalize_lines(lines)
+    return "\n".join(
+        [
+            f'<rect x="{x}" y="{y}" width="{width}" height="{height}" rx="18" ry="18" fill="{fill}" stroke="#cbd5e1" stroke-width="1.2"/>',
+            f'<text x="{x + 18}" y="{y + 28}" class="small">{escape(title)}</text>',
+            render_multiline_text(x + 18, y + 54, content_lines, "small", 18),
+        ]
+    )
+
+
 def render_metadata_note_tile(
     x: int,
     y: int,
@@ -1398,6 +1918,57 @@ def render_metadata_note_tile(
     )
 
 
+def render_trace_pair_tile(
+    x: int,
+    y: int,
+    width: int,
+    title: str,
+    items: Iterable[str],
+    *,
+    kind: str,
+    noun: str,
+    fill: str = "#ffffff",
+    limit: int | None = 2,
+    show_overflow_note: bool = True,
+    height: int | None = None,
+) -> tuple[str, int]:
+    cleaned = clean_items(items)
+    if limit is None:
+        preview, overflow_note = cleaned, None
+    else:
+        preview, overflow_note = preview_items(cleaned, limit=limit, noun=noun, show_overflow_note=show_overflow_note)
+    parts = [
+        f'<rect x="{x}" y="{y}" width="{width}" height="10" rx="18" ry="18" fill="{fill}" stroke="#cbd5e1" stroke-width="1.2"/>',
+        f'<text x="{x + 18}" y="{y + 28}" class="small">{escape(title)}</text>',
+    ]
+    max_chars = max(22, min(42, (width - 36) // 9))
+    current_y = y + 52
+    if not preview:
+        parts.append(render_multiline_text(x + 18, current_y, ["-"], "small", 18))
+        tile_height = height or 102
+    else:
+        for idx, item in enumerate(preview):
+            if idx > 0:
+                parts.append(
+                    f'<line x1="{x + 18}" y1="{current_y - 8}" x2="{x + width - 18}" y2="{current_y - 8}" stroke="#e2e8f0" stroke-width="1.0"/>'
+                )
+            label_lines = wrap_lines(trace_display_label(item, kind), max_chars)
+            parts.append(render_multiline_text(x + 18, current_y, label_lines, "text", 18))
+            current_y += block_height(label_lines, 18) + 4
+            exact_lines = wrap_lines(trace_exact_label(item), max_chars)
+            parts.append(render_multiline_text(x + 18, current_y, exact_lines, "small", 16))
+            current_y += block_height(exact_lines, 16) + 12
+        if overflow_note:
+            parts.append(render_multiline_text(x + 18, current_y, [overflow_note], "small", 18))
+            current_y += block_height([overflow_note], 18)
+        tile_height = max(118, current_y - y + 18)
+        if height is not None:
+            tile_height = max(tile_height, height)
+
+    parts[0] = f'<rect x="{x}" y="{y}" width="{width}" height="{tile_height}" rx="18" ry="18" fill="{fill}" stroke="#cbd5e1" stroke-width="1.2"/>'
+    return "\n".join(parts), tile_height
+
+
 def render_overview_metadata_strip(
     x: int,
     y: int,
@@ -1405,57 +1976,52 @@ def render_overview_metadata_strip(
     *,
     meta: EcuMeta,
 ) -> tuple[str, int]:
-    published = clean_items(meta.published_contracts)
-    consumed = clean_items(meta.consumed_contracts)
-    key_test = clean_items(meta.test_assets)
-    tiles = [
-        (
-            "Key seam",
-            wrap_lines(clean_items(meta.owner_seam)[0] if clean_items(meta.owner_seam) else "-", 28)[:3],
-            "#ffffff",
-        ),
-        (
-            "Runtime contract",
-            [
-                f"Publish: {compact_label(published[0], 28)}" if published else "Publish: -",
-                f"Consume: {compact_label(consumed[0], 28)}" if consumed else "Consume: -",
-            ],
-            "#ffffff",
-        ),
-        (
-            "Verification",
-            wrap_lines(key_test[0] if key_test else "No direct test asset", 28)[:3],
-            "#ffffff",
-        ),
-        (
-            "Risk focus",
-            wrap_lines(ecu_risk_focus(meta), 28)[:3],
-            "#fff7ed",
-        ),
-    ]
     inner_x = x + 22
     inner_w = width - 44
     gap = 14
-    tile_width = (inner_w - gap * 3) // 4
+    tile_width = (inner_w - gap) // 2
     tile_y = y + 54
-    tile_height = max(104, max(48 + block_height(lines, 18) + 16 for _, lines, _ in tiles))
+    risk_lines = wrap_lines(ecu_risk_focus(meta), 28)[:3]
+    _, seam_tile_height = render_trace_pair_tile(
+        inner_x,
+        tile_y,
+        tile_width,
+        "Key seam",
+        meta.owner_seam,
+        kind="seam",
+        noun="seams",
+        fill="#ffffff",
+        limit=1,
+        show_overflow_note=False,
+    )
+    risk_tile_height = max(104, 48 + block_height(risk_lines, 18) + 16)
+    tile_height = max(seam_tile_height, risk_tile_height)
     parts = [
         f'<rect x="{x}" y="{y}" width="{width}" height="{tile_height + 76}" class="box" fill="#ffffff"/>',
         f'<text x="{x + 22}" y="{y + 36}" class="label">ECU metadata</text>',
+        render_trace_pair_tile(
+            inner_x,
+            tile_y,
+            tile_width,
+            "Key seam",
+            meta.owner_seam,
+            kind="seam",
+            noun="seams",
+            fill="#ffffff",
+            limit=1,
+            show_overflow_note=False,
+            height=tile_height,
+        )[0],
+        render_metadata_note_tile(
+            inner_x + tile_width + gap,
+            tile_y,
+            tile_width,
+            "Risk focus",
+            risk_lines,
+            fill="#fff7ed",
+            height=tile_height,
+        ),
     ]
-    for idx, (title, lines, fill) in enumerate(tiles):
-        tile_x = inner_x + idx * (tile_width + gap)
-        parts.append(
-            render_metadata_note_tile(
-                tile_x,
-                tile_y,
-                tile_width,
-                title,
-                lines,
-                fill=fill,
-                height=tile_height,
-            )
-        )
     return "\n".join(parts), tile_height + 76
 
 
@@ -1474,12 +2040,11 @@ def external_edge_ecus(edges: Iterable[str], self_ecu: str) -> list[str]:
 
 def domain_label(domain: str) -> str:
     return {
-        "ETH_Backbone": "Backbone",
-        "Infotainment": "Display",
+        "ETH_Backbone": "ETH Backbone",
     }.get(domain, domain)
 
 
-def clustered_actor_labels(items: Iterable[str], limit: int = 6) -> list[str]:
+def clustered_actor_labels(items: Iterable[str], limit: int | None = 6, *, show_overflow_note: bool = True) -> list[str]:
     counter: Counter[str] = Counter()
     for ecu in clean_items(items):
         domain = ECU_DOMAIN_LOOKUP.get(ecu, "Unknown")
@@ -1488,10 +2053,10 @@ def clustered_actor_labels(items: Iterable[str], limit: int = 6) -> list[str]:
         return ["-"]
     ranked = sorted(counter.items(), key=lambda item: (-item[1], item[0]))
     labels = [f"{name} · {count}" for name, count in ranked]
-    if len(labels) <= limit:
+    if limit is None or len(labels) <= limit:
         return labels
     overflow = len(labels) - limit
-    return labels[:limit] + [f"+{overflow} more"]
+    return labels[:limit] + ([f"+{overflow} more"] if show_overflow_note else [])
 
 
 def preview_items(
@@ -1525,6 +2090,10 @@ def preview_bullet_lines(
 
 
 def preview_chip_items(items: Iterable[str], limit: int = 4, transform=None) -> list[str]:
+    return preview_chip_items_configurable(items, limit=limit, transform=transform, show_overflow_note=True)
+
+
+def preview_chip_items_configurable(items: Iterable[str], limit: int = 4, transform=None, *, show_overflow_note: bool = True) -> list[str]:
     cleaned = clean_items(items)
     if transform is not None:
         cleaned = [transform(item) for item in cleaned]
@@ -1534,7 +2103,7 @@ def preview_chip_items(items: Iterable[str], limit: int = 4, transform=None) -> 
     if len(cleaned) <= limit:
         return cleaned
     overflow = len(cleaned) - limit
-    return cleaned[:limit] + [f"+{overflow} more"]
+    return cleaned[:limit] + ([f"+{overflow} more"] if show_overflow_note else [])
 
 
 def compact_label(text: str, max_len: int = 26) -> str:
@@ -1547,6 +2116,114 @@ def compact_label(text: str, max_len: int = 26) -> str:
 def short_path_label(path: str) -> str:
     normalized = path.replace("\\", "/")
     return compact_label(Path(normalized).name or normalized, max_len=24)
+
+
+def owner_seam_badge(value: str, max_len: int = 24) -> str:
+    normalized = " ".join(value.replace("\\", "/").split()).strip()
+    if "::" in normalized:
+        normalized = normalized.rsplit("::", 1)[-1]
+    normalized = normalized.replace("_", " ")
+    normalized = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", normalized)
+    words = [word for word in normalized.split() if word]
+    while len(words) > 1 and words[0].lower() in {"selected", "current", "local", "vehicle", "runtime", "primary"}:
+        words = words[1:]
+    pretty_words = []
+    for word in (words if words else normalized.split()):
+        if word.isupper() and len(word) <= 4:
+            pretty_words.append(word)
+        else:
+            pretty_words.append(word[0].upper() + word[1:] if word else word)
+    normalized = " ".join(pretty_words) if pretty_words else normalized
+    return compact_label(normalized, max_len=max_len)
+
+
+TRACE_WORD_MAP = {
+    "Diag": "Diagnostic",
+    "Req": "Request",
+    "Resp": "Response",
+    "Cfg": "Config",
+    "Nav": "Navigation",
+    "Amb": "Ambient",
+    "Volum": "Volume",
+    "Obj": "Object",
+}
+
+
+def trace_exact_label(value: str) -> str:
+    return " ".join(str(value).replace("\\", "/").split()).lstrip("@").strip()
+
+
+def trace_display_label(value: str, kind: str = "generic") -> str:
+    normalized = trace_exact_label(value)
+    if "::" in normalized:
+        normalized = normalized.rsplit("::", 1)[-1]
+    if kind in {"message", "contract"}:
+        normalized = re.sub(r"^(frm|eth|udp|can)(?=[A-Z])", "", normalized)
+        normalized = re.sub(r"(Msg|Frame)$", "", normalized)
+    normalized = normalized.replace("_", " ")
+    normalized = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", normalized)
+    normalized = re.sub(r"(?<=[A-Z])(?=[A-Z][a-z])", " ", normalized)
+    words = [word for word in normalized.split() if word]
+    while len(words) > 1 and words[0].lower() in {"selected", "current", "local", "vehicle", "runtime", "primary", "render"}:
+        words = words[1:]
+    ecu_tokens = set(ECU_DOMAIN_LOOKUP.keys())
+    short_tokens = {"ABS", "ACU", "ADAS", "AEB", "AMP", "BCM", "CGW", "CLU", "ESC", "HUD", "IVI", "MDPS", "NAV", "ODS", "RWS", "SCC", "VCU", "VSM", "V2X"}
+    pretty_words = []
+    for word in (words if words else normalized.split()):
+        mapped = TRACE_WORD_MAP.get(word, word)
+        if mapped.upper() in ecu_tokens or mapped.upper() in short_tokens:
+            pretty_words.append(mapped.upper())
+        elif mapped.isupper() and len(mapped) <= 5:
+            pretty_words.append(mapped)
+        else:
+            pretty_words.append(mapped[0].upper() + mapped[1:] if mapped else mapped)
+    display = " ".join(pretty_words) if pretty_words else normalized
+    return display or "-"
+
+
+def representative_contract_labels(values: Iterable[str], limit: int = 4) -> list[str]:
+    labels: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        label = trace_display_label(value, "contract")
+        if not label or label == "-":
+            continue
+        key = label.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        labels.append(label)
+        if len(labels) >= limit:
+            break
+    return labels or ["-"]
+
+
+def test_asset_badge(value: str, max_len: int = 24) -> str:
+    normalized = " ".join(value.replace("\\", "/").split()).strip()
+    normalized = Path(normalized).name or normalized
+    for prefix in ("TC_CANOE_", "TS_CANOE_"):
+        if normalized.startswith(prefix):
+            normalized = normalized[len(prefix) :]
+            break
+    parts = [part for part in normalized.split("_") if part]
+    if len(parts) >= 4:
+        normalized = "_".join(parts[:4])
+    return compact_label(normalized, max_len=max_len)
+
+
+def test_asset_caption(role_label: str, has_test_asset: bool, primary_flow: ActionFlow | None = None, max_len: int = 28) -> str:
+    if not has_test_asset:
+        return "Indirect coverage"
+    if primary_flow:
+        return compact_label(f"covers {action_flow_badge(primary_flow, 28).lower()}", max_len=max_len)
+    return compact_label(f"covers {role_label.lower()}", max_len=max_len)
+
+
+def action_flow_badge(flow: ActionFlow | None, max_len: int = 28) -> str:
+    if not flow:
+        return "No primary flow"
+    label = ACTION_FLOW_BADGES.get(flow.flow_id, flow.title)
+    return compact_label(label, max_len=max_len)
 
 
 def function_statement(meta: EcuMeta) -> str:
@@ -1566,14 +2243,69 @@ def ecu_risk_focus(meta: EcuMeta) -> str:
     return meta.current_gap_risk
 
 
+ROLE_FOCUS_OVERRIDES = {
+    "ADAS": "Route and emergency fusion",
+    "AEB": "Emergency braking handoff",
+    "AMP": "Audio alert and chime output",
+    "BCM": "Body output and ambient control",
+    "CGW": "Cross-domain gate control",
+    "CLU": "Warning and drive-status display",
+    "ESC": "Stability and brake intervention",
+    "HUD": "Head-up warning output",
+    "IVI": "Zone and emergency context staging",
+    "MDPS": "Steering assist and column state",
+    "SCC": "Cruise and longitudinal assist",
+    "VCU": "Drive and propulsion coordination",
+    "VSM": "Stability intervention arbitration",
+    "V2X": "Emergency ingress and ETA context",
+}
+
+
 def statement_headline(statement: str) -> str:
     normalized = " ".join(statement.split()).strip().rstrip(".")
-    for token in (" so ", " to ", " for "):
+    for token in (" then ", " while ", " toward ", " into ", " so ", " to ", " for "):
         if token in normalized:
             head = normalized.split(token, 1)[0].strip()
             if head:
                 return head
     return normalized
+
+
+def role_focus_label(meta: EcuMeta) -> str:
+    override = ROLE_FOCUS_OVERRIDES.get(meta.ecu, "").strip()
+    if override:
+        return override
+
+    statement = function_statement(meta)
+    normalized = " ".join(statement.split()).strip().rstrip(".")
+    lowered = normalized.lower()
+    if lowered.startswith("publishes "):
+        core = normalized[len("Publishes ") :].strip()
+        for token in (" so ", " for ", " to ", " while ", " into ", " toward ", " then "):
+            if token in core:
+                core = core.split(token, 1)[0].strip(" ,")
+                break
+        return core or normalized
+    if lowered.startswith("renders "):
+        core = normalized[len("Renders ") :].strip()
+        for token in (" into ", " for ", " to "):
+            if token in core:
+                core = core.split(token, 1)[0].strip(" ,")
+                break
+        return core or normalized
+    return statement_headline(normalized)
+
+
+def runtime_posture_label(meta: EcuMeta) -> str:
+    read_count = len(clean_items(meta.consumed_contracts))
+    write_count = len(clean_items(meta.published_contracts))
+    if read_count == 0 and write_count > 0:
+        return "State source"
+    if read_count > 0 and write_count == 0:
+        return "Apply / gate"
+    if read_count > 0 and write_count > 0:
+        return "Decision / routing"
+    return "Local runtime"
 
 
 def render_card_layout_v2(meta: EcuMeta) -> str:
@@ -1732,11 +2464,11 @@ def render_card_layout_v2(meta: EcuMeta) -> str:
   <style>
     .bg {{ fill: #f7f7f5; }}
     .title {{ font: 700 32px 'Segoe UI', sans-serif; fill: #0f172a; }}
-    .sub {{ font: 500 15px 'Segoe UI', sans-serif; fill: #475569; }}
-    .label {{ font: 700 18px 'Segoe UI', sans-serif; fill: #0f172a; }}
-    .text {{ font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }}
-    .small {{ font: 500 13px 'Segoe UI', sans-serif; fill: #475569; }}
-    .node {{ font: 700 18px 'Segoe UI', sans-serif; fill: #111827; }}
+    .sub {{ font: 500 16px 'Segoe UI', sans-serif; fill: #475569; }}
+    .label {{ font: 700 19px 'Segoe UI', sans-serif; fill: #0f172a; }}
+    .text {{ font: 600 16px 'Segoe UI', sans-serif; fill: #1f2937; }}
+    .small {{ font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }}
+    .node {{ font: 700 19px 'Segoe UI', sans-serif; fill: #111827; }}
     .box {{ rx: 22; ry: 22; stroke: #334155; stroke-width: 1.6; }}
   </style>
   <rect x="0" y="0" width="1600" height="{total_height}" class="bg"/>
@@ -1830,53 +2562,95 @@ def render_quick_snapshot_card(
     width: int,
     *,
     primary_flow: ActionFlow | None,
-    supporting_flows: list[ActionFlow],
+    published_contracts: list[str],
+    consumed_contracts: list[str],
     owner_seams: list[str],
     test_assets: list[str],
-    source_files: list[str],
-    doc_sources: list[str],
     sysvar_hints: list[str],
 ) -> tuple[str, int]:
     inner_x = x + 22
     inner_w = width - 44
-    tile_gap = 12
-    tile_width = (inner_w - tile_gap) // 2
-    tile_height = 82
-    tile_y1 = y + 62
-    tile_y2 = tile_y1 + tile_height + 12
-    support_count = len(supporting_flows)
-    key_seam = compact_label(clean_items(owner_seams)[0], 54) if clean_items(owner_seams) else "-"
-    key_test = compact_label(clean_items(test_assets)[0], 54) if clean_items(test_assets) else "No direct test asset"
-    source_pack = f"{len([item for item in clean_items(source_files) if item != '-'])} CAPL / {len(clean_items(doc_sources))} docs"
+    gap = 18
+    col_w = (inner_w - gap * 2) // 3
+    top_col_w = (inner_w - gap) // 2
+    tile_chars = max(24, min(48, (top_col_w - 36) // 9))
+    if clean_items(test_assets):
+        test_tile_lines = [
+            test_asset_badge(clean_items(test_assets)[0], 38),
+            test_asset_caption("runtime contract", True, primary_flow, tile_chars + 4),
+        ]
+    else:
+        test_tile_lines = wrap_lines("No direct test asset", tile_chars)[:3]
+    tile_y = y + 58
+    test_tile_h = max(100, 48 + block_height(test_tile_lines, 18) + 16)
+    _, owner_tile_h = render_trace_pair_tile(
+        inner_x + top_col_w + gap,
+        tile_y,
+        top_col_w,
+        "Owner seam",
+        owner_seams,
+        kind="seam",
+        noun="owner seams",
+        fill="#f8fafc",
+        limit=2,
+    )
+    tile_h = max(test_tile_h, owner_tile_h)
+
     parts = [
         f'<rect x="{x}" y="{y}" width="{width}" height="10" class="box" fill="#ffffff"/>',
-        f'<text x="{x + 22}" y="{y + 36}" class="label">Reference snapshot</text>',
-        render_metric_tile(inner_x, tile_y1, tile_width, "Flows", str(1 + len(supporting_flows) if primary_flow else len(supporting_flows)), fill="#f8fafc"),
-        render_metric_tile(inner_x + tile_width + tile_gap, tile_y1, tile_width, "Owner seams", str(len(clean_items(owner_seams))), fill="#f8fafc"),
-        render_metric_tile(inner_x, tile_y2, tile_width, "Sysvars", str(len(clean_items(sysvar_hints))), fill="#f8fafc"),
-        render_metric_tile(inner_x + tile_width + tile_gap, tile_y2, tile_width, "Tests", str(len(clean_items(test_assets))), fill="#f8fafc"),
+        f'<text x="{x + 22}" y="{y + 36}" class="label">CANoe runtime contract</text>',
+        render_metadata_note_tile(inner_x, tile_y, top_col_w, "Lead test asset", test_tile_lines, fill="#f8fafc", height=tile_h),
+        render_trace_pair_tile(
+            inner_x + top_col_w + gap,
+            tile_y,
+            top_col_w,
+            "Owner seam",
+            owner_seams,
+            kind="seam",
+            noun="owner seams",
+            fill="#f8fafc",
+            limit=2,
+            height=tile_h,
+        )[0],
     ]
 
-    snapshot_rows = [
-        ("Primary flow", primary_flow.flow_id if primary_flow else "-"),
-        ("Support pack", f"{support_count} supporting flows"),
-        ("Key seam", key_seam),
-        ("Verification", key_test),
-        ("Source pack", source_pack),
-    ]
-    cursor_y = tile_y2 + tile_height + 22
-    chip_height = 34
-    for section_title, value in snapshot_rows:
-        parts.append(f'<text x="{inner_x}" y="{cursor_y}" class="small">{escape(section_title)}</text>')
-        cursor_y += 14
-        parts.extend(
-            [
-                f'<rect x="{inner_x}" y="{cursor_y}" width="{inner_w}" height="{chip_height}" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>',
-                f'<text x="{inner_x + 14}" y="{cursor_y + 22}" class="small">{escape(value)}</text>',
-            ]
-        )
-        cursor_y += chip_height + 14
-    height = max(248, cursor_y - y + 8)
+    section_y = tile_y + tile_h + 18
+    rx_svg, rx_h = render_trace_pair_card(
+        inner_x,
+        section_y,
+        col_w,
+        "Rx messages",
+        consumed_contracts,
+        kind="message",
+        noun="rx messages",
+        fill="#ffffff",
+        limit=3,
+    )
+    tx_svg, tx_h = render_trace_pair_card(
+        inner_x + col_w + gap,
+        section_y,
+        col_w,
+        "Tx messages",
+        published_contracts,
+        kind="message",
+        noun="tx messages",
+        fill="#ffffff",
+        limit=3,
+    )
+    sysvar_svg, sysvar_h = render_trace_pair_card(
+        inner_x + (col_w + gap) * 2,
+        section_y,
+        col_w,
+        "Linked sysvars",
+        sysvar_hints,
+        kind="sysvar",
+        noun="sysvars",
+        fill="#ffffff",
+        limit=3,
+    )
+    parts.extend([rx_svg, tx_svg, sysvar_svg])
+
+    height = section_y + max(rx_h, tx_h, sysvar_h) - y + 22
     parts[0] = f'<rect x="{x}" y="{y}" width="{width}" height="{height}" class="box" fill="#ffffff"/>'
     return "\n".join(parts), height
 
@@ -1891,17 +2665,24 @@ def render_action_rail_card(
 ) -> tuple[str, int]:
     inbound_actors = external_edge_ecus(meta.inbound_edges, meta.ecu)
     outbound_actors = external_edge_ecus(meta.outbound_edges, meta.ecu)
-    reads = preview_chip_items(inbound_actors, limit=4, transform=lambda item: compact_label(item, 18))
-    writes = preview_chip_items(outbound_actors, limit=4, transform=lambda item: compact_label(item, 18))
-    owner = preview_chip_items(meta.owner_seam, limit=2, transform=lambda item: compact_label(item, 24))
-    headline = compact_label(statement_headline(function_statement(meta)), 28)
+    reads = preview_chip_items_configurable(inbound_actors, limit=4, transform=lambda item: item, show_overflow_note=False)
+    writes = preview_chip_items_configurable(outbound_actors, limit=4, transform=lambda item: item, show_overflow_note=False)
+    headline = role_focus_label(meta)
+    primary_flow_title = action_flow_badge(primary_flow, 28)
+    key_seam = clean_items(meta.owner_seam)[0] if clean_items(meta.owner_seam) else "-"
+    lead_test = clean_items(meta.test_assets)[0] if clean_items(meta.test_assets) else "No direct test asset"
+    core_items = [
+        headline,
+        owner_seam_badge(key_seam, 20),
+        f"{test_asset_badge(lead_test, 20)}\n{test_asset_caption(headline, bool(clean_items(meta.test_assets)), primary_flow, 24)}" if clean_items(meta.test_assets) else "No direct test asset",
+    ]
 
     inner_x = x + 22
     inner_w = width - 44
     card_gap = 22
     card_w = (inner_w - card_gap * 2) // 3
     card_y = y + 66
-    card_h = 188
+    card_h = 232
     card_xs = [inner_x, inner_x + card_w + card_gap, inner_x + (card_w + card_gap) * 2]
 
     cards = [
@@ -1914,8 +2695,8 @@ def render_action_rail_card(
         ),
         (
             "ECU Core",
-            compact_label(primary_flow.flow_id if primary_flow else "No primary flow", 28),
-            [headline] + owner,
+            primary_flow_title,
+            core_items,
             "#dcfce7",
             "#86efac",
         ),
@@ -1934,26 +2715,35 @@ def render_action_rail_card(
     ]
     for idx, (title, subtitle, items, fill, stroke) in enumerate(cards):
         cx = card_xs[idx]
+        subtitle_lines = wrap_lines(subtitle, 28)[:2]
         parts.extend(
             [
                 f'<rect x="{cx}" y="{card_y}" width="{card_w}" height="{card_h}" rx="20" ry="20" fill="{fill}" stroke="{stroke}" stroke-width="1.6"/>',
                 f'<text x="{cx + 18}" y="{card_y + 30}" class="small">{escape(title)}</text>',
-                f'<text x="{cx + 18}" y="{card_y + 56}" class="text">{escape(subtitle)}</text>',
+                render_multiline_text(cx + 18, card_y + 58, subtitle_lines, "text", 20),
             ]
         )
-        chip_gap = 10
+        chip_gap = 12
         chip_w = (card_w - 36 - chip_gap) // 2
-        chip_y = card_y + 84
+        chip_h = 52
+        chip_y = card_y + 104
         normalized = items if items else ["-"]
         for item_idx, item in enumerate(normalized[:4]):
             row = item_idx // 2
             col = item_idx % 2
             chip_x = cx + 18 + col * (chip_w + chip_gap)
-            chip_row_y = chip_y + row * 44
+            chip_row_y = chip_y + row * (chip_h + chip_gap)
+            if "\n" in item:
+                chip_lines = []
+                for part in item.splitlines():
+                    chip_lines.extend(wrap_lines(part, max(10, min(24, (chip_w - 20) // 8)))[:1])
+                chip_lines = chip_lines[:2]
+            else:
+                chip_lines = wrap_lines(item, max(10, min(24, (chip_w - 20) // 8)))[:2]
             parts.extend(
                 [
-                    f'<rect x="{chip_x}" y="{chip_row_y}" width="{chip_w}" height="34" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>',
-                    f'<text x="{chip_x + chip_w / 2:.1f}" y="{chip_row_y + 22}" text-anchor="middle" class="small">{escape(item)}</text>',
+                    f'<rect x="{chip_x}" y="{chip_row_y}" width="{chip_w}" height="{chip_h}" rx="14" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>',
+                    render_centered_multiline_text(chip_x + chip_w / 2, chip_row_y + 18, chip_lines, "small", 15),
                 ]
             )
     arrow_y = card_y + card_h / 2
@@ -1979,11 +2769,11 @@ def render_network_footprint_card(
 ) -> tuple[str, int]:
     upstream = clean_items(meta.upstream_ecus)
     downstream = clean_items(meta.downstream_ecus)
-    peers = sorted(set(clean_items(meta.linked_ecus)) - set(upstream) - set(downstream))
+    linked_bank = clean_items(meta.linked_ecus)
     groups = [
-        ("Upstream", upstream, "#e0f2fe", "#bfdbfe"),
-        ("Peer / linked", peers, "#f8fafc", "#cbd5e1"),
-        ("Downstream", downstream, "#dbeafe", "#93c5fd"),
+        ("Upstream domains", upstream, "#e0f2fe", "#bfdbfe", "upstream ECU"),
+        ("Linked domains", linked_bank, "#f8fafc", "#cbd5e1", "linked ECU"),
+        ("Downstream domains", downstream, "#dbeafe", "#93c5fd", "downstream ECU"),
     ]
 
     inner_x = x + 22
@@ -1997,8 +2787,8 @@ def render_network_footprint_card(
     chip_w = (group_w - 36 - chip_gap) // chip_cols
 
     group_heights: list[int] = []
-    for _, items, _, _ in groups:
-        visible = clustered_actor_labels(items, limit=4)
+    for _, items, _, _, _ in groups:
+        visible = clustered_actor_labels(items, limit=None, show_overflow_note=False)
         rows = max(1, (len(visible) + chip_cols - 1) // chip_cols)
         group_heights.append(92 + rows * chip_h + max(0, rows - 1) * chip_gap)
     group_h = max(154, max(group_heights))
@@ -2008,15 +2798,15 @@ def render_network_footprint_card(
         f'<text x="{x + 22}" y="{y + 36}" class="label">{escape(title)}</text>',
     ]
     group_xs = [inner_x, inner_x + group_w + group_gap, inner_x + (group_w + group_gap) * 2]
-    for idx, (group_title, items, group_fill, stroke) in enumerate(groups):
+    for idx, (group_title, items, group_fill, stroke, count_label) in enumerate(groups):
         gx = group_xs[idx]
-        visible = clustered_actor_labels(items, limit=4)
+        visible = clustered_actor_labels(items, limit=None, show_overflow_note=False)
         parts.extend(
             [
                 f'<rect x="{gx}" y="{group_y}" width="{group_w}" height="{group_h}" rx="20" ry="20" fill="{group_fill}" stroke="{stroke}" stroke-width="1.4"/>',
                 f'<text x="{gx + 18}" y="{group_y + 28}" class="small">{escape(group_title)}</text>',
                 f'<text x="{gx + 18}" y="{group_y + 56}" class="node">{len(items)}</text>',
-                f'<text x="{gx + 88}" y="{group_y + 56}" class="small">Domain clusters</text>',
+                f'<text x="{gx + 88}" y="{group_y + 56}" class="small">{escape(count_label)}</text>',
             ]
         )
         chip_start_y = group_y + 74
@@ -2045,14 +2835,16 @@ def render_network_footprint_card(
 
 
 def render_statement_card(x: int, y: int, width: int, statement: str) -> tuple[str, int]:
-    lines = wrap_lines(statement, 44)
-    height = max(132, 88 + block_height(lines, 28))
+    char_width = max(28, min(72, (width - 44) // 10))
+    lines = wrap_lines(statement, char_width)
+    line_height = 26
+    height = max(142, 86 + block_height(lines, line_height))
     return (
         "\n".join(
             [
                 f'<rect x="{x}" y="{y}" width="{width}" height="{height}" class="box" fill="#fff7ed"/>',
                 f'<text x="{x + 22}" y="{y + 34}" class="small">What this ECU does</text>',
-                render_multiline_text(x + 22, y + 78, lines, "statement", 28),
+                render_multiline_text(x + 22, y + 76, lines, "statement", line_height),
             ]
         ),
         height,
@@ -2064,49 +2856,105 @@ def render_mini_function_diagram(
     y: int,
     width: int,
     *,
+    meta: EcuMeta,
     ecu: str,
     statement: str,
     inbound_actors: list[str],
     outbound_actors: list[str],
 ) -> tuple[str, int]:
-    height = 180
     inner_x = x + 22
     card_gap = 18
     card_width = (width - 44 - card_gap * 2) // 3
     box_y = y + 66
-    headline = statement_headline(statement)
-    titles = ["Input", "ECU", "Output"]
+    headline = role_focus_label(meta)
+    read_count = len(clean_items(meta.consumed_contracts))
+    write_count = len(clean_items(meta.published_contracts))
+    label_chars = max(14, min(24, (card_width - 36) // 9))
+    title_chars = max(14, min(22, (card_width - 36) // 11))
+    value_chars = max(14, min(24, (card_width - 36) // 10))
+    caption_chars = max(14, min(24, (card_width - 36) // 10))
+    key_seam = owner_seam_badge(clean_items(meta.owner_seam)[0], 22) if clean_items(meta.owner_seam) else "No key seam"
+    if read_count == 0 and write_count > 0:
+        core_title = "Originates state"
+    elif read_count > 0 and write_count == 0:
+        core_title = "Applies / gates"
+    else:
+        core_title = "Decides / routes"
+    titles = [
+        "Reads from" if read_count else "No direct input",
+        core_title,
+        "Publishes to" if write_count else "No direct output",
+    ]
     values = [
-        f"{len(inbound_actors)} inbound",
+        ", ".join(inbound_actors[:2]) if inbound_actors else "No direct reads",
         ecu,
-        f"{len(outbound_actors)} outbound",
+        ", ".join(outbound_actors[:2]) if outbound_actors else "No direct publishes",
     ]
     captions = [
-        compact_label(", ".join(inbound_actors[:2]) if inbound_actors else "-", 22),
-        compact_label(headline, 22),
-        compact_label(", ".join(outbound_actors[:2]) if outbound_actors else "-", 22),
+        [
+            f"{len(inbound_actors)} actors",
+            f"{read_count} contracts" if read_count else "self or static source",
+        ],
+        [
+            headline,
+            key_seam,
+        ],
+        [
+            f"{len(outbound_actors)} actors",
+            f"{write_count} contracts" if write_count else "no direct downstream write",
+        ],
     ]
     fills = ["#e0f2fe", "#dcfce7", "#dbeafe"]
     parts = [
-        f'<rect x="{x}" y="{y}" width="{width}" height="{height}" class="box" fill="#ffffff"/>',
+        f'<rect x="{x}" y="{y}" width="{width}" height="10" class="box" fill="#ffffff"/>',
         f'<text x="{x + 22}" y="{y + 34}" class="small">Interaction sketch</text>',
     ]
     xs = [inner_x, inner_x + card_width + card_gap, inner_x + (card_width + card_gap) * 2]
+    box_specs: list[tuple[list[str], list[str], list[str]]] = []
+    box_height = 0
+    for idx in range(3):
+        title_lines = wrap_lines(titles[idx], title_chars)
+        value_lines = wrap_lines(values[idx], value_chars)
+        caption_lines: list[str] = []
+        for caption in captions[idx]:
+            caption_lines.extend(wrap_lines(caption, caption_chars))
+        box_specs.append((title_lines, value_lines, caption_lines))
+        local_box_height = max(
+            118,
+            22
+            + block_height(title_lines, 16)
+            + 14
+            + block_height(value_lines, 20)
+            + 12
+            + block_height(caption_lines, 16)
+            + 18,
+        )
+        box_height = max(box_height, local_box_height)
     for idx, box_x in enumerate(xs):
+        title_lines, value_lines, caption_lines = box_specs[idx]
         parts.extend(
             [
-                f'<rect x="{box_x}" y="{box_y}" width="{card_width}" height="88" rx="18" ry="18" fill="{fills[idx]}" stroke="#cbd5e1" stroke-width="1.2"/>',
-                f'<text x="{box_x + 18}" y="{box_y + 26}" class="small">{titles[idx]}</text>',
-                f'<text x="{box_x + 18}" y="{box_y + 52}" class="node">{escape(values[idx])}</text>',
-                f'<text x="{box_x + 18}" y="{box_y + 74}" class="small">{escape(captions[idx])}</text>',
+                f'<rect x="{box_x}" y="{box_y}" width="{card_width}" height="{box_height}" rx="18" ry="18" fill="{fills[idx]}" stroke="#cbd5e1" stroke-width="1.2"/>',
+                render_multiline_text(box_x + 18, box_y + 24, title_lines, "small", 16),
+                render_multiline_text(box_x + 18, box_y + 24 + block_height(title_lines, 16) + 14, value_lines, "node", 20),
+                render_multiline_text(
+                    box_x + 18,
+                    box_y + 24 + block_height(title_lines, 16) + 14 + block_height(value_lines, 20) + 12,
+                    caption_lines,
+                    "small",
+                    16,
+                ),
             ]
         )
+    center_y = box_y + box_height / 2
     parts.extend(
         [
-            f'<line x1="{xs[0] + card_width}" y1="{box_y + 44}" x2="{xs[1]}" y2="{box_y + 44}" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>',
-            f'<line x1="{xs[1] + card_width}" y1="{box_y + 44}" x2="{xs[2]}" y2="{box_y + 44}" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>',
+            f'<line x1="{xs[0] + card_width}" y1="{center_y:.1f}" x2="{xs[1]}" y2="{center_y:.1f}" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>',
+            f'<line x1="{xs[1] + card_width}" y1="{center_y:.1f}" x2="{xs[2]}" y2="{center_y:.1f}" stroke="#64748b" stroke-width="3" marker-end="url(#arrow)"/>',
         ]
     )
+    height = box_y + box_height - y + 22
+    parts[0] = f'<rect x="{x}" y="{y}" width="{width}" height="{height}" class="box" fill="#ffffff"/>'
     return "\n".join(parts), height
 
 
@@ -2125,68 +2973,190 @@ def render_card_detail_page(meta: EcuMeta, page_number: int = 2) -> str:
     group_color = group_fill(meta.group)
     flow_ids = related_action_flow_ids(meta)
     primary_flow = ACTION_FLOWS[flow_ids[0]] if flow_ids else None
-    supporting_flows = [ACTION_FLOWS[flow_id] for flow_id in flow_ids[1:]]
-    primary_flow_id = primary_flow.flow_id if primary_flow else "-"
     statement = function_statement(meta)
-    inbound_actors = external_edge_ecus(meta.inbound_edges, meta.ecu)
-    outbound_actors = external_edge_ecus(meta.outbound_edges, meta.ecu)
+    detail_pages = reference_detail_pages(meta)
+    split_inventory = len(detail_pages) > 1
 
     header_y = 100
-    header_h = 142
+    hero_gap = 14
+    hero_tile_w = 250
+    hero_tile_h = 82
+    hero_tile_start_x = margin + grid_w(12) - 22 - hero_tile_w * 2 - hero_gap
+    hero_tile_y1 = header_y + 34
+    hero_tile_y2 = hero_tile_y1 + hero_tile_h + 12
+    role_x = margin + 22
+    role_y = header_y + 148
+    role_w = hero_tile_start_x - role_x - 18
+    role_chars = max(34, min(84, role_w // 10))
+    header_role_lines = wrap_lines(role_focus_label(meta), role_chars)[:2]
+    role_h = block_height(header_role_lines, 24)
+    header_bottom = max(
+        hero_tile_y2 + hero_tile_h,
+        role_y + role_h,
+    )
+    header_h = max(188, header_bottom - header_y + 22)
+    hero_stat_tiles = [
+        ("Rx msgs", str(len(clean_items(meta.consumed_contracts)))),
+        ("Tx msgs", str(len(clean_items(meta.published_contracts)))),
+        ("Linked ECU", str(len(clean_items(meta.linked_ecus)))),
+        ("Owner seams", str(len(clean_items(meta.owner_seam)))),
+    ]
+    if page_number == 3:
+        page_subtitle = f"p{page_number} | inbound runtime inventory"
+        page_label = "Inbound inventory | p3"
+    elif page_number == 4:
+        page_subtitle = f"p{page_number} | outbound runtime inventory"
+        page_label = "Outbound inventory | p4"
+    else:
+        page_subtitle = f"p{page_number} | runtime inventory, anchors, and linked ECU bank" if split_inventory else f"p{page_number} | runtime inventory, anchors, and linked ECU bank"
+        page_label = f"Reference | p{page_number}"
     header_parts = [
         f'<rect x="{margin}" y="{header_y}" width="{grid_w(12)}" height="{header_h}" class="box" fill="url(#heroGradient)"/>',
-        f'<text x="{margin + 22}" y="{header_y + 34}" class="small">Reference bank | page {page_number}</text>',
+        f'<text x="{margin + 22}" y="{header_y + 34}" class="small">{page_label}</text>',
         f'<text x="{margin + 22}" y="{header_y + 72}" class="title">{escape(meta.ecu)}</text>',
         f'<text x="{margin + 22}" y="{header_y + 102}" class="text">{escape(group_label)} | {escape(meta.domain)}</text>',
-        f'<text x="{margin + 22}" y="{header_y + 126}" class="text">Primary flow: {escape(primary_flow_id)}</text>',
+        f'<text x="{role_x}" y="{header_y + 128}" class="small">Role focus</text>',
+        render_multiline_text(role_x, role_y, header_role_lines, "heroRole", 24),
     ]
+    for idx, (tile_title, tile_value) in enumerate(hero_stat_tiles):
+        tile_x = hero_tile_start_x + (idx % 2) * (hero_tile_w + hero_gap)
+        tile_y = hero_tile_y1 if idx < 2 else hero_tile_y2
+        header_parts.append(render_metric_tile(tile_x, tile_y, hero_tile_w, tile_title, tile_value, fill="#ffffff"))
 
-    content_y = header_y + header_h + 24
-    peer_count = len(sorted(set(clean_items(meta.linked_ecus)) - set(clean_items(meta.upstream_ecus)) - set(clean_items(meta.downstream_ecus))))
-    linked_svg, linked_height = render_chip_grid_card(
-        margin,
-        content_y,
-        grid_w(12),
-        "Linked ECU bank",
-        meta.linked_ecus,
-        fill="#eff6ff",
-        chip_fill="#ffffff",
-        chip_stroke="#bfdbfe",
-        lead_lines=[
-            f"Linked ECU visible: {len(clean_items(meta.linked_ecus))}",
-            f"Upstream {len(clean_items(meta.upstream_ecus))} | Downstream {len(clean_items(meta.downstream_ecus))} | Peer {peer_count}",
-        ],
-    )
-
-    second_row_y = content_y + linked_height + 18
+    statement_y = header_y + header_h + 18
     statement_svg, statement_height = render_statement_card(
-        grid_x(0),
-        second_row_y,
-        grid_w(4),
+        margin,
+        statement_y,
+        grid_w(12),
         statement,
     )
-    snapshot_svg, snapshot_height = render_quick_snapshot_card(
-        grid_x(4),
-        second_row_y,
-        grid_w(4),
-        primary_flow=primary_flow,
-        supporting_flows=supporting_flows,
-        owner_seams=meta.owner_seam,
-        test_assets=meta.test_assets,
-        source_files=[meta.source_capl, meta.mirror_capl],
-        doc_sources=meta.doc_sources,
-        sysvar_hints=meta.sysvar_hints,
-    )
-    diagram_svg, diagram_height = render_mini_function_diagram(
-        grid_x(8),
-        second_row_y,
-        grid_w(4),
-        ecu=meta.ecu,
-        statement=statement,
-        inbound_actors=inbound_actors,
-        outbound_actors=outbound_actors,
-    )
-    total_height = second_row_y + max(statement_height, snapshot_height, diagram_height) + 50
+
+    if split_inventory and page_number in (3, 4):
+        inventory_y = statement_y + statement_height + 18
+        inventory_title = "Inbound / Rx messages" if page_number == 3 else "Outbound / Tx messages"
+        inventory_items = meta.consumed_contracts if page_number == 3 else meta.published_contracts
+        inventory_noun = "rx messages" if page_number == 3 else "tx messages"
+        inventory_fill = "#e0f2fe" if page_number == 3 else "#dbeafe"
+        inventory_svg, inventory_height = render_trace_inventory_card(
+            margin,
+            inventory_y,
+            grid_w(12),
+            inventory_title,
+            inventory_items,
+            kind="message",
+            noun=inventory_noun,
+            fill=inventory_fill,
+        )
+        total_height = inventory_y + inventory_height + 50
+        body_svg = inventory_svg
+    else:
+        io_y = statement_y + statement_height + 18
+        inbound_limit = 4 if split_inventory else None
+        outbound_limit = 4 if split_inventory else None
+        inbound_svg, inbound_height = render_trace_pair_card(
+            grid_x(0),
+            io_y,
+            grid_w(6),
+            "Inbound / Rx messages",
+            meta.consumed_contracts,
+            kind="message",
+            noun="rx messages",
+            fill="#e0f2fe",
+            limit=inbound_limit,
+            show_overflow_note=False,
+        )
+        outbound_svg, outbound_height = render_trace_pair_card(
+            grid_x(6),
+            io_y,
+            grid_w(6),
+            "Outbound / Tx messages",
+            meta.published_contracts,
+            kind="message",
+            noun="tx messages",
+            fill="#dbeafe",
+            limit=outbound_limit,
+            show_overflow_note=False,
+        )
+
+        second_row_y = io_y + max(inbound_height, outbound_height) + 18
+        anchor_width = grid_w(5)
+        anchor_x = grid_x(0)
+        anchor_inner_x = anchor_x + 22
+        anchor_inner_w = anchor_width - 44
+        anchor_gap = 18
+        anchor_tile_w = (anchor_inner_w - anchor_gap) // 2
+        anchor_tile_y = second_row_y + 54
+        if clean_items(meta.test_assets):
+            test_tile_lines = [
+                test_asset_badge(clean_items(meta.test_assets)[0], 38),
+                test_asset_caption("runtime contract", True, primary_flow, 34),
+            ]
+        else:
+            test_tile_lines = wrap_lines("No direct test asset", 34)[:2]
+        test_tile_h = max(110, 48 + block_height(test_tile_lines, 18) + 16)
+        _, seam_tile_h = render_trace_pair_tile(
+            anchor_inner_x + anchor_tile_w + anchor_gap,
+            anchor_tile_y,
+            anchor_tile_w,
+            "Owner seam",
+            meta.owner_seam,
+            kind="seam",
+            noun="owner seams",
+            fill="#f8fafc",
+            limit=None,
+        )
+        top_anchor_h = max(test_tile_h, seam_tile_h)
+        sysvar_svg, sysvar_h = render_trace_pair_tile(
+            anchor_inner_x,
+            anchor_tile_y + top_anchor_h + 18,
+            anchor_inner_w,
+            "Linked sysvars",
+            meta.sysvar_hints,
+            kind="sysvar",
+            noun="sysvars",
+            fill="#ffffff",
+            limit=None,
+        )
+        anchor_height = (anchor_tile_y + top_anchor_h + 18 + sysvar_h) - second_row_y + 22
+        anchor_svg = "\n".join(
+            [
+                f'<rect x="{anchor_x}" y="{second_row_y}" width="{anchor_width}" height="{anchor_height}" class="box" fill="#ffffff"/>',
+                f'<text x="{anchor_x + 22}" y="{second_row_y + 36}" class="label">Runtime anchors</text>',
+                render_metadata_note_tile(anchor_inner_x, anchor_tile_y, anchor_tile_w, "Lead test asset", test_tile_lines, fill="#f8fafc", height=top_anchor_h),
+                render_trace_pair_tile(
+                    anchor_inner_x + anchor_tile_w + anchor_gap,
+                    anchor_tile_y,
+                    anchor_tile_w,
+                    "Owner seam",
+                    meta.owner_seam,
+                    kind="seam",
+                    noun="owner seams",
+                    fill="#f8fafc",
+                    limit=None,
+                    height=top_anchor_h,
+                )[0],
+                sysvar_svg,
+            ]
+        )
+
+        linked_x = grid_x(5)
+        linked_w = grid_w(7)
+        linked_svg, linked_height = render_grouped_link_bank_card(
+            linked_x,
+            second_row_y,
+            linked_w,
+            "Linked ECU bank",
+            meta.linked_ecus,
+            fill="#eff6ff",
+            chip_fill="#ffffff",
+            chip_stroke="#bfdbfe",
+            lead_lines=[
+                f"{len(clean_items(meta.linked_ecus))} linked ECU",
+                f"Upstream {len(clean_items(meta.upstream_ecus))} | Downstream {len(clean_items(meta.downstream_ecus))}",
+            ],
+        )
+        total_height = second_row_y + max(anchor_height, linked_height) + 50
+        body_svg = "\n".join([inbound_svg, outbound_svg, anchor_svg, linked_svg])
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="{total_height}" viewBox="0 0 1600 {total_height}">
   <defs>
     <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -2200,23 +3170,22 @@ def render_card_detail_page(meta: EcuMeta, page_number: int = 2) -> str:
   <style>
     .bg {{ fill: #f7f7f5; }}
     .title {{ font: 700 32px 'Segoe UI', sans-serif; fill: #0f172a; }}
-    .sub {{ font: 500 15px 'Segoe UI', sans-serif; fill: #475569; }}
-    .label {{ font: 700 18px 'Segoe UI', sans-serif; fill: #0f172a; }}
-    .text {{ font: 600 15px 'Segoe UI', sans-serif; fill: #1f2937; }}
-    .small {{ font: 500 13px 'Segoe UI', sans-serif; fill: #475569; }}
+    .sub {{ font: 500 16px 'Segoe UI', sans-serif; fill: #475569; }}
+    .label {{ font: 700 19px 'Segoe UI', sans-serif; fill: #0f172a; }}
+    .text {{ font: 600 16px 'Segoe UI', sans-serif; fill: #1f2937; }}
+    .small {{ font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }}
+    .heroRole {{ font: 700 23px 'Segoe UI', sans-serif; fill: #111827; }}
     .statement {{ font: 700 26px 'Segoe UI', sans-serif; fill: #111827; }}
-    .node {{ font: 700 18px 'Segoe UI', sans-serif; fill: #111827; }}
+    .node {{ font: 700 19px 'Segoe UI', sans-serif; fill: #111827; }}
     .box {{ rx: 22; ry: 22; stroke: #334155; stroke-width: 1.6; }}
     .lane {{ stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }}
   </style>
   <rect x="0" y="0" width="1600" height="{total_height}" class="bg"/>
-  <text x="34" y="44" class="title">ECU Reference Card - {escape(meta.ecu)}</text>
-  <text x="34" y="72" class="sub">page {page_number} | grouped reference bank with balanced network layout</text>
+  <text x="34" y="44" class="title">ECU Reference - {escape(meta.ecu)}</text>
+  <text x="34" y="72" class="sub">{page_subtitle}</text>
   {' '.join(header_parts)}
-  {linked_svg}
-  {snapshot_svg}
   {statement_svg}
-  {diagram_svg}
+  {body_svg}
 </svg>
 """
 
@@ -2238,17 +3207,31 @@ def render_card_layout_v3(meta: EcuMeta) -> str:
     flow_ids = related_action_flow_ids(meta)
     primary_flow = ACTION_FLOWS[flow_ids[0]] if flow_ids else None
     statement = function_statement(meta)
-    role_lines = wrap_lines(statement_headline(statement), 42)
+    role_lines = wrap_lines(role_focus_label(meta), 42)
     inbound_actors = external_edge_ecus(meta.inbound_edges, meta.ecu)
     outbound_actors = external_edge_ecus(meta.outbound_edges, meta.ecu)
-    primary_flow_label = f"{primary_flow.flow_id} {primary_flow.title}" if primary_flow else "-"
+    primary_flow_label = action_flow_badge(primary_flow, 38) if primary_flow else "-"
+    linked_domain_count = len({domain_label(ECU_DOMAIN_LOOKUP.get(ecu, "Unknown")) for ecu in clean_items(meta.linked_ecus)})
+    upstream_domain_count = len({domain_label(ECU_DOMAIN_LOOKUP.get(ecu, "Unknown")) for ecu in clean_items(meta.upstream_ecus)})
+    downstream_domain_count = len({domain_label(ECU_DOMAIN_LOOKUP.get(ecu, "Unknown")) for ecu in clean_items(meta.downstream_ecus)})
+    posture = runtime_posture_label(meta)
+    posture_badge = {
+        "State source": "Source",
+        "Apply / gate": "Gate",
+        "Decision / routing": "Route",
+        "Local runtime": "Local",
+    }.get(posture, posture)
+    hero_tiles = [
+        ("Inbound", str(len(inbound_actors))),
+        ("Outbound", str(len(outbound_actors))),
+        ("Domains", str(linked_domain_count)),
+        ("Runtime", posture_badge),
+    ]
 
     hero_y = 100
     hero_left_x = grid_x(0)
-    hero_right_x = grid_x(7)
-    hero_right_w = grid_w(5)
-    hero_tile_gap = 12
-    hero_tile_width = (hero_right_w - hero_tile_gap) // 2
+    hero_tile_gap = 14
+    hero_tile_width = 250
     hero_lines = (
         [f"{group_label} | {meta.domain}"]
         + [""]
@@ -2257,21 +3240,28 @@ def render_card_layout_v3(meta: EcuMeta) -> str:
         + ["Primary action flow"]
         + wrap_lines(primary_flow_label, 42)
     )
-    hero_height = max(184, 88 + block_height(hero_lines, 20))
-    tile_x1 = hero_right_x
-    tile_x2 = hero_right_x + hero_tile_width + hero_tile_gap
+    tile_x1 = grid_x(7)
+    tile_x2 = tile_x1 + hero_tile_width + hero_tile_gap
     tile_y1 = hero_y + 34
-    tile_y2 = tile_y1 + 94
+    hero_tile_height = 82
+    tile_y2 = tile_y1 + hero_tile_height + 12
+    hero_left_bottom = hero_y + 104 + block_height(hero_lines, 20)
+    hero_tile_bottom = tile_y2 + hero_tile_height
+    hero_height = max(
+        252,
+        hero_left_bottom - hero_y + 28,
+        hero_tile_bottom - hero_y + 22,
+    )
     hero_svg = "\n".join(
         [
             f'<rect x="{margin}" y="{hero_y}" width="{grid_w(12)}" height="{hero_height}" class="box" fill="url(#heroGradient)"/>',
-            f'<text x="{hero_left_x + 22}" y="{hero_y + 34}" class="small">Story overview</text>',
+            f'<text x="{hero_left_x + 22}" y="{hero_y + 34}" class="small">Overview | p1</text>',
             f'<text x="{hero_left_x + 22}" y="{hero_y + 72}" class="title">{escape(meta.ecu)}</text>',
             render_multiline_text(hero_left_x + 22, hero_y + 104, hero_lines, "text", 20),
-            render_metric_tile(tile_x1, tile_y1, hero_tile_width, "Inbound actors", str(len(inbound_actors)), fill="#ffffff"),
-            render_metric_tile(tile_x2, tile_y1, hero_tile_width, "Outbound actors", str(len(outbound_actors)), fill="#ffffff"),
-            render_metric_tile(tile_x1, tile_y2, hero_tile_width, "Linked ECU", str(len(meta.linked_ecus)), fill="#ffffff"),
-            render_metric_tile(tile_x2, tile_y2, hero_tile_width, "Native Tests", str(len(meta.test_assets)), fill="#ffffff"),
+            render_metric_tile(tile_x1, tile_y1, hero_tile_width, hero_tiles[0][0], hero_tiles[0][1], fill="#ffffff"),
+            render_metric_tile(tile_x2, tile_y1, hero_tile_width, hero_tiles[1][0], hero_tiles[1][1], fill="#ffffff"),
+            render_metric_tile(tile_x1, tile_y2, hero_tile_width, hero_tiles[2][0], hero_tiles[2][1], fill="#ffffff"),
+            render_metric_tile(tile_x2, tile_y2, hero_tile_width, hero_tiles[3][0], hero_tiles[3][1], fill="#ffffff"),
         ]
     )
 
@@ -2301,7 +3291,7 @@ def render_card_layout_v3(meta: EcuMeta) -> str:
         footprint_y,
         grid_w(12),
         meta=meta,
-        title="Network footprint",
+        title="Domain footprint",
         fill="#eff6ff",
     )
 
@@ -2328,8 +3318,8 @@ def render_card_layout_v3(meta: EcuMeta) -> str:
     .lane {{ stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }}
   </style>
   <rect x="0" y="0" width="1600" height="{total_height}" class="bg"/>
-  <text x="34" y="44" class="title">ECU Overview Card - {escape(meta.ecu)}</text>
-  <text x="34" y="72" class="sub">page 1 | hierarchy-first overview with action rail and network footprint</text>
+  <text x="34" y="44" class="title">ECU Overview - {escape(meta.ecu)}</text>
+  <text x="34" y="72" class="sub">p1 | overview, action rail, signal path, and domain footprint</text>
   {hero_svg}
   {metadata_svg}
   {action_svg}
@@ -2363,22 +3353,40 @@ def render_representative_signal_flow(x: int, y: int, width: int, meta: EcuMeta)
             "\n".join(
                 [
                     f'<rect x="{x}" y="{y}" width="{width}" height="{no_path_height}" class="box" fill="#eff6ff"/>',
-                    f'<text x="{x + 22}" y="{y + 36}" class="label">Representative signal flow</text>',
+                    f'<text x="{x + 22}" y="{y + 36}" class="label">Signal path</text>',
                     f'<text x="{x + 22}" y="{y + 72}" class="text">No representative DBC signal path extracted for this ECU.</text>',
                 ]
             ),
             no_path_height,
         )
 
-    panel_height = 206
+    lane_note = []
+    if src_ecu and dst_ecu:
+        lane_note = [f"Path · {src_ecu} -> {meta.ecu} -> {dst_ecu}"]
+    elif src_ecu:
+        lane_note = [f"Path · {src_ecu} -> {meta.ecu}"]
+    elif dst_ecu:
+        lane_note = [f"Path · {meta.ecu} -> {dst_ecu}"]
+    lane_note_lines = wrap_lines(lane_note[0], 68) if lane_note else []
     left_x = x + 28
     center_x = x + width // 2 - 110
     right_x = x + width - 248
-    box_y = y + 70
-    msg_y = y + 132
+    box_y = y + 82
+    src_msg_label_lines = wrap_lines(trace_display_label(src_msg or "-", "message"), 18)[:2]
+    src_msg_exact_lines = wrap_lines(trace_exact_label(src_msg or "-"), 18)[:2]
+    dst_msg_label_lines = wrap_lines(trace_display_label(dst_msg or "-", "message"), 18)[:2]
+    dst_msg_exact_lines = wrap_lines(trace_exact_label(dst_msg or "-"), 18)[:2]
+    chip_h = 30 + max(
+        block_height(src_msg_label_lines, 14) + block_height(src_msg_exact_lines, 12),
+        block_height(dst_msg_label_lines, 14) + block_height(dst_msg_exact_lines, 12),
+    )
+    arrow_y = box_y + 29
+    msg_chip_y = max(y + 74, int(arrow_y - chip_h / 2))
+    note_y = max(box_y + 98, msg_chip_y + chip_h + 22)
+    panel_height = max(194, note_y - y + block_height(lane_note_lines, 18) + 28)
     parts = [
         f'<rect x="{x}" y="{y}" width="{width}" height="{panel_height}" class="box" fill="#eff6ff"/>',
-        f'<text x="{x + 22}" y="{y + 36}" class="label">Representative signal flow</text>',
+        f'<text x="{x + 22}" y="{y + 36}" class="label">Signal path</text>',
     ]
 
     if src_ecu:
@@ -2393,24 +3401,42 @@ def render_representative_signal_flow(x: int, y: int, width: int, meta: EcuMeta)
         parts.append(f'<text x="{right_x + 18}" y="{box_y + 34}" class="node">{escape(dst_ecu)}</text>')
 
     if src_ecu:
-        parts.append(f'<line x1="{left_x + 220}" y1="{box_y + 29}" x2="{center_x}" y2="{box_y + 29}" class="lane"/>')
-        rx_lines = wrap_lines(f"Rx {src_msg or '-'}", 28)
-        parts.append(render_multiline_text(left_x + 236, msg_y, rx_lines, "small", 18))
+        parts.append(f'<line x1="{left_x + 220}" y1="{arrow_y}" x2="{center_x}" y2="{arrow_y}" class="lane"/>')
+        rx_chip_x = left_x + 246
+        rx_chip_w = 160
+        parts.extend(
+            [
+                f'<rect x="{rx_chip_x}" y="{msg_chip_y}" width="{rx_chip_w}" height="{chip_h}" rx="12" ry="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>',
+                render_centered_multiline_text(rx_chip_x + rx_chip_w / 2, msg_chip_y + 16, src_msg_label_lines, "small", 14),
+                render_centered_multiline_text(
+                    rx_chip_x + rx_chip_w / 2,
+                    msg_chip_y + 18 + block_height(src_msg_label_lines, 14),
+                    src_msg_exact_lines,
+                    "small",
+                    12,
+                ),
+            ]
+        )
 
     if dst_ecu:
-        parts.append(f'<line x1="{center_x + 220}" y1="{box_y + 29}" x2="{right_x}" y2="{box_y + 29}" class="lane"/>')
-        tx_lines = wrap_lines(f"Tx {dst_msg or '-'}", 28)
-        parts.append(render_multiline_text(center_x + 236, msg_y, tx_lines, "small", 18))
-
-    lane_note = []
-    if src_ecu and dst_ecu:
-        lane_note = [f"{src_ecu} -> {meta.ecu} -> {dst_ecu}"]
-    elif src_ecu:
-        lane_note = [f"{src_ecu} -> {meta.ecu}"]
-    elif dst_ecu:
-        lane_note = [f"{meta.ecu} -> {dst_ecu}"]
-    if lane_note:
-        parts.append(render_multiline_text(x + 22, y + 182, lane_note, "text", 20))
+        parts.append(f'<line x1="{center_x + 220}" y1="{arrow_y}" x2="{right_x}" y2="{arrow_y}" class="lane"/>')
+        tx_chip_x = center_x + 246
+        tx_chip_w = 160
+        parts.extend(
+            [
+                f'<rect x="{tx_chip_x}" y="{msg_chip_y}" width="{tx_chip_w}" height="{chip_h}" rx="12" ry="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.1"/>',
+                render_centered_multiline_text(tx_chip_x + tx_chip_w / 2, msg_chip_y + 16, dst_msg_label_lines, "small", 14),
+                render_centered_multiline_text(
+                    tx_chip_x + tx_chip_w / 2,
+                    msg_chip_y + 18 + block_height(dst_msg_label_lines, 14),
+                    dst_msg_exact_lines,
+                    "small",
+                    12,
+                ),
+            ]
+        )
+    if lane_note_lines:
+        parts.append(render_multiline_text(x + 22, note_y, lane_note_lines, "small", 18))
 
     return "\n".join(parts), panel_height
 
@@ -2558,7 +3584,7 @@ def render_card(meta: EcuMeta) -> str:
   </style>
   <rect x="0" y="0" width="1600" height="{total_height}" class="bg"/>
   <text x="34" y="44" class="title">{escape(title)}</text>
-  <text x="34" y="72" class="sub">{escape(group_label)} | Domain {escape(meta.domain)} | generated internal OEM-style network flow card</text>
+  <text x="34" y="72" class="sub">{escape(group_label)} | Domain {escape(meta.domain)}</text>
 
   <rect x="30" y="{placement_y}" width="1540" height="{placement_height}" class="box" fill="{group_color}"/>
   <text x="52" y="{placement_y + 36}" class="label">ECU placement</text>
@@ -2619,9 +3645,10 @@ def write_card_set(metadata: list[EcuMeta]) -> None:
     CARD_ROOT.mkdir(parents=True, exist_ok=True)
     for meta in metadata:
         card_svg = render_card_layout_v3(meta)
-        detail_svg = render_card_detail_page(meta, page_number=2)
         (CARD_ROOT / card_filename(meta.ecu)).write_text(card_svg, encoding="utf-8")
-        (CARD_ROOT / card_page_filename(meta.ecu, 2)).write_text(detail_svg, encoding="utf-8")
+        for page_number in reference_detail_pages(meta):
+            detail_svg = render_card_detail_page(meta, page_number=page_number)
+            (CARD_ROOT / card_page_filename(meta.ecu, page_number)).write_text(detail_svg, encoding="utf-8")
 
 
 def write_prototype_card_set(metadata: list[EcuMeta]) -> None:
@@ -2658,10 +3685,12 @@ def ordered_unique(items: Iterable[str]) -> list[str]:
     return result
 
 
-def compact_bank(items: Iterable[str], limit: int = 8, joiner: str = ", ") -> str:
+def compact_bank(items: Iterable[str], limit: int | None = 8, joiner: str = ", ") -> str:
     values = ordered_unique(items)
     if not values:
         return "-"
+    if limit is None:
+        return joiner.join(values)
     head = values[:limit]
     rendered = joiner.join(head)
     if len(values) > limit:
@@ -2671,6 +3700,25 @@ def compact_bank(items: Iterable[str], limit: int = 8, joiner: str = ", ") -> st
 
 def compact_table_bank(items: Iterable[str], limit: int = 6) -> str:
     return compact_bank(items, limit=limit, joiner="<br>")
+
+
+def compact_flow_set(flow_ids: Iterable[str]) -> str:
+    values = ordered_unique(flow_ids)
+    if not values:
+        return "-"
+    numeric_ids: list[int] = []
+    for flow_id in values:
+        try:
+            numeric_ids.append(int(flow_id.split("_")[1]))
+        except (IndexError, ValueError):
+            return ", ".join(values)
+    numeric_ids.sort()
+    if len(numeric_ids) == 1:
+        return f"FLOW_{numeric_ids[0]:02d}"
+    contiguous = all(b - a == 1 for a, b in zip(numeric_ids, numeric_ids[1:]))
+    if contiguous:
+        return f"FLOW_{numeric_ids[0]:02d}~{numeric_ids[-1]:02d} ({len(numeric_ids)} flows)"
+    return ", ".join(f"FLOW_{item:02d}" for item in numeric_ids)
 
 
 def render_master_book(metadata: list[EcuMeta]) -> str:
@@ -2700,10 +3748,12 @@ def render_master_book(metadata: list[EcuMeta]) -> str:
         flows_by_category[flow.category].append(flow)
 
     lines: list[str] = [
-        f"# CANoe Runtime ECU Master Book ({DATE_STAMP})",
+        f"# {BOOK_TITLE} ({DATE_STAMP})",
         "",
-        "CANoe architecture master book for the active SIL baseline.",
-        "This book is the orchestration layer that ties overview SVG, action-flow pack, and 101 ECU cards into one reading sequence.",
+        "Subtitle: CANoe SIL baseline reference for CAN and Ethernet behavior.",
+        "",
+        "Vehicle ECU architecture and interaction reference for the active CANoe SIL baseline.",
+        "This book brings overview maps, action flows, and ECU cards into one reading sequence.",
         "",
         "## Table Of Contents",
         "",
@@ -2711,25 +3761,22 @@ def render_master_book(metadata: list[EcuMeta]) -> str:
         "2. Reading Guide",
         "3. Visual Opening",
         "4. System Narrative",
-        "5. Coverage Summary",
-        "6. Group Snapshot",
-        "7. Action-Flow Pack",
-        "8. ECU Catalog",
-        "9. Evidence Watchlist",
+        "5. Group Snapshot",
+        "6. Action-Flow Pack",
+        "7. ECU Catalog",
         "",
         "## Book Intent",
         "",
-        "Use this document as the official CANoe-side master asset for PDF generation, consulting-style briefings, and later appendix extraction.",
-        "The structure is behavior-first: system overview and action flows come before the per-ECU catalog.",
-        "Each ECU page is an explanatory card, not just an inventory row.",
+        "This book explains the CANoe runtime architecture through overview maps, action flows, and per-ECU cards.",
+        "The structure is behavior-first: system overview and action flows come before the ECU catalog.",
+        "Each ECU page is a reading aid for role, contracts, linked ECU, and representative runtime behavior.",
         "",
         "## Reading Guide",
         "",
         "1. Start with the overview SVG to understand the full 101-ECU surface.",
         "2. Move into the grouped architecture view to see domain-level bundling.",
         "3. Read the canonical action flows to understand behavior chains.",
-        "4. Drop into per-ECU cards only after the behavior context is clear.",
-        "5. Use the evidence watchlist at the end to spot test and contract gaps.",
+        "4. Move into per-ECU cards after the behavior context is clear.",
         "",
         "### Core Reading Path",
         "",
@@ -2738,6 +3785,13 @@ def render_master_book(metadata: list[EcuMeta]) -> str:
         f"3. [Action Flow Index](ACTION_FLOW_INDEX_{DATE_STAMP}.md)",
         f"4. [ECU to Flow Matrix](ECU_ACTION_FLOW_MATRIX_{DATE_STAMP}.md)",
         f"5. [ECU Card Index](ECU_CARD_INDEX_{DATE_STAMP}.md)",
+        "",
+        "### Index Map",
+        "",
+        f"- [Action Flow Index](ACTION_FLOW_INDEX_{DATE_STAMP}.md): use this to find one canonical behavior chapter quickly.",
+        f"- [ECU to Flow Matrix](ECU_ACTION_FLOW_MATRIX_{DATE_STAMP}.md): use this to move from one ECU to its primary and supporting flows.",
+        f"- [ECU Card Index](ECU_CARD_INDEX_{DATE_STAMP}.md): use this to jump directly into `p1/p2/p3/p4` card pages.",
+        f"- [Signal Flow Index](SIGNAL_FLOW_INDEX_{DATE_STAMP}.md): use this only when exact runtime names and detailed signal routes are needed.",
         "",
         PAGE_BREAK,
         "",
@@ -2753,41 +3807,12 @@ def render_master_book(metadata: list[EcuMeta]) -> str:
         f"- Canonical behavior pack: `{action_flow_count}` action flows",
         "- Meaningful behavior is not organized as 101 independent flows.",
         "- One action flow crosses multiple ECU, and one ECU participates in multiple action flows.",
-        "- This book therefore uses three layers: overview architecture, action-flow atlas, and per-ECU catalog.",
+        "- This book therefore uses three layers: overview architecture, action-flow atlas, and per-ECU catalog with detailed signal companions.",
         "",
         "### Book Parts",
         "",
         "- Part I. Architecture narrative: overview map, grouped view, and action-flow pack.",
-        "- Part II. ECU catalog: 101 ECU cards with story page and reference page.",
-        "- Part III. Evidence watchlist: test anchor, contract, and consumption gaps that need later closure.",
-        "",
-        "## Source Priority",
-        "",
-        "1. `canoe/src/capl/**/*.can`",
-        "2. `canoe/cfg/channel_assign/**/*.can`",
-        "3. `canoe/databases/*.dbc`",
-        "4. `canoe/tmp/runtime_message_ownership_matrix.md`",
-        "5. `canoe/tests/modules/test_units/**`",
-        "6. `driving-alert-workproducts/0301~0304`, `04_SW_Implementation`",
-        "",
-        PAGE_BREAK,
-        "",
-        "## Coverage Summary",
-        "",
-        f"- ECU inventory count: `{total}`",
-        f"- Canonical action-flow count: `{action_flow_count}`",
-        f"- ECUs with direct matching native tests: `{direct_tests}`",
-        f"- ECUs without direct matching native tests: `{len(no_test)}`",
-        f"- ECUs without published contract rows in current DBC/runtime supplement: `{len(no_published)}`",
-        f"- ECUs without consumed contract rows in current DBC/runtime supplement: `{len(no_consumed)}`",
-        "",
-        "### By Group",
-        "",
-        *render_summary_table(group_counts, "Group"),
-        "",
-        "### By Domain",
-        "",
-        *render_summary_table(domain_counts, "Domain"),
+        "- Part II. ECU catalog: 101 ECU overview pages with one or more reference pages.",
         "",
         PAGE_BREAK,
         "",
@@ -2799,7 +3824,7 @@ def render_master_book(metadata: list[EcuMeta]) -> str:
         group_direct_tests = sum(1 for item in members if item.test_assets)
         dominant_domains = Counter(item.domain for item in members)
         lead_flows = [
-            f"{flow.flow_id} {flow.title}"
+            flow.flow_id
             for flow in ACTION_FLOWS.values()
             if category_group.get(flow.category) == group
         ]
@@ -2809,10 +3834,8 @@ def render_master_book(metadata: list[EcuMeta]) -> str:
                 "",
                 GROUP_STORIES[group],
                 "",
-                f"- ECU count: `{len(members)}`",
-                f"- Direct native test anchor count: `{group_direct_tests}`",
-                f"- Domains: `{', '.join(f'{domain} {count}' for domain, count in sorted(dominant_domains.items()))}`",
-                f"- Lead action flows: `{compact_bank(lead_flows, limit=4)}`",
+                f"- Included domains: `{', '.join(sorted(dominant_domains))}`",
+                f"- Representative action flows: `{compact_flow_set(lead_flows)}`",
                 "",
                 f"![](svg/{group_svg_filename(group)})",
                 "",
@@ -2830,7 +3853,7 @@ def render_master_book(metadata: list[EcuMeta]) -> str:
             "",
             f"- [Action Flow Index](ACTION_FLOW_INDEX_{DATE_STAMP}.md)",
             f"- [ECU to Flow Matrix](ECU_ACTION_FLOW_MATRIX_{DATE_STAMP}.md)",
-            "- Flow figures are embedded below so the PDF reads like one orchestrated narrative.",
+            "- Flow figures are embedded below so the main body can be read in one sequence.",
             "",
         ]
     )
@@ -2855,11 +3878,10 @@ def render_master_book(metadata: list[EcuMeta]) -> str:
                     flow.summary,
                     "",
                     f"- User outcome: {flow.user_outcome}",
-                    f"- Participant bank: `{compact_bank(flow.participants, limit=6)}`",
-                    f"- Related ECU bank: `{compact_bank(members, limit=10)}`",
-                    f"- Key contracts: `{compact_bank(flow.key_contracts, limit=6)}`",
+                    f"- Primary ECU bank: `{compact_bank(members, limit=None)}`",
+                    f"- Representative signals: `{compact_bank(representative_contract_labels(flow.key_contracts, limit=4), limit=None)}`",
                     "",
-                    f"![](svg/flows/{action_flow_filename(flow)})",
+                    f"![](svg/flows/action/{action_flow_filename(flow)})",
                     "",
                 ]
             )
@@ -2871,7 +3893,7 @@ def render_master_book(metadata: list[EcuMeta]) -> str:
             "## ECU Catalog",
             "",
             "The catalog below is grouped by architecture group so the book reads as one system story instead of a flat asset list.",
-            "Each ECU section keeps one human-readable sentence, one concise metadata table, and the two SVG pages.",
+            "Each ECU section keeps one human-readable sentence, one overview page, one or more reference pages, and one representative detailed signal flow.",
             "",
         ]
     )
@@ -2891,9 +3913,7 @@ def render_master_book(metadata: list[EcuMeta]) -> str:
                     "",
                     GROUP_STORIES[item.group],
                     "",
-                    f"- Group size: `{len(group_items)}` ECU",
-                    f"- Native test anchor count: `{group_direct_tests}`",
-                    f"- Domain spread: `{', '.join(f'{domain} {count}' for domain, count in sorted(dominant_domains.items()))}`",
+                    f"- Included domains: `{', '.join(sorted(dominant_domains))}`",
                     "",
                     f"![](svg/{group_svg_filename(item.group)})",
                     "",
@@ -2901,6 +3921,7 @@ def render_master_book(metadata: list[EcuMeta]) -> str:
             )
         related_flows = related_action_flow_ids(item)
         statement = function_statement(item)
+        related_signal_sources = representative_signal_flow_sources(item, limit=1)
         lines.extend(
             [
                 f"### `{item.ecu}`",
@@ -2909,24 +3930,25 @@ def render_master_book(metadata: list[EcuMeta]) -> str:
                 "",
                 f"![](svg/ecu_cards/{card_filename(item.ecu)})",
                 "",
-                f"![](svg/ecu_cards/{card_page_filename(item.ecu, 2)})",
-                "",
             ]
         )
-
-    lines.extend(
-        [
-            PAGE_BREAK,
-            "",
-            "## Evidence Watchlist",
-            "",
-            f"- No direct native test anchor yet: `{compact_bank(no_test, limit=18)}`",
-            f"- No published contract rows: `{compact_bank(no_published, limit=12)}`",
-            f"- No consumed contract rows: `{compact_bank(no_consumed, limit=12)}`",
-            f"- Canonical action-flow count: `{action_flow_count}`",
-            "",
-        ]
-    )
+        for page_number in reference_detail_pages(item):
+            lines.extend(
+                [
+                    f"![](svg/ecu_cards/{card_page_filename(item.ecu, page_number)})",
+                    "",
+                ]
+            )
+        if related_signal_sources:
+            source = related_signal_sources[0]
+            lines.extend(
+                [
+                    f"- Representative detailed signal flow: `{source.stem}`",
+                    "",
+                    f"![]({signal_flow_svg_relpath(source)})",
+                    "",
+                ]
+            )
 
     return "\n".join(lines) + "\n"
 
@@ -2935,7 +3957,10 @@ def render_card_index(metadata: list[EcuMeta]) -> str:
     lines = [
         f"# ECU Card Index ({DATE_STAMP})",
         "",
+        "Subtitle: Page-set index for all per-ECU overview and reference cards.",
+        "",
         "This is the generated index for all per-ECU OEM-style network flow SVG cards.",
+        "Page rule: `p1 = overview`, `p2 = reference`, `p3/p4 = dense ECU inventory overflow pages`.",
         "",
     ]
     by_group: dict[str, list[EcuMeta]] = defaultdict(list)
@@ -2944,9 +3969,10 @@ def render_card_index(metadata: list[EcuMeta]) -> str:
     for group in sorted(by_group):
         lines.extend([f"## {GROUP_LABELS[group]}", ""])
         for item in by_group[group]:
-            lines.append(
-                f"- [{item.ecu} p1](svg/ecu_cards/{card_filename(item.ecu)}) | [p2](svg/ecu_cards/{card_page_filename(item.ecu, 2)})"
-            )
+            page_links = [f"[p1](svg/ecu_cards/{card_filename(item.ecu)})"]
+            for page_number in reference_detail_pages(item):
+                page_links.append(f"[p{page_number}](svg/ecu_cards/{card_page_filename(item.ecu, page_number)})")
+            lines.append(f"- `{item.ecu}`: " + " | ".join(page_links))
         lines.append("")
     return "\n".join(lines) + "\n"
 
@@ -2960,7 +3986,7 @@ def render_group06_svg(metadata: list[EcuMeta]) -> str:
         row = idx // columns
         col = idx % columns
         x = 60 + col * 300
-        y = 390 + row * 52
+        y = 438 + row * 52
         ecu_boxes.append(f'<rect x="{x}" y="{y}" width="250" height="36" rx="12" ry="12" fill="#f8fafc" stroke="#475569" stroke-width="1.5"/>')
         ecu_boxes.append(f'<text x="{x + 14}" y="{y + 24}" class="node">{escape(ecu)}</text>')
 
@@ -2985,7 +4011,7 @@ def render_group06_svg(metadata: list[EcuMeta]) -> str:
   <text x="52" y="336" class="node">domain state / service requests -> CGW / ETHB / DCM / SGW / IBOX -> routed gateway, diagnostic, and external service surfaces</text>
 
   <rect x="30" y="380" width="1260" height="520" class="box" fill="#ffffff"/>
-  <text x="52" y="416" class="label">ECU roster</text>
+  <text x="52" y="416" class="label">ECU</text>
   {"".join(ecu_boxes)}
 
   <rect x="30" y="920" width="1260" height="40" class="box" fill="#f8fafc"/>
@@ -2997,14 +4023,18 @@ def render_group06_svg(metadata: list[EcuMeta]) -> str:
 def ensure_dirs() -> None:
     DATA_ROOT.mkdir(parents=True, exist_ok=True)
     FLOW_ROOT.mkdir(parents=True, exist_ok=True)
+    PNG_ROOT.mkdir(parents=True, exist_ok=True)
     CARD_ROOT.mkdir(parents=True, exist_ok=True)
     FLOW_SVG_ROOT.mkdir(parents=True, exist_ok=True)
+    SIGNAL_FLOW_SVG_ROOT.mkdir(parents=True, exist_ok=True)
+    SIGNAL_FLOW_PNG_ROOT.mkdir(parents=True, exist_ok=True)
     PROTOTYPE_ROOT.mkdir(parents=True, exist_ok=True)
 
 
 def write_outputs(metadata: list[EcuMeta]) -> None:
     ensure_dirs()
     flow_members = action_flow_members(metadata)
+    signal_sources = render_signal_flow_triplets()
     METADATA_JSON.write_text(json.dumps([asdict(item) for item in metadata], ensure_ascii=False, indent=2), encoding="utf-8")
     ACTION_FLOW_JSON.write_text(
         json.dumps(
@@ -3023,6 +4053,7 @@ def write_outputs(metadata: list[EcuMeta]) -> None:
     MASTER_BOOK.write_text(render_master_book(metadata), encoding="utf-8")
     CARD_INDEX.write_text(render_card_index(metadata), encoding="utf-8")
     ACTION_FLOW_INDEX.write_text(render_action_flow_index(flow_members), encoding="utf-8")
+    SIGNAL_FLOW_INDEX.write_text(render_signal_flow_index(signal_sources), encoding="utf-8")
     ECU_FLOW_MATRIX.write_text(render_ecu_flow_matrix(metadata), encoding="utf-8")
     GROUP06_SVG.write_text(render_group06_svg(metadata), encoding="utf-8")
     for flow_id in ACTION_FLOW_ORDER:
@@ -3043,6 +4074,7 @@ def main() -> None:
     print(f"[internal-ecu-pack] book: {MASTER_BOOK}")
     print(f"[internal-ecu-pack] index: {CARD_INDEX}")
     print(f"[internal-ecu-pack] action-flow-index: {ACTION_FLOW_INDEX}")
+    print(f"[internal-ecu-pack] signal-flow-index: {SIGNAL_FLOW_INDEX}")
     print(f"[internal-ecu-pack] ecu-flow-matrix: {ECU_FLOW_MATRIX}")
     print(f"[internal-ecu-pack] group06: {GROUP06_SVG}")
     print(f"[internal-ecu-pack] action-flow-count: {len(ACTION_FLOW_ORDER)}")

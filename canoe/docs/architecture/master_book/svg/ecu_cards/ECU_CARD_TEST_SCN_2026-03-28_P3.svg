@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1426" viewBox="0 0 1600 1426">
+  <defs>
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #f7f7f5; }
+    .title { font: 700 32px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .sub { font: 500 16px 'Segoe UI', sans-serif; fill: #475569; }
+    .label { font: 700 19px 'Segoe UI', sans-serif; fill: #0f172a; }
+    .text { font: 600 16px 'Segoe UI', sans-serif; fill: #1f2937; }
+    .small { font: 500 14px 'Segoe UI', sans-serif; fill: #475569; }
+    .heroRole { font: 700 23px 'Segoe UI', sans-serif; fill: #111827; }
+    .statement { font: 700 26px 'Segoe UI', sans-serif; fill: #111827; }
+    .node { font: 700 19px 'Segoe UI', sans-serif; fill: #111827; }
+    .box { rx: 22; ry: 22; stroke: #334155; stroke-width: 1.6; }
+    .lane { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+  <rect x="0" y="0" width="1600" height="1426" class="bg"/>
+  <text x="34" y="44" class="title">ECU Reference - TEST_SCN</text>
+  <text x="34" y="72" class="sub">p3 | inbound runtime inventory</text>
+  <rect x="30" y="100" width="1540" height="232" class="box" fill="url(#heroGradient)"/> <text x="52" y="134" class="small">Inbound inventory | p3</text> <text x="52" y="172" class="title">TEST_SCN</text> <text x="52" y="202" class="text">Group 05 Validation Scenario | ETH_Backbone</text> <text x="52" y="228" class="small">Role focus</text> <text x="52" y="248" class="heroRole">Scenario entry point</text> <rect x="1034" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1052" y="162" class="small">Rx msgs</text>
+<text x="1052" y="192" class="node">42</text> <rect x="1298" y="134" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1316" y="162" class="small">Tx msgs</text>
+<text x="1316" y="192" class="node">40</text> <rect x="1034" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1052" y="256" class="small">Linked ECU</text>
+<text x="1052" y="286" class="node">39</text> <rect x="1298" y="228" width="250" height="82" rx="18" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="1316" y="256" class="small">Owner seams</text>
+<text x="1316" y="286" class="node">3</text>
+  <rect x="30" y="350" width="1540" height="142" class="box" fill="#fff7ed"/>
+<text x="52" y="384" class="small">What this ECU does</text>
+<text x="52" y="426" class="statement">Scenario entry point for validation presets, stop/manual logic, and</text>
+<text x="52" y="452" class="statement">scenario verdict readback</text>
+  <rect x="30" y="510" width="1540" height="866" class="box" fill="#e0f2fe"/>
+<text x="52" y="546" class="label">Inbound / Rx messages</text>
+<text x="52" y="572" class="small">42 rx messages</text>
+<text x="52" y="598" class="text">Decel Assist Request</text>
+<text x="52" y="620" class="small">ethDecelAssistReqMsg</text>
+<line x1="52" y1="642" x2="538" y2="642" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="652" class="text">Emergency Risk</text>
+<text x="52" y="674" class="small">ethEmergencyRiskMsg</text>
+<line x1="52" y1="696" x2="538" y2="696" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="706" class="text">Object Risk State</text>
+<text x="52" y="728" class="small">ethObjectRiskStateMsg</text>
+<line x1="52" y1="750" x2="538" y2="750" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="760" class="text">Object Scenario Alert</text>
+<text x="52" y="782" class="small">ethObjectScenarioAlertMsg</text>
+<line x1="52" y1="804" x2="538" y2="804" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="814" class="text">Alert</text>
+<text x="52" y="836" class="small">ethSelectedAlertMsg</text>
+<line x1="52" y1="858" x2="538" y2="858" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="868" class="text">ABS Diagnostic Res</text>
+<text x="52" y="890" class="small">frmAbsDiagResMsg</text>
+<line x1="52" y1="912" x2="538" y2="912" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="922" class="text">ACU Diagnostic Res</text>
+<text x="52" y="944" class="small">frmAcuDiagResMsg</text>
+<line x1="52" y1="966" x2="538" y2="966" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="976" class="text">ADAS Diagnostic Res</text>
+<text x="52" y="998" class="small">frmAdasDiagResMsg</text>
+<line x1="52" y1="1020" x2="538" y2="1020" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1030" class="text">AFLS Diagnostic Res</text>
+<text x="52" y="1052" class="small">frmAflsDiagResMsg</text>
+<line x1="52" y1="1074" x2="538" y2="1074" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1084" class="text">AMP Diagnostic Res</text>
+<text x="52" y="1106" class="small">frmAmpDiagResMsg</text>
+<line x1="52" y1="1128" x2="538" y2="1128" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1138" class="text">BCM Diagnostic Res</text>
+<text x="52" y="1160" class="small">frmBcmDiagResMsg</text>
+<line x1="52" y1="1182" x2="538" y2="1182" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1192" class="text">Body Health</text>
+<text x="52" y="1214" class="small">frmBodyHealthMsg</text>
+<line x1="52" y1="1236" x2="538" y2="1236" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1246" class="text">CDC Diagnostic Res</text>
+<text x="52" y="1268" class="small">frmCdcDiagResMsg</text>
+<line x1="52" y1="1290" x2="538" y2="1290" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="52" y="1300" class="text">Chassis Diagnostic Res</text>
+<text x="52" y="1322" class="small">frmChassisDiagResMsg</text>
+<text x="556" y="598" class="text">Chassis Health</text>
+<text x="556" y="620" class="small">frmChassisHealthMsg</text>
+<line x1="556" y1="642" x2="1042" y2="642" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="652" class="text">CLU Diagnostic Res</text>
+<text x="556" y="674" class="small">frmCluDiagResMsg</text>
+<line x1="556" y1="696" x2="1042" y2="696" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="706" class="text">DATC Diagnostic Res</text>
+<text x="556" y="728" class="small">frmDatcDiagResMsg</text>
+<line x1="556" y1="750" x2="1042" y2="750" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="760" class="text">Digital Key State</text>
+<text x="556" y="782" class="small">frmDigitalKeyStateMsg</text>
+<line x1="556" y1="804" x2="1042" y2="804" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="814" class="text">DMS Diagnostic Res</text>
+<text x="556" y="836" class="small">frmDmsDiagResMsg</text>
+<line x1="556" y1="858" x2="1042" y2="858" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="868" class="text">ECS Diagnostic Res</text>
+<text x="556" y="890" class="small">frmEcsDiagResMsg</text>
+<line x1="556" y1="912" x2="1042" y2="912" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="922" class="text">EHB Diagnostic Res</text>
+<text x="556" y="944" class="small">frmEhbDiagResMsg</text>
+<line x1="556" y1="966" x2="1042" y2="966" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="976" class="text">EPB Diagnostic Res</text>
+<text x="556" y="998" class="small">frmEpbDiagResMsg</text>
+<line x1="556" y1="1020" x2="1042" y2="1020" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1030" class="text">EPB State</text>
+<text x="556" y="1052" class="small">frmEpbStateMsg</text>
+<line x1="556" y1="1074" x2="1042" y2="1074" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1084" class="text">HUD Diagnostic Res</text>
+<text x="556" y="1106" class="small">frmHudDiagResMsg</text>
+<line x1="556" y1="1128" x2="1042" y2="1128" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1138" class="text">HUD State</text>
+<text x="556" y="1160" class="small">frmHudStateMsg</text>
+<line x1="556" y1="1182" x2="1042" y2="1182" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1192" class="text">Infotainment Health</text>
+<text x="556" y="1214" class="small">frmInfotainmentHealthMsg</text>
+<line x1="556" y1="1236" x2="1042" y2="1236" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1246" class="text">IVI Diagnostic Res</text>
+<text x="556" y="1268" class="small">frmIviDiagResMsg</text>
+<line x1="556" y1="1290" x2="1042" y2="1290" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="556" y="1300" class="text">IVI Health Detail</text>
+<text x="556" y="1322" class="small">frmIviHealthDetailMsg</text>
+<text x="1060" y="598" class="text">Navigation Module State</text>
+<text x="1060" y="620" class="small">frmNavModuleStateMsg</text>
+<line x1="1060" y1="642" x2="1546" y2="642" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="652" class="text">ODS Diagnostic Res</text>
+<text x="1060" y="674" class="small">frmOdsDiagResMsg</text>
+<line x1="1060" y1="696" x2="1546" y2="696" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="706" class="text">OMS Diagnostic Res</text>
+<text x="1060" y="728" class="small">frmOmsDiagResMsg</text>
+<line x1="1060" y1="750" x2="1546" y2="750" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="760" class="text">OTA Master State</text>
+<text x="1060" y="782" class="small">frmOtaMasterStateMsg</text>
+<line x1="1060" y1="804" x2="1546" y2="804" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="814" class="text">Powertrain Health</text>
+<text x="1060" y="836" class="small">frmPowertrainHealthMsg</text>
+<line x1="1060" y1="858" x2="1546" y2="858" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="868" class="text">Pt Diagnostic Res</text>
+<text x="1060" y="890" class="small">frmPtDiagResMsg</text>
+<line x1="1060" y1="912" x2="1546" y2="912" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="922" class="text">SAS Diagnostic Res</text>
+<text x="1060" y="944" class="small">frmSasDiagResMsg</text>
+<line x1="1060" y1="966" x2="1546" y2="966" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="976" class="text">SCC Diagnostic Res</text>
+<text x="1060" y="998" class="small">frmSccDiagResMsg</text>
+<line x1="1060" y1="1020" x2="1546" y2="1020" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="1030" class="text">SMK Diagnostic Res</text>
+<text x="1060" y="1052" class="small">frmSmkDiagResMsg</text>
+<line x1="1060" y1="1074" x2="1546" y2="1074" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="1084" class="text">TMU Diagnostic Res</text>
+<text x="1060" y="1106" class="small">frmTmuDiagResMsg</text>
+<line x1="1060" y1="1128" x2="1546" y2="1128" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="1138" class="text">TMU Service State</text>
+<text x="1060" y="1160" class="small">frmTmuServiceStateMsg</text>
+<line x1="1060" y1="1182" x2="1546" y2="1182" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="1192" class="text">TPMS Diagnostic Res</text>
+<text x="1060" y="1214" class="small">frmTpmsDiagResMsg</text>
+<line x1="1060" y1="1236" x2="1546" y2="1236" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="1246" class="text">VSM Diagnostic Res</text>
+<text x="1060" y="1268" class="small">frmVsmDiagResMsg</text>
+<line x1="1060" y1="1290" x2="1546" y2="1290" stroke="#e2e8f0" stroke-width="1.0"/>
+<text x="1060" y="1300" class="text">WIP Diagnostic Res</text>
+<text x="1060" y="1322" class="small">frmWipDiagResMsg</text>
+</svg>

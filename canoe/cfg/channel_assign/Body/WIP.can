@@ -15,6 +15,12 @@ variables
   int gLastWiperInterval;
   int gWiperPos;
   int gWiperDir;
+  int gLastManualTraceWiperCmd;
+  int gLastManualTraceFrontWiperState;
+  int gLastManualTraceRearWiperState;
+  int gLastManualTraceWiperInterval;
+  int gLastManualTraceRainSenseLevel;
+  int gLastManualTraceAutoLightState;
 }
 
 void traceWipInputHealth(int rainInputStale)
@@ -60,7 +66,8 @@ void publishWiperState()
   rearWiperState = 0;
   wiperInterval = 0;
   manualWiperCmd = 0;
-  if ((int)@Test::scenarioActiveId == 0)
+  if (((int)@Test::scenarioActiveId == 0) ||
+      (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0))
   {
     manualWiperCmd = clampRange((int)@Cmd::wiperCmd, 0, 2);
   }
@@ -154,6 +161,31 @@ void publishWiperState()
     gLastRearWiperState = mWiper.RearWiperState;
     gLastWiperInterval = mWiper.WiperInterval;
   }
+
+  if ((((int)@Test::scenarioActiveId) == 0 ||
+       (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) &&
+      (manualWiperCmd != gLastManualTraceWiperCmd ||
+       mWiper.FrontWiperState != gLastManualTraceFrontWiperState ||
+       mWiper.RearWiperState != gLastManualTraceRearWiperState ||
+       mWiper.WiperInterval != gLastManualTraceWiperInterval ||
+       rainSenseLevel != gLastManualTraceRainSenseLevel ||
+       autoLightState != gLastManualTraceAutoLightState))
+  {
+    write("[MANUAL-CORE][WIP] cmd=%d out=%d/%d interval=%d pos=%d rain=%d auto=%d",
+          manualWiperCmd,
+          mWiper.FrontWiperState,
+          mWiper.RearWiperState,
+          mWiper.WiperInterval,
+          gWiperPos,
+          rainSenseLevel,
+          autoLightState);
+    gLastManualTraceWiperCmd = manualWiperCmd;
+    gLastManualTraceFrontWiperState = mWiper.FrontWiperState;
+    gLastManualTraceRearWiperState = mWiper.RearWiperState;
+    gLastManualTraceWiperInterval = mWiper.WiperInterval;
+    gLastManualTraceRainSenseLevel = rainSenseLevel;
+    gLastManualTraceAutoLightState = autoLightState;
+  }
 }
 
 on start
@@ -167,6 +199,12 @@ on start
   gLastWiperInterval = -1;
   gWiperPos = 0;
   gWiperDir = 1;
+  gLastManualTraceWiperCmd = -1;
+  gLastManualTraceFrontWiperState = -1;
+  gLastManualTraceRearWiperState = -1;
+  gLastManualTraceWiperInterval = -1;
+  gLastManualTraceRainSenseLevel = -1;
+  gLastManualTraceAutoLightState = -1;
   @Body::wiperPos = 0;
   @Body::frontWiperAnimFrame = 0;
   setTimer(tWiperCycle, 100);

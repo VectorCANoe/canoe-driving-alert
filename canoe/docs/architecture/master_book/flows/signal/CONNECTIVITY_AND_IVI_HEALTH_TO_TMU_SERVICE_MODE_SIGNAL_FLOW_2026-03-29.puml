@@ -1,0 +1,60 @@
+@startuml connectivity_and_ivi_health_to_tmu_service_mode_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Connectivity And IVI Health To TMU Service Mode Signal Flow\n(connectivity state + IVI health + vehicle state -> TMU link and service-mode publication)
+
+participant "Connectivity bus" as Conn #F4F7FB
+participant "IVI health bus" as Ivi #E8F0FE
+participant "Vehicle state bus" as Veh #FCE8FF
+participant "TMU\ntelematics owner" as TMU #E8F7E8
+participant "TMU service bus" as TmuBus #FFF4CC
+participant "Observers /\nconnectivity readers" as Obs #FFF4CC
+
+== TMU Inputs ==
+
+Conn -> TMU : frmConnectivityStateMsg\nConnectivityType / ConnectivityState / SignalBars
+Ivi -> TMU : frmIviHealthDetailMsg\nIviCpuLoad / IviMemLoad
+Veh -> TMU : frmVehicleStateCanMsg\ngDriveState
+activate TMU
+TMU -> TMU : freshness checks for\nconnectivity, IVI health, vehicle state
+TMU -> TMU : linkState = 0/1/2\nfrom connectivity state and signal bars
+TMU -> TMU : serviceMode degraded when\nIVI CPU/MEM load high or weak connectivity
+TMU -> TMU : remoteClimateReq only when\nserviceMode == 1, connType == 1,\nsignalBars >= 3, IVI load low, driveState == 0
+note right of TMU
+Representative gating inputs
+- ConnectivityType / ConnectivityState
+- SignalBars
+- IviCpuLoad / IviMemLoad
+- gDriveState
+end note
+
+== TMU Publish ==
+
+TMU -> TmuBus : frmTmuServiceStateMsg\nTmuLinkState / TmuServiceMode /\nRemoteClimateReq / SignalBars
+note right of TMU
+Representative outputs
+- TmuLinkState
+- TmuServiceMode
+- RemoteClimateReq
+- SignalBars
+end note
+
+== Downstream Visibility ==
+
+TmuBus -> Obs : telematics service visibility /\nremote-service consumers
+deactivate TMU
+
+note over Conn, Obs
+Representative runtime chain
+1. Connectivity, IVI health, and vehicle state reach TMU
+2. TMU evaluates link quality and service degradations
+3. TMU derives final service mode and remote-climate eligibility
+4. TMU publishes telematics service state for downstream consumers
+end note
+
+@enduml

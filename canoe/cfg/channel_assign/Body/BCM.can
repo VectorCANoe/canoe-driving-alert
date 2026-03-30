@@ -62,6 +62,9 @@ variables
   int gLastComfortStatus;
   int gLastComfortError;
   int gBlinkFlashPhase;
+  int gLastManualAmbientCmd;
+  int gLastManualTurnCmd;
+  int gLastManualTurnLampState;
 }
 
 int useBackboneAlertState()
@@ -335,6 +338,9 @@ on start
   gLastComfortStatus = -1;
   gLastComfortError = -1;
   gBlinkFlashPhase = 0;
+  gLastManualAmbientCmd = -1;
+  gLastManualTurnCmd = -1;
+  gLastManualTurnLampState = -1;
   @Body::blinkLeft = 0;
   @Body::blinkRight = 0;
   @CoreState::bodyHealthTick = 0;
@@ -395,7 +401,8 @@ on timer tBodyCycle
     alertType = 0;
   }
   timeoutClear = (timeoutClear == 1) ? 1 : 0;
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   if (manualMode == 1)
   {
     ambientMode = clampRange((int)@Cmd::ambientModeCmd, 0, 7);
@@ -462,6 +469,15 @@ on timer tBodyCycle
     mAmbient.AmbientColor = ambientColor;
     mAmbient.AmbientPattern = ambientPattern;
     output(mAmbient);
+
+    write("[DYN-BODY][BCM] ambient manual=%d mode=%d color=%d pattern=%d alert=%d/%d timeout=%d",
+          manualMode,
+          ambientMode,
+          ambientColor,
+          ambientPattern,
+          alertLevel,
+          alertType,
+          timeoutClear);
 
     gLastAmbientMode = ambientMode;
     gLastAmbientColor = ambientColor;
@@ -544,7 +560,8 @@ on timer tBodyBase100
     hazardActive = 0;
   }
   turnLampInputStale = (ethIsRecentTick(gTurnLampInputRxMs, 300) == 1) ? 0 : 1;
-  manualMode = (((int)@Test::scenarioActiveId) == 0) ? 1 : 0;
+  manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
+                (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   driveState = gDriveState;
   ambientMode = (manualMode == 1)
                 ? clampRange((int)@Cmd::ambientModeCmd, 0, 7)
@@ -643,6 +660,30 @@ on timer tBodyBase100
   mLamp.TurnLampState = clampRange(turnLampState, 0, 3);
   mLamp.HazardLampReq = hazardActive;
   output(mLamp);
+
+  if (manualMode == 1)
+  {
+    int ambientCmd;
+    int turnCmd;
+
+    ambientCmd = clampRange((int)@Cmd::ambientModeCmd, 0, 7);
+    turnCmd = clampRange((int)@Cmd::turnSignalCmd, 0, 3);
+    if (ambientCmd != gLastManualAmbientCmd ||
+        turnCmd != gLastManualTurnCmd ||
+        mLamp.TurnLampState != gLastManualTurnLampState)
+    {
+      write("[MANUAL-CORE][BCM] ambientCmd=%d ambient=%d turnCmd=%d turn=%d hazard=%d dome=%d",
+            ambientCmd,
+            ambientMode,
+            turnCmd,
+            mLamp.TurnLampState,
+            hazardActive,
+            mLight.DomeLightLevel);
+      gLastManualAmbientCmd = ambientCmd;
+      gLastManualTurnCmd = turnCmd;
+      gLastManualTurnLampState = mLamp.TurnLampState;
+    }
+  }
 
   gBlinkFlashPhase = gBlinkFlashPhase + 1;
   if (gBlinkFlashPhase >= 10)
@@ -807,7 +848,7 @@ on timer tBodyBase100
       mSeatCtrl.SeatHeatLevel != gLastSeatHeatCmd ||
       mSeatCtrl.SeatVentLevel != gLastSeatVentCmd)
   {
-    write("[BCM] doorCmd=%d child=%d seatHeat=%d seatVent=%d paak=%d/%d/%d remote=%d hvac=%d/%d/%d drive=%d",
+    write("[DYN-BODY][BCM] doorCmd=%d child=%d seatHeat=%d seatVent=%d paak=%d/%d/%d remote=%d hvac=%d/%d/%d drive=%d",
           mDoorCtrl.DoorControlCmd,
           mDoorCtrl.ChildLockCmd,
           mSeatCtrl.SeatHeatLevel,
@@ -872,7 +913,7 @@ on timer tBodyBase100
       mComfort.ComfortStatus != gLastComfortStatus ||
       mComfort.ComfortError != gLastComfortError)
   {
-    write("[BCM] comfort profile=%d status=%d error=%d access=%d climate=%d/%d child=%d doorMask=%d lock=%d drive=%d",
+    write("[DYN-BODY][BCM] comfort profile=%d status=%d error=%d access=%d climate=%d/%d child=%d doorMask=%d lock=%d drive=%d ambient=%d",
           mComfort.ComfortProfile,
           mComfort.ComfortStatus,
           mComfort.ComfortError,
@@ -882,7 +923,8 @@ on timer tBodyBase100
           childLockState,
           doorStateMask,
           doorLockState,
-          driveState);
+          driveState,
+          ambientMode);
     gLastComfortProfile = mComfort.ComfortProfile;
     gLastComfortStatus = mComfort.ComfortStatus;
     gLastComfortError = mComfort.ComfortError;

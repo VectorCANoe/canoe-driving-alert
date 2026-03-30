@@ -154,7 +154,8 @@ void publishAebDomainState()
       domainHealth != gLastHealth ||
       objectRiskClass != gLastRiskClass)
   {
-    write("[AEB] armed=%d stop=%d profile=%d health=%d risk=%d ttc=%d",
+    write("[DYN-BRAKE][AEB] t=%lu armed=%d stop=%d profile=%d health=%d risk=%d ttc=%d",
+          getSimulationTimeMs(),
           aebArmed,
           stopReq,
           decelProfile,

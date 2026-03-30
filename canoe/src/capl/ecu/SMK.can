@@ -89,12 +89,14 @@ void publishSmkState()
   if (mImmobilizer.ImmobilizerState != gLastImmobilizerState ||
       mImmobilizer.KeyAuthState != gLastKeyAuthState)
   {
-    write("[SMK] immo=%d auth=%d access=%d key=%d drive=%d",
+    write("[DYN-ACCESS][SMK] immo=%d auth=%d access=%d key=%d drive=%d stale=%d/%d",
           mImmobilizer.ImmobilizerState,
           mImmobilizer.KeyAuthState,
           gVehicleAccessState,
           gKeyPresence,
-          driveState);
+          driveState,
+          dkeyInputStale,
+          vehicleInputStale);
     gLastImmobilizerState = mImmobilizer.ImmobilizerState;
     gLastKeyAuthState = mImmobilizer.KeyAuthState;
   }

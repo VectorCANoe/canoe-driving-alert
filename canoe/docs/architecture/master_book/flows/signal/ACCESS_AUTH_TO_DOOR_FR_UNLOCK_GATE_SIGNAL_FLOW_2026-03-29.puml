@@ -1,0 +1,61 @@
+@startuml access_auth_to_door_fr_unlock_gate_signal_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+title Access Auth To Door FR Unlock Gate Signal Flow\n(front-door control + access authorization -> DOOR_FR unlock gate)
+
+participant "Door-control bus" as DoorCtl #F4F7FB
+participant "Vehicle state bus" as Veh #E8F0FE
+participant "Digital-key /\nimmobilizer buses" as Access #FCE8FF
+participant "DOOR_FR\nfront-right door owner" as DoorFR #E8F7E8
+participant "Door FR state bus" as DoorBus #FFF4CC
+participant "Observers /\nbody readers" as Obs #FFF4CC
+
+== Door FR Inputs ==
+
+DoorCtl -> DoorFR : frmDoorControlMsg\nDoorControlCmd
+Veh -> DoorFR : frmVehicleStateCanMsg\ngDriveState
+Access -> DoorFR : frmDigitalKeyStateMsg\nVehicleAccessState / KeyPresence
+Access -> DoorFR : frmImmobilizerStateMsg\nImmobilizerState / KeyAuthState
+activate DoorFR
+DoorFR -> DoorFR : freshness checks for\ndoor control, vehicle, dkey, immo
+DoorFR -> DoorFR : manualMode may read\nChassis::driveState directly
+DoorFR -> DoorFR : accessAuthorized =\nparked vehicle and dkey/immo auth valid
+DoorFR -> DoorFR : unlockRequest =\nDoorControlCmd > 0
+DoorFR -> DoorFR : unlock only when\nauthorized and requested
+note right of DoorFR
+Representative gating inputs
+- DoorControlCmd
+- gDriveState
+- VehicleAccessState / KeyPresence
+- ImmobilizerState / KeyAuthState
+end note
+
+== Door FR Publish ==
+
+DoorFR -> DoorBus : frmDoorFrStateMsg\nDoorFrLockState / DoorFrOpenState / DoorFrWindowPos
+note right of DoorFR
+Representative outputs
+- DoorFrLockState
+- DoorFrOpenState
+- DoorFrWindowPos
+end note
+
+== Downstream Visibility ==
+
+DoorBus -> Obs : front-door lock visibility /\nbody observers
+deactivate DoorFR
+
+note over DoorCtl, Obs
+Representative runtime chain
+1. Front-door control, vehicle, digital-key, and immobilizer context reach DOOR_FR
+2. DOOR_FR resolves parked-state access authorization
+3. Unlock request is gated by access authorization
+4. DOOR_FR publishes final front-right door lock state
+end note
+
+@enduml

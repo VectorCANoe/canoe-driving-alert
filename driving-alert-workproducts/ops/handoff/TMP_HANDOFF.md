@@ -161,6 +161,12 @@
 - donor panel freeze verification completed:
   - 2026-03-21 기준 runtime panel names(`Ambient_Control`, `Cruise_Pedal`, `Operator_Input` 등)와 `Desktop_ASSIGN` 미러는 donor baseline `cb539900` 매핑 기준으로 content-equal 상태다.
   - 이후 패널 작업은 XVP 수정이 아니라 CAPL/sysvar runtime 연결만 수행한다.
+- manual core baseline freeze completed:
+  - `canoe/tools/20_VERIFICATION/20_verify_manual_core_vehicle.py` 기준 수동 차량 baseline smoke를 고정했다.
+  - latest passing run: `canoe/tmp/manual_core_vehicle_smoke/20260330_220635_manual_core_vehicle`
+  - current protected scope:
+    - `P/N/D/R`, throttle, brake, steering, cruise, ambient
+    - door unlock/open, window down, turn signal, front wiper animation
 
 ## 7) Immediate Next Steps
 1. Keep `00f` placeholder ID policy as `no allocation until promotion`.
@@ -171,6 +177,9 @@
 6. GUI import/compile cycle은 active 99 우선 검증, placeholder 1은 compile-safe 확인만 수행한다.
 7. `05/06/07` 상단 공식 표에는 입력 조건, 기대 출력, 대표 시나리오, 판정 기준이 기존 컬럼 안에 직접 들어가야 하며 하단 추적표 의존을 줄인다.
 8. `0301` 상단 공식 표는 기존 열 구조(`노드/기능 상세/비고`)를 유지한 채 노드 요약을 넘어서 노드별 기능 명세가 직접 보이도록 보강한다.
+9. Manual core owner path는 baseline freeze로 본다.
+   - broad dynamics redesign보다 smoke 유지가 우선이다.
+   - semantics cleanup(`driveState/motion`, reverse signed model)는 smoke를 깨지 않는 범위에서만 단계적으로 진행한다.
 
 ## 8) Do Not Do
 - Do not change file encoding away from UTF-8.
