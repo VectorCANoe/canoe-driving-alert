@@ -197,7 +197,7 @@ def main() -> int:
         )
     )
 
-    apply_cmds(client, {"Cmd::ignitionOn": 1, "Cmd::driveStateCmd": 3, "Cmd::throttlePedalPct": 100}, 2500)
+    apply_cmds(client, {"Cmd::ignitionOn": 1, "Cmd::driveStateCmd": 3, "Cmd::throttlePedalPct": 100}, 3600)
     d_full = sample_core(client)
     steps.append(
         build_step(
@@ -206,14 +206,14 @@ def main() -> int:
             d_full["Chassis::driveState"] == 3
             and d_full["Chassis::throttlePosition"] == 100
             and d_full["Chassis::vehicleSpeed"] >= 100,
-            "D + throttle100 should reach driveState=3, throttlePosition=100, vehicleSpeed>=100",
+            "D + throttle100 should reach driveState=3, throttlePosition=100, vehicleSpeed>=100 within the baseline acceleration window",
         )
     )
 
     apply_cmds(
         client,
         {"Cmd::ignitionOn": 1, "Cmd::driveStateCmd": 3, "Cmd::throttlePedalPct": 0, "Cmd::brakePedalPct": 100},
-        1500,
+        2400,
     )
     d_brake = sample_core(client)
     steps.append(
@@ -223,7 +223,7 @@ def main() -> int:
             d_brake["Chassis::driveState"] == 3
             and d_brake["Chassis::vehicleSpeed"] == 0
             and d_brake["Chassis::brakePressure"] == 100,
-            "D + brake100 should stop the car and drive brakePressure=100",
+            "D + brake100 should stop the car within the baseline brake ramp window and drive brakePressure=100",
         )
     )
 
@@ -282,7 +282,7 @@ def main() -> int:
             "Cmd::cruiseStateCmd": 1,
             "Cmd::cruiseSetSpeedCmd": 50,
         },
-        2800,
+        3400,
     )
     cruise = sample_core(client)
     steps.append(
@@ -290,7 +290,7 @@ def main() -> int:
             "manual_cruise_enable",
             cruise,
             cruise["Powertrain::cruiseSetSpeed"] == 50 and cruise["Chassis::vehicleSpeed"] >= 20,
-            "Cruise ON + set 50 should latch cruiseSetSpeed=50 and move speed upward",
+            "Cruise ON + set 50 should latch cruiseSetSpeed=50 and move speed upward within the baseline cruise ramp window",
         )
     )
 

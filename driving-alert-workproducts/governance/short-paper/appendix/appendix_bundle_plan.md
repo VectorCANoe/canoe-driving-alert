@@ -86,6 +86,15 @@
 
 논문이 주장하는 V2X-ADAS 경고 구조를 직접 설명하는 계약 문서를 포함한다.
 
+추가 포함:
+
+- `appendix/source/architecture/vehicle_ecu_architecture_and_interaction_reference.md`
+- `canoe/docs/architecture/master_book/ECU_METADATA_BOOK_2026-03-28.pdf`
+- `canoe/docs/architecture/master_book/ACTION_FLOW_INDEX_2026-03-28.md`
+- `canoe/docs/architecture/master_book/ECU_ACTION_FLOW_MATRIX_2026-03-28.md`
+- `canoe/docs/architecture/master_book/ECU_CARD_INDEX_2026-03-28.md`
+- `canoe/docs/architecture/master_book/SIGNAL_FLOW_INDEX_2026-03-28.md`
+
 기본 포함:
 
 - [communication-matrix.md](/Users/juns/code/work/mobis/PBL/canoe/docs/Kor/contracts/communication-matrix.md)
@@ -98,6 +107,9 @@
 
 선정 이유:
 
+- `Vehicle ECU Architecture and Interaction Reference`는 V2X-ADAS-CGW-출력 계층을 한 권의 읽기 레이어로 정리한 공식 architecture reference다.
+- 본문이나 발표 자료에서 축약된 그림만 사용할 때, appendix reviewer는 이 reference를 통해 전체 ECU 구조와 행동 흐름을 빠르게 복원할 수 있다.
+- action-flow index, ECU-flow matrix, ECU-card index, signal-flow index는 appendix drill-down 순서를 고정하는 데 필요하다.
 - `communication-matrix`는 active runtime sender/consumer와 backbone contract를 보여준다.
 - `owner-route`는 V2X, ADAS, CGW, 출력 계층의 ownership 경계를 설명한다.
 - `layer-separation-policy`는 business semantics, transport, validation layer를 분리하는 기준 문서다.

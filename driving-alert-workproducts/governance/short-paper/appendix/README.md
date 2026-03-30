@@ -22,6 +22,16 @@
   - 포함 문서 선정 기준
   - 권장 PDF 묶음 구조
 - `source/`
+  - `architecture/`
+    - `vehicle_ecu_architecture_and_interaction_reference.md`
+    - `ECU_METADATA_BOOK_2026-03-28.md`
+    - `ECU_METADATA_BOOK_2026-03-28.pdf`
+    - `ACTION_FLOW_INDEX_2026-03-28.md`
+    - `ECU_ACTION_FLOW_MATRIX_2026-03-28.md`
+    - `ECU_CARD_INDEX_2026-03-28.md`
+    - `SIGNAL_FLOW_INDEX_2026-03-28.md`
+    - `ECU_GROUP_NETWORK_VIEW_2026-03-28.md`
+    - official architecture reference mirror for appendix reuse
   - `governance/`
   - `contracts/`
   - `verification/`

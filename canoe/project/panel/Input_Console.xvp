@@ -18,7 +18,7 @@
             <Property Name="ReadOnlyControl">True</Property>
             <Property Name="TabIndex">6</Property>
             <Property Name="TabStopActive">False</Property>
-            <Property Name="SymbolConfiguration"></Property>
+            <Property Name="SymbolConfiguration">8;16;Cmd;;;ignitionCmd;2;;;-1;;;Value;;;0</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="IgnitionOnButton" ControlName="IgnitionOnButton">
             <Property Name="Name">IgnitionOnButton</Property>
@@ -305,10 +305,18 @@
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="DescriptionSize">82, 21</Property>
             <Property Name="TabIndex">0</Property>
-            <Property Name="DescriptionText">AMBIENT</Property>
+            <Property Name="DescriptionText">AMBIENT 0-7</Property>
             <Property Name="UsedValueTable">PhysicalValue</Property>
             <Property Name="SymbolConfiguration">8;16;Cmd;;;ambientModeCmd;1;;;-1;;;Value;;;0</Property>
             <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AmbientModeHint" ControlName="AmbientModeHint">
+            <Property Name="Name">AmbientModeHint</Property>
+            <Property Name="Size">252, 14</Property>
+            <Property Name="Location">502, 168</Property>
+            <Property Name="ForeColor">DimGray</Property>
+            <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+            <Property Name="Text">select numeric mode 0..7, live box should follow</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AmbientStateLabel" ControlName="AmbientStateLabel">
             <Property Name="Name">AmbientStateLabel</Property>
@@ -1894,6 +1902,7 @@ source below</Property>
             <Property Name="Location">18, 81</Property>
             <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
             <Property Name="TabIndex">1</Property>
+            <Property Name="IsButton">True</Property>
             <Property Name="Epsilon">0</Property>
             <Property Name="Increment">1</Property>
             <Property Name="StartValue">0</Property>
@@ -1920,6 +1929,7 @@ RESET</Property>
             <Property Name="Location">180, 81</Property>
             <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
             <Property Name="TabIndex">2</Property>
+            <Property Name="IsButton">True</Property>
             <Property Name="Epsilon">0</Property>
             <Property Name="Increment">1</Property>
             <Property Name="StartValue">0</Property>
@@ -1946,6 +1956,7 @@ SCHOOL</Property>
             <Property Name="Location">342, 81</Property>
             <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
             <Property Name="TabIndex">3</Property>
+            <Property Name="IsButton">True</Property>
             <Property Name="Epsilon">0</Property>
             <Property Name="Increment">1</Property>
             <Property Name="StartValue">0</Property>
@@ -1972,6 +1983,7 @@ HIGHWAY</Property>
             <Property Name="Location">18, 139</Property>
             <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
             <Property Name="TabIndex">4</Property>
+            <Property Name="IsButton">True</Property>
             <Property Name="Epsilon">0</Property>
             <Property Name="Increment">1</Property>
             <Property Name="StartValue">0</Property>
@@ -1998,6 +2010,7 @@ POLICE</Property>
             <Property Name="Location">180, 139</Property>
             <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
             <Property Name="TabIndex">5</Property>
+            <Property Name="IsButton">True</Property>
             <Property Name="Epsilon">0</Property>
             <Property Name="Increment">1</Property>
             <Property Name="StartValue">0</Property>
@@ -2024,6 +2037,7 @@ AMBUL</Property>
             <Property Name="Location">342, 139</Property>
             <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
             <Property Name="TabIndex">6</Property>
+            <Property Name="IsButton">True</Property>
             <Property Name="Epsilon">0</Property>
             <Property Name="Increment">1</Property>
             <Property Name="StartValue">0</Property>
@@ -2050,6 +2064,7 @@ CROSS</Property>
             <Property Name="Location">18, 197</Property>
             <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
             <Property Name="TabIndex">7</Property>
+            <Property Name="IsButton">True</Property>
             <Property Name="Epsilon">0</Property>
             <Property Name="Increment">1</Property>
             <Property Name="StartValue">0</Property>
@@ -2076,6 +2091,7 @@ MERGE</Property>
             <Property Name="Location">180, 197</Property>
             <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
             <Property Name="TabIndex">8</Property>
+            <Property Name="IsButton">True</Property>
             <Property Name="Epsilon">0</Property>
             <Property Name="Increment">1</Property>
             <Property Name="StartValue">0</Property>
@@ -2102,6 +2118,7 @@ TTC</Property>
             <Property Name="Location">342, 197</Property>
             <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
             <Property Name="TabIndex">9</Property>
+            <Property Name="IsButton">True</Property>
             <Property Name="Epsilon">0</Property>
             <Property Name="Increment">1</Property>
             <Property Name="StartValue">0</Property>
@@ -2128,6 +2145,7 @@ CRASH</Property>
             <Property Name="Location">18, 265</Property>
             <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
             <Property Name="TabIndex">10</Property>
+            <Property Name="IsButton">True</Property>
             <Property Name="Epsilon">0</Property>
             <Property Name="Increment">1</Property>
             <Property Name="StartValue">0</Property>
@@ -2208,7 +2226,7 @@ If Ack stays unchanged, the preset was not accepted. STOP releases scenario cont
             <Property Name="ColorOn">Black</Property>
             <Property Name="DecimalPlaces">0</Property>
             <Property Name="NumberIntDigits">3</Property>
-            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioActiveId;2;;;-1;;;Value;;;0</Property>
+            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioLampStop;2;;;-1;;;Value;;;0</Property>
             <Property Name="DescriptionSize">0, 0</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
@@ -2230,7 +2248,7 @@ If Ack stays unchanged, the preset was not accepted. STOP releases scenario cont
             <Property Name="ColorOn">Black</Property>
             <Property Name="DecimalPlaces">0</Property>
             <Property Name="NumberIntDigits">2</Property>
-            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioResult;2;;;-1;;;Value;;;0</Property>
+            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioLampWarn;2;;;-1;;;Value;;;0</Property>
             <Property Name="DescriptionSize">0, 0</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
@@ -2275,7 +2293,7 @@ If Ack stays unchanged, the preset was not accepted. STOP releases scenario cont
             <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Crimson&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Silver&lt;/Color&gt;</Property>
             <Property Name="UsedLEDColorOff">Silver</Property>
             <Property Name="UsedLEDColorOn">Crimson</Property>
-            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioActiveId;2;;;-1;;;Value;;;0</Property>
+            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioLampRun;2;;;-1;;;Value;;;0</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StopLedLabel" ControlName="StopLedLabel">
             <Property Name="Name">StopLedLabel</Property>

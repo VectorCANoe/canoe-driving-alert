@@ -234,26 +234,32 @@ void respondHistoryQuery()
 
 void publishCompatSteeringFrame()
 {
-  int angle;
+  int steeringCmd;
   int frame;
   int manualMode;
+  int visualAngle;
 
   manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
                 (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
 
   if (manualMode == 1)
   {
-    angle = clampRange(
-      (int)((((long)clampRange((int)@Cmd::steeringAngleCmd, -540, 540)) + 540) * 138 / 1080),
-      0,
-      138
-    );
+    steeringCmd = clampRange((int)@Cmd::steeringAngleCmd, -540, 540);
   }
   else
   {
-    angle = clampRange((int)@Chassis::steeringAngle, 0, 138);
+    steeringCmd = (int)((((long)clampRange((int)@Chassis::steeringAngle, 0, 138)) * 1080) / 138) - 540;
+    steeringCmd = clampRange(steeringCmd, -540, 540);
   }
-  frame = (angle * 69 + 69) / 138;
+
+  /* handel.png starts upright at frame 0/69 and upside-down near frame 35.
+     Map signed steering to one modulo-360 visual turn so center stays upright. */
+  visualAngle = (-steeringCmd) % 360;
+  if (visualAngle < 0)
+  {
+    visualAngle = visualAngle + 360;
+  }
+  frame = (visualAngle * 69 + 180) / 360;
 
   @Display::steeringFrame = clampRange(frame, 0, 69);
 }
@@ -309,7 +315,7 @@ on start
   @Test::historyQueryCode = 0;
   /* `Chassis::steeringAngle` is a donor panel/manual command seam.
      CLU must not clobber it during startup; only derived display state belongs here. */
-  @Display::steeringFrame = 35;
+  @Display::steeringFrame = 0;
   write("[CLU] start");
 }
 

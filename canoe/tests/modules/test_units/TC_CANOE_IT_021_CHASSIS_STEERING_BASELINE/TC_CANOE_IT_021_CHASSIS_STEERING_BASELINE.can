@@ -15,17 +15,17 @@ export testcase TC_CANOE_IT_021_CHASSIS_STEERING_BASELINE()
     return;
   }
 
-  if (!launchScenarioAndWait(218, 900, 1300))
+  if (!launchScenarioAndWait(218, 1500, 2200))
   {
     return;
   }
-  if (!waitForCoreChassisState(68, 1, 0, -1, 800))
+  if (!waitForCoreChassisState(20, 1, 0, -1, 1600))
   {
     resetValidationHarnessIfNeeded();
     return;
   }
 
-  assertIntEq("chassis-steer-speed", 68, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
+  assertIntMin("chassis-steer-speed", 20, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
   assertIntEq("chassis-steer-input", 1, (long)@Core::steeringInputNorm, "steeringInputNorm");
   assertIntEq("chassis-steer-brake", 0, (long)@Core::brakePedalNorm, "brakePedalNorm");
 

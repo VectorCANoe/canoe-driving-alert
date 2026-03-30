@@ -536,6 +536,7 @@ on timer tBodyBase100
   int manualMode;
   int turnLampInputStale;
   int turnLampState;
+  int manualTurnCmd;
   int doorControlCmd;
   int seatHeatLevel;
   int seatVentLevel;
@@ -547,7 +548,12 @@ on timer tBodyBase100
   int comfortError;
   int driverBeltOff;
   int passengerBeltOff;
-  if (useEffectiveAlertState() == 1)
+  manualTurnCmd = clampRange((int)@Cmd::turnSignalCmd, 0, 3);
+  if (manualMode == 1)
+  {
+    hazardActive = (manualTurnCmd == 3) ? 1 : 0;
+  }
+  else if (useEffectiveAlertState() == 1)
   {
     hazardActive = (clampRange((int)@CoreState::selectedAlertEffectiveLevel, 0, 7) >= 6) ? 1 : 0;
   }
@@ -639,13 +645,13 @@ on timer tBodyBase100
   output(mDoorState);
 
   mLamp.TailLampState = 1;
-  if (hazardActive == 1)
+  if (manualMode == 1)
+  {
+    turnLampState = manualTurnCmd;
+  }
+  else if (hazardActive == 1)
   {
     turnLampState = 3;
-  }
-  else if (manualMode == 1)
-  {
-    turnLampState = clampRange((int)@Cmd::turnSignalCmd, 0, 3);
   }
   else if (turnLampInputStale == 0)
   {
@@ -664,23 +670,21 @@ on timer tBodyBase100
   if (manualMode == 1)
   {
     int ambientCmd;
-    int turnCmd;
 
     ambientCmd = clampRange((int)@Cmd::ambientModeCmd, 0, 7);
-    turnCmd = clampRange((int)@Cmd::turnSignalCmd, 0, 3);
     if (ambientCmd != gLastManualAmbientCmd ||
-        turnCmd != gLastManualTurnCmd ||
+        manualTurnCmd != gLastManualTurnCmd ||
         mLamp.TurnLampState != gLastManualTurnLampState)
     {
       write("[MANUAL-CORE][BCM] ambientCmd=%d ambient=%d turnCmd=%d turn=%d hazard=%d dome=%d",
             ambientCmd,
             ambientMode,
-            turnCmd,
+            manualTurnCmd,
             mLamp.TurnLampState,
             hazardActive,
             mLight.DomeLightLevel);
       gLastManualAmbientCmd = ambientCmd;
-      gLastManualTurnCmd = turnCmd;
+      gLastManualTurnCmd = manualTurnCmd;
       gLastManualTurnLampState = mLamp.TurnLampState;
     }
   }

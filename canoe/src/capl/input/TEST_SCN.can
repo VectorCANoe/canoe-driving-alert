@@ -50,6 +50,7 @@ variables
   int gSteerGroupHoldTick;
   int gLockAccelGroupFlag;
   int gLockSteerGroupFlag;
+  int gAutoDemoStepIndex;
   int gScenario213DecelSeen;
   int gScenario238DecelSeen;
   int gScenario226AccessSeen;
@@ -224,6 +225,96 @@ dword getTestScnLocalIp()
 int getEvidenceTierCode()
 {
   return clampRange((int)@Test::nativeExecTierCode, 0, 4);
+}
+
+int scenarioUsesAutomatedHarnessLock()
+{
+  int scenarioId;
+
+  if (gScenarioInputLock != 1)
+  {
+    return 0;
+  }
+
+  scenarioId = clampRange(gCurrentScenarioId, 0, 255);
+  if (getEvidenceTierCode() > 0)
+  {
+    return 1;
+  }
+  if (scenarioId == 100)
+  {
+    return 1;
+  }
+  return 0;
+}
+
+int getAutoDemoStepCount()
+{
+  return 9;
+}
+
+int getAutoDemoStepScenarioId(int stepIndex)
+{
+  switch (stepIndex)
+  {
+    case 1: return 1;
+    case 2: return 2;
+    case 3: return 3;
+    case 4: return 4;
+    case 5: return 5;
+    case 6: return 7;
+    case 7: return 8;
+    case 8: return 20;
+    case 9: return 21;
+    default: return 0;
+  }
+}
+
+int getAutoDemoStepDelayMs(int stepIndex)
+{
+  int scenarioId;
+
+  scenarioId = getAutoDemoStepScenarioId(stepIndex);
+  if (scenarioId == 4 || scenarioId == 5)
+  {
+    return 1100;
+  }
+  if (scenarioId == 20 || scenarioId == 21)
+  {
+    return 1200;
+  }
+  return 900;
+}
+
+void applyAutoDemoStep(int stepIndex)
+{
+  int scenarioId;
+  int dwellMs;
+
+  scenarioId = getAutoDemoStepScenarioId(stepIndex);
+  if (scenarioId <= 0)
+  {
+    return;
+  }
+
+  cancelScenarioTransientTimers();
+  applyScenarioPreset(scenarioId);
+  cancelScenarioTransientTimers();
+
+  gAutoDemoStepIndex = stepIndex;
+  @Test::scenarioActiveId = clampRange(scenarioId, 0, 255);
+  publishScenarioPanelLamps();
+
+  write("[TEST_SCN] AUTO(100) step=%d scenario=%d", stepIndex, scenarioId);
+
+  if (stepIndex < getAutoDemoStepCount())
+  {
+    dwellMs = getAutoDemoStepDelayMs(stepIndex);
+    if (dwellMs > 0)
+    {
+      setTimer(tScenarioPhase2, dwellMs);
+    }
+  }
 }
 
 int calcScenarioEmergencyDistanceM(int etaSec, int speedKph)
@@ -466,12 +557,10 @@ void pushLockedScenarioInputs()
   int injectEmergencyActive;
   int injectEmergencyType;
 
-  if (gScenarioInputLock != 1)
-  {
-    return;
-  }
-
-  if (getEvidenceTierCode() > 0)
+  /* Keep hard locking only for evidence tiers and AUTO(100) full-auto demo.
+     All other interactive scenarios must preserve live manual Inject/V2X/ADAS
+     control surfaces. */
+  if (scenarioUsesAutomatedHarnessLock() == 1)
   {
     @Chassis::steeringInput = clampRange(gLockSteeringInput, 0, 1);
   }
@@ -952,11 +1041,19 @@ void beginScenarioExecution(int scenarioId)
   resetScenarioTestOverrides();
   clearScenarioLifecycleState();
   @Test::scenarioResult = 0;
+  gAutoDemoStepIndex = 0;
   applyScenarioPreset(scenarioId);
   gCurrentScenarioId = scenarioId;
   setScenarioMirror(scenarioId);
-  @Test::scenarioActiveId = clampRange(scenarioId, 0, 255);
-  publishScenarioPanelLamps();
+  if (scenarioId == 100)
+  {
+    applyAutoDemoStep(1);
+  }
+  else
+  {
+    @Test::scenarioActiveId = clampRange(scenarioId, 0, 255);
+    publishScenarioPanelLamps();
+  }
   traceScenarioLifecycle(1);
   scheduleScenarioEvaluation(scenarioId);
 }
@@ -980,7 +1077,7 @@ int applyScenarioPanelRequest(int scenarioId, int fromCompatMirror)
       write("[TEST_SCN] command stop");
     }
   }
-  else if (scenarioId >= 1 && scenarioId <= 35)
+  else if ((scenarioId >= 1 && scenarioId <= 35) || scenarioId == 100)
   {
     beginScenarioExecution(scenarioId);
     acceptedScenarioId = clampRange(scenarioId, 0, 255);
@@ -1450,6 +1547,25 @@ void applyScenarioPreset(int scenarioId)
     gLockSourceId = 51;
     gLockEmergencyDirection = 1;
     setTimer(tScenarioPhase2, 600);
+  }
+  else if (scenarioId == 100)
+  {
+    /* AUTO (100) DEMO: curated auto-sequence across interactive panel scenarios.
+       The panel keeps AUTO(100) as the requested scenario, while Current shows
+       the currently running visible scenario step (1,2,3,4,5,7,8,20,21). */
+    gLockDriveState = 0;
+    gLockVehicleSpeed = 0;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 0;
+    gLockSteeringInput = 1;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockObjectTrackValid = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
   }
   else if (scenarioId == 200)
   {
@@ -2155,6 +2271,10 @@ void scheduleScenarioEvaluation(int scenarioId)
     /* ST_021: Phase2(600ms) 긴급 해제 + 타임아웃(1000ms) 대기 후 판정 */
     evalDelayMs = 1800;
   }
+  else if (scenarioId == 100)
+  {
+    evalDelayMs = 9600;
+  }
   else if (scenarioId == 200)
   {
     /* ST_045: Phase3(2200ms) 정지 후 안정화까지 충분한 여유 */
@@ -2505,6 +2625,14 @@ void evaluateScenarioResult()
        emergencyContext가 0이고 스쿨존 경고 레벨(3)이 복원되어야 함 */
     result = (level == 3 && type == 3 && emergencyType == 0) ? 1 : 0;
   }
+  else if (gCurrentScenarioId == 100)
+  {
+    result = (level == 6 &&
+              type == 1 &&
+              code == getExpectedRuntimeEmergencyWarningCode() &&
+              (int)@UiRender::renderDirection == 2 &&
+              failSafeMode == 0) ? 1 : 0;
+  }
   else if (gCurrentScenarioId == 200)
   {
     /* ST_045: 연속 시나리오 — 최종 정지 단계에서 경고 없음 확인 */
@@ -2813,7 +2941,19 @@ void evaluateScenarioResult()
 on timer tScenarioPhase2
 {
   traceScenarioLifecycle(2);
-  if (gCurrentScenarioId == 9)
+  if (gCurrentScenarioId == 100)
+  {
+    if (gAutoDemoStepIndex < getAutoDemoStepCount())
+    {
+      applyAutoDemoStep(gAutoDemoStepIndex + 1);
+    }
+    else
+    {
+      write("[TEST_SCN] AUTO(100) complete");
+    }
+    return;
+  }
+  else if (gCurrentScenarioId == 9)
   {
     /* Req_030: Phase 2 - inject lower ETA competitor (different sourceId) */
     gLockEmergencyType = 1;
@@ -2984,7 +3124,11 @@ on timer tScenarioPhase2
 on timer tScenarioPhase3
 {
   traceScenarioLifecycle(3);
-  if (gCurrentScenarioId == 12)
+  if (gCurrentScenarioId == 100)
+  {
+    return;
+  }
+  else if (gCurrentScenarioId == 12)
   {
     /* Req_006 + Req_026: Phase 3 - re-trigger school zone warning */
     gLockVehicleSpeed = 45;
@@ -3186,9 +3330,14 @@ on timer tInput100
 
   speedHintCmd = 0;
   harnessRuntimeActive = ((gScenarioInputLock == 1) || (getEvidenceTierCode() > 0)) ? 1 : 0;
-  harnessVehicleOverrideActive = ((gScenarioInputLock == 1) && (getEvidenceTierCode() > 0)) ? 1 : 0;
+  harnessVehicleOverrideActive = (scenarioUsesAutomatedHarnessLock() == 1) ? 1 : 0;
 
   if (gScenarioInputLock == 1)
+  {
+    pushLockedScenarioInputs();
+  }
+
+  if (scenarioUsesAutomatedHarnessLock() == 1)
   {
     roadZone = clampRange(gLockRoadZone, 0, 3);
     navDirection = clampRange(gLockNavDirection, 0, 3);
@@ -3199,7 +3348,6 @@ on timer tInput100
     emergencyDirection = clampRange(gLockEmergencyDirection, 0, 3);
     eta = clampRange(gLockEta, 0, 255);
     sourceId = clampRange(gLockSourceId, 0, 255);
-    pushLockedScenarioInputs();
   }
   else
   {
@@ -3288,7 +3436,7 @@ on timer tInput100
   {
     @Chassis::steeringInput = clampRange(steeringInput, 0, 1);
   }
-  if (gScenarioInputLock == 1)
+  if (scenarioUsesAutomatedHarnessLock() == 1)
   {
     objectTrackValid = clampRange(gLockObjectTrackValid, 0, 1);
     objectRange = clampRange(gLockObjectRange, 0, 500);
@@ -3310,7 +3458,7 @@ on timer tInput100
   }
   objectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
   harnessRuntimeActive = ((gScenarioInputLock == 1) || (getEvidenceTierCode() > 0)) ? 1 : 0;
-  harnessVehicleOverrideActive = ((gScenarioInputLock == 1) && (getEvidenceTierCode() > 0)) ? 1 : 0;
+  harnessVehicleOverrideActive = (scenarioUsesAutomatedHarnessLock() == 1) ? 1 : 0;
 
   /* A-group 자동 감지: 페달 변화율 기반 급가속/급제동 판정
      100ms 주기당 accelPedal 20% 이상 변화 = 급격한 페달 조작
@@ -3441,12 +3589,12 @@ on timer tInput100
     mSrrRrInput.RiskClass = objectRiskClass;
     output(mSrrRrInput);
 
-    if (gScenarioInputLock == 1 && gCurrentScenarioId == 225)
+    if (scenarioUsesAutomatedHarnessLock() == 1 && gCurrentScenarioId == 225)
     {
       /* Chassis comfort path is owned by ESC/ASM/CDC. Scenario 225 only
          supplies upstream driving context so those owners emit the state. */
     }
-    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 226)
+    else if (scenarioUsesAutomatedHarnessLock() == 1 && gCurrentScenarioId == 226)
     {
       mConn.ConnectivityType = 1;
       mConn.ConnectivityState = 1;
@@ -3460,7 +3608,7 @@ on timer tInput100
       mDoorCtrl.DoorControlCmd = 1;
       output(mDoorCtrl);
     }
-    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 227)
+    else if (scenarioUsesAutomatedHarnessLock() == 1 && gCurrentScenarioId == 227)
     {
       mConn.ConnectivityType = 1;
       mConn.ConnectivityState = 1;
@@ -3476,7 +3624,7 @@ on timer tInput100
       mTailgateCtrl.TailgateActuatorCmd = 0;
       output(mTailgateCtrl);
     }
-    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 228)
+    else if (scenarioUsesAutomatedHarnessLock() == 1 && gCurrentScenarioId == 228)
     {
       @Test::driverBeltOff = 1;
       @Test::passengerBeltOff = 1;
@@ -3484,7 +3632,7 @@ on timer tInput100
       mSeatState.PassengerSeatPos = 60;
       output(mSeatState);
     }
-    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 229)
+    else if (scenarioUsesAutomatedHarnessLock() == 1 && gCurrentScenarioId == 229)
     {
       mConn.ConnectivityType = 1;
       mConn.ConnectivityState = 1;
@@ -3498,35 +3646,35 @@ on timer tInput100
       mCabinAir.CabinTemp = 30;
       output(mCabinAir);
     }
-    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 230)
+    else if (scenarioUsesAutomatedHarnessLock() == 1 && gCurrentScenarioId == 230)
     {
       mTurnLampInput.TurnLampState = 2;
       output(mTurnLampInput);
     }
-    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 239)
+    else if (scenarioUsesAutomatedHarnessLock() == 1 && gCurrentScenarioId == 239)
     {
       mTurnLampInput.TurnLampState = 2;
       output(mTurnLampInput);
     }
-    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 231)
+    else if (scenarioUsesAutomatedHarnessLock() == 1 && gCurrentScenarioId == 231)
     {
       mBattery.BatterySoc = 60;
       mBattery.ChargingState = 1;
       output(mBattery);
     }
-    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 232)
+    else if (scenarioUsesAutomatedHarnessLock() == 1 && gCurrentScenarioId == 232)
     {
       mEngineTemp.EngineRpm = 2400;
       mEngineTemp.OilTemp = 90;
       output(mEngineTemp);
     }
-    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 233)
+    else if (scenarioUsesAutomatedHarnessLock() == 1 && gCurrentScenarioId == 233)
     {
       mFcamInput.ObjectTrackValid = 1;
       mFcamInput.Confidence = 80;
       output(mFcamInput);
     }
-    else if (gScenarioInputLock == 1 && gCurrentScenarioId == 234)
+    else if (scenarioUsesAutomatedHarnessLock() == 1 && gCurrentScenarioId == 234)
     {
       mParkUltrasonic.ParkAssistActive = 1;
       mParkUltrasonic.MinDistanceCm = 28;
@@ -3546,7 +3694,7 @@ on timer tInput100
   /* Product-side generated frames stay on ECU owners:
      VCU emits vehicle state, EMS emits engine detail, TCU emits transmission detail. */
 
-  if (gScenarioInputLock == 1)
+  if (scenarioUsesAutomatedHarnessLock() == 1)
   {
     if (gLockSuppressEmergencyFrame == 0)
     {

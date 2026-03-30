@@ -28,6 +28,8 @@ convert_one "${SRC}/governance/00e_ECU_Naming_Standard.md" "${GEN}/00e_ECU_Namin
 convert_one "${SRC}/governance/00f_CAN_ID_Allocation_Standard.md" "${GEN}/00f_CAN_ID_Allocation_Standard.tex"
 convert_one "${SRC}/governance/00g_Master_Test_Matrix.md" "${GEN}/00g_Master_Test_Matrix.tex"
 
+convert_one "${SRC}/architecture/vehicle_ecu_architecture_and_interaction_reference.md" "${GEN}/vehicle_ecu_architecture_and_interaction_reference.tex"
+
 convert_one "${SRC}/contracts/communication-matrix.md" "${GEN}/communication-matrix.tex"
 convert_one "${SRC}/contracts/owner-route.md" "${GEN}/owner-route.tex"
 convert_one "${SRC}/contracts/layer-separation-policy.md" "${GEN}/layer-separation-policy.tex"

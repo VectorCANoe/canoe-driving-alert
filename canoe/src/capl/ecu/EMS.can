@@ -195,6 +195,7 @@ void updateWarningFrame()
 {
   int beltWarn;
   int doorOpen;
+  int driveState;
   int policePos;
   int ambulancePos;
   int selectedAlertLevel;
@@ -212,6 +213,7 @@ void updateWarningFrame()
   beltWarn = clampRange((int)@CoreState::seatBeltWarnLvl, 0, 3);
   doorOpen = (clampRange((int)@Cmd::doorOpenCmd, 0, 2) == 1) ? 1
              : clampRange((int)@Body::doorOpenCmd, 0, 1);
+  driveState = clampRange((int)@Chassis::driveState, 0, 3);
   policePos = clampRange((int)@V2X::policePos, 0, 7);
   ambulancePos = clampRange((int)@V2X::ambulancePos, 0, 7);
   selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
@@ -264,6 +266,10 @@ void updateWarningFrame()
   else if (beltWarn >= 2)
   {
     nextFrame = 7;
+  }
+  else if (gEngineState > 0 && driveState == 3)
+  {
+    nextFrame = 10;
   }
 
   if (crossSceneAlertFrame < 0 &&
@@ -494,6 +500,11 @@ on timer tEngineCycle
     @Display::animFrame = 0;
   }
   gLastAnimEngineState = engineState;
+
+  if (gAnimRunning == 0)
+  {
+    updateWarningFrame();
+  }
 
   if (engineState != gLastEngineState)
   {
