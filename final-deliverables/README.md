@@ -14,7 +14,7 @@ Use this location for the six reviewer-facing submission assets only:
 Current status:
 
 - `01_FINAL_REPORT.pdf`: fixed
-- `02_PRESENTATION.pptx`: fixed local mirror, online review link is the Google Slides URL exposed from the main README
+- `02_PRESENTATION.pptx`: fixed local mirror, sourced from `driving-alert-workproducts/governance/short-paper/ppt/ADAS&V2X_canoe.pptx`, online review link is the Google Slides URL exposed from the main README
 - `03_SHORT_PAPER.pdf`: fixed, sourced from `driving-alert-workproducts/governance/short-paper/paper/short_paper_twocolumn.pdf`
 - `04_ECU_BOOK.pdf`: fixed
 - `05_PROJECT_RESULT_2-2.xlsx`: fixed alias mapped from `driving-alert-workproducts/excel/00~07_Docs.xlsx`
