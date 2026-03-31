@@ -46,6 +46,10 @@ variables
   dword gLastRejectedAlertSrcPort;
   int gCrossMyCarEnd;
   int gCrossAmbEnd;
+  int gLastCrossAlertState;
+  int gLastCrossEmergencyType;
+  int gLastCrossDirection;
+  int gLastCrossSourceId;
 }
 
 
@@ -159,6 +163,48 @@ void startCrossSceneAnimation()
   cancelTimer(tSceneTimer);
   resetCrossSceneAnimation();
   setTimer(tSceneTimer, 50);
+}
+
+void updateCrossSceneTrigger(int alertState,
+                             int emergencyType,
+                             int emergencyDirection,
+                             int sourceId)
+{
+  int sceneIdle;
+  int shouldTrigger;
+
+  sceneIdle = ((((int)@V2X::AnimationTrigger) == 0) &&
+               clampRange((int)@V2X::MyCarFrame, 0, gCrossMyCarEnd) == 0 &&
+               clampRange((int)@V2X::AmbFrame, 0, gCrossAmbEnd) == 0);
+  shouldTrigger = 0;
+  if (alertState == 1 && emergencyType > 0)
+  {
+    if (gLastCrossAlertState == 0 ||
+        emergencyType != gLastCrossEmergencyType ||
+        emergencyDirection != gLastCrossDirection ||
+        sourceId != gLastCrossSourceId ||
+        sceneIdle == 1)
+    {
+      shouldTrigger = 1;
+    }
+  }
+
+  if (shouldTrigger == 1)
+  {
+    @V2X::AnimationTrigger = 1;
+    startCrossSceneAnimation();
+  }
+  else if (alertState == 0 && gLastCrossAlertState == 1)
+  {
+    @V2X::AnimationTrigger = 0;
+    cancelTimer(tSceneTimer);
+    resetCrossSceneAnimation();
+  }
+
+  gLastCrossAlertState = alertState;
+  gLastCrossEmergencyType = emergencyType;
+  gLastCrossDirection = emergencyDirection;
+  gLastCrossSourceId = sourceId;
 }
 
 void bumpIngressHeartbeat()
@@ -448,6 +494,10 @@ void publishActiveEmergencyToV2X()
   @V2X::alertState = compatAlertState;
   @V2X::v2xFrame = (compatAlertState == 1) ? getCompatV2xFrame(compatEmergencyType, compatEta) : 0;
   @Infotainment::emergencySound = (compatAlertState == 1 && compatEmergencyType > 0) ? 1 : 0;
+  updateCrossSceneTrigger(compatAlertState,
+                          compatEmergencyType,
+                          compatEmergencyDirection,
+                          compatSourceId);
   publishNormalizedEmergencyIngress();
 }
 
@@ -690,6 +740,10 @@ on start
   gLastRejectedAlertSrcPort = 0;
   gCrossMyCarEnd = 26;
   gCrossAmbEnd = 31;
+  gLastCrossAlertState = 0;
+  gLastCrossEmergencyType = 0;
+  gLastCrossDirection = 0;
+  gLastCrossSourceId = 0;
   @V2X::ingressHeartbeat = 0;
   @V2X::AnimationTrigger = 0;
   resetCrossSceneAnimation();

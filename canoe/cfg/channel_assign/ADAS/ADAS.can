@@ -1620,8 +1620,15 @@ on start
   @Core::objectEventCode = 0;
   @Core::decelAssistDecisionReq = 0;
   @Core::decelAssistReq = 0;
+  @Core::warningState = 0;
+  @Core::baseZoneContext = 0;
+  @Core::speedLimitNorm = 0;
+  @Core::selectedAlertLevel = 0;
+  @Core::selectedAlertType = 0;
   @CoreState::driverReleaseReason = 0;
   @CoreState::decelGateReason = 0;
+  @CoreState::selectedAlertDecisionLevel = 0;
+  @CoreState::selectedAlertDecisionType = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
     write("[ADAS] tx socket unavailable");
@@ -1652,6 +1659,13 @@ on stopMeasurement
 {
   cancelTimer(tAdasCycle);
   cancelTimer(tArbiter50);
+  @Core::warningState = 0;
+  @Core::baseZoneContext = 0;
+  @Core::speedLimitNorm = 0;
+  @Core::selectedAlertLevel = 0;
+  @Core::selectedAlertType = 0;
+  @CoreState::selectedAlertDecisionLevel = 0;
+  @CoreState::selectedAlertDecisionType = 0;
   ethCloseSocket(gEthTxSocket);
   gEthTxSocket = ethInvalidSocket();
   ethCloseSocket(gEthSocket);

@@ -309,6 +309,7 @@ on start
   @CoreState::clusterSyncSeq = 0;
   @CoreState::alertHistoryCount = 0;
   @Test::historyQueryCode = 0;
+  @Cluster::warningTextCode = 0;
   /* `Chassis::steeringAngle` is a donor panel/manual command seam.
      CLU must not clobber it during startup; only derived display state belongs here. */
   @Display::steeringFrame = 35;
@@ -390,6 +391,7 @@ on sysvar Chassis::steeringAngle
 on stopMeasurement
 {
   cancelTimer(tDuplicateGuard);
+  @Cluster::warningTextCode = 0;
 }
 
 on message frmClusterNotifMsg
