@@ -63,9 +63,8 @@ The repository closeout surface is fixed to the six submission assets below.
     </td>
     <td align="center" width="33%">
       <strong>2. Presentation</strong><br>
-      <a href="http://docs.google.com/presentation/d/1On3UPp9oFxr5yGK2zXpaYrwGLBa6OCgV/edit?usp=drive_web&ouid=115897220734400370363&rtpof=true">View online</a><br>
-      <a href="final-deliverables/02_PRESENTATION.pptx">Download PPTX</a><br>
-      <sub>online review + local mirror</sub>
+      <a href="final-deliverables/02_PRESENTATION.pdf">Open PDF</a><br>
+      <sub>review-ready</sub>
     </td>
     <td align="center" width="33%">
       <strong>3. Short Paper</strong><br>
@@ -82,7 +81,7 @@ The repository closeout surface is fixed to the six submission assets below.
     <td align="center" width="33%">
       <strong>5. Project Result Excel</strong><br>
       <a href="final-deliverables/05_PROJECT_RESULT_2-2.xlsx">Open XLSX</a><br>
-      <sub>mapped from final 00~07_Docs workbook</sub>
+      <sub>2-2 submission workbook</sub>
     </td>
     <td align="center" width="33%">
       <strong>6. Appendix</strong><br>

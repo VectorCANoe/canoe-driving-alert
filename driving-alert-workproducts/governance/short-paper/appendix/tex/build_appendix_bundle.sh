@@ -5,10 +5,13 @@ ROOT="/Users/juns/code/work/mobis/PBL/driving-alert-workproducts/governance/shor
 SRC="${ROOT}/source"
 GEN="${ROOT}/tex/generated"
 MASTER="${ROOT}/tex/supplementary_appendix_bundle.tex"
+CHECKER="${ROOT}/tex/check_appendix_table_width.py"
 
 mkdir -p "${GEN}"
 setopt null_glob
 rm -f "${GEN}"/*.tex
+
+python3 "${CHECKER}" "${SRC}"
 
 convert_one() {
   local src="$1"

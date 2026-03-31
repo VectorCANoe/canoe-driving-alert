@@ -45,220 +45,123 @@
 
 ## 3. Unit Test 매핑
 
-### 3.1 공통 oracle 표현 읽기
+### 3.1 핵심 oracle 축
 
-대형 표 안에서 반복되는 oracle 표현은 아래처럼 해석합니다.
+별첨에서는 Unit Test oracle을 아래 anchor 중심으로 읽습니다.
 
-| 표기 | 한국어 해석 |
-|---|---|
-| `selected warning state` | 최종 선택 경고 상태 |
-| `zone context state` | 구역 판단 상태 |
-| `clear and restore state` | 해제 및 복원 상태 |
-| `final selected warning state` | 최종 선택 경고 결과 |
-| `fail-safe state` | fail-safe 진입 또는 유지 상태 |
-| `minimum-channel state` | 최소 채널 유지 상태 |
-| `display-policy reflection state` | 표시 정책 반영 상태 |
-| `audio focus, ducking, and volume policy state` | 오디오 focus, ducking, volume 정책 상태 |
-| `output-channel availability and fallback state` | 출력 채널 가용성과 fallback 상태 |
-| `duplicate-popup suppression state` | 중복 팝업 억제 상태 |
-| `channel-restore consistency state` | 채널 복원 일관성 상태 |
-| `end-to-end scenario verdict` | 종단 간 시나리오 판정 |
-| `end-to-end fail-safe scenario verdict` | 종단 간 fail-safe 시나리오 판정 |
+- `selected warning state`: 최종 경고 level/type과 text, route 결과
+- `zone context state`: school-zone, highway, direction, distance와 같은 문맥 상태
+- `clear and restore state`: clear, restore, timeout 복귀 기준
+- `fail-safe state`: fail-safe 진입, 유지, 해제 판단
+- `display-policy state`: visual-first, popup/theme, cluster-sync 기준
+- `audio policy state`: audio focus, ducking, volume policy 기준
+- `channel availability/fallback`: 출력 채널 유지와 fallback 기준
+- `scenario verdict`: `TEST_SCN` 단위 verdict
+- `fail-safe scenario verdict`: boundary/fail-safe가 포함된 verdict
 
-### 3.2 공통 evidence 표현 읽기
+### 3.2 핵심 evidence 축
 
-evidence column은 artifact 이름을 유지하되, 조합 의미는 아래처럼 읽습니다.
+- `native report + trace + sysvar`: 기본 runtime 동작 확인
+- `native report + sysvar + panel`: panel 반영이 중요한 경고/출력 검증
+- `panel/cluster capture + screenshot`: reviewer-visible output 검증
+- `write window + trace + sysvar`: diagnostic, fail-safe, route-owner 검증
+- `Eth trace + write window + verification_log`: external TX와 backbone evidence 검증
 
-| 표기 | 한국어 해석 |
-|---|---|
-| `native report + trace + sysvar snapshot` | native report, trace, sysvar snapshot을 함께 보는 기본 조합 |
-| `native report + sysvar snapshot + panel capture` | runtime report와 sysvar, panel capture를 함께 보는 조합 |
-| `panel capture + screenshot + native report` | panel 기준의 visible output evidence 조합 |
-| `cluster capture + screenshot + native report` | cluster/HUD 기준 visual evidence 조합 |
-| `write window + trace + sysvar snapshot` | diagnostic 또는 fail-safe 확인용 심화 evidence 조합 |
-| `Ethernet trace + write window + verification_log.csv` | 외부 TX/주기 확인용 transport evidence 조합 |
-| `panel capture + trace + verification_log.csv` | system-level 동작과 trace chronology를 함께 보는 조합 |
+### 3.3 UT 그룹 매핑
 
-| ID | 후보 native asset | 주요 oracle | 주요 evidence | 진단 필요 여부 |
-|---|---|---|---|---|
-| `UT_001` | `TC_CANOE_UT_CORE_001_CGW_CHS_GW` | vehicle-state 전달 seam | native report + trace + `verification_log.csv` | `No` |
-| `UT_002` | `TC_CANOE_UT_CORE_002_CGW_INFOTAINMENT_GW` | navigation 맥락 전달 seam | native report + trace + `verification_log.csv` | `No` |
-| `UT_003` | `TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS` | 선택 경고 상태 | native report + sysvar snapshot + panel capture | `No` |
-| `UT_004` | `TC_CANOE_UT_CORE_004_V2X_EVENT_MAINTAIN` | emergency 상태 및 timeout clear | native report + trace + sysvar snapshot | `No` |
-| `UT_005` | `TC_CANOE_UT_CORE_005_ADAS_DECEL_ASSIST` | arbitration 결과 및 decel-assist 상태 | native report + sysvar snapshot + panel capture | `No` |
-| `UT_006` | `TC_CANOE_UT_EXT_006_OBJECT_RISK` | object-risk 상태 및 downgrade 상태 | native report + trace + event log | `No` |
-| `UT_007` | `TC_CANOE_UT_EXT_007_CLU_CONTEXT_ADJUST` | 렌더링된 경고 맥락 | native report + cluster capture + sysvar snapshot | `No` |
-| `UT_008` | `TC_CANOE_UT_EXT_008_DOMAIN_BOUNDARY_FAILSAFE` | fail-safe 진입 상태 및 boundary-health 상태 | native report + sysvar snapshot + trace + write window | `No` |
-| `UT_009` | `TC_CANOE_UT_CORE_009_NAV_CTX_MGR` | 구역 맥락 상태 | native report + sysvar snapshot | `No` |
-| `UT_010` | `TC_CANOE_UT_CORE_010_EMS_ALERT_TXRX` | emergency tx/rx 상태 및 timeout 상태 | native report + CAN/Ethernet trace + write window | `No` |
-| `UT_011` | `TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION` | 최종 선택 경고 상태 | native report + sysvar snapshot + panel capture | `No` |
-| `UT_012` | `TC_CANOE_UT_CORE_012_BODY_GW_ROUTE` | ambient route 상태 | native report + trace + ambient capture | `No` |
-| `UT_013` | `TC_CANOE_UT_CORE_013_IVI_GW_ROUTE` | cluster route 상태 | native report + trace + cluster capture | `No` |
-| `UT_014` | `TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY` | ambient 색상 및 패턴 상태 | native report + panel capture + screenshot | `No` |
-| `UT_015` | `TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING` | 경고 text 및 direction 상태 | native report + cluster capture + screenshot | `No` |
-| `UT_016` | `TC_CANOE_UT_EXT_016_CHS_BRAKE_EXT` | brake 관련 맥락 상태 | native report + trace + sysvar snapshot | `No` |
-| `UT_017` | `TC_CANOE_UT_EXT_017_CHS_DYNAMICS_EXT` | chassis 맥락 상태 | native report + trace + sysvar snapshot | `No` |
-| `UT_018` | `TC_CANOE_UT_EXT_018_BODY_ENTRY_EXIT` | door/tailgate 맥락 상태 | native report + trace + sysvar snapshot | `No` |
-| `UT_019` | `TC_CANOE_UT_EXT_019_BODY_OCCUPANT_PROTECTION` | occupant-protection 맥락 상태 | native report + trace + sysvar snapshot | `No` |
-| `UT_020` | `TC_CANOE_UT_EXT_020_BODY_COMFORT` | comfort 맥락 상태 | native report + trace + sysvar snapshot | `No` |
-| `UT_021` | `TC_CANOE_UT_EXT_021_IVI_DISPLAY_SERVICE` | 표시/서비스 맥락 상태 | native report + sysvar snapshot + panel capture | `No` |
-| `UT_022` | `TC_CANOE_UT_EXT_022_IVI_SERVICE_ACCESS` | service-access 맥락 상태 | native report + sysvar snapshot + trace | `No` |
-| `UT_023` | `TC_CANOE_UT_EXT_023_ADAS_DRIVE_ASSIST` | drive-assist 맥락 상태 | native report + sysvar snapshot + trace | `No` |
-| `UT_024` | `TC_CANOE_UT_EXT_024_ADAS_PARKING_PERCEPTION` | parking/perception 맥락 상태 | native report + sysvar snapshot + trace | `No` |
-| `UT_025` | `TC_CANOE_UT_EXT_025_WARNING_DELIVERY_BOUNDARY` | delivery-health 및 fail-safe 상태 | native report + trace + write window + sysvar snapshot | `No` |
-| `UT_026` | `TC_CANOE_UT_EXT_026_DOMAIN_ROUTER_PROPULSION` | propulsion 맥락 상태 | native report + trace + sysvar snapshot | `No` |
-| `UT_027` | `TC_CANOE_UT_EXT_027_DOMAIN_ROUTER_POWER_CHARGE` | power/charge 맥락 상태 | native report + trace + sysvar snapshot | `No` |
-| `UT_028` | `TC_CANOE_UT_INP_028_VEHICLE_STEERING` | drive-state / speed / steering 정규화 | native report + trace + sysvar snapshot | `Yes` |
-| `UT_029` | `TC_CANOE_UT_INP_029_NAV_CONTEXT` | nav 맥락의 alert-level trigger 및 안정 경로 | native report + trace + sysvar snapshot | `Yes` |
-| `UT_030` | `TC_CANOE_UT_INP_030_EMERGENCY_INPUT` | emergency type / ETA 관측 패턴 | native report + trace + sysvar snapshot | `Yes` |
-| `UT_031` | `TC_CANOE_UT_INP_031_EPB_INPUT` | park brake decel 입력 정규화 | native report + trace + sysvar snapshot | `Yes` |
-| `UT_032` | `TC_CANOE_UT_INP_032_EHB_INPUT` | hydraulic brake decel 입력 정규화 | native report + trace + sysvar snapshot | `Yes` |
-| `UT_033` | `TC_CANOE_UT_INP_033_VSM_INPUT` | VSM 안정 상태 및 spurious alert 없음 | native report + trace + sysvar snapshot | `Yes` |
-| `UT_034` | `TC_CANOE_UT_INP_034_ECS_INPUT` | air suspension ride-height mode | native report + trace + sysvar snapshot | `Yes` |
-| `UT_035` | `TC_CANOE_UT_INP_035_CDC_INPUT` | damper mode and valve current | native report + trace + sysvar snapshot | `Yes` |
-| `UT_036` | `TC_CANOE_UT_INP_036_DOOR_FL_INPUT` | front-left door auto unlock / approach score | native report + trace + sysvar snapshot | `Yes` |
-| `UT_037` | `TC_CANOE_UT_INP_037_DOOR_FR_INPUT` | front-right door auto unlock / approach score | native report + trace + sysvar snapshot | `Yes` |
-| `UT_038` | `TC_CANOE_UT_INP_038_DOOR_RL_INPUT` | rear-left door auto unlock / approach score | native report + trace + sysvar snapshot | `Yes` |
-| `UT_039` | `TC_CANOE_UT_INP_039_DOOR_RR_INPUT` | rear-right door auto unlock / approach score | native report + trace + sysvar snapshot | `Yes` |
-| `UT_040` | `TC_CANOE_UT_INP_040_TGM_INPUT` | tailgate assist mode and actuator command | native report + trace + sysvar snapshot | `Yes` |
-| `UT_041` | `TC_CANOE_UT_INP_041_ACU_INPUT` | airbag deployment armed + pretension request | native report + trace + sysvar snapshot | `Yes` |
-| `UT_042` | `TC_CANOE_UT_INP_042_ODS_INPUT` | occupant detection / weight class / child seat | native report + trace + sysvar snapshot | `Yes` |
-| `UT_043` | `TC_CANOE_UT_INP_043_AFLS_INPUT` | adaptive front-light mode + headlamp angle | native report + trace + sysvar snapshot | `Yes` |
-| `UT_044` | `TC_CANOE_UT_INP_044_AHLS_INPUT` | auto high-beam assist + active flag | native report + trace + sysvar snapshot | `Yes` |
-| `UT_045` | `TC_CANOE_UT_INP_045_DATC_INPUT` | cabin temp / blower / AC / vent mode | native report + trace + sysvar snapshot | `Yes` |
-| `UT_046` | `TC_CANOE_UT_INP_046_SEAT_DRV_INPUT` | driver seat position + heat level | native report + trace + sysvar snapshot | `Yes` |
-| `UT_047` | `TC_CANOE_UT_INP_047_SEAT_PASS_INPUT` | passenger seat position + heat level | native report + trace + sysvar snapshot | `Yes` |
-| `UT_048` | `TC_CANOE_UT_INP_048_SRF_INPUT` | sunroof position state | native report + trace + sysvar snapshot | `Yes` |
-| `UT_049` | `TC_CANOE_UT_INP_049_HUD_INPUT` | HUD mode + warning code | native report + trace + sysvar snapshot | `Yes` |
-| `UT_050` | `TC_CANOE_UT_INP_050_AMP_INPUT` | audio mute / ducking / volume level | native report + trace + sysvar snapshot | `Yes` |
-| `UT_051` | `TC_CANOE_UT_INP_051_TMU_INPUT` | telematics link state / service mode / remote climate | native report + trace + sysvar snapshot | `Yes` |
-| `UT_052` | `TC_CANOE_UT_INP_052_SCC_INPUT` | SCC proximity decel — decel-assist observer | native report + trace + sysvar snapshot | `Yes` |
-| `UT_053` | `TC_CANOE_UT_INP_053_PGS_INPUT` | parking guidance 활성 / 기동 준비 | native report + trace + sysvar snapshot | `Yes` |
-| `UT_054` | `TC_CANOE_UT_INP_054_PUS_INPUT` | parking ultrasonic sensor proximity class | native report + trace + sysvar snapshot | `Yes` |
-| `UT_055` | `TC_CANOE_UT_INP_055_AVM_INPUT` | surround-view mode and active flag | native report + trace + sysvar snapshot | `Yes` |
-| `UT_056` | `TC_CANOE_UT_INP_056_FCAM_INPUT` | forward camera health and lane preview | native report + trace + sysvar snapshot | `Yes` |
-| `UT_057` | `TC_CANOE_UT_INP_057_FRADAR_INPUT` | forward radar object range and risk class | native report + trace + sysvar snapshot | `Yes` |
-| `UT_058` | `TC_CANOE_UT_INP_058_SRR_FL_INPUT` | left-front SRR — intersection conflict flag | native report + trace + sysvar snapshot | `Yes` |
-| `UT_059` | `TC_CANOE_UT_INP_059_SRR_FR_INPUT` | right-front SRR — merge cut-in flag | native report + trace + sysvar snapshot | `Yes` |
-| `UT_060` | `TC_CANOE_UT_INP_060_SRR_RL_INPUT` | rear-left SRR blind-spot state | native report + trace + sysvar snapshot | `Yes` |
-| `UT_061` | `TC_CANOE_UT_INP_061_SRR_RR_INPUT` | rear-right SRR blind-spot state | native report + trace + sysvar snapshot | `Yes` |
-| `UT_062` | `TC_CANOE_UT_INP_062_IBOX_INPUT` | digital key / vehicle service 상태 | native report + trace + sysvar snapshot | `Yes` |
-| `UT_063` | `TC_CANOE_UT_EXT_063_SGW_SECURITY_STATE` | security-state injection | write window + trace + sysvar snapshot | `Yes` |
-| `UT_064` | `TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE` | diagnostic-state injection | write window + trace + sysvar snapshot | `Yes` |
-| `UT_065` | `TC_CANOE_UT_INP_065_ETHB_INPUT` | backbone failure 및 fail-safe 관측 | native report + trace + sysvar snapshot | `Yes` |
-| `UT_066` | `TC_CANOE_UT_INP_066_OBC_INPUT` | OBC charge power and AC plug state | native report + trace + sysvar snapshot | `Yes` |
-| `UT_067` | `TC_CANOE_UT_INP_067_DCDC_INPUT` | DCDC LV output voltage and current | native report + trace + sysvar snapshot | `Yes` |
-| `UT_068` | `TC_CANOE_UT_INP_068_MCU_INPUT` | motor torque command and speed rpm | native report + trace + sysvar snapshot | `Yes` |
-| `UT_069` | `TC_CANOE_UT_INP_069_INVERTER_INPUT` | inverter state and DC link voltage | native report + trace + sysvar snapshot | `Yes` |
-| `UT_070` | `TC_CANOE_UT_OUT_070_BCM_AMBIENT` | ambient output 렌더링 상태 | panel capture + screenshot + native report | `No` |
-| `UT_071` | `TC_CANOE_UT_OUT_071_IVI_HMI` | HMI output 상태 | panel capture + screenshot + native report | `No` |
-| `UT_072` | `TC_CANOE_UT_OUT_072_CLU_DISPLAY` | cluster display 렌더링 상태 | cluster capture + screenshot + native report | `No` |
-| `UT_073` | `TC_CANOE_UT_OUT_073_HUD_DISPLAY` | HUD 렌더링 상태 | HUD capture + screenshot + native report | `No` |
-| `UT_074` | `TC_CANOE_UT_OUT_074_AMP_AUDIO` | audio-guide 상태 | write window + audio state capture + native report | `No` |
-| `UT_075` | `TC_CANOE_UT_OUT_075_DECEL_ASSIST_REQ` | decel-assist request 상태 | native report + trace + sysvar snapshot | `No` |
-| `UT_076` | `TC_CANOE_UT_OUT_076_POLICE_TX` | external tx frame 관찰 | Ethernet trace + write window + `verification_log.csv` | `No` |
-| `UT_077` | `TC_CANOE_UT_OUT_077_AMBULANCE_TX` | external tx frame 관찰 | Ethernet trace + write window + `verification_log.csv` | `No` |
+- `UT_001~UT_015`
+  - asset family: `TC_CANOE_UT_CORE_*`
+  - focus: zone, emergency, selected-warning, ambient/text route
+  - evidence: native report, trace, sysvar, panel
+  - diagnostic: `No`
+- `UT_016~UT_027`
+  - asset family: `TC_CANOE_UT_EXT_*`
+  - focus: chassis, body, comfort, service, propulsion context
+  - evidence: native report, trace, sysvar
+  - diagnostic: `No`
+- `UT_028~UT_062`
+  - asset family: `TC_CANOE_UT_INP_*`
+  - focus: domain input normalization, observer consistency
+  - evidence: native report, trace, sysvar
+  - diagnostic: `Yes`
+- `UT_063~UT_065`
+  - asset family: `TC_CANOE_UT_EXT_*`, `TC_CANOE_UT_INP_065_*`
+  - focus: security, diagnostic, backbone fail-safe interpretation
+  - evidence: write window, trace, sysvar
+  - diagnostic: `Yes`
+- `UT_070~UT_077`
+  - asset family: `TC_CANOE_UT_OUT_*`
+  - focus: ambient, HMI, audio render, external TX
+  - evidence: panel, cluster capture, Eth trace, native report
+  - diagnostic: `No`
+
+### 3.4 직접 diagnostic row
+
+- `UT_063`
+  - asset: `TC_CANOE_UT_EXT_063_SGW_SECURITY_STATE`
+  - minimal evidence: security-state injection, write window, trace, sysvar
+- `UT_064`
+  - asset: `TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE`
+  - minimal evidence: diagnostic-state injection, write window, trace, sysvar
+- `UT_065`
+  - asset: `TC_CANOE_UT_INP_065_ETHB_INPUT`
+  - minimal evidence: backbone failure observer, trace, sysvar
 
 ## 4. Integration Test 매핑
 
-| ID | 후보 native asset | 주요 oracle | 주요 evidence | 진단 필요 여부 |
-|---|---|---|---|---|
-| `IT_001` | `TC_CANOE_IT_CORE_001_BASE_ACTIVATION` | 경고 활성/비활성 상태 | native report + sysvar snapshot + panel capture | `No` |
-| `IT_002` | `TC_CANOE_IT_CORE_002_SCHOOLZONE_PATH` | 구역 경고 결과 상태 | native report + trace + panel capture | `No` |
-| `IT_003` | `TC_CANOE_IT_CORE_003_HIGHWAY_NOSTEER_PATH` | 고속도로 경고 발생 및 해제 상태 | native report + sysvar snapshot + panel capture | `No` |
-| `IT_004` | `TC_CANOE_IT_V2_004_POLICE_RX` | 경찰차 경고 결과 상태 | native report + trace + panel capture | `No` |
-| `IT_005` | `TC_CANOE_IT_V2_005_AMBULANCE_RX` | 구급차 경고 결과 상태 | native report + trace + panel capture | `No` |
-| `IT_006` | `TC_CANOE_IT_V2_006_ARBITRATION` | 최종 선택 경고 상태 | native report + sysvar snapshot + panel capture | `No` |
-| `IT_007` | `TC_CANOE_IT_CORE_007_AMBIENT_OUTPUT` | ambient 색상/패턴 결과 | panel capture + screenshot + `verification_log.csv` | `No` |
-| `IT_008` | `TC_CANOE_IT_CORE_008_CLUSTER_DIRECTION_OUTPUT` | cluster 텍스트/방향 결과 | cluster capture + screenshot + `verification_log.csv` | `No` |
-| `IT_009` | `TC_CANOE_IT_V2_009_TIMEOUT_CLEAR` | 해제 및 복원 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_010` | `TC_CANOE_IT_V2_010_DECEL_ASSIST` | decel-assist request 및 동기 상태 | native report + trace + sysvar snapshot + panel capture | `No` |
-| `IT_011` | `TC_CANOE_IT_V2_011_FAILSAFE_MIN_WARNING` | fail-safe 및 최소 채널 상태 | native report + write window + sysvar snapshot + trace | `No` |
-| `IT_012` | `TC_CANOE_IT_EXT_012_OBJECT_RISK_EVENTLOG` | object-risk 및 event-log 상태 | native report + trace + event log | `No` |
-| `IT_013` | `TC_CANOE_IT_013_SEATBELT_CONTEXT` | 안전벨트 강조 상태 | native report + panel capture + sysvar snapshot | `No` |
-| `IT_014` | `TC_CANOE_IT_014_DISPLAY_POLICY` | 표시 정책 반영 상태 | native report + panel capture + sysvar snapshot | `No` |
-| `IT_015` | `TC_CANOE_IT_015_TURN_LAMP_CONTEXT` | turn-lamp 맥락에 따른 경고 유형 조정 | native report + panel capture + sysvar snapshot | `No` |
-| `IT_016` | `TC_CANOE_IT_016_DRIVE_MODE_SENSITIVITY` | 주행 모드 민감도 상태 | native report + panel capture + sysvar snapshot | `No` |
-| `IT_017` | `TC_CANOE_IT_017_AUDIO_VOLUME_POLICY` | 오디오 focus, ducking, volume 정책 상태 | native report + panel capture + sysvar snapshot | `No` |
-| `IT_018` | `TC_CANOE_IT_EXT_018_EMERGENCY_PLUS_TTC` | 경고/decel 결합 결과 상태 | native report + trace + panel capture | `No` |
-| `IT_019` | `TC_CANOE_IT_019_POWERTRAIN_PARKED_BASELINE` | 주차 기준선 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_020` | `TC_CANOE_IT_020_POWERTRAIN_DRIVE_BASELINE` | 주행 기준선 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_021` | `TC_CANOE_IT_021_CHASSIS_STEERING_BASELINE` | 조향 입력 기준선 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_022` | `TC_CANOE_IT_022_CHASSIS_BRAKE_BASELINE` | 제동 입력 기준선 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_023` | `TC_CANOE_IT_023_CHASSIS_ACCEL_BASELINE` | 가속 기반 drive-mode 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_024` | `TC_CANOE_IT_BASE_024_BODY_STATE` | hazard 반영 기준선 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_025` | `TC_CANOE_IT_EXT_025_WINDOW_STATE` | window 상태 반영 | native report + door-state trace + sysvar snapshot | `No` |
-| `IT_026` | `TC_CANOE_IT_BASE_026_BASIC_DISPLAY_UI` | 기본 표시 통합 상태 | panel capture + screenshot + native report | `No` |
-| `IT_027` | `TC_CANOE_IT_BASE_027_COMFORT_CONTEXT` | comfort 맥락의 정책 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_028` | `TC_CANOE_IT_EXT_028_BODY_CONTROL_LOCK` | door lock/open 반영 상태 | native report + door-state trace + sysvar snapshot | `No` |
-| `IT_029` | `TC_CANOE_IT_EXT_029_WIPER_RAIN_BASELINE` | wiper/rain 기준선 반영 상태 | native report + body-output trace + sysvar snapshot | `No` |
-| `IT_030` | `TC_CANOE_IT_BASE_030_BODY_SECURITY_CONTEXT` | security-state service-boundary 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_031` | `TC_CANOE_IT_031_AUDIO_GUIDE_RUNTIME` | 오디오 및 voice-guide 통합 상태 | panel capture + write window + native report | `No` |
-| `IT_032` | `TC_CANOE_IT_032_OUTPUT_FALLBACK` | 출력 채널 가용성 및 fallback 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_033` | `TC_CANOE_IT_033_DUPLICATE_POPUP_SUPPRESSION` | 중복 팝업 억제 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_034` | `TC_CANOE_IT_034_CHANNEL_RESTORE` | 채널 복원 일관성 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_035` | `TC_CANOE_IT_EXT_035_DISTANCE_HISTORY` | 거리 및 이력 조회 결과 | panel capture + native report + `verification_log.csv` | `No` |
-| `IT_036` | `TC_CANOE_IT_EXT_036_CHASSIS_EXT_CONTEXT` | EPB/EHB/VSM/ECS/CDC 통합 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_037` | `TC_CANOE_IT_EXT_037_OCCUPANT_COMFORT_CONTEXT` | occupant/comfort 통합 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_038` | `TC_CANOE_IT_EXT_038_DISPLAY_SERVICE_CONTEXT` | 표시/서비스 통합 상태 | panel capture + trace + native report | `No` |
-| `IT_039` | `TC_CANOE_IT_EXT_039_ADAS_PERCEPTION_CONTEXT` | ADAS/perception 통합 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_040` | `TC_CANOE_IT_EXT_040_SERVICE_SECURITY_DIAG` | service/security/diagnostic 통합 상태 | native report + trace + write window + sysvar snapshot | `Yes` |
-| `IT_041` | `TC_CANOE_IT_EXT_041_CHARGE_POWER_CONTEXT` | power/charge 통합 상태 | native report + trace + sysvar snapshot | `No` |
-| `IT_042` | `TC_CANOE_IT_EXT_042_DISPLAY_CHANNELS` | 채널 간 visual 일관성 | panel capture + screenshot + `verification_log.csv` | `No` |
-| `IT_043` | `TC_CANOE_IT_EXT_043_AUDIO_GUIDE_CHANNEL` | audio-guide 일관성 | write window + audio state capture + `verification_log.csv` | `No` |
-| `IT_044` | `TC_CANOE_IT_ETH_044_POLICE_TX` | 경찰 외부 TX 관찰 | Ethernet trace + write window + `verification_log.csv` | `No` |
-| `IT_045` | `TC_CANOE_IT_ETH_045_AMBULANCE_TX` | 구급차 외부 TX 관찰 | Ethernet trace + write window + `verification_log.csv` | `No` |
+- `IT_001~IT_009`
+  - asset family: `TC_CANOE_IT_CORE_*`, `TC_CANOE_IT_V2_*`
+  - focus: activation, school-zone, emergency priority, timeout clear
+  - evidence: native report, trace, panel
+  - diagnostic: `No`
+- `IT_010~IT_018`
+  - asset family: `TC_CANOE_IT_*`, `TC_CANOE_IT_EXT_*`
+  - focus: decel assist, fail-safe minimum warning, display/audio policy
+  - evidence: native report, panel, sysvar
+  - diagnostic: `No`
+- `IT_019~IT_030`
+  - asset family: baseline/body/control integration assets
+  - focus: parked/drive baseline, window, wiper, body security context
+  - evidence: native report, trace, sysvar
+  - diagnostic: `No`
+- `IT_031~IT_043`
+  - asset family: runtime/output integration assets
+  - focus: fallback, duplicate suppression, display/service, audio guide
+  - evidence: panel, write window, trace, native report
+  - diagnostic: `No`
+- `IT_040`, `IT_044`, `IT_045`
+  - asset family: diagnostic and external TX assets
+  - focus: service/security/diagnostic context, TX continuity
+  - evidence: write window, Eth trace, sysvar
+  - diagnostic: mixed
 
 ## 5. System Test 매핑
 
-| ID | 후보 native asset | 주요 oracle | 주요 evidence | 진단 필요 여부 |
-|---|---|---|---|---|
-| `ST_001` | `TC_CANOE_ST_CORE_001_POWER_ON_BASELINE` | 무경고 기준선 상태 | panel capture + screenshot + native report | `No` |
-| `ST_002` | `TC_CANOE_ST_CORE_002_NORMAL_DRIVE` | 정상 주행 상태 | panel capture + screenshot + native report | `No` |
-| `ST_003` | `TC_CANOE_ST_CORE_003_BASIC_WARNING_ACTIVATION` | 기본 경고 활성 결과 | panel capture + trace + `verification_log.csv` | `No` |
-| `ST_004` | `TC_CANOE_ST_CORE_004_BASIC_WARNING_CLEAR` | 정상 복귀 상태 | panel capture + trace + `verification_log.csv` | `No` |
-| `ST_005` | `TC_CANOE_ST_CORE_005_ENTER_SCHOOL_ZONE` | school-zone 경고 전이 | panel capture + trace + `verification_log.csv` | `No` |
-| `ST_006` | `TC_CANOE_ST_CORE_006_EXIT_SCHOOL_ZONE` | school-zone 복구 상태 | panel capture + trace + `verification_log.csv` | `No` |
-| `ST_007` | `TC_CANOE_ST_CORE_007_HIGHWAY_POLICY_TRANSITION` | 고속도로 정책 전이 | panel capture + trace + `verification_log.csv` | `No` |
-| `ST_008` | `TC_CANOE_ST_CORE_008_STEERING_INACTIVITY` | 경고 발생 및 해제 결과 | panel capture + trace + `verification_log.csv` | `No` |
-| `ST_009` | `TC_CANOE_ST_CORE_009_GUIDE_LEFT` | 좌측 안내 표시 결과 | cluster capture + screenshot + native report | `No` |
-| `ST_010` | `TC_CANOE_ST_CORE_010_GUIDE_RIGHT_CLEAR` | 우측 안내 표시 결과 | cluster capture + screenshot + native report | `No` |
-| `ST_011` | `TC_CANOE_ST_V2_011_POLICE_OVERRIDE` | 경찰 우선 결과 | panel capture + trace + native report | `No` |
-| `ST_012` | `TC_CANOE_ST_V2_012_AMBULANCE_OVERRIDE` | 구급차 우선 결과 | panel capture + trace + native report | `No` |
-| `ST_013` | `TC_CANOE_ST_CORE_013_POLICE_DIRECTION_RIGHT` | 경찰 방향 표시 | cluster/HUD capture + native report | `No` |
-| `ST_014` | `TC_CANOE_ST_CORE_014_AMBULANCE_DIRECTION_LEFT` | 구급차 방향 표시 | cluster/HUD capture + native report | `No` |
-| `ST_015` | `TC_CANOE_ST_V2_015_AMBULANCE_PRIORITY` | 최종 선택 경고 상태 | panel capture + trace + native report | `No` |
-| `ST_016` | `TC_CANOE_ST_V2_016_POLICE_TIEBREAK` | ETA 및 SourceID 중재 결과 | native report + sysvar snapshot + trace | `No` |
-| `ST_017` | `TC_CANOE_ST_V2_017_AMBULANCE_TIEBREAK` | ETA 및 SourceID 중재 결과 | native report + sysvar snapshot + trace | `No` |
-| `ST_018` | `TC_CANOE_ST_018_POLICE_TX_PERIOD` | 경찰 TX 주기 관찰 | Ethernet trace + `verification_log.csv` + write window | `No` |
-| `ST_019` | `TC_CANOE_ST_019_AMBULANCE_TX_PERIOD` | 구급차 TX 주기 관찰 | Ethernet trace + `verification_log.csv` + write window | `No` |
-| `ST_020` | `TC_CANOE_ST_V2_020_TIMEOUT_CLEAR` | timeout 해제 및 복귀 상태 | native report + trace + sysvar snapshot | `No` |
-| `ST_021` | `TC_CANOE_ST_CORE_021_EMERGENCY_CLEAR_RESTORE` | 이전 경고 복원 상태 | panel capture + trace + native report | `No` |
-| `ST_022` | `TC_CANOE_ST_EXT_022_INTERSECTION_DECEL` | 경고/decel 결합 결과 | panel capture + trace + sysvar snapshot | `No` |
-| `ST_023` | `TC_CANOE_ST_EXT_023_MERGE_DECEL` | 경고/decel 결합 결과 | panel capture + trace + sysvar snapshot | `No` |
-| `ST_024` | `TC_CANOE_ST_EXT_024_DRIVER_INTERVENTION_CLEAR` | 운전자 개입 해제 결과 | panel capture + trace + native report | `No` |
-| `ST_025` | `TC_CANOE_ST_EXT_025_FAILSAFE_ENTRY` | fail-safe 진입 및 최소 채널 상태 | native report + write window + trace + sysvar snapshot | `No` |
-| `ST_026` | `TC_CANOE_ST_EXT_026_FAILSAFE_RECOVERY` | fail-safe 복구 상태 | native report + trace + sysvar snapshot | `No` |
-| `ST_027` | `TC_CANOE_ST_EXT_027_FRONTAL_OBJECT_RISK` | object-warning 표시 결과 | panel capture + event log + trace | `No` |
-| `ST_028` | `TC_CANOE_ST_EXT_028_LATERAL_OBJECT_RISK` | object-warning 표시 결과 | panel capture + event log + trace | `No` |
-| `ST_029` | `TC_CANOE_ST_EXT_029_CUTIN_OBJECT_RISK` | object-warning 표시 결과 | panel capture + event log + trace | `No` |
-| `ST_030` | `TC_CANOE_ST_030_SEATBELT_CONTEXT_ADJUST` | 안전벨트/운전자 맥락 조정 경고 | panel capture + screenshot + native report | `No` |
-| `ST_031` | `TC_CANOE_ST_031_DISTANCE_DISPLAY_CONSISTENCY` | 긴급 거리 표시 일관성 | panel capture + screenshot + native report | `No` |
-| `ST_032` | `TC_CANOE_ST_EXT_032_USER_SETTING_CHANGE` | 출력 정책 갱신 상태 | panel capture + screenshot + native report | `No` |
-| `ST_033` | `TC_CANOE_ST_EXT_033_HISTORY_QUERY` | 이력 조회 결과 | panel capture + screenshot + native report | `No` |
-| `ST_034` | `TC_CANOE_ST_034_DUPLICATE_POPUP_GUARD` | 중복 팝업 guard 안정성 결과 | native report + trace + `verification_log.csv` | `No` |
-| `ST_035` | `TC_CANOE_ST_035_TIMEOUT_CLEAR_RESTORE` | timeout-clear 복원 안정성 결과 | native report + trace + `verification_log.csv` | `No` |
-| `ST_036` | `TC_CANOE_ST_036_FAILSAFE_RECOVERY_STABILITY` | fail-safe 복구 안정성 결과 | native report + trace + `verification_log.csv` | `No` |
-| `ST_037` | `TC_CANOE_ST_037_AUDIO_CHANNEL_STABILITY` | 오디오 채널 안정성 결과 | panel capture + trace + `verification_log.csv` | `No` |
-| `ST_038` | `TC_CANOE_ST_038_VISUAL_CHANNEL_STABILITY` | 시각 채널 안정성 결과 | panel capture + trace + `verification_log.csv` | `No` |
-| `ST_039` | `TC_CANOE_ST_EXT_039_CHASSIS_CONTEXT` | 제동/안정성 맥락 결과 | native report + trace + sysvar snapshot | `No` |
-| `ST_040` | `TC_CANOE_ST_EXT_040_OCCUPANT_COMFORT_CONTEXT` | body/occupant/comfort 맥락 결과 | native report + trace + sysvar snapshot | `No` |
-| `ST_041` | `TC_CANOE_ST_EXT_041_DISPLAY_SERVICE_CONTEXT` | 표시/서비스 맥락 결과 | panel capture + trace + native report | `No` |
-| `ST_042` | `TC_CANOE_ST_EXT_042_ADAS_PERCEPTION_CONTEXT` | ADAS/perception 맥락 결과 | native report + trace + sysvar snapshot | `No` |
-| `ST_043` | `TC_CANOE_ST_EXT_043_SERVICE_SECURITY_DIAG_CONTEXT` | service/security/diagnostic 맥락 결과 | native report + trace + write window + sysvar snapshot | `Yes` |
-| `ST_044` | `TC_CANOE_ST_EXT_044_CHARGE_POWER_CONTEXT` | power/charge 맥락 결과 | native report + trace + sysvar snapshot | `No` |
-| `ST_045` | `TC_CANOE_ST_EXT_045_TRIP_SEQUENCE` | 종단 간 시나리오 판정 | native report + panel capture + trace + `verification_log.csv` | `No` |
-| `ST_046` | `TC_CANOE_ST_EXT_046_FAILSAFE_RECOVERY` | 종단 간 fail-safe 시나리오 판정 | native report + panel capture + trace + `verification_log.csv` | `No` |
+- `ST_001~ST_010`
+  - asset family: `TC_CANOE_ST_CORE_*`
+  - focus: power-on baseline, school/highway transition, guide render
+  - evidence: panel, cluster capture, native report
+  - diagnostic: `No`
+- `ST_011~ST_021`
+  - asset family: `TC_CANOE_ST_V2_*`, `TC_CANOE_ST_CORE_*`
+  - focus: emergency override, tie-break, TX period, timeout restore
+  - evidence: trace, report, panel
+  - diagnostic: `No`
+- `ST_022~ST_029`
+  - asset family: `TC_CANOE_ST_EXT_*`
+  - focus: decel coupling, fail-safe entry/recovery, object-risk scenario
+  - evidence: trace, sysvar, panel
+  - diagnostic: `No`
+- `ST_030~ST_038`
+  - asset family: HMI and system robustness assets
+  - focus: seatbelt context, distance/history, popup/audio/visual stability
+  - evidence: panel, screenshot, native report
+  - diagnostic: `No`
+- `ST_039~ST_046`
+  - asset family: context and trip-sequence assets
+  - focus: chassis, body, service, charge context, fail-safe round-trip
+  - evidence: native report, trace, sysvar
+  - diagnostic: `ST_043` only
 
 ## 6. 현재 구현 우선순위
 
@@ -285,23 +188,53 @@ native asset 구축 우선순위는 다음과 같습니다.
 
 ## 최신 diagnostic 실행 기준선 (2026-03-15)
 
-| 공식 범위 | Native Asset | TEST_SCN Scenario | 주요 producer 연결 | 현재 gate |
-| --- | --- | --- | --- | --- |
-| UT_063 | `TC_CANOE_UT_EXT_063_SGW_SECURITY_STATE` | `203` | `SGW.can -> Diag::SecurityState, Diag::RouteOwner` | 실행 가능한 unit contract 고정 |
-| UT_064 | `TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE` | `204` | `DCM.can -> Diag::ServiceState, Diag::ResponseKind, Diag::ReasonCode, Diag::LastRequestSid, Diag::LastResponseCode, Diag::LastResponseOk` | 실행 가능한 unit contract 고정 |
-| IT_040 | `TC_CANOE_IT_EXT_040_SERVICE_SECURITY_DIAG` | `205` | `SGW + DCM 통합 diagnostic seam` | producer 연결 고정, runtime evidence 대기 |
-| ST_043 | `TC_CANOE_ST_EXT_043_SERVICE_SECURITY_DIAG_CONTEXT` | `202` | `SGW + DCM 통합 diagnostic seam with scenario phase tracking` | producer 연결 고정, runtime evidence 대기 |
+- `UT_063`
+  - native asset: `TC_CANOE_UT_EXT_063_SGW_SECURITY_STATE`
+  - scenario: `203`
+  - producer: `SGW.can -> Diag::SecurityState, Diag::RouteOwner`
+  - gate: 실행 가능한 unit contract 고정
+- `UT_064`
+  - native asset: `TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE`
+  - scenario: `204`
+  - producer: `DCM.can -> Diag::ServiceState, Diag::ResponseKind, Diag::ReasonCode, Diag::LastRequestSid, Diag::LastResponseCode, Diag::LastResponseOk`
+  - gate: 실행 가능한 unit contract 고정
+- `IT_040`
+  - native asset: `TC_CANOE_IT_EXT_040_SERVICE_SECURITY_DIAG`
+  - scenario: `205`
+  - producer: `SGW + DCM` 통합 diagnostic seam
+  - gate: producer 연결 고정, runtime evidence 대기
+- `ST_043`
+  - native asset: `TC_CANOE_ST_EXT_043_SERVICE_SECURITY_DIAG_CONTEXT`
+  - scenario: `202`
+  - producer: `SGW + DCM` 통합 diagnostic seam with scenario phase tracking
+  - gate: producer 연결 고정, runtime evidence 대기
 
 ## Wave 2 direct-ownership UT 기준선
 
-| 공식 범위 | Native Asset | 예약 TEST_SCN Scenario | 현재 상태 |
-| --- | --- | --- | --- |
-| UT_003 | `TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS` | `206` | 실행 가능한 scenario contract 고정 |
-| UT_011 | `TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION` | `207` | 실행 가능한 scenario contract 고정 |
-| UT_014 | `TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY` | `208` | 실행 가능한 scenario contract 고정 |
-| UT_015 | `TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING` | `209` | 실행 가능한 scenario contract 고정 |
-| UT_076 | `TC_CANOE_UT_OUT_076_POLICE_TX` | `4` | external-TX unit contract 생성, 최종 frame-period closure는 trace gate 대기 |
-| UT_077 | `TC_CANOE_UT_OUT_077_AMBULANCE_TX` | `5` | external-TX unit contract 생성, 최종 frame-period closure는 trace gate 대기 |
+- `UT_003`
+  - native asset: `TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS`
+  - scenario: `206`
+  - status: 실행 가능한 scenario contract 고정
+- `UT_011`
+  - native asset: `TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION`
+  - scenario: `207`
+  - status: 실행 가능한 scenario contract 고정
+- `UT_014`
+  - native asset: `TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY`
+  - scenario: `208`
+  - status: 실행 가능한 scenario contract 고정
+- `UT_015`
+  - native asset: `TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING`
+  - scenario: `209`
+  - status: 실행 가능한 scenario contract 고정
+- `UT_076`
+  - native asset: `TC_CANOE_UT_OUT_076_POLICE_TX`
+  - scenario: `4`
+  - status: external-TX unit contract 생성, 최종 frame-period closure는 trace gate 대기
+- `UT_077`
+  - native asset: `TC_CANOE_UT_OUT_077_AMBULANCE_TX`
+  - scenario: `5`
+  - status: external-TX unit contract 생성, 최종 frame-period closure는 trace gate 대기
 
 ## Wave 2 oracle 기준선
 
@@ -343,43 +276,52 @@ native asset 구축 우선순위는 다음과 같습니다.
 
 ## Wave 3 system-test 기준선
 
-| 공식 범위 | Native Asset | TEST_SCN Scenario | 현재 계약 |
-| --- | --- | --- | --- |
-| ST_001 | `TC_CANOE_ST_CORE_001_POWER_ON_BASELINE` | `1` | 전원 인가 초기화가 fail-safe 잔여 상태 없이 no-warning 준비 상태로 들어가는지 확인 |
-| ST_002 | `TC_CANOE_ST_CORE_002_NORMAL_DRIVE` | `14` | 정상 주행 기준선에서 routing이 정상이고 no-warning 상태가 안정적인지 확인 |
-| ST_003 | `TC_CANOE_ST_CORE_003_BASIC_WARNING_ACTIVATION` | `1 -> 26` | general-road single-risk 활성화가 fail-safe drift 없이 basic warning 상태를 올리는지 확인 |
-| ST_004 | `TC_CANOE_ST_CORE_004_BASIC_WARNING_CLEAR` | `26 -> 1` | 조건 제거 후 basic warning이 no-warning 기준선으로 정상 복귀하는지 확인 |
-| ST_005 | `TC_CANOE_ST_CORE_005_ENTER_SCHOOL_ZONE` | `1 -> 2` | 정상 주행에서 school-zone 과속으로 전이될 때 school-zone warning 정책으로 전환되는지 확인 |
-| ST_006 | `TC_CANOE_ST_CORE_006_EXIT_SCHOOL_ZONE` | `2 -> 1` | 정상 주행 기준선으로 돌아갈 때 school-zone warning이 정상 해제되는지 확인 |
-| ST_007 | `TC_CANOE_ST_CORE_007_HIGHWAY_POLICY_TRANSITION` | `14 -> 244` | 정상 주행에서 highway 맥락으로 전이될 때 false warning 없이 highway policy에 안정화되는지 확인 |
-| ST_008 | `TC_CANOE_ST_CORE_008_STEERING_INACTIVITY` | `244 -> 3 -> 244` | 지속적인 steering inactivity 뒤 highway no-steer warning이 발생하고 steering recovery 후 해제되는지 확인 |
-| ST_009 | `TC_CANOE_ST_CORE_009_GUIDE_LEFT` | `7` | 좌측 안내 warning이 표시 출력 전반에서 일관되게 렌더링되는지 확인 |
-| ST_010 | `TC_CANOE_ST_CORE_010_GUIDE_RIGHT_CLEAR` | `8 -> 1` | guide-right warning이 올바르게 렌더링되고 완료 후 no-warning 기준선으로 복귀하는지 확인 |
-| ST_011 | `TC_CANOE_ST_V2_011_POLICE_OVERRIDE` | `11` | police emergency가 활성 general-warning 맥락을 모호함 없이 우선 덮어쓰는지 확인 |
-| ST_012 | `TC_CANOE_ST_V2_012_AMBULANCE_OVERRIDE` | `223` | ambulance emergency가 활성 general-warning 맥락을 모호함 없이 우선 덮어쓰는지 확인 |
-| ST_013 | `TC_CANOE_ST_CORE_013_POLICE_DIRECTION_RIGHT` | `30` | `warningTextCode=102`, `renderDirection=2` 조건의 police-right emergency 표시를 확인 |
-| ST_014 | `TC_CANOE_ST_CORE_014_AMBULANCE_DIRECTION_LEFT` | `33` | `warningTextCode=201`, `renderDirection=1` 조건의 ambulance-left emergency 표시를 확인 |
-| ST_015 | `TC_CANOE_ST_V2_015_AMBULANCE_PRIORITY` | `212` | police와 ambulance dispatch가 동시에 들어올 때 ambulance warning이 선택 유지되는지 확인 |
-| ST_016 | `TC_CANOE_ST_V2_016_POLICE_TIEBREAK` | `10` | 동순위 police warning이 ETA 동률 후 SourceID 기준으로 일관되게 결정되는지 확인 |
-| ST_017 | `TC_CANOE_ST_V2_017_AMBULANCE_TIEBREAK` | `224` | 동순위 ambulance warning이 ETA 동률 후 SourceID 기준으로 일관되게 결정되는지 확인 |
-| ST_018 | `TC_CANOE_ST_018_POLICE_TX_PERIOD` | `4` | police external transport 맥락이 trace-gated `100ms` 주기 closure로 자극되는지 확인 |
-| ST_019 | `TC_CANOE_ST_019_AMBULANCE_TX_PERIOD` | `5` | ambulance external transport 맥락이 trace-gated `100ms` 주기 closure로 자극되는지 확인 |
-| ST_020 | `TC_CANOE_ST_V2_020_TIMEOUT_CLEAR` | `35` | timeout-clear가 emergency 맥락을 제거하고 시스템을 안전한 복원 상태로 돌리는지 확인 |
-| ST_021 | `TC_CANOE_ST_CORE_021_EMERGENCY_CLEAR_RESTORE` | `35` | emergency clear 후 zone-warning 복원이 이어지는지 확인 |
-| ST_027 | `TC_CANOE_ST_EXT_027_FRONTAL_OBJECT_RISK` | `20` | forward TTC conflict 조건에서 frontal object-risk warning과 event-log 일관성을 확인 |
-| ST_028 | `TC_CANOE_ST_EXT_028_LATERAL_OBJECT_RISK` | `21` | intersection conflict 조건에서 lateral object-risk warning과 event-log 일관성을 확인 |
-| ST_029 | `TC_CANOE_ST_EXT_029_CUTIN_OBJECT_RISK` | `22` | merge conflict 조건에서 cut-in object-risk warning과 event-log 일관성을 확인 |
-| ST_030 | `TC_CANOE_ST_030_SEATBELT_CONTEXT_ADJUST` | `214` | 의도하지 않은 fail-safe 또는 alert-class drift 없이 seat-belt/driver 맥락이 warning 맥락을 조정하는지 확인 |
-| ST_031 | `TC_CANOE_ST_031_DISTANCE_DISPLAY_CONSISTENCY` | `222` | emergency 거리 표시가 warning text 및 police-right 렌더링 맥락과 일관되는지 확인 |
-| ST_032 | `TC_CANOE_ST_EXT_032_USER_SETTING_CHANGE` | `215` | 사용자 표시/볼륨 정책 변경이 system-level warning 안내에 일관되게 반영되는지 확인 |
-| ST_033 | `TC_CANOE_ST_EXT_033_HISTORY_QUERY` | `222 + historyQuery(0)` | emergency warning 이후 거리 표시와 latest-history query response가 일관되는지 확인 |
-| ST_034 | `TC_CANOE_ST_034_DUPLICATE_POPUP_GUARD` | `12` | 안정된 warning 안내를 유지하면서 rapid re-trigger oscillation을 억제하는지 확인 |
-| ST_035 | `TC_CANOE_ST_035_TIMEOUT_CLEAR_RESTORE` | `35` | timeout-clear 경로가 fail-safe 잔여 상태 없이 이전 valid warning 맥락을 복원하는지 확인 |
-| ST_036 | `TC_CANOE_ST_036_FAILSAFE_RECOVERY_STABILITY` | `201` | fail-safe recovery 후 warning 경로가 residual oscillation 없이 normal로 복귀하는지 확인 |
-| ST_037 | `TC_CANOE_ST_037_AUDIO_CHANNEL_STABILITY` | `215` | 활성 emergency 안내 동안 audio focus, ducking, volume handling이 안정적인지 확인 |
-| ST_038 | `TC_CANOE_ST_038_VISUAL_CHANNEL_STABILITY` | `220` | 시각 우선 warning mode에서 popup priority와 cluster synchronization이 fail-safe drift 없이 안정적인지 확인 |
-| ST_045 | `TC_CANOE_ST_EXT_045_TRIP_SEQUENCE` | `200` | 전체 주행 시퀀스 후 no-warning 안정 상태로 복귀하는지 확인 |
-| ST_046 | `TC_CANOE_ST_EXT_046_FAILSAFE_RECOVERY` | `201` | fail-safe recovery 후 `failSafeMode`가 `0`으로 복귀하는지 확인 |
+### 1. Baseline and transition
+
+- `ST_001` `TC_CANOE_ST_CORE_001_POWER_ON_BASELINE`, scenario `1`: no-warning 준비 상태 진입 확인
+- `ST_002` `TC_CANOE_ST_CORE_002_NORMAL_DRIVE`, scenario `14`: 정상 주행 기준선 안정화 확인
+- `ST_003` `TC_CANOE_ST_CORE_003_BASIC_WARNING_ACTIVATION`, scenario `1 -> 26`: basic warning 활성화 확인
+- `ST_004` `TC_CANOE_ST_CORE_004_BASIC_WARNING_CLEAR`, scenario `26 -> 1`: no-warning 기준선 복귀 확인
+- `ST_005` `TC_CANOE_ST_CORE_005_ENTER_SCHOOL_ZONE`, scenario `1 -> 2`: school-zone 전환 확인
+- `ST_006` `TC_CANOE_ST_CORE_006_EXIT_SCHOOL_ZONE`, scenario `2 -> 1`: school-zone 해제 확인
+- `ST_007` `TC_CANOE_ST_CORE_007_HIGHWAY_POLICY_TRANSITION`, scenario `14 -> 244`: highway policy 안정화 확인
+- `ST_008` `TC_CANOE_ST_CORE_008_STEERING_INACTIVITY`, scenario `244 -> 3 -> 244`: no-steer 경고 발생과 recovery 해제 확인
+- `ST_009` `TC_CANOE_ST_CORE_009_GUIDE_LEFT`, scenario `7`: 좌측 안내 렌더링 확인
+- `ST_010` `TC_CANOE_ST_CORE_010_GUIDE_RIGHT_CLEAR`, scenario `8 -> 1`: guide-right 렌더링과 clear 확인
+
+### 2. Emergency precedence and TX
+
+- `ST_011` `TC_CANOE_ST_V2_011_POLICE_OVERRIDE`, scenario `11`: police priority override 확인
+- `ST_012` `TC_CANOE_ST_V2_012_AMBULANCE_OVERRIDE`, scenario `223`: ambulance priority override 확인
+- `ST_013` `TC_CANOE_ST_CORE_013_POLICE_DIRECTION_RIGHT`, scenario `30`: police-right 방향 표시 확인
+- `ST_014` `TC_CANOE_ST_CORE_014_AMBULANCE_DIRECTION_LEFT`, scenario `33`: ambulance-left 방향 표시 확인
+- `ST_015` `TC_CANOE_ST_V2_015_AMBULANCE_PRIORITY`, scenario `212`: ambulance dispatch priority 유지 확인
+- `ST_016` `TC_CANOE_ST_V2_016_POLICE_TIEBREAK`, scenario `10`: police tie-break 확인
+- `ST_017` `TC_CANOE_ST_V2_017_AMBULANCE_TIEBREAK`, scenario `224`: ambulance tie-break 확인
+- `ST_018` `TC_CANOE_ST_018_POLICE_TX_PERIOD`, scenario `4`: police TX period closure 확인
+- `ST_019` `TC_CANOE_ST_019_AMBULANCE_TX_PERIOD`, scenario `5`: ambulance TX period closure 확인
+- `ST_020` `TC_CANOE_ST_V2_020_TIMEOUT_CLEAR`, scenario `35`: timeout-clear 복원 확인
+- `ST_021` `TC_CANOE_ST_CORE_021_EMERGENCY_CLEAR_RESTORE`, scenario `35`: zone-warning restore 확인
+
+### 3. Object risk and fail-safe
+
+- `ST_027` `TC_CANOE_ST_EXT_027_FRONTAL_OBJECT_RISK`, scenario `20`: frontal object-risk 경고와 event-log 일관성 확인
+- `ST_028` `TC_CANOE_ST_EXT_028_LATERAL_OBJECT_RISK`, scenario `21`: lateral object-risk 경고와 event-log 일관성 확인
+- `ST_029` `TC_CANOE_ST_EXT_029_CUTIN_OBJECT_RISK`, scenario `22`: cut-in object-risk 경고와 event-log 일관성 확인
+- `ST_035` `TC_CANOE_ST_035_TIMEOUT_CLEAR_RESTORE`, scenario `35`: 이전 valid warning 복원 확인
+- `ST_036` `TC_CANOE_ST_036_FAILSAFE_RECOVERY_STABILITY`, scenario `201`: residual oscillation 없는 recovery 확인
+- `ST_046` `TC_CANOE_ST_EXT_046_FAILSAFE_RECOVERY`, scenario `201`: `failSafeMode=0` 복귀 확인
+
+### 4. HMI stability and context
+
+- `ST_030` `TC_CANOE_ST_030_SEATBELT_CONTEXT_ADJUST`, scenario `214`: seat-belt 강조와 alert drift 부재 확인
+- `ST_031` `TC_CANOE_ST_031_DISTANCE_DISPLAY_CONSISTENCY`, scenario `222`: 거리 표시와 text/render 맥락 일치 확인
+- `ST_032` `TC_CANOE_ST_EXT_032_USER_SETTING_CHANGE`, scenario `215`: user policy 반영 확인
+- `ST_033` `TC_CANOE_ST_EXT_033_HISTORY_QUERY`, scenario `222 + historyQuery(0)`: history response 일관성 확인
+- `ST_034` `TC_CANOE_ST_034_DUPLICATE_POPUP_GUARD`, scenario `12`: duplicate popup suppression 확인
+- `ST_037` `TC_CANOE_ST_037_AUDIO_CHANNEL_STABILITY`, scenario `215`: audio focus, ducking, volume 안정성 확인
+- `ST_038` `TC_CANOE_ST_038_VISUAL_CHANNEL_STABILITY`, scenario `220`: popup priority와 cluster sync 안정성 확인
+- `ST_045` `TC_CANOE_ST_EXT_045_TRIP_SEQUENCE`, scenario `200`: 전체 시퀀스 후 no-warning 복귀 확인
 
 ## Wave 2 완료 업데이트 (UT_004/UT_005)
 
@@ -412,46 +354,52 @@ native asset 구축 우선순위는 다음과 같습니다.
 
 ## Wave 4 integration 기준선
 
-| 공식 범위 | Native Asset | TEST_SCN Scenario | 현재 계약 |
-| --- | --- | --- | --- |
-| IT_002 | `TC_CANOE_IT_CORE_002_SCHOOLZONE_PATH` | `2` | nav/chassis 입력에서 ambient 출력까지 이어지는 school-zone 경고 경로를 검증 |
-| IT_003 | `TC_CANOE_IT_CORE_003_HIGHWAY_NOSTEER_PATH` | `3` | chassis 입력에서 ambient 출력까지 이어지는 highway no-steer 경로를 검증 |
-| IT_001 | `TC_CANOE_IT_CORE_001_BASE_ACTIVATION` | `1 -> 2 -> 12` | idle no-warning 기준선, 활성화, duplicate-guard 안정성을 하나의 통합 흐름으로 검증 |
-| IT_004 | `TC_CANOE_IT_V2_004_POLICE_RX` | `4` | police emergency 수신 경로가 최종 warning 상태로 반영되는지 검증 |
-| IT_005 | `TC_CANOE_IT_V2_005_AMBULANCE_RX` | `5` | ambulance emergency 수신 경로가 최종 warning 상태로 반영되는지 검증 |
-| IT_006 | `TC_CANOE_IT_V2_006_ARBITRATION` | `9 -> 10 -> 11 -> 212` | ETA 우선순위, SourceID tiebreak, emergency-over-nav takeover, ambulance-over-police dispatch priority를 포함한 arbitration 기준선을 검증 |
-| IT_007 | `TC_CANOE_IT_CORE_007_AMBIENT_OUTPUT` | `4` | emergency ambient 출력 경로를 검증 |
-| IT_008 | `TC_CANOE_IT_CORE_008_CLUSTER_DIRECTION_OUTPUT` | `30` | cluster 방향 출력 경로를 검증 |
-| IT_009 | `TC_CANOE_IT_V2_009_TIMEOUT_CLEAR` | `35` | emergency clear 후 이전 valid 맥락으로 안전하게 복원되는지 검증 |
-| IT_010 | `TC_CANOE_IT_V2_010_DECEL_ASSIST` | `19` | emergency proximity 상황에서 decel-assist request와 warning synchronization을 검증 |
-| IT_011 | `TC_CANOE_IT_V2_011_FAILSAFE_MIN_WARNING` | `18` | fail-safe downgrade 시 minimum warning 유지와 decel 차단을 검증 |
-| IT_012 | `TC_CANOE_IT_EXT_012_OBJECT_RISK_EVENTLOG` | `20 -> 21 -> 22 -> 24 -> 25` | object-risk escalation, validity filtering, confidence downgrade, event-log 연속성을 검증 |
-| RET_IT_013 | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | `214 -> 215 -> 236 -> 239` | driver-context umbrella row는 retired 처리하고 exact executable row로 대체 |
-| IT_013 | `TC_CANOE_IT_013_SEATBELT_CONTEXT` | `214` | 의도하지 않은 alert-class drift 없이 seat-belt 맥락이 warning 강조를 높이는지 검증 |
-| IT_014 | `TC_CANOE_IT_014_DISPLAY_POLICY` | `215` | display-policy 설정이 output code와 렌더링된 방향 상태에 반영되는지 검증 |
-| IT_015 | `TC_CANOE_IT_015_TURN_LAMP_CONTEXT` | `239` | fail-safe 또는 level drift 없이 right turn-lamp context가 school-zone warning 유형을 조정하는지 검증 |
-| IT_016 | `TC_CANOE_IT_016_DRIVE_MODE_SENSITIVITY` | `236` | alert 유형을 유지한 채 sport-mode context가 school-zone warning 민감도를 올리는지 검증 |
-| IT_017 | `TC_CANOE_IT_017_AUDIO_VOLUME_POLICY` | `215` | alert-volume 설정이 audio focus, ducking, volume policy state에 반영되는지 검증 |
-| IT_018 | `TC_CANOE_IT_EXT_018_EMERGENCY_PLUS_TTC` | `213` | 동시 TTC intersection conflict 상황에서 emergency priority 유지와 decel-assist request를 검증 |
-| RET_IT_015 | `TC_CANOE_IT_BASE_001_POWERTRAIN_STATE` | `216 -> 217` | powertrain umbrella row는 retired 처리하고 exact parked/drive executable row로 대체 |
-| IT_019 | `TC_CANOE_IT_019_POWERTRAIN_PARKED_BASELINE` | `216` | parked 기준선에서 drive-state와 speed-state가 stable no-warning integration 기준선을 유지하는지 검증 |
-| IT_020 | `TC_CANOE_IT_020_POWERTRAIN_DRIVE_BASELINE` | `217` | drive 기준선이 의도하지 않은 warning activation 없이 drive-state와 speed-state를 전달하는지 검증 |
-| RET_IT_016 | `TC_CANOE_IT_BASE_002_CHASSIS_STATE` | `218 -> 219 -> 237` | chassis umbrella row는 retired 처리하고 exact steering/braking/acceleration executable row로 대체 |
-| IT_021 | `TC_CANOE_IT_021_CHASSIS_STEERING_BASELINE` | `218` | steering-input 전파 기준선에서 steering과 speed state가 warning judgment에 맞게 정렬되는지 검증 |
-| IT_022 | `TC_CANOE_IT_022_CHASSIS_BRAKE_BASELINE` | `219` | braking-input 전파 기준선에서 brake와 speed state가 warning judgment에 맞게 정렬되는지 검증 |
-| IT_023 | `TC_CANOE_IT_023_CHASSIS_ACCEL_BASELINE` | `237` | high-acceleration 기준선이 driveMode와 sport-state를 stable chassis integration result로 이끄는지 검증 |
-| RET_IT_017 | `TC_CANOE_IT_BASE_024_BODY_STATE` | `211 -> 216` | body umbrella row는 retired 처리하고 exact hazard/window executable row로 대체 |
-| IT_024 | `TC_CANOE_IT_BASE_024_BODY_STATE` | `211` | hazard 반영 기준선에서 turn-lamp state와 alert level이 drift 없이 정렬되는지 검증 |
-| IT_025 | `TC_CANOE_IT_EXT_025_WINDOW_STATE` | `226` | 진입 맥락에서 좌/우 door window position이 door/window 출력 반영과 일관되는지 검증 |
-| IT_026 | `TC_CANOE_IT_BASE_026_BASIC_DISPLAY_UI` | `220` | visual-first display mode에서 popup, theme, cluster-sync state가 school-zone warning에 맞게 일관되는지 검증 |
-| RET_IT_019 | `TC_CANOE_IT_BASE_027_COMFORT_CONTEXT / TC_CANOE_IT_BASE_030_BODY_SECURITY_CONTEXT` | `229 / 203` | comfort/security umbrella row는 retired 처리하고 exact executable row로 대체 |
-| IT_027 | `TC_CANOE_IT_BASE_027_COMFORT_CONTEXT` | `229` | remote-climate, HVAC, rear-climate, digital-access 출력이 하나의 comfort context로 일관되게 유지되는지 검증 |
-| IT_028 | `TC_CANOE_IT_EXT_028_BODY_CONTROL_LOCK` | `226` | 좌/우 body control 출력 경로 전반에서 door lock/open 반영이 일관되는지 검증 |
-| IT_029 | `TC_CANOE_IT_EXT_029_WIPER_RAIN_BASELINE` | `229` | parked comfort context에서 wiper와 rain-light 기준선이 비활성 상태로 일관되게 유지되는지 검증 |
-| IT_030 | `TC_CANOE_IT_BASE_030_BODY_SECURITY_CONTEXT` | `203` | service downgrade state와 충돌 없이 security-state boundary가 유지되는지 검증 |
-| IT_031 | `TC_CANOE_IT_031_AUDIO_GUIDE_RUNTIME` | `215` | emergency warning 상황에서 audio focus, ducking, 명시적 warning-volume policy를 검증 |
-| RET_IT_021 | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | `18 -> 12 -> 35` | output-availability umbrella row는 retired 처리하고 exact executable row로 대체 |
-| IT_032 | `TC_CANOE_IT_032_OUTPUT_FALLBACK` | `18` | fail-safe entry 상황에서도 minimum warning channel이 유지되는지 검증 |
-| IT_033 | `TC_CANOE_IT_033_DUPLICATE_POPUP_SUPPRESSION` | `12` | 중복 팝업 억제가 과도한 non-emergency popup 반복 변동을 막는지 검증 |
-| IT_034 | `TC_CANOE_IT_034_CHANNEL_RESTORE` | `35` | clear 또는 mismatch recovery 뒤 channel 상태가 일관된 warning 맥락으로 복원되는지 검증 |
-| IT_035 | `TC_CANOE_IT_EXT_035_DISTANCE_HISTORY` | `222 + historyQuery(0)` | emergency 거리 표시와 latest-history response가 일관되는지 검증 |
+### 1. Core and emergency integration
+
+- `IT_001` `TC_CANOE_IT_CORE_001_BASE_ACTIVATION`, scenario `1 -> 2 -> 12`: idle baseline, activation, duplicate-guard 안정성 검증
+- `IT_002` `TC_CANOE_IT_CORE_002_SCHOOLZONE_PATH`, scenario `2`: school-zone 경고 경로 검증
+- `IT_003` `TC_CANOE_IT_CORE_003_HIGHWAY_NOSTEER_PATH`, scenario `3`: highway no-steer 경로 검증
+- `IT_004` `TC_CANOE_IT_V2_004_POLICE_RX`, scenario `4`: police emergency 수신 경로 검증
+- `IT_005` `TC_CANOE_IT_V2_005_AMBULANCE_RX`, scenario `5`: ambulance emergency 수신 경로 검증
+- `IT_006` `TC_CANOE_IT_V2_006_ARBITRATION`, scenario `9 -> 10 -> 11 -> 212`: arbitration 기준선 검증
+- `IT_007` `TC_CANOE_IT_CORE_007_AMBIENT_OUTPUT`, scenario `4`: emergency ambient 출력 검증
+- `IT_008` `TC_CANOE_IT_CORE_008_CLUSTER_DIRECTION_OUTPUT`, scenario `30`: cluster 방향 출력 검증
+- `IT_009` `TC_CANOE_IT_V2_009_TIMEOUT_CLEAR`, scenario `35`: emergency clear 후 안전 복원 검증
+- `IT_010` `TC_CANOE_IT_V2_010_DECEL_ASSIST`, scenario `19`: decel-assist와 warning synchronization 검증
+- `IT_011` `TC_CANOE_IT_V2_011_FAILSAFE_MIN_WARNING`, scenario `18`: minimum warning 유지와 decel 차단 검증
+- `IT_012` `TC_CANOE_IT_EXT_012_OBJECT_RISK_EVENTLOG`, scenario `20 -> 21 -> 22 -> 24 -> 25`: object-risk escalation과 event-log 연속성 검증
+- `IT_018` `TC_CANOE_IT_EXT_018_EMERGENCY_PLUS_TTC`, scenario `213`: emergency priority와 TTC decel-assist 동시 검증
+
+### 2. Driver and HMI policy integration
+
+- `RET_IT_013` `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT`, scenario `214 -> 215 -> 236 -> 239`: retired umbrella row
+- `IT_013` `TC_CANOE_IT_013_SEATBELT_CONTEXT`, scenario `214`: seat-belt 강조 검증
+- `IT_014` `TC_CANOE_IT_014_DISPLAY_POLICY`, scenario `215`: display-policy 출력 반영 검증
+- `IT_015` `TC_CANOE_IT_015_TURN_LAMP_CONTEXT`, scenario `239`: turn-lamp 맥락 조정 검증
+- `IT_016` `TC_CANOE_IT_016_DRIVE_MODE_SENSITIVITY`, scenario `236`: sport-mode 민감도 조정 검증
+- `IT_017` `TC_CANOE_IT_017_AUDIO_VOLUME_POLICY`, scenario `215`: audio volume policy 반영 검증
+- `IT_031` `TC_CANOE_IT_031_AUDIO_GUIDE_RUNTIME`, scenario `215`: emergency audio runtime 검증
+- `RET_IT_021` `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY`, scenario `18 -> 12 -> 35`: retired umbrella row
+- `IT_032` `TC_CANOE_IT_032_OUTPUT_FALLBACK`, scenario `18`: minimum warning channel 유지 검증
+- `IT_033` `TC_CANOE_IT_033_DUPLICATE_POPUP_SUPPRESSION`, scenario `12`: duplicate popup suppression 검증
+- `IT_034` `TC_CANOE_IT_034_CHANNEL_RESTORE`, scenario `35`: channel restore 검증
+- `IT_035` `TC_CANOE_IT_EXT_035_DISTANCE_HISTORY`, scenario `222 + historyQuery(0)`: distance/history response 일관성 검증
+
+### 3. Vehicle baseline and body integration
+
+- `RET_IT_015` `TC_CANOE_IT_BASE_001_POWERTRAIN_STATE`, scenario `216 -> 217`: retired umbrella row
+- `IT_019` `TC_CANOE_IT_019_POWERTRAIN_PARKED_BASELINE`, scenario `216`: parked baseline 검증
+- `IT_020` `TC_CANOE_IT_020_POWERTRAIN_DRIVE_BASELINE`, scenario `217`: drive baseline 검증
+- `RET_IT_016` `TC_CANOE_IT_BASE_002_CHASSIS_STATE`, scenario `218 -> 219 -> 237`: retired umbrella row
+- `IT_021` `TC_CANOE_IT_021_CHASSIS_STEERING_BASELINE`, scenario `218`: steering baseline 검증
+- `IT_022` `TC_CANOE_IT_022_CHASSIS_BRAKE_BASELINE`, scenario `219`: brake baseline 검증
+- `IT_023` `TC_CANOE_IT_023_CHASSIS_ACCEL_BASELINE`, scenario `237`: high-acceleration baseline 검증
+- `RET_IT_017` `TC_CANOE_IT_BASE_024_BODY_STATE`, scenario `211 -> 216`: retired umbrella row
+- `IT_024` `TC_CANOE_IT_BASE_024_BODY_STATE`, scenario `211`: hazard 반영 기준선 검증
+- `IT_025` `TC_CANOE_IT_EXT_025_WINDOW_STATE`, scenario `226`: door/window 출력 일관성 검증
+- `IT_026` `TC_CANOE_IT_BASE_026_BASIC_DISPLAY_UI`, scenario `220`: visual-first display mode 검증
+- `RET_IT_019` `TC_CANOE_IT_BASE_027_COMFORT_CONTEXT / TC_CANOE_IT_BASE_030_BODY_SECURITY_CONTEXT`, scenario `229 / 203`: retired umbrella row
+- `IT_027` `TC_CANOE_IT_BASE_027_COMFORT_CONTEXT`, scenario `229`: comfort context 출력 일관성 검증
+- `IT_028` `TC_CANOE_IT_EXT_028_BODY_CONTROL_LOCK`, scenario `226`: body control lock/open 일관성 검증
+- `IT_029` `TC_CANOE_IT_EXT_029_WIPER_RAIN_BASELINE`, scenario `229`: parked comfort baseline 검증
+- `IT_030` `TC_CANOE_IT_BASE_030_BODY_SECURITY_CONTEXT`, scenario `203`: security-state boundary 유지 검증

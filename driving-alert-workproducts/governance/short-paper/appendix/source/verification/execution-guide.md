@@ -25,11 +25,9 @@
 
 현재 baseline은 `harness-first execution model`을 사용합니다.
 
-| 요소 | 역할 |
-| --- | --- |
-| `TEST_SCN` | scenario stimulus를 주입하고 scenario 단위 verdict 상태를 설정합니다. |
-| `TEST_BAS` | `Test::base*` summary variable을 통해 baseline 결과를 집계합니다. |
-| native CANoe Test Unit asset | 선택한 verification package를 CANoe 내부에서 실행합니다. |
+- `TEST_SCN`: scenario stimulus를 주입하고 scenario 단위 verdict 상태를 설정합니다.
+- `TEST_BAS`: `Test::base*` summary variable을 통해 baseline 결과를 집계합니다.
+- native CANoe Test Unit asset: 선택한 verification package를 CANoe 내부에서 실행합니다.
 
 ## 현재 active native asset
 
@@ -44,16 +42,14 @@
 
 현재 실행 흐름은 아래 harness variable에 의존합니다.
 
-| 변수 | 의미 |
-| --- | --- |
-| `Test::scenarioCommand` | one-shot execution trigger |
-| `Test::scenarioCommandAck` | accepted command identifier |
-| `Test::scenarioResult` | `TEST_SCN`이 기록하는 scenario 단위 verdict |
-| `Test::baseScenarioId` | baseline aggregation에 사용하는 scenario identifier |
-| `Test::baseScenarioResult` | `TEST_BAS`가 기록하는 baseline PASS/FAIL 결과 |
-| `Test::baseFlowCoverageMask` | baseline coverage summary |
-| `Test::baseTraceSnapshotId` | baseline trace anchor |
-| `Test::baseTestHealth` | baseline harness health summary |
+- `Test::scenarioCommand`: one-shot execution trigger
+- `Test::scenarioCommandAck`: accepted command identifier
+- `Test::scenarioResult`: `TEST_SCN`이 기록하는 scenario 단위 verdict
+- `Test::baseScenarioId`: baseline aggregation에 사용하는 scenario identifier
+- `Test::baseScenarioResult`: `TEST_BAS`가 기록하는 baseline PASS/FAIL 결과
+- `Test::baseFlowCoverageMask`: baseline coverage summary
+- `Test::baseTraceSnapshotId`: baseline trace anchor
+- `Test::baseTestHealth`: baseline harness health summary
 
 ## 표준 실행 절차
 
@@ -68,10 +64,12 @@
 
 ## 현재 매핑
 
-| 자산 | 주요 scope | 주요 runtime check |
-| --- | --- | --- |
-| `TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION` | school-zone warning-selection path | `selectedAlert*`, `warningPathStatus`, `failSafeMode`, `warningTextCode` |
-| `TC_CANOE_IT_V2_011_FAILSAFE_MIN_WARNING` | boundary fail-safe path | `failSafeMode`, `decelAssistReq`, `selectedAlert*`, `warningTextCode`, `Test::baseScenarioId`, `Test::baseScenarioResult` |
+- `TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION`
+  - scope: school-zone warning-selection path
+  - runtime check: `selectedAlert*`, `warningPathStatus`, `failSafeMode`, `warningTextCode`
+- `TC_CANOE_IT_V2_011_FAILSAFE_MIN_WARNING`
+  - scope: boundary fail-safe path
+  - runtime check: `failSafeMode`, `decelAssistReq`, `selectedAlert*`, `warningTextCode`, `Test::baseScenarioId`, `Test::baseScenarioResult`
 
 ## 기대 산출물
 

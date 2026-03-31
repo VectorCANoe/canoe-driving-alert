@@ -25,13 +25,21 @@ oracle은 단일 signal check가 아닙니다.
 
 ## Oracle 모델
 
-| Oracle 계층 | 주 소스 | PASS 기대치 |
-| --- | --- | --- |
-| Contract oracle | communication matrix, owner/route contract, multibus policy, interface contract | runtime이 문서화된 owner, bus, route, timeout, observation seam을 따릅니다. |
-| ECU behavior oracle | ECU classification, panel/sysvar contract, diagnostic-sysvar contract | 각 active ECU 또는 surface가 문서화된 responsibility boundary 안에서 동작합니다. |
-| Scenario oracle | acceptance criteria | scenario result가 기대한 alert, clear, fail-safe, routing behavior와 일치합니다. |
-| Harness oracle | `TEST_SCN`, `TEST_BAS`, native Test Unit verdict | native harness verdict가 기대 scenario result와 일치합니다. |
-| Evidence oracle | evidence policy와 captured artifact | evidence package가 review와 traceability에 충분합니다. |
+- Contract oracle
+  - source: communication matrix, owner/route contract, multibus policy, interface contract
+  - pass expectation: runtime이 문서화된 owner, bus, route, timeout, observation seam을 따릅니다.
+- ECU behavior oracle
+  - source: ECU classification, panel/sysvar contract, diagnostic-sysvar contract
+  - pass expectation: 각 active ECU 또는 surface가 문서화된 responsibility boundary 안에서 동작합니다.
+- Scenario oracle
+  - source: acceptance criteria
+  - pass expectation: scenario result가 기대한 alert, clear, fail-safe, routing behavior와 일치합니다.
+- Harness oracle
+  - source: `TEST_SCN`, `TEST_BAS`, native Test Unit verdict
+  - pass expectation: native harness verdict가 기대 scenario result와 일치합니다.
+- Evidence oracle
+  - source: evidence policy와 captured artifact
+  - pass expectation: evidence package가 review와 traceability에 충분합니다.
 
 ## Oracle source
 
@@ -66,13 +74,11 @@ oracle은 단일 signal check가 아닙니다.
 
 현재 baseline이 쓰는 핵심 seam은 아래와 같습니다.
 
-| Harness seam | 해석 |
-| --- | --- |
-| `Test::scenarioResult` | `TEST_SCN`이 기록하는 scenario-level PASS/FAIL |
-| `Test::baseScenarioResult` | `TEST_BAS`가 기록하는 aggregate baseline verdict |
-| `Test::baseFlowCoverageMask` | review completeness를 위한 coverage summary |
-| `Test::baseTraceSnapshotId` | evidence navigation용 trace anchor |
-| `Test::baseTestHealth` | harness trustworthiness를 판단하는 health summary |
+- `Test::scenarioResult`: `TEST_SCN`이 기록하는 scenario-level PASS/FAIL
+- `Test::baseScenarioResult`: `TEST_BAS`가 기록하는 aggregate baseline verdict
+- `Test::baseFlowCoverageMask`: review completeness를 위한 coverage summary
+- `Test::baseTraceSnapshotId`: evidence navigation용 trace anchor
+- `Test::baseTestHealth`: harness trustworthiness를 판단하는 health summary
 
 ## 현재 oracle 경계
 

@@ -24,39 +24,45 @@
 
 ## 3. 표기 규칙
 
-| 항목 | 규칙 |
-|---|---|
-| Surface ECU | `EMS`, `VCU`, `ESC`, `MDPS`, `BCM`, `IVI`, `CLU`, `ADAS`, `V2X`, `CGW`처럼 업계 통용 약어를 사용한다. |
-| Runtime Module | `_GW`, `_CTRL`, `_MGR`, `_TX`, `_RX`와 같은 구현 이름은 필요 시 괄호로만 병기한다. |
-| Validation | Validation 전용 노드는 production ECU와 섞지 않고 별도로 설명한다. |
-| 문서 작성 | 상단 표와 reviewer-facing 설명은 표면 ECU 기준으로 읽히도록 작성한다. |
+- `Surface ECU`: `EMS`, `VCU`, `ESC`, `MDPS`, `BCM`, `IVI`, `CLU`, `ADAS`, `V2X`, `CGW`처럼 업계 통용 약어를 사용한다.
+- `Runtime Module`: `_GW`, `_CTRL`, `_MGR`, `_TX`, `_RX`와 같은 구현 이름은 필요 시 괄호로만 병기한다.
+- `Validation`: validation 전용 노드는 production ECU와 섞지 않고 별도로 설명한다.
+- `문서 작성`: 상단 표와 reviewer-facing 설명은 표면 ECU 기준으로 읽히도록 작성한다.
 
 ## 4. Canonical 약어 기준
 
-| Canonical (고정) | Alias (설명용) | 비고 |
-|---|---|---|
-| `SGW` | `SECURITY_GATEWAY` | 보안 게이트웨이 |
-| `_4WD` | `AWD_4WD` | 4WD 제어 표면명 |
-| `DATC` | `HVAC` | 공조 제어 |
-| `AHLS` | `LIGHTING_ECU` | 조명 제어 |
-| `EDR` | `EDGE_LOGGER` | 이벤트 기록 |
-| `EMS` | `ECM` | 엔진 제어 표면명 |
-| `TCU` | `TCM` | 변속 제어 표면명 |
-| `ESC` | `ESP` | 제동/차체 제어 표면명 |
-| `MDPS` | `EPS` | 조향 제어 표면명 |
-| `CLU` | `CLUSTER` | 클러스터 표면명 |
-| `ETHB` | `ETH_BACKBONE` | Ethernet 경계 표면명 |
+- `SGW`: alias `SECURITY_GATEWAY`, 보안 게이트웨이
+- `_4WD`: alias `AWD_4WD`, 4WD 제어 표면명
+- `DATC`: alias `HVAC`, 공조 제어
+- `AHLS`: alias `LIGHTING_ECU`, 조명 제어
+- `EDR`: alias `EDGE_LOGGER`, 이벤트 기록
+- `EMS`: alias `ECM`, 엔진 제어 표면명
+- `TCU`: alias `TCM`, 변속 제어 표면명
+- `ESC`: alias `ESP`, 제동/차체 제어 표면명
+- `MDPS`: alias `EPS`, 조향 제어 표면명
+- `CLU`: alias `CLUSTER`, 클러스터 표면명
+- `ETHB`: alias `ETH_BACKBONE`, Ethernet 경계 표면명
 
 ## 5. 주요 표면 ECU 기준
 
-| Domain | 주요 표면 ECU | 설명 |
-|---|---|---|
-| Integration | `CGW`, `ETHB`, `DCM`, `IBOX`, `SGW` | 차량 경계 연결, 진단, 보안, 서비스 경계 역할 (`ETH_BACKBONE` alias) |
-| Powertrain | `EMS`, `TCU`, `VCU`, `_4WD`, `BAT_BMS`, `OBC`, `DCDC`, `MCU`, `INVERTER` | 동력, 전력 변환, 충전, 열관리 관련 기능 |
-| Chassis/Safety | `ESC`, `MDPS`, `ABS`, `EPB`, `EHB`, `VSM`, `ECS`, `CDC`, `RWS` | 제동, 조향, 차체 안정화 관련 기능 |
-| Body/Comfort | `BCM`, `DATC`, `AFLS`, `AHLS`, `DOOR_FL/FR/RL/RR`, `TAILGATE_MODULE`, `SEAT_DRV`, `SEAT_PASS` | 출입, 조명, 공조, 실내 편의 관련 기능 |
-| IVI/HMI | `IVI`, `CLU`, `HUD`, `TMU`, `AMP`, `NAV_MODULE`, `DIGITAL_KEY`, `RSE` | 표시, 안내, 연결 서비스 관련 기능 |
-| ADAS/V2X | `ADAS`, `V2X`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `DMS`, `OMS` | 주행 보조, 주차 보조, 센서 기반 경고 기능 |
+- `Integration`
+  - 주요 표면 ECU: `CGW`, `ETHB`, `DCM`, `IBOX`, `SGW`
+  - 설명: 차량 경계 연결, 진단, 보안, 서비스 경계 역할
+- `Powertrain`
+  - 주요 표면 ECU: `EMS`, `TCU`, `VCU`, `_4WD`, `BAT_BMS`, `OBC`, `DCDC`, `MCU`, `INVERTER`
+  - 설명: 동력, 전력 변환, 충전, 열관리 관련 기능
+- `Chassis/Safety`
+  - 주요 표면 ECU: `ESC`, `MDPS`, `ABS`, `EPB`, `EHB`, `VSM`, `ECS`, `CDC`, `RWS`
+  - 설명: 제동, 조향, 차체 안정화 관련 기능
+- `Body/Comfort`
+  - 주요 표면 ECU: `BCM`, `DATC`, `AFLS`, `AHLS`, `DOOR_FL/FR/RL/RR`, `TAILGATE_MODULE`, `SEAT_DRV`, `SEAT_PASS`
+  - 설명: 출입, 조명, 공조, 실내 편의 관련 기능
+- `IVI/HMI`
+  - 주요 표면 ECU: `IVI`, `CLU`, `HUD`, `TMU`, `AMP`, `NAV_MODULE`, `DIGITAL_KEY`, `RSE`
+  - 설명: 표시, 안내, 연결 서비스 관련 기능
+- `ADAS/V2X`
+  - 주요 표면 ECU: `ADAS`, `V2X`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `DMS`, `OMS`
+  - 설명: 주행 보조, 주차 보조, 센서 기반 경고 기능
 
 ## 6. 문서 적용 기준
 

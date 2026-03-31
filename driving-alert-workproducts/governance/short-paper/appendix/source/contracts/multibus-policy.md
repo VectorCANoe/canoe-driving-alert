@@ -57,42 +57,124 @@
 
 ### 5.1 진성 multibus anchor
 
-| Node | 이유 |
-| --- | --- |
-| `CGW` | cross-domain boundary와 fail-safe authority를 가지며 `frmChassisHealthMsg`, `frmBodyHealthMsg`, `frmInfotainmentHealthMsg`를 함께 소비합니다. |
-| `TEST_SCN` | full-system scenario orchestration을 수행하며 five-domain CAN contract를 모두 주입/관찰해야 합니다. |
+- `CGW`: cross-domain boundary와 fail-safe authority를 가지며 `frmChassisHealthMsg`, `frmBodyHealthMsg`, `frmInfotainmentHealthMsg`를 함께 소비
+- `TEST_SCN`: full-system scenario orchestration을 수행하며 five-domain CAN contract를 모두 주입/관찰
 
 ### 5.2 CAN-primary이지만 cross-domain visibility가 필요한 node
 
-| Node | Primary placement | GUI Ethernet runtime | 추가 CAN visibility | 핵심 이유 |
-| --- | --- | --- | --- | --- |
-| `PGS` | `Infotainment` | not required | `ADAS` | `frmParkUltrasonicStateMsg`를 소비합니다. |
-| `AFLS` | `Body` | not required | `Chassis` | `frmSteeringAngleMsg`를 소비합니다. |
-| `DATC` | `Body` | not required | `Infotainment` | `frmTmuServiceStateMsg`를 소비합니다. |
-| `ACU` | `Chassis` | not required | `Body` | `frmSeatBeltStateMsg`를 소비합니다. |
-| `ODS` | `Chassis` | not required | `Body` | `frmSeatBeltStateMsg`, `frmSeatStateMsg`를 함께 소비합니다. |
-| `ADAS` | `ADAS` | required | `Chassis`, `Body`, `Infotainment`, `Powertrain` | cross-domain context를 소비하고 ADAS-specific ETH seam의 direct ingress owner로 남습니다. |
-| `BCM` | `Body` | not required | `Chassis`, `Infotainment`, `ADAS` | `frmVehicleStateCanMsg`, `frmPhoneAsKeyStateMsg`, `frmTmuServiceStateMsg`, `frmTurnLampInputMsg`, `frmAdasDomainStateMsg`를 소비합니다. |
-| `IVI` | `Infotainment` | required | `Chassis`, `ADAS` | `frmVehicleStateCanMsg`, `frmAdasDomainStateMsg`를 소비하면서 `ethNavContextMsg`를 publish합니다. |
-| `SCC` | `ADAS` | not required | `Powertrain`, `Chassis` | `frmCruiseStateMsg`를 publish하고 `frmVehicleStateCanMsg`를 소비합니다. |
-| `HWP` | `ADAS` | not required | `Powertrain` | `frmCruiseStateMsg`를 소비합니다. |
-| `VCU` | `Chassis` | required | `Powertrain`, `Infotainment` | `frmIgnitionEngineMsg`, `frmGearStateMsg`, `frmVehicleModeMsg`, `frmNavModuleStateMsg`를 소비하면서 `ethVehicleStateMsg`를 publish합니다. |
-| `MDPS` | `Chassis` | required | none | foreign CAN은 필요 없지만 `ethSteeringMsg` publish를 위해 GUI Ethernet runtime placement를 유지합니다. |
-| `CLU` | `Infotainment` | not required | `ADAS` | `frmAdasDomainStateMsg`를 소비합니다. |
+- `PGS`
+  - primary placement: `Infotainment`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `ADAS`
+  - reason: `frmParkUltrasonicStateMsg` 소비
+- `AFLS`
+  - primary placement: `Body`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `Chassis`
+  - reason: `frmSteeringAngleMsg` 소비
+- `DATC`
+  - primary placement: `Body`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `Infotainment`
+  - reason: `frmTmuServiceStateMsg` 소비
+- `ACU`
+  - primary placement: `Chassis`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `Body`
+  - reason: `frmSeatBeltStateMsg` 소비
+- `ODS`
+  - primary placement: `Chassis`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `Body`
+  - reason: `frmSeatBeltStateMsg`, `frmSeatStateMsg` 동시 소비
+- `ADAS`
+  - primary placement: `ADAS`
+  - GUI Ethernet runtime: required
+  - extra CAN visibility: `Chassis`, `Body`, `Infotainment`, `Powertrain`
+  - reason: cross-domain context 소비와 ADAS-specific ETH ingress owner 유지
+- `BCM`
+  - primary placement: `Body`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `Chassis`, `Infotainment`, `ADAS`
+  - reason: `frmVehicleStateCanMsg`, `frmPhoneAsKeyStateMsg`, `frmTmuServiceStateMsg`, `frmTurnLampInputMsg`, `frmAdasDomainStateMsg` 소비
+- `IVI`
+  - primary placement: `Infotainment`
+  - GUI Ethernet runtime: required
+  - extra CAN visibility: `Chassis`, `ADAS`
+  - reason: `frmVehicleStateCanMsg`, `frmAdasDomainStateMsg` 소비와 `ethNavContextMsg` publish
+- `SCC`
+  - primary placement: `ADAS`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `Powertrain`, `Chassis`
+  - reason: `frmCruiseStateMsg` publish와 `frmVehicleStateCanMsg` 소비
+- `HWP`
+  - primary placement: `ADAS`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `Powertrain`
+  - reason: `frmCruiseStateMsg` 소비
+- `VCU`
+  - primary placement: `Chassis`
+  - GUI Ethernet runtime: required
+  - extra CAN visibility: `Powertrain`, `Infotainment`
+  - reason: vehicle-state 관련 CAN을 소비하며 `ethVehicleStateMsg` publish
+- `MDPS`
+  - primary placement: `Chassis`
+  - GUI Ethernet runtime: required
+  - extra CAN visibility: none
+  - reason: foreign CAN은 필요 없지만 `ethSteeringMsg` publish를 위해 backbone runtime 유지
+- `CLU`
+  - primary placement: `Infotainment`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `ADAS`
+  - reason: `frmAdasDomainStateMsg` 소비
 
 ### 5.3 ETH_Backbone-primary node
 
-| Node | Primary placement | GUI Ethernet runtime | 추가 CAN visibility | 핵심 이유 |
-| --- | --- | --- | --- | --- |
-| `CGW` | `ETH_Backbone` | required | `Chassis`, `Body`, `Infotainment` | health seam과 cross-domain boundary contract를 모두 소유합니다. |
-| `TEST_SCN` | `ETH_Backbone` | required | `Powertrain`, `Chassis`, `Body`, `Infotainment`, `ADAS` | validation orchestration과 full-system signal injection/observation을 수행합니다. |
-| `V2X` | `ETH_Backbone` | required | none | emergency backbone ingress와 monitor owner입니다. |
-| `DCM` | `ETH_Backbone` | not required | `Infotainment` | source/mirror에서는 backbone 아래 유지하지만, live Ethernet runtime 참여는 제거합니다. |
-| `ETHB` | `ETH_Backbone` | not required | `Infotainment` | internal fail-safe contract만 읽고 live Ethernet runtime은 필요하지 않습니다. |
-| `SGW` | `ETH_Backbone` | not required | `Chassis`, `Infotainment` | `frmVehicleStateCanMsg`, `frmNavModuleStateMsg`, `frmClusterNotifMsg`를 소비합니다. |
-| `IBOX` | `ETH_Backbone` | not required | `Chassis`, `Infotainment`, `ADAS` | vehicle/nav/ADAS context를 소비하지만 direct ETH RX/TX owner는 아닙니다. |
-| `EDR` | `ETH_Backbone` | not required | `ADAS` | object/fail-safe internal contract를 읽는 observer 성격입니다. |
-| `TEST_BAS` | `ETH_Backbone` | required | none | shared observer와 sysvar aggregation seam을 담당합니다. |
+- `CGW`
+  - primary placement: `ETH_Backbone`
+  - GUI Ethernet runtime: required
+  - extra CAN visibility: `Chassis`, `Body`, `Infotainment`
+  - reason: health seam과 cross-domain boundary contract 소유
+- `TEST_SCN`
+  - primary placement: `ETH_Backbone`
+  - GUI Ethernet runtime: required
+  - extra CAN visibility: `Powertrain`, `Chassis`, `Body`, `Infotainment`, `ADAS`
+  - reason: validation orchestration과 full-system signal injection/observation 수행
+- `V2X`
+  - primary placement: `ETH_Backbone`
+  - GUI Ethernet runtime: required
+  - extra CAN visibility: none
+  - reason: emergency backbone ingress와 monitor owner
+- `DCM`
+  - primary placement: `ETH_Backbone`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `Infotainment`
+  - reason: source/mirror에서는 backbone 아래 유지하지만 live runtime 참여는 제거
+- `ETHB`
+  - primary placement: `ETH_Backbone`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `Infotainment`
+  - reason: internal fail-safe contract만 읽고 live Ethernet runtime은 필요하지 않음
+- `SGW`
+  - primary placement: `ETH_Backbone`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `Chassis`, `Infotainment`
+  - reason: `frmVehicleStateCanMsg`, `frmNavModuleStateMsg`, `frmClusterNotifMsg` 소비
+- `IBOX`
+  - primary placement: `ETH_Backbone`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `Chassis`, `Infotainment`, `ADAS`
+  - reason: vehicle, nav, ADAS context를 소비하지만 direct ETH RX/TX owner는 아님
+- `EDR`
+  - primary placement: `ETH_Backbone`
+  - GUI Ethernet runtime: not required
+  - extra CAN visibility: `ADAS`
+  - reason: object/fail-safe internal contract를 읽는 observer 성격
+- `TEST_BAS`
+  - primary placement: `ETH_Backbone`
+  - GUI Ethernet runtime: required
+  - extra CAN visibility: none
+  - reason: shared observer와 sysvar aggregation seam 담당
 
 ## 6. `TEST_BAS` 단일-bus 유지 규칙
 

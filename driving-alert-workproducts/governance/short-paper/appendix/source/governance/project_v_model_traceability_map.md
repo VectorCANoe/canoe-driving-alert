@@ -15,16 +15,38 @@
 
 ## 3. V-모델 매핑 표
 
-| 관점 | ASPICE / ISO 26262 | 프로젝트 문서 | 검증 대응 |
-|---|---|---|---|
-| 안전 / 추적성 기준 | `SYS.2`, `SUP.10` / Part 3, Part 8 | `00d_HARA_Worksheet`, `00g_Master_Test_Matrix` | `05`, `06`, `07` 전 계층 |
-| 시스템 요구사항 | `SYS.2` / Part 4, Cl.6 | `01_Requirements` | `07_System_Test` |
-| 시스템 설계 | `SYS.3` / Part 4, Cl.7 | `03`, `0301`, `0302` | `06`, `07` |
-| 통신 / 변수 계약 | `SWE.2`, `SWE.3` / Part 6, Cl.7~8 | `0303`, `0304` | `05`, `06` |
-| 구현 기준선 | `SWE.3` / Part 6, Cl.9 | `04_SW_Implementation` | `05`, `06` |
-| 단위 검증 | `SWE.4` / Part 6, Cl.9 | `05_Unit_Test` | `0303`, `0304`, `04` |
-| 통합 검증 | `SWE.5` / Part 6, Cl.10 | `06_Integration_Test` | `03`, `0301`, `0302`, `0303`, `0304` |
-| 시스템 검증 | `SYS.5` / Part 4, Cl.10 | `07_System_Test` | `01_Requirements`, `00d_HARA_Worksheet` |
+- 안전 / 추적성 기준
+  - standard: `SYS.2`, `SUP.10` / Part 3, Part 8
+  - project docs: `00d_HARA_Worksheet`, `00g_Master_Test_Matrix`
+  - verification link: `05`, `06`, `07` 전 계층
+- 시스템 요구사항
+  - standard: `SYS.2` / Part 4, Cl.6
+  - project docs: `01_Requirements`
+  - verification link: `07_System_Test`
+- 시스템 설계
+  - standard: `SYS.3` / Part 4, Cl.7
+  - project docs: `03`, `0301`, `0302`
+  - verification link: `06`, `07`
+- 통신 / 변수 계약
+  - standard: `SWE.2`, `SWE.3` / Part 6, Cl.7~8
+  - project docs: `0303`, `0304`
+  - verification link: `05`, `06`
+- 구현 기준선
+  - standard: `SWE.3` / Part 6, Cl.9
+  - project docs: `04_SW_Implementation`
+  - verification link: `05`, `06`
+- 단위 검증
+  - standard: `SWE.4` / Part 6, Cl.9
+  - project docs: `05_Unit_Test`
+  - verification link: `0303`, `0304`, `04`
+- 통합 검증
+  - standard: `SWE.5` / Part 6, Cl.10
+  - project docs: `06_Integration_Test`
+  - verification link: `03`, `0301`, `0302`, `0303`, `0304`
+- 시스템 검증
+  - standard: `SYS.5` / Part 4, Cl.10
+  - project docs: `07_System_Test`
+  - verification link: `01_Requirements`, `00d_HARA_Worksheet`
 
 표 1의 각 행은 아래 의미를 갖는다.
 
