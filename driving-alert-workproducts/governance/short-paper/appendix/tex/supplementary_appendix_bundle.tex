@@ -1,9 +1,9 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[10pt,a4paper]{article}
 \usepackage{kotex}
 \setmainhangulfont{AppleMyungjo}
 \setsanshangulfont{Apple SD Gothic Neo}
 \setmonofont{Apple SD Gothic Neo}
-\usepackage[margin=24mm]{geometry}
+\usepackage[margin=20mm]{geometry}
 \usepackage{longtable,booktabs,array,tabularx}
 \usepackage{hyperref}
 \usepackage{xurl}
@@ -12,15 +12,21 @@
 \usepackage{fancyhdr}
 \usepackage{setspace}
 \usepackage{parskip}
+\usepackage{etoolbox}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.45em}
 \setlength{\headheight}{14pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
 \setlist[itemize]{leftmargin=1.5em}
 \setlist[enumerate]{leftmargin=1.8em}
 \newcounter{none}
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \sloppy
+\AtBeginEnvironment{longtable}{\footnotesize}
+\AtBeginEnvironment{tabular}{\footnotesize}
+\AtBeginEnvironment{tabularx}{\footnotesize}
 
 \hypersetup{
   colorlinks=true,
@@ -135,14 +141,14 @@ Source Rule & Canonical source paths are preserved in each supplementary note \\
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{../figures/network_architecture_driving_alert_active_baseline.png}
+\includegraphics[width=0.92\textwidth]{../figures/network_architecture_driving_alert_active_baseline.png}
 \caption{Integrated warning network topology. Domain CAN, ETH Backbone, decision ownership, boundary authority, render/output, validation/diagnostic separation을 한 장에서 정리하였다.}
 \end{figure}
 \clearpage
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{../figures/signal_flow_integrated_warning_network.png}
+\includegraphics[width=0.92\textwidth]{../figures/signal_flow_integrated_warning_network.png}
 \caption{Integrated warning signal flow. Context publication, emergency ingress, V2X normalization, ADAS arbitration, CGW boundary shaping, render/verification, timeout recovery 규칙을 순차적으로 정리하였다.}
 \end{figure}
 \clearpage
