@@ -21,7 +21,7 @@
 \setbeamertemplate{itemize subitem}{\tiny$\blacktriangleright$}
 
 \title{주행 상황 실시간 경고 시스템}
-\subtitle{구간 정보 및 긴급차량 접근 기반 경고 컨셉\\설계, 구현, 시험, 운영 자동화 경험}
+\subtitle{구간 정보 및 긴급차량 접근 기반 경고 컨셉\\전주기 시스템 설계·구현·검증 포트폴리오}
 \author{Driving Alert Project}
 \date{2026-03}
 
@@ -32,8 +32,24 @@
 \end{frame}
 
 \begin{frame}{목차}
+\begin{columns}[T,onlytextwidth]
+\column{0.52\textwidth}
 \footnotesize
 \tableofcontents
+
+\column{0.46\textwidth}
+\small
+\begin{block}{발표 흐름}
+\scriptsize
+\begin{itemize}
+  \item 전체 차량 기준선 $\rightarrow$ 다수 ECU 구조 $\rightarrow$ 네트워크 흐름
+  \item \texttt{V2X} $\rightarrow$ \texttt{ADAS} $\rightarrow$ \texttt{CGW} $\rightarrow$ 진단/관측 계층
+  \item 패널 $\rightarrow$ 요구사항 $\rightarrow$ 기능 정의 $\rightarrow$ 시험 전략
+  \item \texttt{UT / IT / ST} $\rightarrow$ 실행 증빙 $\rightarrow$ 리포트 $\rightarrow$ 운영 자동화
+  \item 정량 지표 구조 $\rightarrow$ appendix / 별첨
+\end{itemize}
+\end{block}
+\end{columns}
 \end{frame}
 
 \AtBeginSubsection[]
@@ -652,11 +668,11 @@ TTC=\frac{3600\cdot d}{|v_{rel}|}
 \section{결과와 해석}
 \subsection{핵심 결과와 정량 지표}
 
-\begin{frame}{도출 결과 요약}
+\begin{frame}{프로젝트 성과 요약}
 \begin{itemize}
-  \item 주행 경고 컨셉은 문서, CAPL ECU, 시험 자산, 운영 자동화까지 연결된 하나의 기준선으로 정리되었다.
-  \item V2X 선택 규칙, ADAS 위험도 산정, timeout clear와 복귀 규칙이 각각 독립된 설명이 아니라 같은 중재 구조 안에서 설명되도록 정리되었다.
-  \item 즉 본 프로젝트는 기능 데모보다 ``설명 가능한 컨셉 + 실행 가능한 시험 구조''를 구축한 데 의미가 있다.
+  \item 본 프로젝트는 개별 기능 시연이 아니라, 전체 차량 기준선 위에서 구간 경고, 긴급차량 접근, 객체 위험을 하나의 경고 정책으로 통합한 시스템 구축 결과다.
+  \item 이 구조는 \texttt{V2X}, \texttt{ADAS}, \texttt{CGW} 논리 ECU의 CAPL 구현과 출력·진단·시험 경로까지 포함하여 실제 실행 가능한 기준선으로 정리되었다.
+  \item 또한 요구사항, 기능 정의, 흐름, 통신, 변수, 코드, 단위시험·통합시험·시스템시험이 하나의 추적 구조로 닫히도록 구성하였다.
 \end{itemize}
 \end{frame}
 
@@ -694,24 +710,24 @@ N3&=(S_{rec}/T_{rec})\times100 && \text{복귀 안정성 준수율}
 
 \begin{frame}{핵심 결과 해석}
 \begin{itemize}
-  \item 자산 수 자체보다, 어떤 로직을 어떤 지표로 해석할 수 있는 구조를 만들었는지가 더 중요하다.
-  \item 따라서 결과는 단순 PASS 개수보다 V2X 선택, 통합 경고, 복귀 안정성의 세 축을 중심으로 정리한다.
-  \item 필요 시 실제 CANoe 실행 화면과 대표 시나리오 결과를 함께 제시해 정량 지표의 의미를 보강할 수 있다.
+  \item 본 프로젝트의 강점은 단일 시나리오를 설명하는 수준을 넘어, 전체 차량 시스템을 처음부터 끝까지 하나의 기준선으로 연결했다는 점이다.
+  \item 특히 77개 단위시험, 45개 통합시험, 46개 시스템시험 자산은 핵심 기능이 요구사항부터 시스템시험까지 이어지는 검증 구조를 갖추었음을 보여준다.
+  \item 따라서 결과는 단순 PASS 개수보다 V2X 선택, 통합 경고, 복귀 안정성을 어떤 근거와 시나리오로 해석할 수 있는지가 더 중요하다.
 \end{itemize}
 \end{frame}
 
-\section{결론 및 향후 계획}
+\section{프로젝트 정리 및 향후 계획}
 \subsection{프로젝트 가치와 향후 방향}
 
-\begin{frame}{프로젝트의 핵심 가치}
+\begin{frame}{프로젝트 성과와 구축 범위}
 \begin{itemize}
-  \item 구간 경고, 긴급차량 접근, 교차로·합류구간 위험을 분리된 기능이 아니라 하나의 경고 정책으로 설명할 수 있게 되었다.
-  \item 문서, 코드, 시험, 운영 산출이 같은 기준선 위에 놓이도록 정리함으로써 이후 확장과 검증의 출발점을 확보하였다.
-  \item 이 점이 본 프로젝트를 단순 시연이 아니라 시스템 관점의 구축 사례로 만든다.
+  \item 구간 경고, 긴급차량 접근, 교차로·합류구간 위험을 분리된 기능으로 남기지 않고, 전체 차량 기준선 위에서 하나의 통합 경고 정책으로 구현하였다.
+  \item 문서, CAPL ECU 코드, 시험 자산, 운영 자동화 산출을 같은 기준선 위에 정렬하여 확장과 검증이 가능한 구조를 확보하였다.
+  \item 이 점에서 본 프로젝트는 단순 기능 시연이 아니라 차량 시스템 관점의 통합 구축 사례로 의미를 가진다.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{산업적 의미}
+\begin{frame}{프로젝트 확장성과 활용 관점}
 \begin{itemize}
   \item 실제 차량 시스템에서는 입력이 많아질수록 경고 기능도 늘어나지만, 사용자가 경험하는 것은 결국 하나의 최종 경고 정책이다.
   \item 본 프로젝트는 이 정책을 문서, ECU 구조, 시험 자산, 운영 체계까지 포함한 형태로 설명할 수 있게 했다는 점에서 의미가 있다.
@@ -739,9 +755,9 @@ N3&=(S_{rec}/T_{rec})\times100 && \text{복귀 안정성 준수율}
 
 \begin{frame}{맺음말}
 \begin{itemize}
-  \item 본 프로젝트는 주행 경고 컨셉을 설계, 구현, 시험, 운영 기준선으로 연결한 경험을 정리한 사례이다.
-  \item 발표의 핵심은 ``어떤 기능을 만들었는가''보다 ``어떻게 설명 가능한 구조로 만들었는가''에 있다.
-  \item 이후 단계에서는 현재 확보한 기준선을 바탕으로 정량 결과와 확장 기능을 점진적으로 누적할 수 있다.
+  \item 본 프로젝트는 전체 차량 기준선 위에서 주행 경고 정책을 설계, 구현, 시험, 운영 기준선으로 끝까지 연결한 사례이다.
+  \item 발표의 핵심은 단일 기능 소개보다, 요구사항부터 시스템시험까지 닫히는 시스템 통합 구조를 실제 ECU 구현과 함께 구축했다는 점에 있다.
+  \item 이후 단계에서는 현재 확보한 기준선을 바탕으로 정량 결과를 확정하고 확장 기능을 점진적으로 누적할 수 있다.
 \end{itemize}
 \end{frame}
 

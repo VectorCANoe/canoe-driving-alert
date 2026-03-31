@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#f9f9fb"/>
+
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#444"/>
+    </marker>
+  </defs>
+
+  <style>
+    .font-kr { font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+    .font-en { font-family: Menlo, Consolas, "SF Mono", monospace; }
+  </style>
+
+  <!-- ===== HEADER ===== -->
+  <rect x="0" y="0" width="1280" height="68" fill="#1a252f"/>
+  <text x="42" y="26" class="font-kr" font-size="13" fill="#bb8fce">HMI (Output Layer)</text>
+  <text x="42" y="50" class="font-kr" font-size="22" font-weight="700" fill="#ffffff">최종 경고 표출 (Ambient/Cluster/Audio) 매핑 — CAPL 이벤트 패턴</text>
+  <text x="1238" y="42" class="font-kr" font-size="13" fill="#aab7c4" text-anchor="end">on message · 상태 디코딩 · 다중 채널 동시 렌더링</text>
+
+  <!-- ===== SECTION HEADERS ===== -->
+  <rect x="30" y="84" width="220" height="34" rx="6" fill="#1a5276"/>
+  <text x="140" y="107" class="font-kr" font-size="13" font-weight="700" fill="#eaf2f8" text-anchor="middle">① 유효 경고 (Effective) 수신</text>
+
+  <rect x="280" y="84" width="220" height="34" rx="6" fill="#1a5276"/>
+  <text x="390" y="107" class="font-kr" font-size="13" font-weight="700" fill="#eaf2f8" text-anchor="middle">② 상태/우선순위 디코딩</text>
+
+  <rect x="530" y="84" width="220" height="34" rx="6" fill="#5b2c6f"/>
+  <text x="640" y="107" class="font-kr" font-size="13" font-weight="700" fill="#f4ecf7" text-anchor="middle">③ Ambient Light 매핑</text>
+
+  <rect x="780" y="84" width="220" height="34" rx="6" fill="#5b2c6f"/>
+  <text x="890" y="107" class="font-kr" font-size="13" font-weight="700" fill="#f4ecf7" text-anchor="middle">④ Cluster / HUD 팝업 반영</text>
+
+  <rect x="1030" y="84" width="220" height="34" rx="6" fill="#5b2c6f"/>
+  <text x="1140" y="107" class="font-kr" font-size="13" font-weight="700" fill="#f4ecf7" text-anchor="middle">⑤ Audio Focus 제어</text>
+
+  <!-- ===== FLOW COMPONENTS ===== -->
+  
+  <!-- Step 1: Receiving Effective Alert -->
+  <rect x="30" y="136" width="220" height="230" rx="10" fill="#eaf2f8" stroke="#2980b9" stroke-width="2"/>
+  <rect x="30" y="136" width="220" height="28" rx="10" fill="#2980b9"/>
+  <rect x="30" y="154" width="220" height="10" fill="#2980b9"/>
+  <text x="140" y="156" class="font-en" font-size="12" fill="#fff" text-anchor="middle">on message (ETH)</text>
+
+  <rect x="50" y="186" width="180" height="60" rx="8" fill="#fff" stroke="#2980b9" stroke-width="1.5"/>
+  <text x="140" y="206" class="font-en" font-size="11" fill="#154360" font-weight="700" text-anchor="middle">ethEffectiveAlertMsg</text>
+  <text x="140" y="224" class="font-kr" font-size="11" fill="#154360" text-anchor="middle">CGW로부터 수신된 검증된 내용</text>
+
+  <text x="140" y="268" class="font-kr" font-size="11" fill="#2980b9" font-weight="700" text-anchor="middle">경고 판단 로직 불필요</text>
+  <text x="140" y="286" class="font-kr" font-size="11" fill="#154360" text-anchor="middle">주행 맥락 판단은 ADAS 소관</text>
+  <text x="140" y="304" class="font-kr" font-size="11" fill="#154360" text-anchor="middle">HMI는 '주어진 상태'만 렌더링</text>
+
+  <text x="140" y="348" class="font-kr" font-size="10" fill="#154360" text-anchor="middle">Active / Level / Type 속성 포함</text>
+
+  <!-- Arrow 1->2 -->
+  <line x1="250" y1="250" x2="280" y2="250" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+
+  <!-- Step 2: Decoding Status -->
+  <rect x="280" y="136" width="220" height="230" rx="10" fill="#eaf2f8" stroke="#2980b9" stroke-width="2"/>
+  <rect x="280" y="136" width="220" height="28" rx="10" fill="#2980b9"/>
+  <rect x="280" y="154" width="220" height="10" fill="#2980b9"/>
+  <text x="390" y="156" class="font-en" font-size="12" fill="#fff" text-anchor="middle">decodeAlertProperty()</text>
+
+  <rect x="300" y="186" width="180" height="40" rx="8" fill="#fff" stroke="#2980b9" stroke-width="1.5"/>
+  <text x="390" y="204" class="font-en" font-size="11" fill="#154360" text-anchor="middle">warn_active == 1</text>
+  <text x="390" y="218" class="font-kr" font-size="10" fill="#2980b9" text-anchor="middle">경고 표시 On</text>
+
+  <rect x="300" y="234" width="180" height="40" rx="8" fill="#fff" stroke="#2980b9" stroke-width="1.5"/>
+  <text x="390" y="252" class="font-en" font-size="11" fill="#154360" text-anchor="middle">warn_type = EMG / ZONE</text>
+  <text x="390" y="266" class="font-kr" font-size="10" fill="#2980b9" text-anchor="middle">경고 문맥 종류 확인</text>
+
+  <rect x="300" y="282" width="180" height="40" rx="8" fill="#fff" stroke="#2980b9" stroke-width="1.5"/>
+  <text x="390" y="300" class="font-en" font-size="11" fill="#154360" text-anchor="middle">warn_level = H / M / L</text>
+  <text x="390" y="314" class="font-kr" font-size="10" fill="#2980b9" text-anchor="middle">강조(플래시/점멸) 수준 결정</text>
+
+  <text x="390" y="348" class="font-kr" font-size="11" fill="#154360" font-weight="700" text-anchor="middle">"동기화된 UI SysVar 병렬 설정"</text>
+
+  <!-- Splitting Arrows -->
+  <line x1="500" y1="216" x2="530" y2="216" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="500" y1="250" x2="780" y2="250" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="500" y1="284" x2="1030" y2="284" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+
+  <!-- Step 3: Ambient Mapping -->
+  <rect x="530" y="136" width="220" height="230" rx="10" fill="#f5eef8" stroke="#8e44ad" stroke-width="2"/>
+  <rect x="530" y="136" width="220" height="28" rx="10" fill="#8e44ad"/>
+  <rect x="530" y="154" width="220" height="10" fill="#8e44ad"/>
+  <text x="640" y="156" class="font-en" font-size="12" fill="#fff" text-anchor="middle">setAmbientState()</text>
+
+  <text x="640" y="186" class="font-kr" font-size="12" font-weight="700" fill="#512e5f" text-anchor="middle">긴급차량 접근 (EMG / H)</text>
+  <text x="640" y="204" class="font-kr" font-size="11" fill="#8e44ad" text-anchor="middle">▶ RED FLASH (가장 시인성 높음)</text>
+  <line x1="560" y1="214" x2="720" y2="214" stroke="#8e44ad" stroke-width="0.8" stroke-dasharray="4,3"/>
+
+  <text x="640" y="234" class="font-kr" font-size="12" font-weight="700" fill="#512e5f" text-anchor="middle">스쿨존 구간 (ZONE / M)</text>
+  <text x="640" y="252" class="font-kr" font-size="11" fill="#8e44ad" text-anchor="middle">▶ AMBER PULSE (은은한 점멸)</text>
+  <line x1="560" y1="262" x2="720" y2="262" stroke="#8e44ad" stroke-width="0.8" stroke-dasharray="4,3"/>
+
+  <text x="640" y="282" class="font-kr" font-size="12" font-weight="700" fill="#512e5f" text-anchor="middle">유도선 연장 (ZONE / L)</text>
+  <text x="640" y="300" class="font-kr" font-size="11" fill="#8e44ad" text-anchor="middle">▶ BLUE SOLID (기본 주행 맥락)</text>
+
+  <text x="640" y="348" class="font-kr" font-size="11" fill="#8e44ad" font-weight="700" text-anchor="middle">시야 분산 없는 직관적 심리 압박감 조절</text>
+
+  <!-- Step 4: Cluster / HUD Mapping -->
+  <rect x="780" y="136" width="220" height="230" rx="10" fill="#f5eef8" stroke="#8e44ad" stroke-width="2"/>
+  <rect x="780" y="136" width="220" height="28" rx="10" fill="#8e44ad"/>
+  <rect x="780" y="154" width="220" height="10" fill="#8e44ad"/>
+  <text x="890" y="156" class="font-en" font-size="12" fill="#fff" text-anchor="middle">setClusterHUD()</text>
+
+  <rect x="800" y="186" width="180" height="60" rx="8" fill="#fff" stroke="#8e44ad" stroke-width="1.5"/>
+  <text x="890" y="206" class="font-en" font-size="11" fill="#512e5f" font-weight="700" text-anchor="middle">Icon / String 렌더링</text>
+  <text x="890" y="224" class="font-kr" font-size="11" fill="#512e5f" text-anchor="middle">"전방에 구급차가 접근 중"</text>
+  <text x="890" y="238" class="font-kr" font-size="10" fill="#8e44ad" text-anchor="middle">정확한 인지 맥락 제공</text>
+
+  <rect x="800" y="266" width="180" height="60" rx="8" fill="#fff" stroke="#8e44ad" stroke-width="1.5"/>
+  <text x="890" y="286" class="font-en" font-size="11" fill="#512e5f" font-weight="700" text-anchor="middle">Dynamic Popup 효과</text>
+  <text x="890" y="304" class="font-kr" font-size="11" fill="#512e5f" text-anchor="middle">LEVEL: HIGH 시 팝업 최우선</text>
+  <text x="890" y="318" class="font-kr" font-size="10" fill="#8e44ad" text-anchor="middle">HUD 방향성 아이콘 활성화</text>
+
+
+  <!-- Step 5: Audio Focus -->
+  <rect x="1030" y="136" width="220" height="230" rx="10" fill="#f5eef8" stroke="#8e44ad" stroke-width="2"/>
+  <rect x="1030" y="136" width="220" height="28" rx="10" fill="#8e44ad"/>
+  <rect x="1030" y="154" width="220" height="10" fill="#8e44ad"/>
+  <text x="1140" y="156" class="font-en" font-size="12" fill="#fff" text-anchor="middle">setAudioFocus()</text>
+
+  <text x="1140" y="186" class="font-kr" font-size="12" font-weight="700" fill="#512e5f" text-anchor="middle">Audio Ducking (차폐)</text>
+  <text x="1140" y="204" class="font-kr" font-size="11" fill="#8e44ad" text-anchor="middle">warn_active 시 미디어 볼륨 30%</text>
+  <line x1="1060" y1="214" x2="1220" y2="214" stroke="#8e44ad" stroke-width="0.8" stroke-dasharray="4,3"/>
+
+  <text x="1140" y="234" class="font-kr" font-size="12" font-weight="700" fill="#512e5f" text-anchor="middle">Chime 알림 패턴</text>
+  <text x="1140" y="252" class="font-kr" font-size="11" fill="#512e5f" text-anchor="middle">EMG: 비프음 연속 3회</text>
+  <text x="1140" y="266" class="font-kr" font-size="11" fill="#512e5f" text-anchor="middle">ZONE: 부드러운 차임 1회</text>
+  <line x1="1060" y1="276" x2="1220" y2="276" stroke="#8e44ad" stroke-width="0.8" stroke-dasharray="4,3"/>
+
+  <rect x="1050" y="296" width="180" height="40" rx="8" fill="#fff" stroke="#8e44ad" stroke-width="1.5"/>
+  <text x="1140" y="316" class="font-en" font-size="11" fill="#512e5f" font-weight="700" text-anchor="middle">청각적 경고 동기화</text>
+  <text x="1140" y="330" class="font-kr" font-size="10" fill="#8e44ad" text-anchor="middle">앰비언트 Flash 타이밍과 일치</text>
+
+  <!-- ===== CAPL CODE HINT ===== -->
+  <rect x="30" y="390" width="1220" height="136" rx="10" fill="#1e2328" stroke="#444" stroke-width="1.5"/>
+  <text x="52" y="413" class="font-en" font-size="11" fill="#6aaf6a">// HMI.capl — 핵심 구조 요약 (의사 코드)</text>
+  <text x="52" y="432" class="font-en" font-size="11" fill="#8be0f7">on message</text>
+  <text x="130" y="432" class="font-en" font-size="11" fill="#c8d8e8"> ethEffectiveAlertMsg {</text>
+  <text x="52" y="450" class="font-en" font-size="11" fill="#c8d8e8">  if (this.isActive) {</text>
+  <text x="52" y="468" class="font-en" font-size="11" fill="#c8d8e8">    sysvar::HMI::WarningPopup = this.type;</text>
+  <text x="360" y="468" class="font-en" font-size="11" fill="#6aaf6a">// Cluster / HUD 팝업 스트링 매핑</text>
+  <text x="52" y="486" class="font-en" font-size="11" fill="#9b59b6">    sysvar::HMI::AmbientColor = mapColorForLevel(this.level);</text>
+  <text x="52" y="504" class="font-en" font-size="11" fill="#9b59b6">    sysvar::HMI::AudioDucking = (this.level &gt;= LEVEL_MID) ? 1 : 0;</text>
+  <text x="52" y="520" class="font-en" font-size="11" fill="#c8d8e8">  } else { clearAllOutputState(); } }</text>
+  <text x="360" y="520" class="font-en" font-size="11" fill="#6aaf6a">// isActive=0 시 안전 복귀</text>
+
+  <!-- ===== BOTTOM SUMMARY ===== -->
+  <rect x="30" y="546" width="1220" height="50" rx="10" fill="#eaf2ff" stroke="#2e86c1" stroke-width="1.5"/>
+  <text x="640" y="567" class="font-kr" font-size="13" font-weight="700" fill="#1a5276" text-anchor="middle">설계 원칙</text>
+  <text x="640" y="587" class="font-kr" font-size="12" fill="#2c3e50" text-anchor="middle">출력단(HMI)은 자의적으로 경고를 합산하거나 판단하지 않는다. ADAS가 중재하고 CGW가 검증하여 전달한 '단일화된 통합 경고'를 시각(색상, 텍스트)과 청각(Volume Ducking/Chime) 채널로 동시에 일관되게 뿌려주는 Passive Renderer 로 동작한다.</text>
+
+  <!-- ===== TRACEABILITY NOTE ===== -->
+  <rect x="30" y="612" width="1220" height="66" rx="8" fill="#f4f6f7" stroke="#808b96" stroke-width="1.5"/>
+  <text x="640" y="634" class="font-kr" font-size="12" font-weight="700" fill="#2c3e50" text-anchor="middle">통합 출력 매핑 시너지 (Traceability)</text>
+  <text x="640" y="654" class="font-kr" font-size="11" fill="#555" text-anchor="middle">Req_015~019 (Ambient 표출) · Req_031 (Ducking 정책) · Req_036 (분산 경고의 단일 출력)</text>
+  <text x="640" y="671" class="font-kr" font-size="11" fill="#555" text-anchor="middle">분산된 다수 ECU 도메인의 입력을 단일 출력으로 모음으로써, 운전자는 충돌하는 팝업들이 아니라 완전히 동기화된 일체형 경고 경험을 갖는다.</text>
+
+</svg>

@@ -1,0 +1,1160 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{kotex}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\geometry{a4paper,margin=20mm}
+\setstretch{1.15}
+\setmainhangulfont{AppleMyungjo}
+\setsanshangulfont{Apple SD Gothic Neo}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{프로젝트 완료 보고서}
+\rhead{주행 상황 실시간 경고 시스템}
+\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+
+\renewcommand{\contentsname}{제목 차례}
+\renewcommand{\listtablename}{표 차례}
+\renewcommand{\listfigurename}{그림 차례}
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\arabic{subsection}.\arabic{subsubsection}}
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+
+\lstdefinestyle{caplcode}{
+  language=C,
+  basicstyle=\ttfamily\footnotesize,
+  frame=single,
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=2,
+  captionpos=b,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  xleftmargin=2mm,
+  framexleftmargin=2mm,
+  rulecolor=\color{black},
+  keywordstyle=\color{blue!60!black}\bfseries,
+  commentstyle=\color{gray!70!black},
+  stringstyle=\color{red!50!black}
+}
+\captionsetup[lstlisting]{justification=raggedright,singlelinecheck=false,font=small}
+
+\newcommand{\ProjectTitle}{주행 상황 실시간 경고 시스템}
+\newcommand{\ProjectSubtitle}{구간 정보 및 긴급차량 접근 기반 통합 경고 시스템}
+\newcommand{\ProjectPeriod}{2026년 2월 초 -- 2026년 3월 말 (약 2개월)}
+
+\newcommand{\FigurePlaceholder}[3]{%
+  \begin{figure}[H]
+  \centering
+  \fbox{%
+    \parbox[c][#2][c]{0.92\textwidth}{%
+      \centering
+      \textbf{이미지 배치 영역}
+    }%
+  }
+  \caption{#1}
+  \end{figure}
+}
+
+\newcommand{\SimpleInfoRow}[2]{\textbf{#1} & #2 \\ \hline}
+
+\begin{document}
+
+\begin{titlepage}
+  \thispagestyle{empty}
+  \begin{center}
+    \vspace*{20mm}
+    {\Large 프로젝트 완료 보고서\par}
+    \vspace{18mm}
+    {\LARGE \textbf{\ProjectTitle}\par}
+    \vspace{4mm}
+    {\large \ProjectSubtitle\par}
+    \vfill
+    \begin{tabular}{|p{35mm}|p{95mm}|}
+      \hline
+      프로젝트명 & \ProjectTitle \\ \hline
+      프로젝트 기간 & \ProjectPeriod \\ \hline
+      팀명 & 벡켄팀 \\ \hline
+      작성 목적 & 프로젝트 완료 보고서 \\ \hline
+      작성일 & 2026년 3월 \\ \hline
+    \end{tabular}
+    \vfill
+  \end{center}
+\end{titlepage}
+
+\clearpage
+\thispagestyle{plain}
+\begin{center}
+  {\Large \textbf{프로젝트 완료 보고서}}\\[6pt]
+  프로젝트명 : \ProjectTitle\\
+  단계 : 프로젝트 완성 \hspace{10mm} 작성일 : 2026년 3월
+\end{center}
+
+\vspace{6mm}
+\begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}m{18mm}|>{\centering\arraybackslash}m{28mm}|>{\centering\arraybackslash}m{28mm}|X|>{\centering\arraybackslash}m{24mm}|}
+\hline
+개정번호 & 개정일자 & 시행일자 & 개정내용 & 담당자 \\ \hline
+1.0 & 2026.03.28 & 2026.03.28 & 프로젝트 완료 보고서 작성 & 이준영 \\ \hline
+\end{tabularx}
+
+\vspace{8mm}
+\begin{tabularx}{\textwidth}{|p{34mm}|X|}
+\hline
+\SimpleInfoRow{프로젝트 주제}{\ProjectTitle}
+\SimpleInfoRow{프로젝트 부제}{\ProjectSubtitle}
+\SimpleInfoRow{프로젝트 책임자}{이준영}
+\SimpleInfoRow{실무 참여자}{프로젝트 관리 / 아키텍처 설계 / CAPL 구현 / 시험 구조 정리 / 보고서 작성}
+\end{tabularx}
+
+\clearpage
+\tableofcontents
+\clearpage
+\listoftables
+\clearpage
+\listoffigures
+\clearpage
+
+\section{프로젝트 개요}
+
+\subsection{프로젝트명}
+\ProjectTitle
+
+\subsection{프로젝트 기간}
+\ProjectPeriod
+
+\subsection{프로젝트 배경}
+본 프로젝트는 차량 내 분산된 경고 기능을 하나의 경고 정책으로 통합하고, 이를 CANoe SIL 환경에서 설계·구현·검증 가능한 형태로 정리하는 것을 목표로 진행되었다. 기존 데모형 기능 구현과 달리, 본 프로젝트에서는 전체 차량 기준선, 다수 ECU 구조, 네트워크 흐름, 핵심 판단 로직, 시험 자산을 하나의 추적 체계 안에서 연결하는 데 중점을 두었다.
+
+\subsection{프로젝트 목적 및 기능}
+\subsubsection{프로젝트 목적}
+\begin{itemize}
+  \item 구간 정보, V2X 긴급 접근, ADAS 객체 위험을 하나의 경고 정책으로 통합한다.
+  \item 요구사항부터 코드와 시스템시험까지 이어지는 추적 구조를 정리한다.
+  \item CANoe SIL 기반 논리 ECU 환경에서 구현 및 검증 자산을 남긴다.
+\end{itemize}
+
+\subsubsection{구현 기능}
+\begin{itemize}
+  \item 전체 차량 기준선 및 ECU 역할 구조
+  \item CAN과 Ethernet 네트워크 흐름
+  \item V2X 정규화, ADAS 위험도 산정, 경고 중재, CGW 보정
+  \item 단위시험(UT) / 통합시험(IT) / 시스템시험(ST) 자산과 실행 증빙
+\end{itemize}
+
+\subsubsection{프로젝트 범위와 산출 대상}
+\begin{itemize}
+  \item 차량 기준선 ECU 노드 100개를 기준으로 역할 그룹과 연계 경로를 정리하였다.
+  \item 요구사항, 구현, 시험, 실행 증빙을 하나의 보고서 안에서 연결하였다.
+  \item 시스템 동작에 직접 연결되는 핵심 자산을 본문에 정리하였다.
+\end{itemize}
+
+\FigurePlaceholder{프로젝트 한 줄 개요도}{58mm}{삽입 예정 이미지:\\
+전체 프로젝트 요약 그림\\
+추천 내용: 전체 차량 기준선 -> V2X -> ADAS -> CGW -> 출력/검증 흐름}
+
+\FigurePlaceholder{대표 시나리오 개요}{58mm}{삽입 예정 이미지:\\
+대표 시나리오 요약 그림\\
+추천 내용: 기본 주행 -> 긴급 접근 + 객체 위험 -> 최종 경고 및 감속 보조}
+
+\clearpage
+\section{프로젝트 추진 체계}
+
+\subsection{프로젝트 참여인력 총괄표}
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{30mm}|p{32mm}|X|}
+\hline
+\textbf{구분} & \textbf{담당} & \textbf{주요 역할} \\ \hline
+프로젝트 총괄 & 이준영 & 아키텍처 방향, 문서 체계, 핵심 산출물 정리 \\ \hline
+구현 / 통신 구조 & 팀원 기입 & CAPL, 네트워크, 시스템 변수, 패널 연결 \\ \hline
+검증 / 리포트 & 팀원 기입 & 단위시험(UT), 통합시험(IT), 시스템시험(ST) 자산, 실행, 결과 정리 \\ \hline
+\end{tabularx}
+\caption{참여인력 총괄표}
+\end{table}
+
+\subsection{참여인력 업무분장}
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{28mm}|p{30mm}|X|}
+\hline
+\textbf{영역} & \textbf{담당} & \textbf{주요 내용} \\ \hline
+아키텍처 / 문서 체계 & 이준영 & 요구사항-설계-구현-시험 추적 구조 정리 \\ \hline
+네트워크 / 메시지 & 팀원 기입 & CAN과 Ethernet 흐름, 담당 ECU, 메시지 매트릭스 정리 \\ \hline
+로직 구현 & 팀원 기입 & V2X, ADAS, CGW, 패널/시스템 변수 연계 \\ \hline
+시험 / 보고서 & 팀원 기입 & 단위시험(UT), 통합시험(IT), 시스템시험(ST) 자산, XML 추출, 종결 자료 정리 \\ \hline
+\end{tabularx}
+\caption{세부 업무분장}
+\end{table}
+
+\subsection{기술 스택}
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{34mm}|X|}
+\hline
+\textbf{구분} & \textbf{내용} \\ \hline
+구현 언어 & CAPL (Communication Access Protocol Language) \\ \hline
+개발 / 시뮬레이션 환경 & CANoe 19 SP4, CANdb++, DBC, 시스템 변수, 패널, Simulation \\ \hline
+협업 / 일정 관리 & JIRA, Slack, Notion \\ \hline
+형상 관리 & Git, GitHub \\ \hline
+문서 / 산출물 & 00$\sim$07 문서 체계, Excel, Google Drive, PDF, PPT \\ \hline
+설계 / 모델링 & PlantUML, Draw.io, Figma, Visual Paradigm \\ \hline
+검증 / 보고서 & 단위시험(UT), 통합시험(IT), 시스템시험(ST), XML 추출, 보고서 자산 \\ \hline
+아키텍처 기준 & ISO 26262, ASPICE 관점의 V-모델 추적 구조 \\ \hline
+\end{tabularx}
+\caption{기술 스택}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{24mm}|p{52mm}|X|}
+\hline
+\textbf{영역} & \textbf{주요 도구} & \textbf{사용 목적} \\ \hline
+문서 & Excel, Google Drive, Notion, PDF, PPT & 요구사항, 시험 결과, 종결 자료, 발표 자료를 정리하고 공유하였다. \\ \hline
+설계 & PlantUML, Draw.io, Figma, Visual Paradigm & 시스템 구조, 네트워크 흐름, 컨셉 설계, 인터페이스 구조를 시각화하였다. \\ \hline
+구현 & CAPL, CANoe 19 SP4, CANdb++, DBC, 시스템 변수, 패널 & 논리 ECU, 통신 경로, 상태 반영, 패널 연계를 구현하였다. \\ \hline
+검증 & CANoe SIL, XML 추출, UT/IT/ST 자산 & 단계별 시험 실행, 결과 확인, 리포트 근거 정리를 수행하였다. \\ \hline
+형상관리 & Git, GitHub, JIRA, Slack & 코드와 문서 변경 이력을 관리하고, 작업 상태와 이슈를 추적하였다. \\ \hline
+\end{tabularx}
+\caption{영역별 도구 사용 요약}
+\end{table}
+
+\subsection{협업 방식}
+\subsubsection{이슈 및 일정 관리}
+JIRA를 기준으로 작업 항목, 담당자, 우선순위, 진행 상태를 관리하였다. 기능 추가, 문서 갱신, 시험 자산 반영이 따로 움직이지 않도록 작업 단위를 기준선과 대표 시나리오 단위로 묶어 추적하였다.
+
+\FigurePlaceholder{이슈 및 일정 관리 흐름}{52mm}{삽입 예정 이미지:\\
+작업 보드 및 일정 관리 화면\\
+추천 내용: 작업 항목, 담당자, 우선순위, 상태 추적 화면}
+
+\subsubsection{회의 기록 및 지식 공유}
+회의 내용과 기준 합의는 Notion을 중심으로 정리하고, Slack을 통해 설계 쟁점과 작업 진행 상황을 수시로 공유하였다. 회의록은 단순 기록이 아니라 요구사항 해석, 메시지 의미, 시험 기준 합의가 이후 문서와 구현에 그대로 이어질 수 있도록 작성하였다.
+
+\FigurePlaceholder{회의 기록 및 지식 공유}{52mm}{삽입 예정 이미지:\\
+회의록 및 지식 공유 문서 화면\\
+추천 내용: 회의록, 기준선 변경 이력, 설계 근거 정리 화면}
+
+\subsubsection{자산 버전 관리 및 파일 공유}
+Git과 GitHub를 기준으로 문서, DBC, CAPL, 시험 자산, 보고서 산출물을 함께 관리하였다. 공유가 필요한 표, 종결 자료, 증빙 정리는 Excel과 Google Drive를 사용해 정리하였고, 변경 시점과 반영 대상을 함께 기록해 문서와 구현이 따로 움직이지 않도록 유지하였다.
+
+\FigurePlaceholder{자산 버전 관리 및 파일 공유}{52mm}{삽입 예정 이미지:\\
+파일 공유 및 버전 관리 화면\\
+추천 내용: DBC, CAPL, 증빙 파일, 보고서 자산 공유 구조}
+
+\subsection{문서 및 추적 체계}
+\begin{itemize}
+  \item 문서 기준선과 구현 기준선을 분리하지 않고 함께 유지하였다.
+  \item 요구사항 -> 기능 -> 흐름 -> 통신 -> 변수 -> 코드 -> 단위시험(UT) / 통합시험(IT) / 시스템시험(ST) 구조를 공통 판단 기준으로 사용하였다.
+  \item 시험 결과는 보고서, XML 추출, Excel 종결 자료까지 이어지도록 정리하였다.
+\end{itemize}
+
+\FigurePlaceholder{문서 및 추적 체계 개요}{56mm}{삽입 예정 이미지:\\
+00\textasciitilde07 문서 체계와 V-모델 추적 구조\\
+추천 내용: Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST}
+
+\subsection{프로젝트 자산 구성도}
+\FigurePlaceholder{프로젝트 자산 구성도}{56mm}{삽입 예정 이미지:\\
+프로젝트 산출물 구성도\\
+추천 내용: 문서, 코드, 시험, 리포트, 동영상, 발표 자료 연결도}
+
+\clearpage
+\section{프로젝트 수행 내용}
+
+\subsection{고객 요구사항}
+고객 요구사항은 공식 기준 문서인 \texttt{01\_Requirements.md}의 \texttt{Req\_001 \textasciitilde Req\_097}을 그대로 따른다. 별도의 임의 분류를 만들지 않고, 01 문서의 Part 체계와 공식 요구 문장을 그대로 정리한다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{20mm}|p{46mm}|X|}
+\hline
+\textbf{Part} & \textbf{의미} & \textbf{대표 요구사항 범위} \\ \hline
+P0 & 기본 차량 입력/상태 연계 & Req\_037 \textasciitilde Req\_048 \\ \hline
+P1 & 경고 기본 동작 & Req\_001 \textasciitilde Req\_006 \\ \hline
+P2 & 구간 경고 규칙 & Req\_007 \textasciitilde Req\_016 \\ \hline
+P3 & 긴급차량 경고 규칙 & Req\_017 \textasciitilde Req\_025, Req\_096 \textasciitilde Req\_097 \\ \hline
+P4 & 우선순위/중재 규칙 & Req\_026 \textasciitilde Req\_033 \\ \hline
+P5 & 표시 정책/HMI 표현 규칙 & Req\_034 \textasciitilde Req\_036 \\ \hline
+P7 & 객체 기반 위험 경고/감속 보조 & Req\_049 \textasciitilde Req\_066 \\ \hline
+P9 & 운전자 편의/설정 연계 & Req\_067 \textasciitilde Req\_074 \\ \hline
+P10 & 강건성/운영 안전 & Req\_075 \textasciitilde Req\_082 \\ \hline
+P11 & 확장 ECU 연계 후보(후속 승격 대상) & Req\_083 \textasciitilde Req\_095 \\ \hline
+\end{tabularx}
+\caption{01 문서 기준 고객 요구사항 Part 구성}
+\end{table}
+
+고객 요구사항의 핵심은 세 가지 축으로 요약된다. 첫째, 기본 주행 상태와 구간 맥락 변화에 따라 경고가 즉시 시작되고 해제되어야 한다. 둘째, 긴급차량 접근과 객체 위험이 동시에 존재하더라도 최종 경고는 하나의 우선순위 규칙으로 결정되어야 한다. 셋째, 결과는 앰비언트, 클러스터, 진단/관측 자산까지 같은 맥락으로 이어져야 한다. 이러한 방향은 모두 01 문서의 공식 요구 문장에서 직접 확인된다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{22mm}|p{34mm}|X|}
+\hline
+\textbf{Req. ID} & \textbf{요약} & \textbf{설명} \\ \hline
+Req\_001 & 경고 시스템 활성 조건 & 시스템은 차량 주행 상태에서 경고 기능을 활성화해야 한다. \\ \hline
+Req\_007 & 구간 정보 수신 반영 & 시스템은 구간 타입/방향/거리/제한속도 정보가 변경되면 해당 구간 경고 규칙을 반영해야 한다. \\ \hline
+Req\_017 & 긴급차량 접근 경고 & 시스템은 긴급차량(경찰/구급) 접근 시 운전자에게 즉시 긴급 경고를 표시해야 한다. \\ \hline
+Req\_024 & 다중 긴급 경고 처리 & 동시에 여러 긴급 경고가 유효하면 최종 경고 1개만 선택해 표시해야 한다. \\ \hline
+Req\_049 & 긴급차량 근접 위험 판단 & 시스템은 긴급차량의 접근 방향, 도달예상시간(ETA), 자차 속도 정보를 결합해 근접 위험도를 산정해야 한다. \\ \hline
+Req\_057 & 주변 객체 목록 수용 & 시스템은 주변 객체 목록(객체 유형, 상대 위치/속도, 유효성)을 수신해 경고 판단 입력으로 사용할 수 있어야 한다. \\ \hline
+Req\_075 & 경고 입력 유효성 필터링 & 시스템은 유효성 플래그 또는 신뢰도 기준을 통과하지 못한 입력을 경고 판정에서 제외해야 한다. \\ \hline
+Req\_083 & 전동 주차 및 제동 보조 상태 연계 & 시스템은 전동 주차 및 제동 보조 상태를 수용해 제동 관련 경고 맥락과 상태 판단에 반영해야 한다. \\ \hline
+\end{tabularx}
+\caption{01 문서 기준 대표 고객 요구사항 발췌}
+\end{table}
+
+\FigurePlaceholder{고객 요구사항 개요}{56mm}{삽입 예정 이미지:\\
+\texttt{01\_Requirements} 핵심 요약 화면\\
+추천 내용: 대표 요구사항 표 또는 요구사항 요약 그림}
+
+\subsection{시스템 요구사항}
+\subsubsection{기능 요구사항}
+시스템 요구사항도 01 문서의 공식 표준 양식을 그대로 따른다. 기능군을 새로 정의하지 않고, 01 문서의 Part 분류를 시스템 관점에서 다시 읽어 구현 그룹과 시험 그룹으로 이어지도록 정리한다. 즉 P1/P2/P3/P4/P5는 경고 기본 동작과 표시 정책을, P7은 V2X·ADAS 기반 위험도와 감속 보조를, P10은 오래된 입력 정리, 비상 보호, 출력 강건성을, P11은 확장 ECU 연계를 담당하는 요구 영역으로 본다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{34mm}|X|}
+\hline
+\textbf{요구 영역} & \textbf{주요 내용} \\ \hline
+P0 기본 차량 입력/상태 연계 & 시동, 기어, 가속, 제동, 조향, 창문, 클러스터, 실내편의, 보안, 오디오 상태를 수용한다. \\ \hline
+P1 \textasciitilde P3 경고 규칙 & 경고 활성/비활성, 구간 규칙, 긴급차량 접근, 긴급 종료 및 통신 끊김 보호 해제를 정의한다. \\ \hline
+P4 우선순위/중재 규칙 & 긴급 경고 우선, 구급 우선, 도달 시간 기반 우선순위, 출처 동률 처리, 복귀 규칙을 정의한다. \\ \hline
+P5 표시 정책/HMI 표현 규칙 & 긴급 전용 색상/패턴, 구간별 고정 패턴, 문구 형식을 정의한다. \\ \hline
+P7 객체 기반 위험/감속 보조 & 근접 위험도, TTC, 객체 위험, 감속 보조 요청과 해제, 비상 보호, 이벤트 기록을 정의한다. \\ \hline
+P9 \textasciitilde P11 편의/강건성/확장 ECU 연계 & 설정 연계, 오래된 입력 보호, 채널 가용성, 다수 ECU 상태 연계를 정의한다. \\ \hline
+\end{tabularx}
+\caption{01 문서 기준 시스템 요구사항 영역 요약}
+\end{table}
+
+\FigurePlaceholder{요구사항 및 컨셉 요약}{58mm}{삽입 예정 이미지:\\
+요구사항 및 개념 구조도\\
+추천 내용: 문제 정의, 통합 목표, 입력-판단-출력 개념도}
+
+\subsubsection{비기능 요구사항}
+비기능 요구사항은 경고 기능을 추가로 정의하는 항목이 아니라, 경고 구조가 얼마나 안정적이고 일관되게 유지되어야 하는지를 정하는 기준이다. 본 프로젝트에서는 해제와 복귀, 중복 억제, 전환 안정성, 비상 보호, 입력 유효성, 채널 가용성과 같은 항목을 비기능 요구의 핵심으로 정리하였다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{34mm}|X|}
+\hline
+\textbf{항목} & \textbf{관련 요구와 의미} \\ \hline
+해제와 복귀 & Req\_004, Req\_016, Req\_023, Req\_032는 경고 조건이 해제되었을 때 시스템이 정상 상태 또는 직전 유효 상태로 안정적으로 복귀해야 함을 요구한다. \\ \hline
+중복 억제와 전환 안정성 & Req\_006, Req\_015, Req\_025, Req\_033은 동일 경고 반복 표시를 억제하고, 구간 또는 우선순위 전환 시 불필요한 반복 점멸 없이 안정적으로 바뀌어야 함을 요구한다. \\ \hline
+비상 보호 & Req\_054, Req\_055, Req\_056은 전달 이상이 생긴 상황에서도 감속 보조 차단, 최소 경고 유지, fail-safe 전환이 일관되게 적용되어야 함을 요구한다. \\ \hline
+입력 유효성과 신선도 & Req\_063, Req\_075, Req\_076은 객체 추적 손실, 입력 유효성 저하, 오래된 입력 상황에서 즉시 오동작하지 않도록 보수 유지와 stale 처리를 요구한다. \\ \hline
+출력 채널 강건성 & Req\_078, Req\_079, Req\_080, Req\_082는 채널 가용성 판단, 대체 채널 전환, 오디오 경합 상황, 채널 간 동기 일관성이 유지되어야 함을 요구한다. \\ \hline
+\end{tabularx}
+\caption{프로젝트 비기능 요구사항 요약}
+\end{table}
+
+\subsubsection{우선순위 및 안전 등급 요약}
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{28mm}|p{26mm}|p{18mm}|X|}
+\hline
+\textbf{우선순위 등급} & \textbf{기준} & \textbf{개수} & \textbf{포함 Req. ID} \\ \hline
+Critical (P0) & 상/상 & 45개 & Req\_001, Req\_003, Req\_004, Req\_007, Req\_009, Req\_010, Req\_011, Req\_012, Req\_016, Req\_017, Req\_021, Req\_022, Req\_023, Req\_024, Req\_026, Req\_027, Req\_028, Req\_031, Req\_032, Req\_034, Req\_049, Req\_050, Req\_051, Req\_052, Req\_053, Req\_054, Req\_055, Req\_056, Req\_057, Req\_058, Req\_059, Req\_061, Req\_062, Req\_064, Req\_066, Req\_075, Req\_076, Req\_078, Req\_079, Req\_086, Req\_090, Req\_091, Req\_092, Req\_093, Req\_094 \\ \hline
+High (P1) & 상/중 & 32개 & Req\_002, Req\_005, Req\_008, Req\_013, Req\_014, Req\_018, Req\_019, Req\_020, Req\_025, Req\_029, Req\_030, Req\_035, Req\_036, Req\_037, Req\_038, Req\_039, Req\_040, Req\_041, Req\_044, Req\_046, Req\_047, Req\_060, Req\_063, Req\_069, Req\_070, Req\_082, Req\_083, Req\_084, Req\_085, Req\_095, Req\_096, Req\_097 \\ \hline
+Medium (P2) & 중/중 & 20개 & Req\_006, Req\_015, Req\_033, Req\_042, Req\_043, Req\_045, Req\_048, Req\_065, Req\_067, Req\_068, Req\_071, Req\_072, Req\_073, Req\_074, Req\_077, Req\_080, Req\_081, Req\_087, Req\_088, Req\_089 \\ \hline
+\end{tabularx}
+\caption{01 문서 기준 우선순위 요구사항 요약}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{34mm}|p{18mm}|p{34mm}|X|}
+\hline
+\textbf{안전 등급} & \textbf{개수} & \textbf{해당 HARA ID} & \textbf{관련 Req (대표)} \\ \hline
+ASIL C (Locked) & 3개 & HC-02, HC-03, HC-05 & Req\_011\textasciitilde Req\_012, Req\_021/Req\_024/Req\_026\textasciitilde Req\_031, Req\_054\textasciitilde Req\_056 \\ \hline
+ASIL C (Provisional) & 2개 & HC-06, HC-07 & Req\_057\textasciitilde Req\_066, Req\_075\textasciitilde Req\_079 \\ \hline
+ASIL B (Locked) & 2개 & HC-01, HC-04 & Req\_010, Req\_023/Req\_032/Req\_033 \\ \hline
+ASIL B (Provisional) & 1개 & HC-08 & Req\_080\textasciitilde Req\_082 \\ \hline
+\end{tabularx}
+\caption{01 문서 기준 안전 등급 요약}
+\end{table}
+
+\subsection{시스템 아키텍처}
+\subsubsection{시스템 구성도}
+시스템 아키텍처는 공식 ECU 명명 기준과 통신 계약 문서를 함께 기준으로 정리하였다. 100개 ECU 노드를 모두 개별 설명하지 않고, 도메인 그룹과 연결 책임 단위로 재구성하였다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{28mm}|p{48mm}|X|}
+\hline
+\textbf{도메인} & \textbf{대표 ECU} & \textbf{의미} \\ \hline
+통합 & CGW, ETHB, DCM, IBOX, SGW & 차량 경계 연결, 진단, 보안, 서비스 경계 역할을 담당한다. \\ \hline
+파워트레인 & EMS, TCU, VCU, \_4WD, BAT\_BMS, OBC, DCDC, MCU, INVERTER & 동력, 전력 변환, 충전, 열관리 관련 상태를 제공한다. \\ \hline
+섀시/안전 & ESC, MDPS, ABS, EPB, EHB, VSM, ECS, CDC, RWS & 제동, 조향, 차체 안정화와 같은 주행 안전 상태를 제공한다. \\ \hline
+바디/편의 & BCM, DATC, AFLS, AHLS, DOOR\_FL/FR/RL/RR, TAILGATE\_MODULE, SEAT\_DRV, SEAT\_PASS & 출입, 조명, 공조, 실내 편의 상태를 형성한다. \\ \hline
+IVI / 표시 & IVI, CLU, HUD, TMU, AMP, NAV\_MODULE, DIGITAL\_KEY, RSE & 표시, 안내, 연결 서비스와 경고 출력 화면을 담당한다. \\ \hline
+ADAS / V2X & ADAS, V2X, SCC, LDWS\_LKAS, FCA, BCW, LCA, SPAS, RSPA, AVM, DMS, OMS & 주행 보조, 객체 위험, 긴급 이벤트 관련 판단 입력과 기능 가용성을 담당한다. \\ \hline
+\end{tabularx}
+\caption{00e 기준 대표 ECU 도메인 구성}
+\end{table}
+
+\paragraph{입력부 구성}
+본 프로젝트의 입력부는 차량 상태, 조향 상태, 구간 정보, 긴급차량 접근 정보를 기준선으로 받아들이는 구조로 정리하였다. 차량 상태와 조향 상태는 기본 주행 맥락을 형성하고, 구간 정보는 스쿨존·고속도로·유도 구간과 같은 도로 문맥을 제공한다. 긴급차량 정보는 경찰차와 구급차 접근 상황을 판단 입력으로 제공하며, 이후 판단 계층이 같은 기준으로 비교할 수 있도록 전달된다.
+
+\paragraph{제어부 구성}
+제어부는 Ethernet 경로의 V2X와 ADAS, 그리고 Central Gateway를 중심으로 구성하였다. V2X는 다수의 긴급 이벤트 후보를 하나의 활성 이벤트로 정리하고, ADAS는 긴급 접근 위험과 객체 기반 위험을 함께 판단한다. Central Gateway는 이 판단 결과를 그대로 통과시키지 않고, 구간 경고·긴급 경고·객체 위험 경고를 하나의 최종 경고 상태로 정리하며, 생성·해제·복귀·전환까지 연속된 상태 흐름으로 관리한다. 진단 계층은 이 제어 과정과 경계 상태를 별도 관측 경로에서 확인할 수 있도록 구성하였다.
+
+\paragraph{출력부 구성}
+출력부는 최종 경고 상태를 운전자가 즉시 인지할 수 있는 채널로 변환하는 구조로 정리하였다. 앰비언트 조명은 색상, 방향, 점멸 패턴을 통해 위험 구간과 경고 강도를 전달하고, 내비게이션은 위험 객체와 경로 안내를 시각화한다. 클러스터와 오디오는 긴급차량 위치와 최종 경고 상태를 함께 전달해 운전자가 같은 맥락의 경고를 여러 표면에서 일관되게 인지할 수 있도록 한다.
+
+\FigurePlaceholder{컨셉 아키텍처 구성도}{72mm}{삽입 예정 이미지:\\
+입력부 + 제어부 + 출력부를 합친 컨셉 아키텍처\\
+추천 내용: 차량 상태/조향/구간 정보/긴급차량 입력 -> V2X/ADAS/CGW 제어 -> 앰비언트/내비게이션/클러스터/오디오 출력}
+
+\FigurePlaceholder{전체 차량 ECU 기준선 구조}{65mm}{삽입 예정 이미지:\\
+전체 차량 ECU 트리 구조도\\
+추천 내용: 차량 도메인 기준 ECU 노드 트리와 그룹 구성}
+
+\subsubsection{네트워크 설계도}
+네트워크 설계는 CAN과 Ethernet 혼합 구조를 유지하되, 차량 상태와 구간 맥락은 도메인 CAN과 핵심 전달 경로로 정리하고, 긴급 이벤트와 최종 경고 상태는 Ethernet 경로를 통해 전달하도록 구성하였다. 또한 출력 ECU와 진단·관측 계층은 같은 의미를 상태 확인 경로에서 다시 읽도록 구성해, 입력과 출력, 관측이 서로 다른 기준으로 분리되지 않도록 했다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{32mm}|p{24mm}|X|}
+\hline
+\textbf{연결 경로} & \textbf{담당 ECU} & \textbf{설명} \\ \hline
+주행 맥락 & IVI & 도로 구간, 방향, 거리, 제한속도 맥락을 제공하며 도메인 간 전달이 필요할 때는 CGW를 경유한다. \\ \hline
+긴급 이벤트 맥락 & V2X & 긴급 이벤트를 정규화해 다른 판단 계층이 공통 기준으로 사용할 수 있게 한다. \\ \hline
+경고 판단 결과 & ADAS & 최종 경고 판단과 감속 보조 판단의 기능 의미를 담당한다. \\ \hline
+최종 적용 결과 & CGW & 경계 상태와 비상 보호를 반영한 최종 경고 상태와 감속 보조 적용 결과를 담당한다. \\ \hline
+경고 출력 상태 & IVI, CLU, HUD, AMP & 최종 적용 결과를 받아 표시와 음향 출력으로 변환한다. \\ \hline
+바디 경고 출력 & BCM & 바디 경고 동작과 앰비언트/비상등 출력을 담당한다. \\ \hline
+경계 상태 & CGW & 경고 전달 경로와 비상 보호 경계 상태를 요약한다. \\ \hline
+시나리오/기준선 결과 & TEST\_SCN / TEST\_BAS & 시험 시나리오 결과와 기준선 관측 결과를 별도 경로로 유지한다. \\ \hline
+\end{tabularx}
+\caption{주요 연결 책임 정리}
+\end{table}
+
+\FigurePlaceholder{네트워크 흐름 설계도}{65mm}{삽입 예정 이미지:\\
+네트워크 구조 및 신호 흐름도\\
+추천 내용: CAN/Ethernet 혼합 구조, 담당 ECU, 출력 및 상태 확인 경로}
+
+\subsubsection{ECU 그룹 간 동작 시퀀스 개요}
+100개 ECU 노드를 모두 개별 슬라이드처럼 나열하지 않고, 실제 기능 흐름 기준으로 입력 그룹, V2X 그룹, ADAS 그룹, CGW 및 출력 그룹, 진단·관측 그룹으로 묶어 시퀀스를 정리하였다.
+
+\FigurePlaceholder{ECU 그룹 간 동작 시퀀스 개요}{58mm}{삽입 예정 이미지:\\
+전체 시퀀스 개요도\\
+추천 내용: 기준선 입력 -> V2X / ADAS -> CGW -> 출력 / 진단 관측}
+
+\subsubsection{ECU 그룹 책임 요약표}
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{28mm}|p{24mm}|X|}
+\hline
+\textbf{그룹} & \textbf{대표 ECU} & \textbf{주요 책임} \\ \hline
+입력 기준선 그룹 & VCU, MDPS, IVI & 차량 상태, 조향 상태, 구간 맥락을 주행 상황 기준선으로 정리한다. \\ \hline
+긴급 이벤트 그룹 & V2X & 다수 긴급 후보를 하나의 활성 이벤트로 정리해 판단 입력으로 넘긴다. \\ \hline
+판단 그룹 & ADAS & 긴급 접근 위험과 객체 위험을 함께 판단해 최종 경고와 감속 보조 결정을 만든다. \\ \hline
+최종 적용 그룹 & CGW & 경계 상태와 비상 보호 조건을 반영해 최종 적용 경고 상태를 만든다. \\ \hline
+출력 그룹 & BCM, CLU, HUD, AMP, IVI & 최종 적용 결과를 시각·청각 경고 채널로 변환해 운전자에게 전달한다. \\ \hline
+진단·관측 그룹 & SGW, DCM, IBOX, EXT\_DIAG, TEST\_BAS & 서비스 상태, 진단 상태, 기준선 결과를 별도 관측 경로로 남긴다. \\ \hline
+\end{tabularx}
+\caption{ECU 그룹별 책임 요약}
+\end{table}
+
+\subsection{상세 설계}
+본 장은 기능 정의, 통신 구조, 시험 자산, 실제 CANoe CAPL 구현을 함께 기준으로 정리하였다.
+
+\subsubsection{기능 정의 반영}
+기능 정의는 구현과 시험 자산이 어떤 흐름으로 닫히는지를 설명하는 중심 축으로 사용하였다. 본 프로젝트의 기능은 기본 차량 상태와 구간 맥락을 기준선으로 받아들이고, 긴급 이벤트는 V2X에서 하나의 활성 이벤트로 정리한 뒤, ADAS가 긴급 위험과 객체 위험을 함께 판단하는 구조로 정리된다. 이후 CGW가 경계 상태와 비상 보호 기준을 반영해 최종 적용 결과를 만들고, 출력 ECU와 진단·관측 계층은 같은 결과를 서로 다른 표면에서 확인할 수 있도록 구성하였다.
+
+즉 기능 정의의 핵심은 개별 기능 나열이 아니라, 입력 정리 -> 위험 판단 -> 최종 중재 -> 최종 적용 -> 출력 및 관측이라는 일관된 단계 구조를 유지하는 데 있다. 이 구조 덕분에 요구사항에서 정의한 경고 시작, 우선순위, 복귀, 감속 보조 규칙을 코드와 시험 자산까지 같은 해석 기준으로 연결할 수 있었다.
+
+\subsubsection{시스템 기능 분석 반영}
+시스템 기능 분석은 실제 ECU가 어떤 역할로 묶이는지를 보여주는 기준으로 사용하였다. 입력 기준선은 VCU, MDPS, IVI가 담당하고, 긴급 이벤트 정규화는 V2X가 맡으며, 위험도 산정과 최종 경고 선택은 ADAS가 담당한다. CGW는 이 판단을 차량 전체에 적용 가능한 상태로 다시 정리하고, BCM, CLU, HUD, AMP는 최종 경고를 시각·청각 채널로 반영한다. SGW, DCM, IBOX, EXT\_DIAG, TEST\_BAS는 서비스 상태, 진단 상태, 관측 근거를 별도로 확인할 수 있게 만든다.
+
+이 분석을 통해 프로젝트를 단일 기능 묶음으로 보지 않고, 입력 기준선 그룹, 판단 그룹, 경계 및 출력 그룹, 진단 및 관측 그룹으로 나누어 이해할 수 있다. 본문도 같은 기준을 따라, 코드와 그림이 서로 다른 설명을 하지 않도록 정리하였다.
+
+\subsubsection{네트워크 흐름 정의 반영}
+네트워크 흐름은 도메인 CAN에서 올라오는 차량 상태와 구간 맥락, Ethernet 핵심 경로를 타는 긴급 이벤트와 최종 판단 결과, 그리고 시험 자극과 진단 관측 경로를 분리해 설명하였다. 실제 기준선에서는 차량 상태와 조향 상태, 구간 맥락이 먼저 정리되고, 긴급 이벤트는 V2X에서 하나의 활성 이벤트로 정규화된다. 객체 위험 자극은 검증 전용 경로로만 들어가며, ADAS는 이를 포함한 전체 입력을 바탕으로 위험도와 최종 경고를 결정한다. 이후 CGW가 최종 적용 상태를 다시 만들고, 출력 ECU와 진단·관측 계층이 이를 소비한다.
+
+중요한 점은 기능 의미와 전송 경로를 분리해 본다는 것이다. 입력이 어떤 버스를 거쳤는지보다, 어떤 계층이 그 의미를 책임지고 다음 계층에 넘기는지가 더 중요하다. 이 기준을 지키면 도메인 CAN, Ethernet, 시스템 변수, 패널 화면이 서로 다른 구조처럼 보이지 않고 하나의 기능 흐름으로 읽힌다.
+
+\subsubsection{통신 명세 반영}
+통신 명세는 활성 기준선에서 각 메시지와 전달 경로에 명확한 담당 ECU를 두는 방식으로 정리하였다. 구간 맥락은 IVI가, 긴급 이벤트는 V2X가, 최종 판단 결과는 ADAS가, 최종 적용 상태와 경계 상태는 CGW가 담당하도록 구분하였다. 출력 ECU는 최종 적용 결과를 우선적으로 소비하고, 진단 계층은 요청과 응답, 서비스 상태, 보안 상태를 별도 관측 경로에서 유지한다.
+
+이처럼 통신 명세의 핵심은 메시지 수를 많이 나열하는 것이 아니라, 어떤 정보가 누구의 책임 아래 생성되고 어디까지 전달되는지를 분명히 하는 데 있다. 특히 본 프로젝트에서는 검증 전용 자극 경로와 제품 기능 경로를 분리해, 시험 자산이 제품 로직의 소유권을 침범하지 않도록 정리하였다.
+
+\subsubsection{시스템 변수 설계 반영}
+시스템 변수 설계는 입력, 상태 확인, 시험 자극의 경계를 분명히 나누는 데 초점을 맞추었다. 입력 화면은 차량 명령, 맥락 주입, 시험 시나리오 변수만 쓸 수 있도록 제한하고, 관측 화면은 담당 ECU가 계산해 놓은 상태만 읽도록 구성하였다. 따라서 패널은 경고를 만들어내는 계층이 아니라, 이미 계산된 상태를 보여주는 확인 화면으로 동작한다.
+
+이 구조는 구현과 검증을 함께 안정화하는 데 중요한 역할을 했다. 입력 경로가 고정되어 있어야 같은 시나리오를 반복 실행할 수 있고, 상태 확인 경로가 안정되어 있어야 결과를 보고서와 증빙으로 다시 설명할 수 있다. 즉 시스템 변수 설계는 단순 표시용 연결이 아니라, 프로젝트 전체를 재현 가능하게 만드는 기준이었다.
+
+\subsubsection{CAN DB 설계}
+DBC와 핵심 전달 경로 계약은 같은 인터페이스 기준으로 함께 관리하였다. 도메인별 CAN 메시지는 각 DBC가 담당하고, Ethernet 핵심 전달 경로는 별도 통신 계약 문서를 통해 연결 책임과 전송 규칙을 정리하였다. 본 프로젝트에서는 CAN과 Ethernet이 따로 분리되지 않도록, 도메인별 입력과 최종 판단 결과가 같은 해석 기준 위에서 이어지게 했다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{34mm}|X|}
+\hline
+\textbf{계층} & \textbf{설명} \\ \hline
+Chassis CAN & 조향, 휠 속도, 제동, 차체 상태와 같은 기본 주행 상태를 담당한다. \\ \hline
+Powertrain CAN & 시동, 기어, 주행 모드, 열/전력 상태와 같은 구동 기준선을 담당한다. \\ \hline
+Body CAN & 앰비언트, 비상등, 창문, 안전벨트, 공조, 도어 상태와 같은 차체 상태를 담당한다. \\ \hline
+Infotainment CAN & 클러스터, 내비게이션, 미디어, HMI/서비스 상태와 같은 표시·맥락 상태를 담당한다. \\ \hline
+ADAS 핵심 전달 경로(CAN/Ethernet) & 위험 판단, 최종 경고, 감속 보조, 비상 보호와 같은 최종 판단 상태를 담당한다. \\ \hline
+\end{tabularx}
+\caption{기준선 인터페이스 계층}
+\end{table}
+
+\FigurePlaceholder{CAN DB 설계 요약}{58mm}{삽입 예정 이미지:\\
+DBC 설계 캡처 1~2장\\
+추천 내용: 도메인별 DBC, 대표 메시지 구조}
+
+\subsubsection{상세 네트워크 및 메시지 매트릭스}
+메시지 매트릭스는 단순한 송수신 목록이 아니라 어떤 ECU가 어떤 기능 의미를 담당하는가를 보여준다. 각 연결 경로는 입력 맥락, 판단 결과, 경계 상태, 진단 관측 경로로 나누어 설명한다.
+
+네트워크 흐름도 같은 기준을 따른다. 차량 상태와 구간 맥락은 입력 계층에서 먼저 정리되고, 긴급 이벤트는 V2X를 거쳐 활성 이벤트 하나로 정규화된다. ADAS는 이 입력을 바탕으로 위험도와 최종 경고, 감속 보조 판단을 내보내고, CGW는 다시 경계 상태와 비상 보호를 반영한 최종 적용 결과를 만든다. 진단·관측 계층은 이 과정에서 별도의 진단 상태와 관측 근거를 함께 남겨, 결과를 나중에 다시 설명할 수 있게 한다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{28mm}|p{40mm}|p{24mm}|X|}
+\hline
+\textbf{계층} & \textbf{대표 정보} & \textbf{담당 ECU} & \textbf{설명} \\ \hline
+입력 맥락 & 차량 상태, 조향 상태, 구간 맥락 & VCU, MDPS, IVI & 기본 차량 상태와 구간 맥락을 판단 계층의 공통 입력으로 전달한다. \\ \hline
+긴급 이벤트 입력 & 긴급차량 접근 정보, 모니터링 정보 & V2X & 외부 긴급 이벤트를 받아 활성 이벤트 하나로 정리한다. \\ \hline
+검증 전용 객체 입력 & 객체 위험 입력 자극 & TEST\_SCN & 객체 위험 입력은 검증 전용 자극으로 유지한다. \\ \hline
+판단 결과 & 위험도, 최종 경고, 감속 보조, 객체 위험 결과 & ADAS & 위험도, 최종 경고, 감속 보조, 객체 위험 결과를 다른 계층으로 전달한다. \\ \hline
+경계 상태 & 비상 보호, 경고 경로, 경계 상태 & CGW & 경고 경계 상태와 비상 보호 결과를 다시 전달한다. \\ \hline
+진단 관측 & 진단 요청/응답, 서비스/보안 상태 & SGW + DCM & 진단 요청/응답, 서비스/보안 상태를 관측 가능한 기준으로 노출한다. \\ \hline
+\end{tabularx}
+\caption{메시지 매트릭스 해석 관점}
+\end{table}
+
+\FigurePlaceholder{메시지 매트릭스 요약}{58mm}{삽입 예정 이미지:\\
+\texttt{0303} 메시지 매트릭스 발췌\\
+추천 내용: 대표 메시지, 송신 ECU, 수신 ECU, 목적}
+
+\subsubsection{전체 차량 기준선 ECU 그룹}
+전체 차량 기준선 ECU 그룹은 공식 ECU 도메인 기준을 그대로 따르되, 실제 경고 로직과 직접 맞닿는 기준선 상태만 본문에 올렸다. 이 그룹은 이후 V2X와 ADAS가 의존하는 입력 기준선과 출력 기준선을 동시에 형성한다.
+
+실제 기준선에서는 VCU가 속도와 주행 상태를, MDPS가 조향 상태를, IVI가 도로 구간과 방향, 제한속도 맥락을 제공한다. BCM, IVI, CLU, HUD, AMP는 최종 경고를 소비하는 출력 ECU로 동작하며, CGW는 도메인 간 경계와 최종 적용 상태를 담당한다. 따라서 기준선 ECU 그룹은 단순 배경이 아니라 입력 기준선 -> 판단 기준선 -> 출력 기준선이 끊기지 않도록 만드는 시작 계층이다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{32mm}|X|}
+\hline
+\textbf{그룹} & \textbf{역할} \\ \hline
+VCU / EMS / TCU / 주행 기준선 & 속도, 기어, 주행 상태, 제동, 조향과 같은 주행 기준선을 제공한다. \\ \hline
+IVI / NAV 기준선 & 도로 구간, 방향, 제한속도와 같은 구간 맥락을 정리한다. \\ \hline
+BCM / CLU / HUD / AMP 출력 화면 & 최종 경고 결과가 시각·청각 채널로 어떻게 반영될지 결정하는 출력 화면을 형성한다. \\ \hline
+CGW / DCM / IBOX / SGW 서비스 경계 & 도메인 간 경계, 서비스 상태, 보안·진단 상태를 관리한다. \\ \hline
+\end{tabularx}
+\caption{전체 차량 기준선 ECU 그룹 요약}
+\end{table}
+
+\FigurePlaceholder{전체 차량 기준선 ECU 그룹}{56mm}{삽입 예정 이미지:\\
+전체 차량 기준선 계층 구조도\\
+추천 내용: 차량 기준선 계층과 도메인별 역할 그룹}
+
+\FigurePlaceholder{기본 차량 기준선 시퀀스 플로우}{56mm}{삽입 예정 이미지:\\
+기본 기준선 ECU 시퀀스 흐름도\\
+추천 내용: 속도 / 기어 / 구간 맥락 / 기본 출력 흐름}
+
+\subsubsection{입력 및 맥락 ECU 그룹}
+입력 및 맥락 ECU 그룹은 입력 맥락 기준을 따른다. 즉 주행 맥락은 IVI가, 차량 상태는 VCU가, 조향 맥락은 MDPS가 담당한다. 이 상태들은 CGW와 IBOX를 거쳐 도메인 간 전달이 필요할 때만 경계 계층을 통과한다.
+
+동작 순서도 명확하다. 먼저 VCU와 MDPS가 차량 상태와 조향 상태를 핵심 전달 경로에 올린다. 다음으로 IVI가 도로 구간, 방향, 제한속도를 맥락 정보로 제공한다. CGW와 IBOX는 이를 경계 및 서비스 관점에서 다시 정리해 하위 계층에 전달하고, 표시 계층은 이 기준선을 바탕으로 기본 화면을 유지한다. 이후 V2X와 ADAS는 동일 기준선 위에서만 추가 판단을 수행하므로, 입력 및 맥락 그룹은 단순 수집 계층이 아니라 전체 판단의 공통 기준면으로 본다.
+
+\FigurePlaceholder{입력 및 기준선 ECU 그룹 구조}{56mm}{삽입 예정 이미지:\\
+입력 및 기준선 ECU 그룹도\\
+추천 내용: 입력 ECU, 기준선 ECU, 출력 ECU 그룹 구성}
+
+\subsubsection{V2X 그룹 설계}
+V2X는 외부 긴급 이벤트를 그대로 전달하는 것이 아니라, 긴급차량 유형, 도달 시간, 출처 기준으로 활성 이벤트를 정규화하는 계층으로 설계하였다.
+
+V2X 그룹의 핵심은 수신 그 자체가 아니라 비교 가능한 입력으로의 변환이다. 실제 코드에서도 외부 긴급 이벤트를 단순 수신값으로 넘기지 않고, 긴급차량 유형, 접근 방향, 도달 시간, 출처 정보를 함께 보고 차량이 참조해야 할 활성 이벤트를 하나로 정리한다. 이때 구급차를 우선하고, 같은 종류의 이벤트가 겹치면 도달 시간이 더 짧은 쪽을 먼저 반영하며, 그래도 같을 경우에는 출처 식별값으로 순서를 정한다. 또한 입력이 일정 시간 이상 갱신되지 않으면 오래된 경고가 다음 단계에 남지 않도록 입력 정리 신호를 발생시켜, 이후 판단 계층이 항상 최신 긴급 이벤트만 보게 했다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{34mm}|X|}
+\hline
+\textbf{V2X 주요 처리} & \textbf{설명} \\ \hline
+긴급 이벤트 수집 & 외부 긴급 이벤트에서 유형, 방향, 도달 시간, 출처 정보를 받아 활성 후보를 형성한다. \\ \hline
+우선순위 비교 & 긴급차량 종류, 도달 시간, 출처 순으로 반영할 이벤트를 하나로 정리한다. \\ \hline
+정규화 상태 반영 & ADAS와 출력 계층이 공통으로 참조할 수 있는 긴급 이벤트 상태를 만든다. \\ \hline
+오래된 입력 정리 & 일정 시간 동안 갱신이 없으면 입력 정리 신호를 발생시켜 오래된 이벤트를 정리한다. \\ \hline
+관측 경로 전달 & 실제 판단에 사용된 긴급 이벤트 상태를 모니터링 경로에도 함께 남긴다. \\ \hline
+\end{tabularx}
+\caption{V2X 그룹 코드 동작 요약}
+\end{table}
+
+대표 알고리즘 코드는 긴급차량 유형, 도달 시간, 출처를 비교하여 하나의 활성 이벤트를 선택하는 구간이다. 아래 코드는 \texttt{V2X.can}에서 발췌한 우선순위 정규화 핵심 구간으로, `구급 우선 -> 도달 시간 우선 -> 출처 정렬` 규칙이 실제 CAPL에서 어떻게 구현되는지를 보여준다.
+
+\begin{lstlisting}[style=caplcode,caption={대표 알고리즘 코드 1. V2X 활성 이벤트 우선순위 정규화}]
+int getEmergencyPriorityRank(int emergencyType)
+{
+  // Ambulance(2) > police(1) > others
+  if (emergencyType == 2)
+  {
+    return 2;
+  }
+  if (emergencyType == 1)
+  {
+    return 1;
+  }
+  return 0;
+}
+
+int isHigherPriority(int newType, int newEta, int newSourceId,
+                     int activeType, int activeEta, int activeSourceId)
+{
+  int newRank;
+  int activeRank;
+
+  if (activeType == 0)
+  {
+    return 1;
+  }
+  newRank = getEmergencyPriorityRank(newType);
+  activeRank = getEmergencyPriorityRank(activeType);
+  if (newRank != activeRank)
+  {
+    return (newRank > activeRank);
+  }
+  // Same type: ETA first, then source ID
+  if (newEta != activeEta)
+  {
+    return (newEta < activeEta);
+  }
+  return (newSourceId < activeSourceId);
+}
+\end{lstlisting}
+
+\FigurePlaceholder{V2X 정규화 구조}{58mm}{삽입 예정 이미지:\\
+V2X 정규화 구조도\\
+추천 내용: 긴급 이벤트 후보 -> V2X 정규화 -> 활성 이벤트}
+
+\FigurePlaceholder{V2X 시퀀스 플로우}{58mm}{삽입 예정 이미지:\\
+V2X 이벤트 흐름도\\
+추천 내용: 긴급 이벤트 입력 -> 정규화 -> 상태 반영}
+
+\subsubsection{ADAS 그룹 설계}
+ADAS는 긴급 접근 위험과 객체 기반 위험을 하나의 판단 축으로 통합하고, 최종 경고 상태와 감속 보조 요청을 결정하는 계층으로 설계하였다.
+
+ADAS 그룹은 본 프로젝트의 중심 판단 계층이다. 실제 코드에서는 먼저 긴급차량 접근 위험을 계산하고, 동시에 주변 객체에 대한 충돌 위험을 계산한다. 긴급차량 쪽은 도달 시간, 자차 속도, 접근 방향, 차량 유형을 함께 보며, 객체 쪽은 거리와 상대속도로 TTC를 구한 뒤 거리, 신뢰도, 교차 충돌과 끼어들기 같은 상황 편향을 함께 반영한다. 그 다음 두 위험 가운데 더 큰 축을 기준으로 최종 경고 상태를 선택하고, 감속 보조는 켜짐과 꺼짐 기준을 분리해 출력이 경계값에서 흔들리지 않도록 안정화한다.
+
+최종 중재 단계에서는 위험도만 단순 비교하지 않는다. 주행 상태, 조향과 제동 입력, 긴급 이벤트 유지 상태, 객체 경고 활성 여부, 입력 정리 상태, 경계 상태, 비상 보호 상태를 함께 보고 최종 경고를 조정한다. 따라서 ADAS는 단순 계산기가 아니라, 여러 입력을 하나의 경고 상태와 하나의 감속 보조 상태로 수렴시키는 판단 계층으로 보는 것이 맞다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{34mm}|X|}
+\hline
+\textbf{ADAS 주요 처리} & \textbf{설명} \\ \hline
+긴급 접근 위험도 & 도달 시간, 속도, 접근 방향, 긴급차량 유형을 결합해 긴급 접근 위험을 계산한다. \\ \hline
+객체 위험도 & 거리와 상대속도로 TTC를 계산하고, 신뢰도와 시나리오 편향을 더해 객체 위험을 계산한다. \\ \hline
+최종 위험도 선택 & 긴급 접근 위험과 객체 위험 중 더 높은 축을 최종 판단 입력으로 사용한다. \\ \hline
+경고 중재 & 계산된 위험과 차량 상태를 함께 보고 최종 경고 종류와 경고 강도를 정한다. \\ \hline
+감속 보조 안정화 & 켜짐과 꺼짐 기준을 분리해 감속 보조가 반복적으로 흔들리지 않게 유지한다. \\ \hline
+핵심 경로 반영 & 위험도, 최종 경고, 감속 보조 결과를 다른 ECU가 읽을 수 있는 상태로 다시 전달한다. \\ \hline
+\end{tabularx}
+\caption{ADAS 그룹 코드 동작 요약}
+\end{table}
+
+대표 알고리즘 코드는 위험도 계산 결과가 실제 최종 경고와 감속 보조로 이어지는 핵심 구간을 보여준다. 아래 코드는 \texttt{ADAS.can}에서 발췌한 최종 중재 및 감속 보조 안정화 구간으로, 긴급 접근과 객체 위험이 어떤 규칙으로 하나의 경고 상태로 수렴되는지를 보여준다.
+
+\begin{lstlisting}[style=caplcode,caption={대표 알고리즘 코드 2. ADAS 최종 경고 중재와 감속 보조 안정화}]
+// Separate on/off thresholds for stable decel assist
+decelRiskOnThreshold = getDecelRiskOnThreshold(emergencyContext, objectWarningActive);
+decelRiskOffThreshold = getDecelRiskOffThreshold(emergencyContext, objectWarningActive);
+
+if (driveState == 3 && (emergencyContext > 0 || objectWarningActive == 1))
+{
+  if (decelDecisionReq == 0 && proximityRiskLevel >= decelRiskOnThreshold)
+  {
+    decelDecisionReq = 1;
+  }
+  else if (decelDecisionReq == 1 && proximityRiskLevel <= decelRiskOffThreshold)
+  {
+    decelDecisionReq = 0;
+  }
+}
+else
+{
+  decelDecisionReq = 0;
+}
+
+if (decelDecisionReq == 1)
+{
+  if (brakePedal >= 15)
+  {
+    decelDecisionReq = 0;
+    driverReleaseReason = 2;
+  }
+  else if (steeringInput == 1)
+  {
+    decelDecisionReq = 0;
+    driverReleaseReason = 1;
+  }
+}
+
+// Emergency alert has priority over normal object alert
+if (emergencyContext == 2)
+{
+  selectedAlertLevel = 7;
+  selectedAlertType = 2;
+}
+else if (emergencyContext == 1)
+{
+  selectedAlertLevel = 6;
+  selectedAlertType = 1;
+}
+else
+{
+  selectedAlertLevel = baseAlertLevel;
+  selectedAlertType = baseAlertType;
+  if (objectWarningActive == 1)
+  {
+    selectedAlertLevel = getObjectAlertLevel(intersectionConflictFlag, mergeCutInFlag, objectRiskClass);
+    selectedAlertType = getObjectAlertType(intersectionConflictFlag, mergeCutInFlag);
+  }
+}
+\end{lstlisting}
+
+\FigurePlaceholder{ADAS 상태 함수 및 위험도 구조}{60mm}{삽입 예정 이미지:\\
+ADAS 상태 함수 및 위험도 구조도\\
+추천 내용: 입력 상태 집합 -> ADAS 상태 함수 -> 최종 경고 상태}
+
+\FigurePlaceholder{객체 위험도 / TTC / 중재 구조}{60mm}{삽입 예정 이미지:\\
+객체 위험도, TTC, 중재 구조도\\
+추천 내용: TTC, 객체 위험도, 최종 위험도, 계층형 경고 중재}
+
+\FigurePlaceholder{ADAS 시퀀스 플로우}{58mm}{삽입 예정 이미지:\\
+ADAS 이벤트 흐름도\\
+추천 내용: 맥락 입력 -> 위험도 계산 -> 중재 -> 판단 결과 반영}
+
+\subsubsection{CGW 및 출력 ECU 그룹}
+CGW는 ADAS 판단 결과를 최종 적용 경고와 비상 보호 기준으로 보정하는 역할을 맡고, 출력 계층은 앰비언트, 클러스터, HUD, 오디오 채널에 반영되도록 설계하였다.
+
+CGW 그룹은 ADAS가 계산한 판단 상태를 차량 전체에서 실제로 사용할 수 있는 최종 적용 상태로 바꾸는 계층이다. 실제 코드에서도 경계 활성 상태, 경고 전달 경로, 데이터 건강 상태, 비상 보호 상태를 함께 보고 ADAS의 판단을 다시 다듬는다. 경계가 끊기거나 입력 정리 신호가 발생하면 최소 경고 수준이 갑자기 사라지지 않도록 유지하고, 비상 보호가 활성화되면 감속 보조는 제한하면서도 운전자 경고는 계속 이어지도록 설계했다. 즉 CGW는 판단을 다시 만드는 계층이 아니라, 판단 결과를 차량 전체 기준에 맞게 안전하게 다듬는 계층이다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{34mm}|X|}
+\hline
+\textbf{CGW 주요 처리} & \textbf{설명} \\ \hline
+경계 상태 확인 & 경계 활성 상태, 전달 경로 상태, 데이터 건강 상태를 기준으로 전달 가능 상태를 확인한다. \\ \hline
+최종 적용 경고 보정 & ADAS 판단 결과를 차량 전체에서 사용 가능한 최종 경고 상태로 보정한다. \\ \hline
+비상 보호 차단 & 비상 보호가 활성화되면 감속 보조는 차단하고 최소 경고 수준은 유지한다. \\ \hline
+경계 상태 재전달 & 최종 경고와 함께 경계 상태도 다른 계층이 읽을 수 있도록 다시 전달한다. \\ \hline
+\end{tabularx}
+\caption{CGW 그룹 코드 동작 요약}
+\end{table}
+
+\FigurePlaceholder{CGW 및 진단·관측 계층 구조}{58mm}{삽입 예정 이미지:\\
+CGW와 진단·관측 계층 구조도\\
+추천 내용: 경고 판단 계층과 진단·관측 계층의 분리 구조}
+
+\FigurePlaceholder{CGW 시퀀스 플로우}{58mm}{삽입 예정 이미지:\\
+CGW 이벤트 흐름도\\
+추천 내용: 판단 결과 -> 최종 적용 보정 -> 비상 보호 -> 출력 상태}
+
+\subsubsection{진단 및 관측 ECU 그룹}
+SGW, DCM, IBOX, EXT\_DIAG, TEST\_BAS는 서비스 상태, 경계 상태, 시험 관측 정보를 따로 확인할 수 있게 하는 그룹으로 정리하였다. 경고 판단을 직접 결정하기보다 결과를 설명 가능하게 만드는 계층으로 구성하였다.
+
+이 그룹은 핵심 경고를 직접 판단하지는 않지만, 시스템의 설명 가능성과 검증 가능성을 만드는 역할을 한다. SGW는 보안과 서비스 경계가 어떤 상태인지, 어떤 경로가 열려 있는지를 정리한다. DCM은 진단 요청이 어떤 상태로 처리되었는지, 어떤 응답이 반환되었는지, 왜 그런 응답이 나왔는지를 관측 가능한 형태로 남긴다. IBOX는 차량과 내비게이션 입력의 최신성, 서비스 연결 상태, 링크 상태를 유지해 상위 서비스 계층이 입력을 믿을 수 있는지를 보여준다. EXT\_DIAG는 외부 진단 관측면으로 동작하고, TEST\_BAS는 최종 경고, 비상 보호, 감속 보조, 객체 위험 상태를 시험 자산에서 바로 읽을 수 있도록 별도 관측 경로로 다시 남긴다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{30mm}|X|}
+\hline
+\textbf{ECU} & \textbf{역할} \\ \hline
+SGW & 보안과 서비스 경계 상태를 정리하고, 어떤 경로가 유효한지 보여준다. \\ \hline
+DCM & 진단 요청 처리 상태, 응답 종류, 응답 사유를 관측 가능한 형태로 남긴다. \\ \hline
+IBOX & 차량 및 내비게이션 입력의 최신성, 링크 상태, 서비스 연결 상태를 형성한다. \\ \hline
+EXT\_DIAG & 외부 진단 관점에서 진단 상태를 읽는 관측면으로 동작한다. \\ \hline
+TEST\_BAS & 최종 경고, 비상 보호, 감속 보조, 객체 위험 결과를 시험 자산용 관측 경로로 다시 남긴다. \\ \hline
+\end{tabularx}
+\caption{진단 및 관측 ECU 그룹 역할}
+\end{table}
+
+\FigurePlaceholder{진단 및 관측 ECU 그룹 구조}{58mm}{삽입 예정 이미지:\\
+진단 및 관측 ECU 그룹 구조도\\
+추천 내용: 서비스 상태, 진단 관측 경로, 증빙 경로}
+
+\FigurePlaceholder{진단 및 관측 그룹 시퀀스 플로우}{58mm}{삽입 예정 이미지:\\
+진단 및 관측 시퀀스 흐름도\\
+추천 내용: 서비스 상태 -> 진단 미러링 -> 증빙 / 상태 확인}
+
+\subsubsection{패널 및 상태 확인 계층}
+패널은 단순 시각자료가 아니라 출력 채널과 관측 채널이 실제로 연결되어 있음을 보여주는 확인 화면으로 사용하였다.
+
+패널 계층은 독립적인 판단 로직을 갖지 않는다. 입력은 콘솔과 시험용 입력 경로를 통해 담당 ECU에 전달되고, 패널은 각 ECU가 계산해 놓은 상태를 읽어 화면에 보여주는 역할만 한다. 따라서 패널은 경고를 직접 만드는 계층이 아니라, 출력과 관측 결과가 실제로 어떻게 이어지는지 확인하는 확인 화면이라고 보는 것이 맞다. 이 때문에 패널 구성 자체보다, 어떤 상태가 어떤 경로를 통해 패널에 반영되는지가 더 중요한 설계 포인트였다.
+
+\FigurePlaceholder{출력 패널 및 상태 확인 구조}{58mm}{삽입 예정 이미지:\\
+출력 패널 및 상태 확인 구조도\\
+추천 내용: 입력 콘솔 -> 담당 ECU -> 상태 확인 경로}
+
+\FigurePlaceholder{패널 시퀀스 플로우}{58mm}{삽입 예정 이미지:\\
+패널 이벤트 흐름도\\
+추천 내용: 상태 확인 경로 -> 패널 표시 -> 증빙 캡처}
+
+\subsubsection{대표 시퀀스 플로우 묶음}
+프로젝트에서 중요한 시퀀스는 기본 주행 기준선, 긴급 접근 정규화, 객체 위험 산정, 최종 경고 보정, 출력/관측 반영으로 나누어 정리하였다.
+
+\FigurePlaceholder{대표 시퀀스 플로우 묶음}{60mm}{삽입 예정 이미지:\\
+대표 시퀀스 흐름 모음\\
+추천 내용: V2X / ADAS / CGW / HMI 시퀀스 4장 요약}
+
+\subsection{테스트}
+\subsubsection{테스트 전략}
+검증은 공식 시험 매트릭스와 시험 자산 매핑 문서를 기준으로 단위시험(UT), 통합시험(IT), 시스템시험(ST)으로 구분하였다. 단위시험은 개별 로직과 계산 규칙을, 통합시험은 ECU 간 의미 전달과 경고 중재를, 시스템시험은 전체 차량 기준선 위의 연속 시나리오를 확인한다. 시험 자산 매핑 문서 기준으로는 단위시험 77건, 통합시험 45건, 시스템시험 46건이 연결되어 있으며, 이 구조를 통해 기능 설명과 시험 결과를 같은 흐름으로 추적할 수 있게 하였다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{28mm}|X|}
+\hline
+\textbf{구분} & \textbf{검증 목적} \\ \hline
+UT & 개별 로직, 조건 분기, 변수 반영, 직접 담당 동작을 확인한다. \\ \hline
+IT & ECU 간 인터페이스, 메시지 흐름, 경고 중재, 출력/관측 연계를 확인한다. \\ \hline
+ST & 대표 시나리오 기준 전체 차량 기준선 동작과 연속 시나리오 닫힘을 확인한다. \\ \hline
+\end{tabularx}
+\caption{단계별 테스트 전략}
+\end{table}
+
+\subsubsection{기본 주행 및 기준선 시나리오}
+기본 주행 및 기준선 시나리오는 전원 인가 이후 초기화, 일반 구간 주행, 스쿨존 전환, 고속 구간 무조향, 유도 구간 방향 표시까지 차량의 기본 경고 정책이 안정적으로 이어지는지를 확인하는 묶음이다. 시스템시험 ST\_001~ST\_010과 통합시험 IT\_001~IT\_003은 불필요한 경고가 발생하지 않는 정상 상태와, 구간 문맥이 바뀔 때 해당 정책만 즉시 반영되는 전환 상태를 함께 점검한다. 이 구간은 이후 긴급 접근과 객체 위험 시나리오를 비교하는 기준선이다.
+
+\FigurePlaceholder{기본 주행 시나리오}{56mm}{삽입 예정 이미지:\\
+기본 주행 시나리오 화면\\
+추천 내용: 속도 / 기어 / 구간 맥락 / 기본 출력 상태}
+
+\subsubsection{긴급 접근 시나리오}
+긴급 접근 시나리오는 외부 긴급 이벤트가 들어왔을 때 V2X 계층이 활성 이벤트를 하나로 정리하고, 그 결과가 ADAS와 출력 채널까지 같은 의미로 이어지는지를 확인하는 묶음이다. 통합시험 IT\_004~IT\_011과 시스템시험 ST\_011~ST\_021은 경찰과 구급의 개별 반영, 유형 우선순위, 도달 시간 비교, 동일 조건에서의 식별 규칙, 종료 후 안전 복귀까지를 함께 확인한다. 핵심은 긴급 경고가 강하게 보이는지가 아니라, 여러 후보가 들어와도 최종 경고가 하나로 안정적으로 선택되는지에 있다.
+
+\FigurePlaceholder{긴급 접근 시나리오}{56mm}{삽입 예정 이미지:\\
+V2X 시연 화면 또는 보고서 증빙\\
+추천 내용: 긴급 이벤트, 도달 시간, 경고 출력}
+
+\subsubsection{객체 위험 및 통합 시나리오}
+객체 위험 및 통합 시나리오는 ADAS 계층이 객체 거리와 상대 접근, 교차로 및 합류 맥락을 이용해 충돌 위험을 판단하고, 이를 긴급 접근 위험과 함께 최종 경고로 수렴시키는지를 확인하는 묶음이다. 통합시험 IT\_012, IT\_018과 시스템시험 ST\_022~ST\_029는 전방 급접근, 측방 접근, 합류 및 끼어들기, 긴급 접근과의 동시 입력까지를 포함한다. 이 구간의 핵심은 위험 입력이 여러 개 들어와도 최종 경고는 하나로 정리되고, 자동 감속 보조와 출력 채널이 같은 판단을 따르는지 확인하는 데 있다.
+
+대표 테스트 코드는 교차로 충돌 위험이 감지되었을 때 감속 보조 요청, 교차 충돌 플래그, 최종 경고 수준과 유형이 함께 일치하는지를 확인하는 시스템시험 구간이다. 아래 코드는 \texttt{TC\_CANOE\_ST\_EXT\_022\_INTERSECTION\_DECEL.can}에서 발췌한 대표 시험으로, 입력 자극, 대기 조건, 관측 상태 검증이 한 흐름으로 이어지는 방식을 보여준다.
+
+\begin{lstlisting}[style=caplcode,caption={대표 테스트 코드. 교차로 충돌 위험 감속 보조 검증}]
+export testcase TC_CANOE_ST_EXT_022_INTERSECTION_DECEL()
+{
+  // Reset baseline and test state before scenario start
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(213, 800, 1300)) { return; }
+  if (!waitForObservedDecelState(1, 1, 0, 1500) ||
+      !waitForObservedIntersectionConflict(1500) ||
+      !waitForObservedSelectedAlertState(7, 2, 1500)) { resetValidationHarnessIfNeeded(); return; }
+  // Verify decel assist and final alert together
+  assertIntEq("st-intersection-flag", 1, (long)@Test::obsIntersectionConflictFlag, "ethIntersectionConflictFlag");
+  assertIntEq("st-intersection-decision", 1, (long)@Test::obsDecelDecisionReq, "ethDecelDecisionReq");
+  assertIntEq("st-intersection-decel-req", 1, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
+  assertIntEq("st-intersection-gate-clear", 0, (long)@Test::obsDecelGateReason, "ethDecelGateReason");
+  assertIntEq("st-intersection-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("st-intersection-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  resetValidationHarnessIfNeeded();
+}
+\end{lstlisting}
+
+\FigurePlaceholder{객체 위험 및 통합 시나리오}{56mm}{삽입 예정 이미지:\\
+ADAS 시연 화면 또는 보고서 증빙\\
+추천 내용: TTC / 객체 위험 + 최종 중재 결과}
+
+\subsubsection{비상 보호 및 복귀 시나리오}
+비상 보호 및 복귀 시나리오는 입력이 오래되었거나 전달 경로에 이상이 생긴 상황에서 시스템이 어떻게 최소 안전 상태를 유지하고, 이상이 해제된 뒤 어떻게 정상 경로로 돌아오는지를 확인하는 묶음이다. 통합시험 IT\_009, IT\_011과 시스템시험 ST\_020, ST\_021, ST\_025, ST\_026, ST\_035, ST\_036, ST\_046은 갱신 중단, 경고 전달 이상, 직전 경고 복원, 연속 주행 중 복귀 안정성을 함께 점검한다. 이 장면의 핵심은 화려한 동작이 아니라, 문제가 생겼을 때도 최소 경고와 복귀 규칙이 안정적으로 유지되는지 확인하는 데 있다.
+
+\FigurePlaceholder{비상 보호 및 복귀 시나리오}{56mm}{삽입 예정 이미지:\\
+비상 보호 및 복귀 구조도\\
+추천 내용: 오래된 입력, 경계 손실, 비상 보호, 복귀 경로}
+
+\subsubsection{UT / IT / ST 자산}
+단위시험(UT), 통합시험(IT), 시스템시험(ST) 자산은 수를 늘리는 것이 목적이 아니라, 단계마다 다른 질문에 답하도록 구성하였다. 단위시험은 개별 규칙과 계산을, 통합시험은 ECU 간 의미 전달과 경고 중재를, 시스템시험은 연속 시나리오 닫힘을 확인한다. 시험 자산 번호, 실행 화면, 대표 판정 근거를 함께 제시해 같은 장면이 어떤 검증 단계에 대응하는지 확인할 수 있도록 정리하였다.
+
+\FigurePlaceholder{UT 자산 및 실행 화면}{58mm}{삽입 예정 이미지:\\
+UT 보고서 및 시험 화면\\
+추천 내용: 단위시험 목록, 실행 결과, 대표 판정}
+
+\FigurePlaceholder{IT 자산 및 실행 화면}{58mm}{삽입 예정 이미지:\\
+IT 보고서 및 시험 화면\\
+추천 내용: 통합시험 목록, 시나리오, 결과}
+
+\FigurePlaceholder{ST 자산 및 실행 화면}{58mm}{삽입 예정 이미지:\\
+ST 보고서 및 시험 화면\\
+추천 내용: 시스템시험 대표 시나리오 및 결과}
+
+\subsubsection{실행 증빙 및 리포트}
+실행 증빙은 단순 시연 영상에 머무르지 않고, 시험 자산과 로그, 캡처, 보고서, 종결 자료로 이어지도록 표준 절차를 고정하였다. 검증 증빙 표준 문서는 로직, 통신, 시간 규칙을 나누어 근거를 남기도록 요구하며, 실제 실행 순서도 컴파일과 핵심 경로 확인, 표준 로그 작성, 시간 규칙 확인, 화면 캡처, 시험 문서 반영으로 정리되어 있다.
+
+실행 장면은 ``동작했다''는 인상 자료가 아니라, 어떤 조건에서 어떤 결과가 나왔고 그 근거를 어디에서 다시 확인할 수 있는지를 보여주는 증빙이다.
+
+\FigurePlaceholder{실행 증빙 장면}{60mm}{삽입 예정 이미지:\\
+동영상 캡처 / 패널 변화 / 추적 로그 증빙\\
+추천 내용: 대표 시나리오 동작 화면}
+
+\FigurePlaceholder{리포트 및 XML 기반 정리 흐름}{60mm}{삽입 예정 이미지:\\
+보고서 + XML + Excel 종결 흐름\\
+추천 내용: 보고서 -> XML 추출 -> Excel 종결 정리}
+
+\clearpage
+\section{프로젝트 결과}
+
+\subsection{프로젝트 기대효과}
+본 프로젝트의 성과는 경고 기능 하나를 보여주는 데모가 아니라, 전체 차량 기준선 위에서 입력, 판단, 출력, 관측이 어떻게 연결되는지를 설명 가능한 구조로 남긴 데 있다. 요구사항, 기능 정의, 통신 구조, 실제 구현, 시험 자산, 실행 증빙이 한 흐름으로 이어지기 때문에 기능이 바뀌어도 무엇을 함께 수정하고 어떤 시험으로 다시 확인해야 하는지 추적할 수 있다.
+
+\FigurePlaceholder{프로젝트 성과 요약 카드}{58mm}{삽입 예정 이미지:\\
+핵심 성과 요약 그림\\
+추천 내용: 차량 기준선 / V2X-ADAS / 추적성 / UT-IT-ST / 리포트}
+
+\subsection{유지보수 및 확장 방안}
+유지보수는 문서, 코드, 시험 자산을 따로 관리하는 방식이 아니라, 같은 기준선 안에서 함께 갱신하는 방식을 전제로 한다. 새 시나리오가 추가되면 요구사항과 기능 정의를 먼저 보완하고, 이어 통신 구조, 구현, 시험 자산을 같은 축에서 갱신하도록 흐름을 고정하였다. 실행 결과도 로그, 캡처, 보고서, 종결 자료를 함께 남기기 때문에 변경 전후의 영향 범위를 다시 추적할 수 있다.
+
+\subsection{정량 지표 구조와 해석}
+정량 지표는 별도의 홍보 수치보다 실제 검증 자산과 바로 연결되는 기준을 중심으로 정리하였다. 본문에서 직접 확인 가능한 정량 축은 `50/100/150/1000ms` 시간 기준, 단계별 시험 자산 수 `단위시험(UT) 77 / 통합시험(IT) 45 / 시스템시험(ST) 46`, 그리고 기준선 ECU 노드와 채널 반영본의 동기화 현황이다. 즉 이 프로젝트의 정량 지표는 성능 과시가 아니라, 설계한 시간 규칙과 검증 구조가 실제로 유지되고 있는지를 설명하는 기준이다.
+
+\FigurePlaceholder{정량 지표 구조}{60mm}{삽입 예정 이미지:\\
+정량 지표 카드 및 결과 표\\
+추천 내용: 시간 기준 / 시험 자산 수 / 동기화 현황 요약}
+
+\subsection{문서-코드-시험 동기화 현황}
+프로젝트 자산의 양이 많았기 때문에, 문서와 구현이 실제로 얼마나 연결되어 있는지를 별도 항목으로 정리하였다. 핵심은 기준선 ECU 노드와 채널 반영본이 같은 단위를 유지하는지, 시험 자산이 요구사항과 구현을 다시 설명할 수 있는 구조인지 확인하는 데 있다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{50mm}|p{28mm}|X|}
+\hline
+\textbf{항목} & \textbf{현황} & \textbf{의미} \\ \hline
+CAPL 노드 파일 & 100/100 & 기준선 ECU 노드 목록이 구현 자산과 연결되어 있음을 보여준다. \\ \hline
+채널 할당 연계 & 100/100 & ECU 노드와 채널 할당 반영본이 동기화되어 있음을 보여준다. \\ \hline
+단위시험(UT) / 통합시험(IT) / 시스템시험(ST) 자산 & 별도 정리 & 단계별 시험 자산과 실행 증빙이 별도 자료로 존재한다. \\ \hline
+\end{tabularx}
+\caption{문서-코드-시험 동기화 현황}
+\end{table}
+
+\clearpage
+\section{부록}
+
+\subsection{설치 및 운영환경 정보}
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{38mm}|X|}
+\hline
+\textbf{항목} & \textbf{내용} \\ \hline
+개발 환경 & CANoe, CAPL, DBC, 시스템 변수, 패널 \\ \hline
+검증 환경 & CANoe SIL, CAN과 Ethernet, XML 추출 \\ \hline
+산출물 환경 & Excel 산출물, 보고서 PDF, 프로젝트 문서 \\ \hline
+\end{tabularx}
+\caption{설치 및 운영환경 정보}
+\end{table}
+
+\subsection{문서 체계 및 별첨}
+\FigurePlaceholder{문서 체계 및 별첨 구성}{58mm}{삽입 예정 이미지:\\
+00~07 문서 체계 및 부록 구성도\\
+추천 내용: 00d~00g, 01~07, 기술보고서, 부록 연결}
+
+\subsection{참고 자료}
+\begin{itemize}
+  \item ISO 26262 관련 참고자료
+  \item Automotive SPICE 관련 참고자료
+  \item OEM 예시 / 멘토링 자료
+  \item CANoe 보고서, 부록, 보조 그림 자료
+\end{itemize}
+
+\subsection{세부 기술 자산}
+\begin{itemize}
+  \item 전체 차량 ECU 구조 상세
+  \item 상세 메시지 매트릭스
+  \item DBC 설계 캡처
+  \item 추가 패널 및 데모 캡처
+  \item 보조 부록 자료
+\end{itemize}
+
+\FigurePlaceholder{추가 기술 자산 예시}{58mm}{삽입 예정 이미지:\\
+부록용 추가 이미지 1장\\
+추천 내용: 네트워크 상세 / V-모델 / 보조 부록 대표 화면}
+
+\clearpage
+\subsection{팀원별 역할 및 느낀 점}
+
+\subsubsection{김택천}
+\paragraph{Opendbc의 DBC 파일 기반 노드 역할 유추 및 메시지 통신 분석}
+Opendbc의 DBC 파일을 기반으로 노드 역할을 유추하고 메시지 통신 구조를 분석하였다. Hyundai Kia Generic DBC 파일의 메시지 프레임과 시그널을 확인하고, 공식 문서인 현대자동차 오너스 매뉴얼(\url{https://ownersmanual.hyundai.com/full_webhelp/LX3/2026/en_US/owner.html})을 함께 참고하여 약어 의미와 노드 역할을 교차 검증하였다.
+
+이번 프로젝트에서 핵심으로 사용한 노드들은 아래와 같이 정리하였다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{24mm}|p{26mm}|X|}
+\hline
+\textbf{도메인} & \textbf{ECU} & \textbf{설명} \\ \hline
+파워트레인 & EMS & 엔진 회전수, 토크, 냉각수 온도를 관리한다. \\ \hline
+파워트레인 & TCU & 현재 기어 상태와 변속 시점을 제어한다. \\ \hline
+파워트레인 & FPCM & 저압 연료 펌프 압력과 펌프 구동 상태를 제어한다. \\ \hline
+섀시 & MDPS & 조향 토크, 조향각, 모터 상태를 제어한다. \\ \hline
+섀시 & ESC & 요레이트, 횡가속도 감지와 차체 미끄럼 방지를 담당한다. \\ \hline
+ADAS & SCC & 스마트 크루즈 목표 속도, 차간 거리, 가감속 요구량을 제어한다. \\ \hline
+ADAS & FCA & 충돌 위험 감지 시 긴급 제동 요청과 경고를 담당한다. \\ \hline
+ADAS & LDWS\_LKAS & 차선 인식과 조향 보조 요청을 담당한다. \\ \hline
+바디 / IVI & BCM & 도어, 윈도우, 와이퍼, 앰비언트 라이트 등 차체 전장품을 통합 제어한다. \\ \hline
+바디 / IVI & AFLS & 주행 상황과 조향각에 따라 헤드램프 조사각과 패턴을 조절한다. \\ \hline
+바디 / IVI & CLU & 속도계, RPM, 경고등, 트립 정보를 표시한다. \\ \hline
+\end{tabularx}
+\caption{Opendbc 기반 핵심 ECU 정리}
+\end{table}
+
+또한 메시지에 정의된 Tx와 Rx를 기준으로, 데이터가 한 도메인에서 다른 도메인으로 어떻게 전달되는지 한눈에 확인할 수 있도록 데이터 Tx/Rx 다이어그램을 작성하였다.
+
+\FigurePlaceholder{DBC 파일의 데이터 Tx/Rx 다이어그램}{56mm}{삽입 예정 이미지:\\
+DBC 파일의 데이터 Tx/Rx 다이어그램\\
+추천 내용: 도메인 간 송신/수신 관계와 핵심 메시지 흐름}
+
+\FigurePlaceholder{도메인 아키텍처 기반 네트워크 흐름도}{56mm}{삽입 예정 이미지:\\
+도메인 아키텍처 기반 네트워크 흐름도\\
+추천 내용: 기준선 ECU 그룹과 경고 시스템 핵심 네트워크 흐름}
+
+기능 명세 단계와 상세 설계 단계에서 작성한 단위시험, 통합시험, 시스템시험을 실행하며 CAPL 코드가 정상 작동하는지 검증하였다. 이 과정에서 다수의 실패 시험을 분석했고, 주요 원인은 다음과 같이 정리하였다.
+
+\begin{itemize}
+  \item 상태 머신의 불완전 구현
+  \item 문서로 명세되지 않은 상태에서 enum 값 사용
+  \item 변수 이름과 일치하지 않는 타입 사용
+\end{itemize}
+
+분석 결과 CAPL이 이벤트 기반 비동기 통신이라는 점을 충분히 반영하지 못한 것이 핵심 원인으로 드러났다. 기존 알고리즘은 외부 이벤트가 들어오면 즉시 시스템 변수를 수정하거나 메시지를 송신하는 방식이었고, 이를 상태 기반 갱신 구조로 바꾸는 개선안을 제시하였다.
+
+\FigurePlaceholder{단위 테스트 슈트 실행 결과}{56mm}{삽입 예정 이미지:\\
+CANoe Test Report Viewer로 확인한 단위 테스트 슈트 실행 결과\\
+추천 내용: 개선 전 시험 결과와 주요 실패 항목}
+
+\FigurePlaceholder{코드 개선 이후 단위 테스트 결과}{56mm}{삽입 예정 이미지:\\
+실패 원인 분석 및 코드 개선 이후 단위 테스트 슈트 실행 결과\\
+추천 내용: 개선 후 시험 결과와 통과율 비교}
+
+개선된 알고리즘을 적용한 뒤 단위 테스트 통과율은 13.5\%에서 41.6\%로 상승하였다.
+
+\paragraph{브랜치 기준 불일치로 인한 병합 충돌 및 개발 흐름 혼선 문제 해결}
+또한 패널 제작팀과 ECU 노드 구현팀으로 나누어 협업하는 과정에서 브랜치 기준 불일치로 인한 병합 충돌 가능성을 점검하였다. 체크아웃 시점 차이로 \texttt{cfg}, \texttt{sysvars} 파일 관리가 어긋난 상황에서, \texttt{merge/lee}, \texttt{fix/wiper-animation}, \texttt{fix/vehicle-logic}와 같은 별도 병합용 브랜치를 만들고 충돌 지점을 먼저 확인하여 실제 병합의 시간 비용을 줄이려 했다.
+
+\FigurePlaceholder{병합용 브랜치 생성 결과}{56mm}{삽입 예정 이미지:\\
+git log 명령어로 확인한 병합용 브랜치 생성 결과\\
+추천 내용: 병합용 브랜치 구성과 충돌 확인 흐름}
+
+\subsubsection{박성현}
+먼저 긴급차 접근 이벤트, 내비게이션 구간 정보, 차량 상태를 직접 입력할 수 있는 Operator Input 패널을 구현했다. 이를 통해 경찰차 및 구급차 접근, 스쿨존 과속, IC 유도 구간 등 다양한 시나리오를 직접 구성할 수 있도록 하였고, 07 문서에 정의된 시나리오를 패널에서 바로 시험할 수 있게 했다. 또한 입력뿐 아니라 중간 및 최종 상태를 확인할 수 있도록 경고 상태, 긴급차 종류, 경고 문구 코드, 기본 구간 맥락 등의 값을 함께 표시해 시스템 동작을 단계적으로 확인할 수 있도록 구성했다.
+
+\FigurePlaceholder{Operator Input 패널}{56mm}{삽입 예정 이미지:\\
+Operator Input 패널 화면\\
+추천 내용: 긴급차, 구간 정보, 차량 상태 입력 및 상태 확인 항목}
+
+Navigation Alert 패널에서는 입력값에 따라 도로 구간 표시, 차선 애니메이션, 경고음 상태, 기본 경고음 볼륨과 최종 출력 볼륨을 확인할 수 있도록 구성하였다. 일반 도로, 스쿨존, 고속도로, IC 유도 구간을 배경 이미지와 구간별 이름 표시로 구분하였고, 차량 속도에 따라 차선 애니메이션 속도가 변화하도록 하여 실제 주행과 유사한 동작을 표현하였다.
+
+\FigurePlaceholder{Navigation Alert 패널 시나리오 화면}{58mm}{삽입 예정 이미지:\\
+일반 도로 / 경찰차 후방 접근 / 스쿨존 과속 / 구급차 전방 접근 / 고속도로 과속 / IC 유도 구간 화면\\
+추천 내용: 시나리오별 배경, 차선 애니메이션, 경고 출력 비교}
+
+추가로 AMP의 경고음 출력 동작을 검증하기 위해 긴급차 접근, 과속, IC 유도 상황에 대한 경고음 동작 기준을 정의하고, CAPL을 활용하여 출력 로직을 구성하였다. 각 경고 유형에 따라 기본 볼륨에 가산치를 적용하고, 다른 오디오와의 충돌을 방지하기 위한 ducking 정책을 반영해 최종 출력 볼륨이 결정되도록 설계하였다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{34mm}|p{24mm}|X|}
+\hline
+\textbf{구분} & \textbf{가산치} & \textbf{최종 출력 볼륨} \\ \hline
+정상 상태 & 0 & Base vol(기본 볼륨) \\ \hline
+구급차 접근 & +20 & Base vol + 20 \\ \hline
+경찰차 접근 & +10 & Base vol + 10 \\ \hline
+과속 & +5 & Base vol + 5 \\ \hline
+IC 유도 구간 & 0 & Base vol \\ \hline
+\end{tabularx}
+\caption{경고 유형별 볼륨 가산치}
+\end{table}
+
+또한 기본 경고음 볼륨을 조절하는 입력 패널과 기본 볼륨 및 최종 출력 볼륨을 비교하는 출력 패널을 구성하여, AMP 내부 로직에서 적용되는 가산치와 ducking 정책이 정상적으로 동작하는지 직관적으로 확인할 수 있는 검증 환경을 구성하였다.
+
+\FigurePlaceholder{경고음 입력 및 출력 검증 패널}{56mm}{삽입 예정 이미지:\\
+기본 볼륨 입력 패널과 최종 출력 볼륨 확인 화면\\
+추천 내용: 경고 유형별 볼륨 변화와 최종 출력 비교}
+
+\paragraph{Cluster Alert 패널 구현}
+Cluster Alert 패널에서는 최종적으로 생성된 경고 문구 코드, 긴급차 접근 방향 화살표, 긴급차 종류, IC 유도 구간 방향 화살표, 구간 정보를 확인할 수 있도록 구성하였다.
+
+\FigurePlaceholder{Cluster Alert 패널}{56mm}{삽입 예정 이미지:\\
+Cluster Alert 패널 화면\\
+추천 내용: warning text code, 방향 화살표, 긴급차 종류, 구간 정보}
+
+\paragraph{담당 역할 및 느낀 점}
+프로젝트에서 저는 CANoe 패널을 활용한 입력·출력 검증 환경 구성을 맡았다. 경찰차와 구급차 접근, 구간 정보, 제한속도, 차량 속도 같은 값을 직접 넣을 수 있는 입력 패널을 만들었고, 그 결과가 주행 화면, 경고음, 최종 클러스터 경고 문구에 어떻게 반영되는지 확인할 수 있도록 출력 패널도 별도로 구성하였다. 입력 패널, 주행/경고 패널, 클러스터 패널을 나누어 설계했기 때문에 단순 시각화가 아니라 시스템의 입력부터 최종 출력까지 end-to-end로 검증할 수 있는 구조를 만들 수 있었다.
+
+이 과정에서 sysvar 연결, 패널 병합, 경고음 출력 검증, 최종 warning text 확인까지 직접 조정하며 프로젝트 시연과 테스트에 활용할 수 있는 환경을 완성하였다. 패널을 구현하며 시스템 동작은 ECU 간 메시지와 sysvar를 통한 데이터 흐름에 의해 결정된다는 점을 경험했고, 입력에서 판단, 출력으로 이어지는 전체 흐름을 단계적으로 확인하고 설계하는 과정이 중요하다는 점을 느꼈다. 다른 팀원의 패널을 통합하는 과정에서는 sysvar 정의 차이, 조건 로직 충돌 등으로 경고가 출력되지 않는 문제가 있었고, CANoe Trace와 로그를 활용해 데이터 흐름을 추적하며 원인을 찾았다. 이를 통해 단순히 코드를 수정하는 것이 아니라 시스템 구조를 이해하는 것이 문제 해결에 더 중요하다는 점을 체감했다. 또한 V-Model을 따라 요구사항부터 시스템시험까지 문서를 작성하고, 이를 바탕으로 CANoe 기반 환경에서 구현까지 진행하며 차량 시스템 개발의 전체 흐름을 폭넓게 이해할 수 있었다.
+
+\subsubsection{정라엘}
+\paragraph{A. 주행 상황 연동 앰비언트 조명 제어 구현}
+프로젝트의 핵심 컨셉인 `다방면의 경고를 하나의 통합된 경험으로 전달`하는 수단으로, 주행 상황별로 다르게 반응하는 앰비언트 조명 시스템을 설계하고 CAPL로 구현하였다. BCM에서 CAN 메시지 수신 이벤트를 기반으로 현재 주행 상황을 판단하고, 상황에 따라 조명 패턴을 다르게 출력하도록 구성하였다.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{34mm}|X|}
+\hline
+\textbf{상황} & \textbf{조명 패턴} \\ \hline
+기본 주행 & 파란색 정등 \\ \hline
+경고 상태 & 노란색 정등 \\ \hline
+스쿨존 진입 & 주황색 점등 반복 \\ \hline
+고속도로 유도선 안내 & 좌/우 방향을 구분한 이동형 애니메이션 \\ \hline
+긴급차량 접근 & 빨간색 점등 반복, 사이렌 소리 반복 \\ \hline
+\end{tabularx}
+\caption{주행 상황별 앰비언트 조명 패턴}
+\end{table}
+
+특히 고속도로 유도선 안내에서는 좌우 방향을 구분하여 빛이 이동하는 듯한 애니메이션을 구현해 운전자가 직관적으로 방향을 인지할 수 있도록 했다. 앰비언트 패널 UI도 함께 구성하여 조명 상태 변화가 시뮬레이션 환경에서 실시간으로 확인되도록 sysvar 동기화 작업을 병행하였다.
+
+\FigurePlaceholder{주행 상황 연동 앰비언트 조명 제어}{58mm}{삽입 예정 이미지:\\
+주행 상황 연동 앰비언트 조명 패널 및 시연 화면\\
+추천 내용: 기본 주행, 스쿨존, 긴급차량, 유도 안내 조명 비교}
+
+\paragraph{B. V-Model 추적성 미적용으로 인한 시스템 변수 불일치 문제 해결}
+구현 과정에서는 V-Model 추적성이 제대로 적용되지 않아 CAPL 코드와 패널 간 sysvar 명칭이 맞지 않는 문제가 발생하였다. 이는 설계 단계에서 추적성을 확보하지 않은 채 각자 구현을 진행한 것이 원인이었다. 이를 해결하기 위해 요구사항, 설계, 구현, 테스트로 이어지는 추적 구조를 다시 정리하고, sysvar 명칭과 신호 흐름을 문서 기준으로 통일해 연동 구조의 일관성을 확보하였다.
+
+\paragraph{C. AUTOSAR 기반 ECU 네이밍 컨벤션 정립 및 지식 공유}
+AUTOSAR 표준(CP R24-11), ISO 26262, ASPICE를 참고해 프로젝트 전체 ECU 네이밍 컨벤션을 정의하고 Notion 문서로 공유하였다. 기존에 혼용되던 Control/CTRL 표기를 통일하고, `도메인 약어\_기능 약어\_역할` 구조로 전 도메인에 걸쳐 표준화된 네이밍 체계를 정리하였다. 복잡하거나 헷갈리기 쉬운 내용을 문서로 정리해 공유하는 과정에서, 협업에서 문서가 중요한 소통 수단이라는 점을 체감했다고 정리하였다.
+
+\FigurePlaceholder{ECU 네이밍 컨벤션 문서}{56mm}{삽입 예정 이미지:\\
+ECU 네이밍 컨벤션 문서 화면\\
+추천 내용: 표준화 규칙과 예시 ECU 이름}
+
+\paragraph{D. 결과물 및 느낀 점}
+본인 기여로 완성한 주요 결과물은 주행 상황 연동 앰비언트 조명 시스템과 팀 공통 ECU 네이밍 컨벤션 문서였다. 앰비언트 조명은 기본 주행부터 스쿨존, 긴급차량, 고속도로 유도 안내까지 다섯 가지 상황을 색상과 애니메이션으로 구분해 표현함으로써, 프로젝트의 핵심 컨셉인 `통합된 경고 경험`을 시각적으로 구현하는 역할을 담당하였다. ECU 네이밍 컨벤션은 회의록, 보고서, 코드 전반에 일관되게 적용되어 팀의 설계 표준으로 자리 잡았다.
+
+또한 기능 개발만이 아니라 프로세스의 중요성을 이해하게 되었다고 정리하였다. 요구사항, 설계, 구현, 테스트 산출물을 V-Model 기반으로 관리하며 검증 가능한 구조를 경험했고, CAN/Ethernet 혼재 환경에서 CANoe SIL을 통해 실제 메시지 흐름과 fail-safe의 필요성을 실무적으로 이해할 수 있었다고 남겼다.
+
+\subsubsection{이준영}
+\paragraph{차량 기준선 아키텍처와 통합 경고 구조 정리}
+프로젝트 전반에서 차량 기준선 아키텍처와 핵심 경고 구조를 정리하는 역할을 맡았다. 100여 개 ECU를 차량 도메인 관점에서 다시 묶고, 어떤 입력이 어느 ECU로 들어와 어떤 판단과 출력으로 이어지는지를 전체 흐름으로 정리하였다. 이 과정에서 전체 차량 기준선, ECU 그룹별 역할, 네트워크 흐름, 메시지 매트릭스, 신호 흐름 자료를 함께 맞추면서 단일 기능 시연이 아니라 차량 시스템 단위에서 설명 가능한 구조를 만드는 데 집중하였다.
+
+\paragraph{핵심 로직과 패널, 검증 자산 연결}
+또한 V2X, ADAS, CGW를 중심으로 한 핵심 경고 로직이 문서와 구현, 패널, 시험 자산에서 서로 같은 의미를 갖도록 정리하였다. 입력 콘솔과 출력 패널이 실제 CAPL 동작과 어긋나지 않도록 시스템 변수와 경로를 맞추고, 긴급차량 접근, 구간 경고, 객체 위험, 비상 보호와 복귀 시나리오가 패널과 테스트 자산에서 같은 흐름으로 확인되도록 연결하였다. 이를 통해 개별 화면이나 개별 코드보다, 입력부터 최종 출력과 관측까지 이어지는 구조를 한 번에 검증할 수 있는 기반을 다듬었다.
+
+\paragraph{테스트 자산 정리와 문서화}
+단위시험, 통합시험, 시스템시험 자산을 프로젝트 구조 안에서 다시 정리하고, 실행 근거와 부록 자산이 문서와 함께 읽히도록 맞추는 작업도 함께 수행하였다. 시험 자산을 단순히 많이 만드는 것보다, 어떤 요구와 기능이 어떤 시험으로 연결되는지 드러나게 하는 것이 더 중요하다고 판단했고, 이를 위해 시나리오별 시험 흐름과 부록용 아키텍처 자료를 함께 정리하였다.
+
+\paragraph{느낀 점}
+이번 프로젝트를 통해 가장 크게 느낀 점은 차량 소프트웨어에서는 구현 자체보다도 구조를 끝까지 맞추는 일이 더 중요하다는 것이었다. 기능, 네트워크, 패널, 코드, 시험이 따로 움직이면 개별 결과는 만들어질 수 있어도 시스템으로는 설명하기 어려웠다. 반대로 각 산출물이 같은 기준선 위에서 연결되면 복잡한 프로젝트도 훨씬 명확하게 이해되고 검증할 수 있었다. 이번 경험을 통해 전체 구조를 먼저 보고, 구현과 검증을 같은 흐름 안에서 정리하는 방식의 중요성을 배웠다.
+
+\end{document}
