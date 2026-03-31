@@ -69,99 +69,71 @@
 
 ### 3.3 UT 그룹 매핑
 
-- `UT_001~UT_015`
-  - asset family: `TC_CANOE_UT_CORE_*`
-  - focus: zone, emergency, selected-warning, ambient/text route
-  - evidence: native report, trace, sysvar, panel
-  - diagnostic: `No`
-- `UT_016~UT_027`
-  - asset family: `TC_CANOE_UT_EXT_*`
-  - focus: chassis, body, comfort, service, propulsion context
-  - evidence: native report, trace, sysvar
-  - diagnostic: `No`
-- `UT_028~UT_062`
-  - asset family: `TC_CANOE_UT_INP_*`
-  - focus: domain input normalization, observer consistency
-  - evidence: native report, trace, sysvar
-  - diagnostic: `Yes`
-- `UT_063~UT_065`
-  - asset family: `TC_CANOE_UT_EXT_*`, `TC_CANOE_UT_INP_065_*`
-  - focus: security, diagnostic, backbone fail-safe interpretation
-  - evidence: write window, trace, sysvar
-  - diagnostic: `Yes`
-- `UT_070~UT_077`
-  - asset family: `TC_CANOE_UT_OUT_*`
-  - focus: ambient, HMI, audio render, external TX
-  - evidence: panel, cluster capture, Eth trace, native report
-  - diagnostic: `No`
+| UT 범위 | 핵심 목적 |
+|---|---|
+| `UT_001~UT_015` | 기본 경고·구간 판단 |
+| `UT_016~UT_027` | 차체·편의·추진 입력 |
+| `UT_028~UT_062` | 입력 정규화·관측 일치 |
+| `UT_063~UT_065` | security·diagnostic·backbone |
+| `UT_070~UT_077` | ambient·HMI·audio·TX |
+
+| UT 범위 | 증빙 / 진단 |
+|---|---|
+| `UT_001~UT_015` | report, trace, sysvar, panel / `No` |
+| `UT_016~UT_027` | report, trace, sysvar / `No` |
+| `UT_028~UT_062` | report, trace, sysvar / `Yes` |
+| `UT_063~UT_065` | write window, trace, sysvar / `Yes` |
+| `UT_070~UT_077` | panel, cluster, Eth trace / `No` |
 
 ### 3.4 직접 diagnostic row
 
-- `UT_063`
-  - asset: `TC_CANOE_UT_EXT_063_SGW_SECURITY_STATE`
-  - minimal evidence: security-state injection, write window, trace, sysvar
-- `UT_064`
-  - asset: `TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE`
-  - minimal evidence: diagnostic-state injection, write window, trace, sysvar
-- `UT_065`
-  - asset: `TC_CANOE_UT_INP_065_ETHB_INPUT`
-  - minimal evidence: backbone failure observer, trace, sysvar
+| Test ID | Asset |
+|---|---|
+| `UT_063` | `TC_CANOE_UT_EXT_063_SGW_SECURITY_STATE` |
+| `UT_064` | `TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE` |
+| `UT_065` | `TC_CANOE_UT_INP_065_ETHB_INPUT` |
+
+| Test ID | Minimal Evidence |
+|---|---|
+| `UT_063` | security inject, write, trace, sysvar |
+| `UT_064` | diagnostic inject, write, trace, sysvar |
+| `UT_065` | backbone observer, trace, sysvar |
 
 ## 4. Integration Test 매핑
 
-- `IT_001~IT_009`
-  - asset family: `TC_CANOE_IT_CORE_*`, `TC_CANOE_IT_V2_*`
-  - focus: activation, school-zone, emergency priority, timeout clear
-  - evidence: native report, trace, panel
-  - diagnostic: `No`
-- `IT_010~IT_018`
-  - asset family: `TC_CANOE_IT_*`, `TC_CANOE_IT_EXT_*`
-  - focus: decel assist, fail-safe minimum warning, display/audio policy
-  - evidence: native report, panel, sysvar
-  - diagnostic: `No`
-- `IT_019~IT_030`
-  - asset family: baseline/body/control integration assets
-  - focus: parked/drive baseline, window, wiper, body security context
-  - evidence: native report, trace, sysvar
-  - diagnostic: `No`
-- `IT_031~IT_043`
-  - asset family: runtime/output integration assets
-  - focus: fallback, duplicate suppression, display/service, audio guide
-  - evidence: panel, write window, trace, native report
-  - diagnostic: `No`
-- `IT_040`, `IT_044`, `IT_045`
-  - asset family: diagnostic and external TX assets
-  - focus: service/security/diagnostic context, TX continuity
-  - evidence: write window, Eth trace, sysvar
-  - diagnostic: mixed
+| IT 범위 | 핵심 목적 |
+|---|---|
+| `IT_001~IT_009` | activation, school-zone, emergency priority |
+| `IT_010~IT_018` | decel assist, fail-safe, display/audio |
+| `IT_019~IT_030` | parked/drive, window, wiper, body security |
+| `IT_031~IT_043` | fallback, duplicate suppression, service, audio |
+| `IT_040`, `IT_044`, `IT_045` | service/security/diagnostic, TX continuity |
+
+| IT 범위 | 증빙 / 진단 |
+|---|---|
+| `IT_001~IT_009` | report, trace, panel / `No` |
+| `IT_010~IT_018` | report, panel, sysvar / `No` |
+| `IT_019~IT_030` | report, trace, sysvar / `No` |
+| `IT_031~IT_043` | panel, write window, trace / `No` |
+| `IT_040`, `IT_044`, `IT_045` | write window, Eth trace, sysvar / mixed |
 
 ## 5. System Test 매핑
 
-- `ST_001~ST_010`
-  - asset family: `TC_CANOE_ST_CORE_*`
-  - focus: power-on baseline, school/highway transition, guide render
-  - evidence: panel, cluster capture, native report
-  - diagnostic: `No`
-- `ST_011~ST_021`
-  - asset family: `TC_CANOE_ST_V2_*`, `TC_CANOE_ST_CORE_*`
-  - focus: emergency override, tie-break, TX period, timeout restore
-  - evidence: trace, report, panel
-  - diagnostic: `No`
-- `ST_022~ST_029`
-  - asset family: `TC_CANOE_ST_EXT_*`
-  - focus: decel coupling, fail-safe entry/recovery, object-risk scenario
-  - evidence: trace, sysvar, panel
-  - diagnostic: `No`
-- `ST_030~ST_038`
-  - asset family: HMI and system robustness assets
-  - focus: seatbelt context, distance/history, popup/audio/visual stability
-  - evidence: panel, screenshot, native report
-  - diagnostic: `No`
-- `ST_039~ST_046`
-  - asset family: context and trip-sequence assets
-  - focus: chassis, body, service, charge context, fail-safe round-trip
-  - evidence: native report, trace, sysvar
-  - diagnostic: `ST_043` only
+| ST 범위 | 핵심 목적 |
+|---|---|
+| `ST_001~ST_010` | power-on baseline, school/highway, guide render |
+| `ST_011~ST_021` | emergency override, tie-break, TX, timeout |
+| `ST_022~ST_029` | decel coupling, fail-safe, object-risk |
+| `ST_030~ST_038` | seatbelt, popup/audio, visual stability |
+| `ST_039~ST_046` | chassis, body, service, charge, round-trip |
+
+| ST 범위 | 증빙 / 진단 |
+|---|---|
+| `ST_001~ST_010` | panel, cluster, report / `No` |
+| `ST_011~ST_021` | trace, report, panel / `No` |
+| `ST_022~ST_029` | trace, sysvar, panel / `No` |
+| `ST_030~ST_038` | panel, screenshot, report / `No` |
+| `ST_039~ST_046` | report, trace, sysvar / `ST_043` only |
 
 ## 6. 현재 구현 우선순위
 

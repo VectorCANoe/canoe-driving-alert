@@ -39,92 +39,44 @@
 
 ## 4. Request-side contract
 
-- `Diag::LastRequestTarget`
-  - meaning: 가장 최근 diagnostic request의 target ECU 또는 service code
-  - producer: diagnostic tester / harness path
-  - consumer: verification and evidence tools
-- `Diag::LastRequestSid`
-  - meaning: 가장 최근 request의 service identifier
-  - producer: diagnostic tester / harness path
-  - consumer: verification and evidence tools
-- `Diag::LastRequestDidHigh`
-  - meaning: 가장 최근 request의 DID high byte
-  - producer: diagnostic tester / harness path
-  - consumer: verification and evidence tools
-- `Diag::LastRequestDidLow`
-  - meaning: 가장 최근 request의 DID low byte
-  - producer: diagnostic tester / harness path
-  - consumer: verification and evidence tools
-- `Diag::LastRequestSourceBus`
-  - meaning: request가 발생한 source bus code
-  - producer: diagnostic tester / harness path
-  - consumer: verification and evidence tools
-- `Diag::RequestCounter`
-  - meaning: 누적 request count
-  - producer: diagnostic tester / harness path
-  - consumer: verification and evidence tools
-- `Diag::LastRequestTimeMs`
-  - meaning: 가장 최근 request timestamp(ms)
-  - producer: diagnostic tester / harness path
-  - consumer: verification and evidence tools
+request-side 변수는 diagnostic tester / harness path가 생산하고, verification / evidence 도구가 소비합니다.
+
+| 변수 | 역할 |
+|---|---|
+| `Diag::LastRequestTarget` | 최근 request target |
+| `Diag::LastRequestSid` | 최근 request SID |
+| `Diag::LastRequestDidHigh` | 최근 DID high byte |
+| `Diag::LastRequestDidLow` | 최근 DID low byte |
+| `Diag::LastRequestSourceBus` | 최근 request source bus |
+| `Diag::RequestCounter` | 누적 request 수 |
+| `Diag::LastRequestTimeMs` | 최근 request 시각(ms) |
 
 ## 5. Response-side contract
 
-- `Diag::LastResponseTarget`
-  - meaning: 가장 최근 diagnostic response의 target ECU 또는 service code
-  - producer: diagnostic response handler
-  - consumer: verification and evidence tools
-- `Diag::LastResponseCode`
-  - meaning: 가장 최근 response의 response code
-  - producer: diagnostic response handler
-  - consumer: verification and evidence tools
-- `Diag::LastResponseData0`
-  - meaning: evidence 요약용 첫 번째 response payload byte
-  - producer: diagnostic response handler
-  - consumer: verification and evidence tools
-- `Diag::LastResponseData1`
-  - meaning: evidence 요약용 두 번째 response payload byte
-  - producer: diagnostic response handler
-  - consumer: verification and evidence tools
-- `Diag::LastResponseOk`
-  - meaning: 가장 최근 response의 positive/negative flag
-  - producer: diagnostic response handler
-  - consumer: verification and evidence tools
-- `Diag::LastResponseSourceBus`
-  - meaning: response가 발생한 source bus code
-  - producer: diagnostic response handler
-  - consumer: verification and evidence tools
-- `Diag::ResponseCounter`
-  - meaning: 누적 response count
-  - producer: diagnostic response handler
-  - consumer: verification and evidence tools
-- `Diag::LastResponseTimeMs`
-  - meaning: 가장 최근 response timestamp(ms)
-  - producer: diagnostic response handler
-  - consumer: verification and evidence tools
+response-side 변수는 diagnostic response handler가 생산하고, verification / evidence 도구가 소비합니다.
+
+| 변수 | 역할 |
+|---|---|
+| `Diag::LastResponseTarget` | 최근 response target |
+| `Diag::LastResponseCode` | 최근 response code |
+| `Diag::LastResponseData0` | 첫 번째 payload byte |
+| `Diag::LastResponseData1` | 두 번째 payload byte |
+| `Diag::LastResponseOk` | 최근 positive/negative flag |
+| `Diag::LastResponseSourceBus` | 최근 response source bus |
+| `Diag::ResponseCounter` | 누적 response 수 |
+| `Diag::LastResponseTimeMs` | 최근 response 시각(ms) |
 
 ## 6. Verdict-facing seam contract
 
-- `Diag::SecurityState`
-  - meaning: verification용 현재 security interpretation
-  - producer: diagnostic/security seam producer
-  - consumer: verification and evidence tools
-- `Diag::ServiceState`
-  - meaning: verification용 현재 service availability interpretation
-  - producer: diagnostic/service seam producer
-  - consumer: verification and evidence tools
-- `Diag::RouteOwner`
-  - meaning: 가장 최근 diagnostic-linked verdict의 active route ownership interpretation
-  - producer: gateway/runtime diagnostic seam producer
-  - consumer: verification and evidence tools
-- `Diag::ResponseKind`
-  - meaning: 가장 최근 diagnostic-linked verdict의 semantic response class
-  - producer: diagnostic response handler
-  - consumer: verification and evidence tools
-- `Diag::ReasonCode`
-  - meaning: diagnostic-linked decision의 compact verdict-facing reason code
-  - producer: diagnostic/service/security seam producer
-  - consumer: verification and evidence tools
+verdict-facing 변수는 diagnostic/service/security seam producer가 생산하고, verification / evidence 도구가 소비합니다.
+
+| 변수 | 역할 |
+|---|---|
+| `Diag::SecurityState` | 현재 security 해석값 |
+| `Diag::ServiceState` | 현재 service 해석값 |
+| `Diag::RouteOwner` | 현재 route ownership 해석값 |
+| `Diag::ResponseKind` | 현재 response class |
+| `Diag::ReasonCode` | compact reason code |
 
 이 변수들은 verdict 설명을 위한 semantic seam입니다.
 
