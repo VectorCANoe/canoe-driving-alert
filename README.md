@@ -21,6 +21,7 @@ A public repository for designing, verifying, and reviewing a driving-alert syst
 </p>
 
 <p align="center">
+  <a href="#final-deliverables"><strong>Final Deliverables</strong></a> ·
   <a href="#overview"><strong>Overview</strong></a> ·
   <a href="#highlights"><strong>Highlights</strong></a> ·
   <a href="#system-overview"><strong>System Overview</strong></a> ·
@@ -49,6 +50,49 @@ It is structured as a public engineering repository that connects communication 
 
 ---
 
+## Final Deliverables
+
+The repository closeout surface is fixed to the six submission assets below.
+
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <strong>1. Final Report</strong><br>
+      <a href="final-deliverables/01_FINAL_REPORT.pdf">Open PDF</a><br>
+      <sub>review-ready</sub>
+    </td>
+    <td align="center" width="33%">
+      <strong>2. Presentation</strong><br>
+      <a href="final-deliverables/02_PRESENTATION.pptx">Open PPTX</a><br>
+      <sub>review-ready</sub>
+    </td>
+    <td align="center" width="33%">
+      <strong>3. Short Paper</strong><br>
+      <a href="final-deliverables/03_SHORT_PAPER_PENDING.md">Open status</a><br>
+      <sub>source finalized, PDF pending</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="33%">
+      <strong>4. ECU Book</strong><br>
+      <a href="final-deliverables/04_ECU_BOOK.pdf">Open PDF</a><br>
+      <sub>review-ready</sub>
+    </td>
+    <td align="center" width="33%">
+      <strong>5. Project Result Excel</strong><br>
+      <a href="final-deliverables/05_PROJECT_RESULT_2-2.xlsx">Open XLSX</a><br>
+      <sub>2-2 submission workbook</sub>
+    </td>
+    <td align="center" width="33%">
+      <strong>6. Appendix</strong><br>
+      <a href="final-deliverables/06_APPENDIX_PENDING.md">Open status</a><br>
+      <sub>PDF pending</sub>
+    </td>
+  </tr>
+</table>
+
+For source mapping and replacement policy, see [`final-deliverables/README.md`](final-deliverables/README.md).
+
 ## Overview
 
 Most CAN communication repositories expose only one layer of the work: runtime assets, code, or test outputs.
@@ -69,28 +113,9 @@ This repository is built to show the full engineering path:
 
 ## System Overview
 
-```mermaid
-flowchart LR
-    A[Requirements] --> B[Functional Definition]
-    B --> C[Network Flow]
-    C --> D[Communication Specification]
-    D --> E[System Variables]
-    E --> F[CANoe Runtime and CAPL]
-    F --> G[UT / IT / ST]
-    G --> H[Evidence and Review]
-```
+The overview below uses the project-authored closeout figure rather than a generic placeholder diagram.
 
-## System flow
-
-```text
-Requirements
-  -> Functional Definition
-  -> Network Flow
-  -> Communication Specification
-  -> System Variables
-  -> CANoe Runtime and CAPL
-  -> Unit / Integration / System Verification
-```
+![Driving-alert system overview](driving-alert-workproducts/governance/short-paper/ppt/assets/asset_13_architecture_stack.png)
 
 ## Quick start
 

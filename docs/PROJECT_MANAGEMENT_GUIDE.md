@@ -65,7 +65,7 @@ canoe-driving-alert/
 ├── reports/                      # 보고서 산출물
 ├── scripts/                      # 유틸리티 스크립트 (Python, Batch)
 ├── Concept_design.drawio         # 시스템 설계 다이어그램 (7페이지)
-├── CLAUDE.md                     # AI 컨텍스트 (세션 자동 로드)
+├── .claude/CLAUDE.md             # AI 컨텍스트 (내부 운영용)
 ├── CHANGELOG.md                  # 변경 이력 (Keep a Changelog 방식)
 ├── CONTRIBUTING.md               # 기여 가이드
 └── README.md                     # 프로젝트 개요
