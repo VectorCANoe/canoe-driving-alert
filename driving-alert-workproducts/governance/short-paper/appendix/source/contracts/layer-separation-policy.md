@@ -41,14 +41,24 @@
 
 active baseline은 아래 여섯 계층으로 나눕니다.
 
-| Layer | 의미 | 전형적인 owner |
-| --- | --- | --- |
-| Transport ingress | raw network context 수신 및 freshness 정규화 | ingress owner |
-| Functional decision | warning, risk, assist 의미 결정 | decision owner |
-| Boundary / override | fail-safe, route, freshness 정책 적용 | gateway / boundary owner |
-| Render / output | body, display, cluster, audio로 결과 반영 | render owner |
-| Observer / validation | 이미 publish된 seam을 evidence/verdict 용도로 관측 | validation harness |
-| Diagnostic semantic | diagnostic state, session, security, response 의미 제공 | diagnostic owner |
+- `Transport ingress`
+  - meaning: raw network context 수신 및 freshness 정규화
+  - typical owner: ingress owner
+- `Functional decision`
+  - meaning: warning, risk, assist 의미 결정
+  - typical owner: decision owner
+- `Boundary / override`
+  - meaning: fail-safe, route, freshness 정책 적용
+  - typical owner: gateway / boundary owner
+- `Render / output`
+  - meaning: body, display, cluster, audio로 결과 반영
+  - typical owner: render owner
+- `Observer / validation`
+  - meaning: 이미 publish된 seam을 evidence/verdict 용도로 관측
+  - typical owner: validation harness
+- `Diagnostic semantic`
+  - meaning: diagnostic state, session, security, response 의미 제공
+  - typical owner: diagnostic owner
 
 ## 분리 규칙
 
@@ -95,28 +105,78 @@ active baseline은 아래 여섯 계층으로 나눕니다.
 
 ### Emergency / V2X path
 
-| Seam | Product owner | Transport 역할 | Observer 역할 | Validation-only 예외 |
-| --- | --- | --- | --- | --- |
-| `ETH_EmergencyAlert` | `V2X` | raw emergency ingress contract | trace only | `TEST_SCN`이 validation ingress stimulus로 emit할 수 있으나 product owner는 여전히 `V2X`입니다 |
-| `Core::emergencyContext` | `V2X` | normalized internal semantic | `TEST_BAS`, evidence tool | 없음 |
-| `CoreState::emergencyIngressDirection / emergencyIngressEtaSec / emergencyIngressSourceId` | `V2X` | product consumer용 normalized ingress metadata seam | `TEST_BAS`, evidence tool | 없음 |
-| `V2X::ingressHeartbeat` | `V2X` | acceptance/clear/watchdog 전이에 대한 ingress freshness heartbeat | `TEST_BAS`, evidence tool | 없음 |
-| `ETH_EmergencyMonitor` | `V2X` | transport-monitor publication | `TEST_BAS`, trace observer | 없음 |
-| `CoreState::selectedAlertDecisionLevel / selectedAlertDecisionType` | `ADAS` | 게이트웨이 shaping 이전의 functional selected-alert decision seam | `TEST_BAS`, evidence tool | 없음 |
-| `CoreState::selectedAlertEffectiveLevel / selectedAlertEffectiveType / selectedAlertGateReason` | `CGW` | 경계/Failsafe 정책을 반영한 selected-alert effective seam | `TEST_BAS`, evidence tool | 없음 |
-| `ethSelectedAlertMsg` / selected alert result | `ADAS` transport publication of selected-alert state for downstream consumers | active selected-alert state의 transport relay | `TEST_BAS`, evidence tool | 없음 |
-| `@Core::decelAssistDecisionReq` | `ADAS` | internal decision seam | `TEST_BAS`, debug trace | 없음 |
-| `CoreState::driverReleaseReason` | `ADAS` | 게이트웨이 effective gating 이전의 운전자 개입 해제 seam | `TEST_BAS`, debug trace | 없음 |
-| `@Core::decelAssistReq` / `CoreState::decelGateReason` | `CGW` | 경계/Failsafe를 반영한 effective assist seam | `TEST_BAS`, debug trace | 없음 |
-| `ethFailSafeStateMsg` / `warningPathStatus` | `CGW` | boundary-health publication | `TEST_BAS`, trace observer | `TEST_SCN`의 `ValidationOverride`는 test-only입니다 |
+- `ETH_EmergencyAlert`
+  - product owner: `V2X`
+  - transport role: raw emergency ingress contract
+  - observer role: trace only
+  - validation-only exception: `TEST_SCN`이 validation ingress stimulus로 emit할 수 있으나 product owner는 여전히 `V2X`
+- `Core::emergencyContext`
+  - product owner: `V2X`
+  - transport role: normalized internal semantic
+  - observer role: `TEST_BAS`, evidence tool
+  - validation-only exception: 없음
+- `CoreState::emergencyIngressDirection / emergencyIngressEtaSec / emergencyIngressSourceId`
+  - product owner: `V2X`
+  - transport role: normalized ingress metadata seam
+  - observer role: `TEST_BAS`, evidence tool
+  - validation-only exception: 없음
+- `V2X::ingressHeartbeat`
+  - product owner: `V2X`
+  - transport role: ingress freshness heartbeat
+  - observer role: `TEST_BAS`, evidence tool
+  - validation-only exception: 없음
+- `ETH_EmergencyMonitor`
+  - product owner: `V2X`
+  - transport role: transport-monitor publication
+  - observer role: `TEST_BAS`, trace observer
+  - validation-only exception: 없음
+- `CoreState::selectedAlertDecisionLevel / selectedAlertDecisionType`
+  - product owner: `ADAS`
+  - transport role: functional selected-alert decision seam
+  - observer role: `TEST_BAS`, evidence tool
+  - validation-only exception: 없음
+- `CoreState::selectedAlertEffectiveLevel / selectedAlertEffectiveType / selectedAlertGateReason`
+  - product owner: `CGW`
+  - transport role: selected-alert effective seam
+  - observer role: `TEST_BAS`, evidence tool
+  - validation-only exception: 없음
+- `ethSelectedAlertMsg`
+  - product owner: `ADAS`
+  - transport role: active selected-alert state relay
+  - observer role: `TEST_BAS`, evidence tool
+  - validation-only exception: 없음
+- `@Core::decelAssistDecisionReq`
+  - product owner: `ADAS`
+  - transport role: internal decision seam
+  - observer role: `TEST_BAS`, debug trace
+  - validation-only exception: 없음
+- `CoreState::driverReleaseReason`
+  - product owner: `ADAS`
+  - transport role: 운전자 개입 해제 seam
+  - observer role: `TEST_BAS`, debug trace
+  - validation-only exception: 없음
+- `@Core::decelAssistReq / CoreState::decelGateReason`
+  - product owner: `CGW`
+  - transport role: effective assist seam
+  - observer role: `TEST_BAS`, debug trace
+  - validation-only exception: 없음
+- `ethFailSafeStateMsg / warningPathStatus`
+  - product owner: `CGW`
+  - transport role: boundary-health publication
+  - observer role: `TEST_BAS`, trace observer
+  - validation-only exception: `TEST_SCN::ValidationOverride`는 test-only
 
 ### Render / output path
 
-| Output meaning | Product owner | Required input |
-| --- | --- | --- |
-| visual warning level/type | `IVI`, `HUD`, `CLU` render side | `CoreState::selectedAlertEffective*` + documented compatibility fallback |
-| ambient / body warning actuation | `BCM` | CGW effective selected-alert state + CGW boundary health |
-| audio focus / ducking / volume guidance | `AMP`, `IVI`, `VCS` render side | CGW effective selected-alert state + user policy input |
+- visual warning level/type
+  - product owner: `IVI`, `HUD`, `CLU`
+  - required input: `CoreState::selectedAlertEffective*` + documented compatibility fallback
+- ambient / body warning actuation
+  - product owner: `BCM`
+  - required input: CGW effective selected-alert state + CGW boundary health
+- audio focus / ducking / volume guidance
+  - product owner: `AMP`, `IVI`, `VCS`
+  - required input: CGW effective selected-alert state + user policy input
 
 규칙:
 
@@ -129,28 +189,30 @@ active baseline은 아래 여섯 계층으로 나눕니다.
 
 ### Diagnostic path
 
-| Seam | Owner | 역할 |
-| --- | --- | --- |
-| network request / response route | requester + gateway + ECU server path | 실제 transport/addressing flow |
-| `Diag::*` semantic seam | `SGW` + `DCM` | diagnostic status/result 의미를 compact하게 관측 |
-| `EXT_DIAG` | logical external requester / observer surface | 현재 baseline에서는 `Diag::*`만 읽고, 새 backbone payload contract는 추가하지 않습니다 |
+- network request / response route
+  - owner: requester + gateway + ECU server path
+  - role: 실제 transport/addressing flow
+- `Diag::*` semantic seam
+  - owner: `SGW` + `DCM`
+  - role: diagnostic status/result 의미를 compact하게 관측
+- `EXT_DIAG`
+  - owner: logical external requester / observer surface
+  - role: 현재 baseline에서는 `Diag::*`만 읽고 새 backbone payload contract는 추가하지 않음
 
 ## 현재 backbone producer boundary 규칙
 
 active baseline은 backbone seam에서 producer identity를 유지해야 합니다.
 
-| Backbone seam | Accepted producer |
-| --- | --- |
-| `ETH_EmergencyAlert` (current SIL validation ingress) | `TEST_SCN` |
-| `ethObjectRiskInputMsg` | `TEST_SCN` |
-| `ETH_EmergencyMonitor` | `V2X` |
-| `ethSelectedAlertMsg` | `ADAS` |
-| `ethDecelAssistReqMsg` | `ADAS` |
-| `ethObjectRiskStateMsg` | `ADAS` |
-| `ethObjectScenarioAlertMsg` | `ADAS` |
-| `ethFailSafeStateMsg` | `CGW` |
-| `ethObjectSafetyStateMsg` | `CGW` |
-| `ethValidationOverride` | `TEST_SCN` |
+- `ETH_EmergencyAlert`: `TEST_SCN`
+- `ethObjectRiskInputMsg`: `TEST_SCN`
+- `ETH_EmergencyMonitor`: `V2X`
+- `ethSelectedAlertMsg`: `ADAS`
+- `ethDecelAssistReqMsg`: `ADAS`
+- `ethObjectRiskStateMsg`: `ADAS`
+- `ethObjectScenarioAlertMsg`: `ADAS`
+- `ethFailSafeStateMsg`: `CGW`
+- `ethObjectSafetyStateMsg`: `CGW`
+- `ethValidationOverride`: `TEST_SCN`
 
 의미:
 

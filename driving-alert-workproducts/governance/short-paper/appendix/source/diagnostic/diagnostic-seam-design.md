@@ -63,15 +63,42 @@ minimum seam set은 다음 질문에 답할 수 있어야 합니다.
 
 먼저 다음 기존 variable을 우선 활용합니다.
 
-| Semantic need | Current candidate sysvar surface |
-|---|---|
-| fail-safe state | `Core::failSafeMode` |
-| path health | `CoreState::warningPathStatus`, `CoreState::e2eHealthState` |
-| route and boundary condition | `Powertrain::RoutingPolicy`, `Powertrain::BoundaryStatus`, `Body::BodyGwHealth` |
-| diagnostic request identity | `Diag::LastRequestTarget`, `Diag::LastRequestSid`, `Diag::LastRequestDidHigh`, `Diag::LastRequestDidLow`, `Diag::LastRequestSourceBus`, `Diag::RequestCounter`, `Diag::LastRequestTimeMs` |
-| diagnostic response identity | `Diag::LastResponseTarget`, `Diag::LastResponseCode`, `Diag::LastResponseData0`, `Diag::LastResponseData1`, `Diag::LastResponseOk`, `Diag::LastResponseSourceBus`, `Diag::ResponseCounter`, `Diag::LastResponseTimeMs` |
-| ECU-local diagnostic state hint | `Chassis::ChassisDiagState`, `Body::BodyDiagState`, `Infotainment::InfoDiagState`, `Powertrain::PtDiagState` |
-| ECU-local diagnostic request/response hint | `Chassis::ChsDiagServiceId`, `Chassis::ChsDiagRespCode`, `Body::BcmDiagServiceId`, `Body::BcmDiagRespCode`, `Infotainment::IviDiagServiceId`, `Infotainment::IviDiagRespCode`, `Powertrain::PtDiagServiceId`, `Powertrain::PtDiagRespCode` |
+- fail-safe state
+  - `Core::failSafeMode`
+- path health
+  - `CoreState::warningPathStatus`
+  - `CoreState::e2eHealthState`
+- route and boundary condition
+  - `Powertrain::RoutingPolicy`
+  - `Powertrain::BoundaryStatus`
+  - `Body::BodyGwHealth`
+- diagnostic request identity
+  - `Diag::LastRequestTarget`
+  - `Diag::LastRequestSid`
+  - `Diag::LastRequestDidHigh`
+  - `Diag::LastRequestDidLow`
+  - `Diag::LastRequestSourceBus`
+  - `Diag::RequestCounter`
+  - `Diag::LastRequestTimeMs`
+- diagnostic response identity
+  - `Diag::LastResponseTarget`
+  - `Diag::LastResponseCode`
+  - `Diag::LastResponseData0`
+  - `Diag::LastResponseData1`
+  - `Diag::LastResponseOk`
+  - `Diag::LastResponseSourceBus`
+  - `Diag::ResponseCounter`
+  - `Diag::LastResponseTimeMs`
+- ECU-local diagnostic state hint
+  - `Chassis::ChassisDiagState`
+  - `Body::BodyDiagState`
+  - `Infotainment::InfoDiagState`
+  - `Powertrain::PtDiagState`
+- ECU-local diagnostic request/response hint
+  - `Chassis::ChsDiagServiceId`, `Chassis::ChsDiagRespCode`
+  - `Body::BcmDiagServiceId`, `Body::BcmDiagRespCode`
+  - `Infotainment::IviDiagServiceId`, `Infotainment::IviDiagRespCode`
+  - `Powertrain::PtDiagServiceId`, `Powertrain::PtDiagRespCode`
 
 이 변수들만으로도 skeleton wiring과 evidence capture는 시작할 수 있습니다.
 
@@ -83,13 +110,16 @@ minimum seam set은 다음 질문에 답할 수 있어야 합니다.
 
 producer wiring은 아직 진행 중일 수 있습니다.
 
-| Reserved seam | 필요한 이유 |
-|---|---|
-| `Diag::SecurityState` | `UT_063`, `IT_040`, `ST_043`는 indirect interpretation만으로는 부족하고 stable security verdict seam이 필요합니다 |
-| `Diag::ServiceState` | integrated service-context verdict를 mixed runtime side effect만으로 판단하면 설명력이 약합니다 |
-| `Diag::RouteOwner` | 현재 route/boundary health 표면만으로는 ownership explanation이 충분히 강하지 않습니다 |
-| `Diag::ResponseKind` | `Positive / Negative / Timeout / Unavailable`를 verdict-facing 의미로 안정적으로 해석해야 합니다 |
-| `Diag::ReasonCode` | 최종 official verdict에서 diagnostic-linked decision의 이유를 짧고 안정적으로 설명해야 합니다 |
+- `Diag::SecurityState`
+  - `UT_063`, `IT_040`, `ST_043`는 indirect interpretation만으로는 부족하고 stable security verdict seam이 필요합니다.
+- `Diag::ServiceState`
+  - integrated service-context verdict를 mixed runtime side effect만으로 판단하면 설명력이 약합니다.
+- `Diag::RouteOwner`
+  - 현재 route/boundary health 표면만으로는 ownership explanation이 충분히 강하지 않습니다.
+- `Diag::ResponseKind`
+  - `Positive / Negative / Timeout / Unavailable`를 verdict-facing 의미로 안정적으로 해석해야 합니다.
+- `Diag::ReasonCode`
+  - diagnostic-linked decision의 이유를 짧고 안정적으로 설명해야 합니다.
 
 ## 6. 남아 있는 meaning-level gap
 
@@ -97,11 +127,12 @@ producer wiring은 아직 진행 중일 수 있습니다.
 
 핵심은 producer-side semantic wiring입니다.
 
-| Remaining gap | 필요한 이유 |
-|---|---|
-| semantic producer wiring | runtime 또는 harness logic이 reserved seam을 일관되게 써줘야 합니다 |
-| stable enum meaning | `UT`, `IT`, `ST` 전 구간에서 seam 값의 해석이 동일해야 합니다 |
-| trace correlation rule | seam update가 `Diag::*` request/response mirror와 write-window evidence와 연동돼야 합니다 |
+- semantic producer wiring
+  - runtime 또는 harness logic이 reserved seam을 일관되게 써줘야 합니다.
+- stable enum meaning
+  - `UT`, `IT`, `ST` 전 구간에서 seam 값의 해석이 동일해야 합니다.
+- trace correlation rule
+  - seam update가 `Diag::*` request/response mirror와 write-window evidence와 연동돼야 합니다.
 
 ## 7. Baseline enum contract
 
@@ -135,30 +166,102 @@ producer wiring은 아직 진행 중일 수 있습니다.
 
 ## 8. 현재 official scope별 seam design
 
-| Source ID | Seam question | Minimum required fields | Primary evidence path |
-|---|---|---|---|
-| `UT_063` | security preset이 의도한 security state와 ownership context로 해석됐는가 | current: `Powertrain::RoutingPolicy`, `Body::BodyGwHealth`; reserved: `Diag::SecurityState`, `Diag::RouteOwner`, `Diag::ReasonCode` | write window + trace + sysvar snapshot |
-| `UT_064` | diagnostic preset이 의도한 diagnostic state와 request class로 해석됐는가 | current: `Diag::LastRequestSid`, `Diag::LastResponseCode`, `Diag::LastResponseOk`; reserved: ECU-local diag state + `Diag::ResponseKind`, `Diag::ReasonCode` | write window + trace + sysvar snapshot |
-| `IT_040` | integrated service, security, diagnostic context가 기대한 runtime verdict로 수렴하는가 | current: `Diag::*`, ECU-local `*DiagState`, `Powertrain::RoutingPolicy`; reserved: `Diag::ServiceState`, `Diag::SecurityState`, `Diag::RouteOwner` | native report + trace + write window + sysvar snapshot |
-| `ST_043` | system-level service/security/diagnostic context가 최종 scenario verdict를 정당하게 설명하는가 | current: `Diag::*`, ECU-local `*DiagState`, `CoreState::warningPathStatus`; reserved: `Diag::ServiceState`, `Diag::SecurityState`, `Diag::RouteOwner`, `Diag::ReasonCode` | native report + trace + write window + sysvar snapshot |
+### `UT_063`
+
+- seam question
+  - security preset이 의도한 security state와 ownership context로 해석됐는가
+- minimum required fields
+  - current: `Powertrain::RoutingPolicy`, `Body::BodyGwHealth`
+  - reserved: `Diag::SecurityState`, `Diag::RouteOwner`, `Diag::ReasonCode`
+- primary evidence path
+  - write window + trace + sysvar snapshot
+
+### `UT_064`
+
+- seam question
+  - diagnostic preset이 의도한 diagnostic state와 request class로 해석됐는가
+- minimum required fields
+  - current: `Diag::LastRequestSid`, `Diag::LastResponseCode`, `Diag::LastResponseOk`
+  - reserved: ECU-local diag state + `Diag::ResponseKind`, `Diag::ReasonCode`
+- primary evidence path
+  - write window + trace + sysvar snapshot
+
+### `IT_040`
+
+- seam question
+  - integrated service, security, diagnostic context가 기대한 runtime verdict로 수렴하는가
+- minimum required fields
+  - current: `Diag::*`, ECU-local `*DiagState`, `Powertrain::RoutingPolicy`
+  - reserved: `Diag::ServiceState`, `Diag::SecurityState`, `Diag::RouteOwner`
+- primary evidence path
+  - native report + trace + write window + sysvar snapshot
+
+### `ST_043`
+
+- seam question
+  - system-level service/security/diagnostic context가 최종 scenario verdict를 정당하게 설명하는가
+- minimum required fields
+  - current: `Diag::*`, ECU-local `*DiagState`, `CoreState::warningPathStatus`
+  - reserved: `Diag::ServiceState`, `Diag::SecurityState`, `Diag::RouteOwner`, `Diag::ReasonCode`
+- primary evidence path
+  - native report + trace + write window + sysvar snapshot
 
 ## 9. Planned assertion profile
 
-| Source ID | Planned nominal assert set | Planned degraded or blocked assert set | Current blocker |
-|---|---|---|---|
-| `UT_063` | `SecurityState=2`, `RouteOwner=3 or 1` | degraded: `SecurityState=3`, `RouteOwner=1`; blocked: `SecurityState=3`, `RouteOwner=1` | executable via `TEST_SCN` scenario `203` |
-| `UT_064` | `LastRequestSid=0x22`, `ResponseKind=1`, `ReasonCode=0` | degraded: `ResponseKind=2`, `ReasonCode=3`; blocked: `ResponseKind=4`, `ReasonCode=2` | executable via `TEST_SCN` scenario `204` |
-| `IT_040` | `ServiceState=2`, `SecurityState=2`, `RouteOwner=3`, `ResponseKind=1`, `ReasonCode=0` | degraded: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=3`; blocked: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=2` | executable via `TEST_SCN` scenario `205` |
-| `ST_043` | scenario verdict remains explainable with `ServiceState=2`, `SecurityState=2`, `RouteOwner=3`, `ReasonCode=0` | degraded context: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=3`; blocked context: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=2` | executable via `TEST_SCN` scenario `202` |
+### `UT_063`
+
+- nominal assert
+  - `SecurityState=2`, `RouteOwner=3 or 1`
+- degraded or blocked assert
+  - degraded: `SecurityState=3`, `RouteOwner=1`
+  - blocked: `SecurityState=3`, `RouteOwner=1`
+- current blocker
+  - executable via `TEST_SCN` scenario `203`
+
+### `UT_064`
+
+- nominal assert
+  - `LastRequestSid=0x22`, `ResponseKind=1`, `ReasonCode=0`
+- degraded or blocked assert
+  - degraded: `ResponseKind=2`, `ReasonCode=3`
+  - blocked: `ResponseKind=4`, `ReasonCode=2`
+- current blocker
+  - executable via `TEST_SCN` scenario `204`
+
+### `IT_040`
+
+- nominal assert
+  - `ServiceState=2`, `SecurityState=2`, `RouteOwner=3`, `ResponseKind=1`, `ReasonCode=0`
+- degraded or blocked assert
+  - degraded: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=3`
+  - blocked: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=2`
+- current blocker
+  - executable via `TEST_SCN` scenario `205`
+
+### `ST_043`
+
+- nominal assert
+  - scenario verdict remains explainable with `ServiceState=2`, `SecurityState=2`, `RouteOwner=3`, `ReasonCode=0`
+- degraded or blocked assert
+  - degraded: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=3`
+  - blocked: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=2`
+- current blocker
+  - executable via `TEST_SCN` scenario `202`
 
 ## 10. Publisher ownership baseline
 
 reserved seam은 producer를 하나로 제한합니다.
 
-| Producer | Owned reserved seam |
-|---|---|
-| `SGW.can` | `Diag::SecurityState`, `Diag::RouteOwner` |
-| `DCM.can` | `Diag::ServiceState`, `Diag::ResponseKind`, `Diag::ReasonCode`, `Diag::LastRequestSid`, `Diag::LastResponseCode`, `Diag::LastResponseOk` |
+- `SGW.can`
+  - `Diag::SecurityState`
+  - `Diag::RouteOwner`
+- `DCM.can`
+  - `Diag::ServiceState`
+  - `Diag::ResponseKind`
+  - `Diag::ReasonCode`
+  - `Diag::LastRequestSid`
+  - `Diag::LastResponseCode`
+  - `Diag::LastResponseOk`
 
 ## 11. ST_043 scenario stimulus contract
 

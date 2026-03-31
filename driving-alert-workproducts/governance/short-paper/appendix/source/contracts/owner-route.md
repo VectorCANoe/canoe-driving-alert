@@ -17,12 +17,10 @@
 
 ## 계약 차원
 
-| 차원 | 의미 |
-| --- | --- |
-| Owner | 해당 seam의 business meaning을 소유하는 runtime authority |
-| Bus | active baseline에서 사용하는 primary transport 또는 observation seam |
-| Timeout authority | stale-state, clear, fail-safe 동작을 결정하는 runtime authority |
-| Route authority | cross-domain delivery와 forwarding을 제어하는 runtime authority |
+- `Owner`: 해당 seam의 business meaning을 소유하는 runtime authority
+- `Bus`: active baseline에서 사용하는 primary transport 또는 observation seam
+- `Timeout authority`: stale-state, clear, fail-safe 동작을 결정하는 runtime authority
+- `Route authority`: cross-domain delivery와 forwarding을 제어하는 runtime authority
 
 ## 규칙
 
@@ -33,21 +31,74 @@
 - foreign-domain CAN visibility는 `contracts/multibus-policy.md`를 따릅니다
 - 상세 frame-level ownership은 `contracts/communication-matrix.md`에서 관리합니다
 
-## 현재 seam 표
+## 현재 seam 기준선
 
-| Seam | Owner | Primary bus | Timeout authority | Route authority | 비고 |
-| --- | --- | --- | --- | --- | --- |
-| Navigation context | `IVI` | Infotainment CAN | `IVI` | `CGW` when cross-domain delivery is required | road zone, direction, distance, speed-limit context |
-| Emergency context | `V2X` | Ethernet backbone + normalized `Core/CoreState` seam | `CGW` boundary authority | `CGW` | emergency source, direction, ETA, active/clear context |
-| Arbitration decision | `ADAS` | local runtime + `CoreState::selectedAlertDecision*` seam | `ADAS` | `CGW` for cross-domain forwarding | gateway boundary 또는 fail-safe shaping 이전의 selected alert level/type |
-| Arbitration effective result | `CGW` | `CoreState::selectedAlertEffective*` seam + published output seam | `CGW` | `CGW` | boundary, timeout-clear, fail-safe shaping 이후의 selected alert level/type |
-| Decel decision | `ADAS` | local runtime + `@Core::decelAssistDecisionReq` + `CoreState::driverReleaseReason` | `ADAS` | `CGW` for cross-domain forwarding | 운전자 개입 해제 의미는 이 seam에서 먼저 정리됩니다 |
-| Decel effective result | `CGW` | `@Core::decelAssistReq` + `CoreState::decelGateReason` | `CGW` | `CGW` | fail-safe 적용 후의 최종 감속 보조 요청과 gate reason |
-| Render warning state | `IVI`, `CLU`, `HUD`, `AMP` | local render output + `CoreState::selectedAlertEffective*` consumer seam | 각 render owner | none | render owner는 `effective -> decision -> compatibility fallback` 순서로 소비하며 ingress/gateway owner가 되지 않습니다 |
-| Body ambient / hazard output | `BCM` | body output + `CoreState::selectedAlertEffective*` consumer seam | `BCM` | none | body warning actuation은 `effective -> decision -> compatibility fallback`과 local body policy를 함께 소비합니다 |
-| Boundary health | `CGW` | Ethernet backbone | `CGW` | `CGW` | fail-safe and cross-domain health summary |
-| Scenario result | `TEST_SCN` | test harness seam | `TEST_SCN` | none | per-scenario verdict and trace anchor |
-| Baseline result | `TEST_BAS` | SysVar-only seam | `TEST_BAS` | none | aggregate baseline verdict and health summary |
+- Navigation context
+  - owner: `IVI`
+  - bus: `Infotainment CAN`
+  - timeout authority: `IVI`
+  - route authority: cross-domain delivery가 필요할 때 `CGW`
+  - note: road zone, direction, distance, speed-limit context
+- Emergency context
+  - owner: `V2X`
+  - bus: `Ethernet backbone + normalized Core/CoreState seam`
+  - timeout authority: `CGW`
+  - route authority: `CGW`
+  - note: emergency source, direction, ETA, active/clear context
+- Arbitration decision
+  - owner: `ADAS`
+  - bus: local runtime + `CoreState::selectedAlertDecision*`
+  - timeout authority: `ADAS`
+  - route authority: cross-domain forwarding 시 `CGW`
+  - note: gateway shaping 이전 selected alert level/type
+- Arbitration effective result
+  - owner: `CGW`
+  - bus: `CoreState::selectedAlertEffective*` + published output seam
+  - timeout authority: `CGW`
+  - route authority: `CGW`
+  - note: boundary, timeout-clear, fail-safe shaping 이후 selected alert level/type
+- Decel decision
+  - owner: `ADAS`
+  - bus: local runtime + `@Core::decelAssistDecisionReq` + `CoreState::driverReleaseReason`
+  - timeout authority: `ADAS`
+  - route authority: cross-domain forwarding 시 `CGW`
+  - note: 운전자 개입 해제 의미를 먼저 정리하는 seam
+- Decel effective result
+  - owner: `CGW`
+  - bus: `@Core::decelAssistReq` + `CoreState::decelGateReason`
+  - timeout authority: `CGW`
+  - route authority: `CGW`
+  - note: fail-safe 적용 후 최종 감속 보조 요청과 gate reason
+- Render warning state
+  - owner: `IVI`, `CLU`, `HUD`, `AMP`
+  - bus: local render output + `CoreState::selectedAlertEffective*` consumer seam
+  - timeout authority: 각 render owner
+  - route authority: 없음
+  - note: render owner는 `effective -> decision -> compatibility fallback` 순서로 소비하며 ingress/gateway owner가 되지 않음
+- Body ambient / hazard output
+  - owner: `BCM`
+  - bus: body output + `CoreState::selectedAlertEffective*` consumer seam
+  - timeout authority: `BCM`
+  - route authority: 없음
+  - note: local body policy와 effective selected-alert state를 함께 소비
+- Boundary health
+  - owner: `CGW`
+  - bus: `Ethernet backbone`
+  - timeout authority: `CGW`
+  - route authority: `CGW`
+  - note: fail-safe and cross-domain health summary
+- Scenario result
+  - owner: `TEST_SCN`
+  - bus: test harness seam
+  - timeout authority: `TEST_SCN`
+  - route authority: 없음
+  - note: per-scenario verdict and trace anchor
+- Baseline result
+  - owner: `TEST_BAS`
+  - bus: SysVar-only seam
+  - timeout authority: `TEST_BAS`
+  - route authority: 없음
+  - note: aggregate baseline verdict and health summary
 
 ## 사용 규칙
 
