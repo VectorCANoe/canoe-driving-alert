@@ -176,8 +176,7 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
     bundle_root.mkdir(parents=True, exist_ok=True)
 
-    # Runtime root marker expected by sdv_cli.py
-    copy_file(ROOT / "AGENTS.md", bundle_root / "AGENTS.md")
+    # Minimal root files expected by sdv_cli.py
     copy_file(ROOT / "pyproject.toml", bundle_root / "pyproject.toml")
     copy_file(ROOT / "sdv_cli.py", bundle_root / "sdv_cli.py")
 
@@ -192,7 +191,6 @@ def main() -> int:
         "05_Unit_Test.md",
         "06_Integration_Test.md",
         "07_System_Test.md",
-        "TMP_HANDOFF.md",
     ]:
         src = ROOT / "driving-alert-workproducts" / rel
         if src.exists():

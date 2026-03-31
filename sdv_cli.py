@@ -33,7 +33,11 @@ except Exception:  # pragma: no cover
 
 
 def _is_repo_root(path: Path) -> bool:
-    return (path / "scripts" / "run.py").exists() and (path / "AGENTS.md").exists()
+    return (
+        (path / "scripts" / "run.py").exists()
+        and (path / "pyproject.toml").exists()
+        and (path / "canoe").exists()
+    )
 
 
 def _find_repo_root(start: Path) -> Path | None:

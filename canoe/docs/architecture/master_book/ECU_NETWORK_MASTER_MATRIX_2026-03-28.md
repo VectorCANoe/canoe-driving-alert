@@ -19,7 +19,7 @@ This matrix is intentionally ECU-centric and runtime-centric.
 2. `scripts/gates/check_runtime_seam_ownership.py`
 3. `canoe/tests/modules/test_units/**`
 4. `driving-alert-workproducts/0301~0304`
-5. `canoe/AGENT/canoe/docs/operations/reference/**`
+5. `canoe/docs/contracts/**` and `canoe/docs/verification/**`
 
 ## Inventory Basis
 

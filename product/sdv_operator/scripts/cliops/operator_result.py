@@ -12,7 +12,11 @@ from typing import Any
 def _find_repo_root() -> Path:
     current = Path(__file__).resolve()
     for candidate in current.parents:
-        if (candidate / "AGENTS.md").exists() and (candidate / "canoe").exists():
+        if (
+            (candidate / "scripts" / "run.py").exists()
+            and (candidate / "pyproject.toml").exists()
+            and (candidate / "canoe").exists()
+        ):
             return candidate
     return current.parents[-1]
 

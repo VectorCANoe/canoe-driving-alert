@@ -4,7 +4,7 @@ Quick index for the active `canoe` surface.
 
 ## 0) First Open
 
-1. `C:\Users\이준영\CANoe-IVI-OTA\driving-alert-workproducts\ops\handoff\TMP_HANDOFF.md`
+1. `C:\Users\이준영\CANoe-IVI-OTA\README.md`
 2. `C:\Users\이준영\CANoe-IVI-OTA\canoe\README.md`
 3. `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\README.md`
 
@@ -47,5 +47,5 @@ Quick index for the active `canoe` surface.
 
 ## 5) Archive Policy
 
-- legacy runtime assets are preserved in archive branches and local `canoe/AGENT/legacy/`, not in the active root.
+- legacy runtime assets are preserved in archive branches and archived snapshots, not in the active root.
 - local helper, reference, and staging assets may still exist under ignored paths for developer workflows.

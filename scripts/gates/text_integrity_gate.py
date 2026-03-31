@@ -61,7 +61,6 @@ EXCLUDE_PATH_PARTS = {
 EXEMPT_LITERAL_SENTINEL_FILES = {
     Path("scripts/gates/cfg_hygiene_gate.py"),
     Path("canoe/scripts/fix_cfg_paths.py"),
-    Path("canoe/AGENT/canoe/scripts/fix_cfg_paths.py"),
 }
 
 QUESTION_RUN_RE = re.compile(r"\?{3,}")

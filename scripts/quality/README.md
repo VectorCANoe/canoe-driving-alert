@@ -34,7 +34,7 @@ Canonical verification inputs:
 
 Current policy:
 
-- `canoe/AGENT/` and legacy `TMP` evidence sandboxes are reference-only.
+- legacy `TMP` evidence sandboxes are reference-only.
 - Official `00~07` docs and root `canoe/` assets are the canonical verification SoT.
 - Verification operations follow `canoe/docs/verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md`.
 - `init_evidence_run.py` seeds `verification_log.csv` directly from the official docs and current native assets.

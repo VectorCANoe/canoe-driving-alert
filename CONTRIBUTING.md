@@ -12,14 +12,15 @@ Contributions should keep those boundaries explicit instead of mixing them.
 
 Before changing code or docs, open:
 
-1. `AGENTS.md`
-2. `driving-alert-workproducts/ops/handoff/TMP_HANDOFF.md`
-3. `docs/DEVELOPMENT_ENTRYPOINTS.md`
+1. `README.md`
+2. `canoe/README.md`
+3. `product/sdv_operator/README.md`
+4. `driving-alert-workproducts/00_Project_Overview.md`
 
 ## Basic Workflow
 
-1. Confirm the current scope and exclusions from `TMP_HANDOFF.md`
-2. Update the correct ownership area:
+1. Confirm the change target and ownership area
+2. Update the correct surface:
    - runtime behavior: `canoe/`
    - operator surface: `scripts/` and `product/sdv_operator/`
    - canonical docs: `driving-alert-workproducts/`
