@@ -69,8 +69,8 @@ The repository closeout surface is fixed to the six submission assets below.
     </td>
     <td align="center" width="33%">
       <strong>3. Short Paper</strong><br>
-      <a href="final-deliverables/03_SHORT_PAPER_PENDING.md">Open status</a><br>
-      <sub>source finalized, PDF pending</sub>
+      <a href="final-deliverables/03_SHORT_PAPER.pdf">Open PDF</a><br>
+      <sub>review-ready</sub>
     </td>
   </tr>
   <tr>
@@ -86,8 +86,8 @@ The repository closeout surface is fixed to the six submission assets below.
     </td>
     <td align="center" width="33%">
       <strong>6. Appendix</strong><br>
-      <a href="final-deliverables/06_APPENDIX_PENDING.md">Open status</a><br>
-      <sub>PDF pending</sub>
+      <a href="final-deliverables/06_APPENDIX.pdf">Open PDF</a><br>
+      <sub>review-ready</sub>
     </td>
   </tr>
 </table>
