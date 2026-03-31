@@ -11,6 +11,7 @@
 \usepackage{enumitem}
 \usepackage{setspace}
 \usepackage{graphicx}
+\graphicspath{{../ppt/assets/}}
 
 \setmainhangulfont{AppleMyungjo}
 \setsanshangulfont{Apple SD Gothic Neo}
@@ -42,7 +43,7 @@
 }
 
 \title{구간 정보와 긴급차량 접근을 통합한 실시간 주행 경고 컨셉:\\CANoe SIL 기반 구현 및 시험 사례}
-\author{현대모비스 PBL 팀}
+\author{현대모비스 부트캠프 벡캔팀}
 \date{2026-03-18}
 
 \begin{document}
@@ -117,8 +118,8 @@ e_t^*=\arg\min(-rank(type), ETA, SourceID)
 
 \begin{figure*}[t]
 \centering
-\placeholderfigure{52mm}{다중 긴급 이벤트 입력, 차량 유형 우선순위 적용, ETA 비교, SourceID 동률 해소, 활성 이벤트 유지, watchdog timeout clear, 정상 상태 복귀를 포함한 상태도를 배치한다. 좌측은 EmergencyAlert 입력 집합, 중앙은 V2X 정규화, 우측은 활성 긴급 이벤트 $e_t^*$로 구성한다.}
-\caption{V2X 긴급 이벤트 선택 및 timeout clear 상태도}
+\includegraphics[width=0.92\textwidth]{asset_36_v2x_role_normalization.png}
+\caption{V2X 긴급 이벤트 정규화 구조}
 \label{fig:v2x_state}
 \end{figure*}
 
@@ -173,9 +174,16 @@ u_{t-1}, & T_{off}<R_t<T_{on}
 
 \begin{figure*}[t]
 \centering
-\placeholderfigure{55mm}{차량 상태 $V_t$, 구간 맥락 $C_t$, 긴급 접근 정보 $E_t$, 객체 위험 정보 $O_t$, 서비스 가용성 $S_t$가 위험도 계산 블록으로 수렴하고, $R_{emg}$, $TTC$, $R_{obj}$, $R_t$ 및 hysteresis를 거쳐 최종 경고 상태 $W_t$, 감속 보조, fail-safe 보정으로 분기되는 블록도를 배치한다.}
+\includegraphics[width=0.92\textwidth]{asset_24_adas_state_function.png}
 \caption{ADAS 위험도 산정 및 계층형 경고 중재 블록도}
 \label{fig:adas_block}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{asset_33_fail_safe_boundary_recovery.png}
+\caption{Fail-Safe 및 복귀 규칙}
+\label{fig:fail_safe_recovery}
 \end{figure*}
 
 \subsection{혼합 네트워크 전달 구조}
@@ -188,7 +196,7 @@ u_{t-1}, & T_{off}<R_t<T_{on}
 
 \subsection{핵심 seam 권한 구조}
 
-혼합 네트워크 구조가 설명 가능하려면 메시지 자체보다 먼저 ``어떤 seam을 누가 소유하는가''가 정리되어야 한다. 본 연구에서는 owner, primary bus, timeout authority, route authority를 분리하여 정의함으로써, 기능 의미와 경계 정책을 transport와 독립적으로 설명할 수 있도록 하였다. 특히 긴급 경고와 감속 보조는 ADAS가 판단하되, 최종 effective result와 fail-safe shaping은 CGW가 담당하도록 하여, 기능 판단과 경계 적용이 섞이지 않도록 구성하였다~\cite{comm_spec,system_vars}.
+혼합 네트워크 구조가 설명 가능하려면 메시지 자체보다 먼저 ``어떤 seam을 누가 소유하는가''가 정리되어야 한다. 본 연구에서는 owner, primary bus, timeout authority, route authority를 분리하여 정의함으로써, 기능 의미와 경계 정책을 transport와 독립적으로 설명할 수 있도록 하였다. 특히 긴급 경고와 감속 보조는 ADAS가 판단하되, 최종 effective result와 fail-safe shaping은 CGW가 담당하도록 하여, 기능 판단과 경계 적용이 섞이지 않도록 구성하였다~\cite{comm_spec,sysvar_spec}.
 
 \begin{table*}[t]
 \caption{핵심 seam 권한 구조 요약}
@@ -214,7 +222,7 @@ Decel effective result & CGW & effective seam & CGW & CGW & fail-safe 적용 후
 
 \begin{figure*}[t]
 \centering
-\placeholderfigure{54mm}{CAN 기반 상태 수집 경로와 Ethernet 기반 긴급 이벤트 유입 경로가 중앙의 V2X/ADAS 블록으로 모이고, 우측으로 BCM, IVI, CLU, HUD, AMP, Decel Assist가 분기되는 혼합 네트워크 전달 구조도를 배치한다. 관측 경로는 운영 경로와 병렬로 별도 표기한다.}
+\includegraphics[width=0.92\textwidth]{asset_16_network_message_flow.png}
 \caption{CAN/Ethernet 혼합 경고 전달 구조도}
 \label{fig:network_flow}
 \end{figure*}
@@ -233,15 +241,15 @@ Decel effective result & CGW & effective seam & CGW & CGW & fail-safe 적용 후
 
 \begin{figure*}[t]
 \centering
-\placeholderfigure{52mm}{좌측의 시험 입력 및 시나리오, 중앙의 CANoe SIL CAPL 논리 ECU군과 Validation Harness, 우측의 상태 변수·로그·단위시험/통합시험/시스템시험 결과 판정으로 이어지는 구현 및 시험 구성도를 배치한다.}
-\caption{CANoe SIL 구현 및 시험 구성도}
+\includegraphics[width=0.92\textwidth]{asset_23_diag_observability_layer.png}
+\caption{핵심 경고 판단과 진단·관측 계층 구성}
 \label{fig:canoe_impl}
 \end{figure*}
 
 \begin{figure*}[t]
 \centering
-\placeholderfigure{46mm}{Ambient\_TopView, Cluster\_Alert, Navigation\_Alert, V2X\_Ingress, Diagnostic\_Console 대표 화면 또는 병렬 캡처를 배치한다. 좌측에는 경고 출력 채널, 우측에는 V2X 입력 및 Diagnostic Console을 배치하여 입력-출력-관측 관계가 동시에 보이도록 구성한다.}
-\caption{대표 CANoe 패널 및 진단 콘솔 구성}
+\includegraphics[width=0.92\textwidth]{asset_35_panel_input_readback_contract.png}
+\caption{패널 입력과 상태 확인 구조}
 \label{fig:canoe_panels}
 \end{figure*}
 
@@ -286,7 +294,7 @@ Decel effective result & CGW & effective seam & CGW & CGW & fail-safe 적용 후
 
 정량 결과는 세 가지 핵심 지표를 중심으로 정리하였다. 첫째, V2X 긴급 이벤트 선택 정확도 [N1]\%는 IT\_006, ST\_016, ST\_017을 기준으로 유형, ETA, SourceID 규칙이 올바르게 적용되었는지를 보여준다~\cite{integration_test,system_test}. 둘째, 교차로·합류구간 통합 경고 성공률 [N2]\%는 IT\_018, ST\_022, ST\_023을 기준으로 긴급 접근 정보와 TTC 기반 위험이 단일 경고 및 감속 보조 요청으로 수렴하는지를 보여준다~\cite{integration_test,system_test}. 셋째, 복귀 안정성 준수율 [N3]\%은 IT\_009, ST\_035, ST\_036, ST\_045, ST\_046을 기준으로 timeout clear, fail-safe, 정상 복귀가 기준 시간과 상태 일관성을 만족하는지를 보여준다~\cite{integration_test,master_test_matrix,system_test}. 각 지표는 각각 $N1=(S_{sel}/T_{v2x})\times100$, $N2=(S_{int}/T_{int})\times100$, $N3=(S_{rec}/T_{rec})\times100$으로 정의하였다. 여기서 $S_{sel}$은 정상 선택 시나리오 수, $T_{v2x}$는 전체 V2X 선택 시나리오 수, $S_{int}$는 정상 통합 경고 시나리오 수, $T_{int}$는 전체 교차로·합류 시나리오 수, $S_{rec}$는 정상 복귀 시나리오 수, $T_{rec}$는 전체 복귀 시나리오 수를 의미한다.
 
-정량 지표의 집계 단위는 개별 신호나 개별 테스트 코드가 아니라 ``시나리오 단위 verdict''로 두었다. 이는 동일 경고 컨셉이 단위시험, 통합시험, 시스템시험에서 반복적으로 등장하더라도, 최종 해석은 기능 의미 단위로 수행해야 한다는 판단에 따른 것이다. 또한 각 지표는 owner-published seam과 시험 verdict를 함께 사용하도록 정의함으로써, 단순 PASS 수보다 기능 의미와 경계 조건을 동시에 읽을 수 있도록 하였다~\cite{comm_spec,master_test_matrix,system_test,system_vars,suite_policy}.
+정량 지표의 집계 단위는 개별 신호나 개별 테스트 코드가 아니라 ``시나리오 단위 verdict''로 두었다. 이는 동일 경고 컨셉이 단위시험, 통합시험, 시스템시험에서 반복적으로 등장하더라도, 최종 해석은 기능 의미 단위로 수행해야 한다는 판단에 따른 것이다. 또한 각 지표는 owner-published seam과 시험 verdict를 함께 사용하도록 정의함으로써, 단순 PASS 수보다 기능 의미와 경계 조건을 동시에 읽을 수 있도록 하였다~\cite{comm_spec,master_test_matrix,system_test,sysvar_spec,suite_policy}.
 
 \begin{table*}[t]
 \caption{대표 시험 시나리오 요약}
@@ -394,31 +402,31 @@ intacs, ``Training Center,'' available: \url{https://www.intacs.info/training-ce
 Vector, ``CANoe --- Comprehensive Development, Test and Analysis Environment,'' available: \url{https://www.vector.com/int/en/products/products-a-z/software/canoe/} (accessed 2026-03-18).
 
 \bibitem{func_def}
-현대모비스 PBL 팀, ``03\_Function\_definition.md,'' 버전 4.39, 2026-03-17.
+현대모비스 부트캠프 벡캔팀, ``03\_Function\_definition Excel,'' 버전 4.39, 2026-03-17.
 
 \bibitem{integration_test}
-현대모비스 PBL 팀, ``06\_Integration\_Test.md,'' 버전 4.23, 2026-03-17.
+현대모비스 부트캠프 벡캔팀, ``06\_Integration\_Test Excel,'' 버전 4.23, 2026-03-17.
 
 \bibitem{comm_spec}
-현대모비스 PBL 팀, ``0303\_Communication\_Specification.md,'' 버전 3.36, 2026-03-17.
+현대모비스 부트캠프 벡캔팀, ``0303\_Communication\_Specification Excel,'' 버전 3.36, 2026-03-17.
 
 \bibitem{hara}
-현대모비스 PBL 팀, ``00d\_HARA\_Worksheet.md,'' 버전 1.6, 2026-03-11.
+현대모비스 부트캠프 벡캔팀, ``00d\_HARA\_Worksheet Excel,'' 버전 1.6, 2026-03-11.
 
 \bibitem{master_test_matrix}
-현대모비스 PBL 팀, ``Test Matrix (00g\_Master\_Test\_Matrix.md),'' 버전 0.2, 2026-03-15.
+현대모비스 부트캠프 벡캔팀, ``Test Matrix (00g\_Master\_Test\_Matrix Excel),'' 버전 0.2, 2026-03-15.
 
 \bibitem{system_test}
-현대모비스 PBL 팀, ``07\_System\_Test.md,'' 버전 5.23, 2026-03-17.
+현대모비스 부트캠프 벡캔팀, ``07\_System\_Test Excel,'' 버전 5.23, 2026-03-17.
 
 \bibitem{sw_impl}
-현대모비스 PBL 팀, ``04\_SW\_Implementation.md,'' 버전 2.26, 2026-03-17.
+현대모비스 부트캠프 벡캔팀, ``04\_SW\_Implementation Excel,'' 버전 2.26, 2026-03-17.
 
 \bibitem{unit_test}
-현대모비스 PBL 팀, ``05\_Unit\_Test.md,'' 버전 2.26, 2026-03-17.
+현대모비스 부트캠프 벡캔팀, ``05\_Unit\_Test Excel,'' 버전 2.26, 2026-03-17.
 
 \bibitem{nw_flow}
-현대모비스 PBL 팀, ``0302\_NWflowDef.md,'' 버전 3.31, 2026-03-17.
+현대모비스 부트캠프 벡캔팀, ``0302\_NWflowDef Excel,'' 버전 3.31, 2026-03-17.
 
 \bibitem{v2x_evp_review}
 Ahmed Kamel et al., ``Vehicle-to-Everything (V2X) Communication for Emergency Vehicle Priority: A Comprehensive Review,'' available: \url{https://www.kamelrobotics.com/assets/projects/v2x-evp-review/Vehicle_to_Everything__V2X__Communication_for_Emergency_Vehicle_Priority__A_Comprehensive_Review.pdf} (accessed 2026-03-19).
@@ -436,22 +444,22 @@ Sensors, ``Vehicle Trajectory Prediction and Collision Warning via Fusion of Mul
 National Highway Traffic Safety Administration, ``Integrated Vehicle-Based Safety Systems Light Vehicle Field Operational Test Final Program Report,'' available: \url{https://rosap.ntl.bts.gov/view/dot/3973/dot_3973_DS1.pdf} (accessed 2026-03-19).
 
 \bibitem{proj_overview}
-현대모비스 PBL 팀, ``00\_Project\_Overview.md,'' 버전 0.5, 2026-03-17.
+현대모비스 부트캠프 벡캔팀, ``00\_Project\_Overview Excel,'' 버전 0.5, 2026-03-17.
 
 \bibitem{concept_design}
-현대모비스 PBL 팀, ``02\_Concept\_design.md,'' 버전 0.5, 2026-03-17.
+현대모비스 부트캠프 벡캔팀, ``02\_Concept\_design Excel,'' 버전 0.5, 2026-03-17.
 
 \bibitem{sysfunc_analysis}
-현대모비스 PBL 팀, ``0301\_SysFuncAnalysis.md,'' 버전 3.16, 2026-03-17.
+현대모비스 부트캠프 벡캔팀, ``0301\_SysFuncAnalysis Excel,'' 버전 3.16, 2026-03-17.
 
 \bibitem{sysvar_spec}
-현대모비스 PBL 팀, ``0304\_System\_Variables.md,'' 버전 3.10, 2026-03-17.
+현대모비스 부트캠프 벡캔팀, ``0304\_System\_Variables Excel,'' 버전 3.10, 2026-03-17.
 
 \bibitem{kiefer_ttc}
 R. J. Kiefer et al., ``Developing an inverse time-to-collision crash alert timing approach,'' \emph{Accident Analysis and Prevention}, vol. 37, no. 2, pp. 295--303, 2005. Available: \url{https://doi.org/10.1016/j.aap.2004.09.003} (accessed 2026-03-19).
 
 \bibitem{suite_policy}
-현대모비스 PBL 팀, ``canoe/tests/modules/test\_suites/README.md,'' active suite policy snapshot, 2026-03-21.
+현대모비스 부트캠프 벡캔팀, ``CANoe test suites 운영 기준,'' 2026-03-21.
 
 \end{thebibliography}
 

@@ -186,7 +186,7 @@ u_{t-1}, & T_{off} < R_t < T_{on}
 
 검증은 단위시험, 통합시험, 시스템시험으로 나누어 구성하였다. 단위시험은 V2X의 긴급 이벤트 유지와 timeout clear, ADAS의 위험도 산정과 경고 선택과 같이 개별 판단 규칙을 다룬다. 통합시험은 우선순위와 ETA/SourceID 규칙, timeout clear와 복귀, 객체 위험과 감속 보조 연계를 다룬다. 시스템시험은 외부 송신 주기, 연속 시나리오, fail-safe 복귀를 포함한 전체 흐름을 다룬다.
 
-추적성은 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`의 1:1 연결을 원칙으로 삼았다. 이를 위해 `01_Requirements.md`, `03_Function_definition.md`, `0302_NWflowDef.md`, `0303_Communication_Specification.md`, `0304_System_Variables.md`, `04_SW_Implementation.md`, `05_Unit_Test.md`, `06_Integration_Test.md`, `07_System_Test.md`를 연결하고, 추가로 `00d_HARA_Worksheet`와 `00g_Master_Test_Matrix`를 통해 상위 위험 항목과 시험 기준을 함께 관리하였다.
+추적성은 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`의 1:1 연결을 원칙으로 삼았다. 이를 위해 `01_Requirements Excel`, `03_Function_definition Excel`, `0302_NWflowDef Excel`, `0303_Communication_Specification Excel`, `0304_System_Variables Excel`, `04_SW_Implementation Excel`, `05_Unit_Test Excel`, `06_Integration_Test Excel`, `07_System_Test Excel`을 연결하고, 추가로 `00d_HARA_Worksheet Excel`와 `00g_Master_Test_Matrix Excel`를 통해 상위 위험 항목과 시험 기준을 함께 관리하였다.
 
 특히 본 연구의 시험 구조는 V2X의 우선순위 선택 규칙과 ADAS의 계층형 중재 규칙이 실제 시험 항목으로 직접 이어지도록 구성되었다는 점에서 의미가 있다. 예를 들어 ETA와 SourceID에 따른 긴급 이벤트 선택은 통합시험과 시스템시험에서 반복적으로 검증되며[6][10], timeout clear와 fail-safe 역시 별도의 연속 시나리오로 유지된다[6][9][10]. 따라서 본 연구의 검증 구성은 단순 기능 나열이 아니라, “정규화된 긴급 이벤트가 어떤 규칙으로 선택되고, 그 결과가 어떤 경고와 복귀 상태로 이어지는가”를 반복해서 확인하는 구조라고 볼 수 있다.
 
@@ -261,22 +261,22 @@ u_{t-1}, & T_{off} < R_t < T_{on}
 - [2] intacs, `SPICE Center`, available: `https://intacs.info/spice-center` (accessed 2026-03-18).
 - [3] intacs, `Training Center`, available: `https://www.intacs.info/training-center` (accessed 2026-03-18).
 - [4] Vector, `CANoe — Comprehensive Development, Test and Analysis Environment`, available: `https://www.vector.com/int/en/products/products-a-z/software/canoe/` (accessed 2026-03-18).
-- [5] 현대모비스 PBL 팀, `03_Function_definition.md`, 버전 4.39, 2026-03-17.
-- [6] 현대모비스 PBL 팀, `06_Integration_Test.md`, 버전 4.23, 2026-03-17.
-- [7] 현대모비스 PBL 팀, `0303_Communication_Specification.md`, 버전 3.36, 2026-03-17.
-- [8] 현대모비스 PBL 팀, `00d_HARA_Worksheet.md`, 버전 1.6, 2026-03-11.
-- [9] 현대모비스 PBL 팀, `00g_Master_Test_Matrix.md`, 버전 0.2, 2026-03-15.
-- [10] 현대모비스 PBL 팀, `07_System_Test.md`, 버전 5.23, 2026-03-17.
-- [11] 현대모비스 PBL 팀, `04_SW_Implementation.md`, 버전 2.26, 2026-03-17.
-- [12] 현대모비스 PBL 팀, `05_Unit_Test.md`, 버전 2.26, 2026-03-17.
-- [13] 현대모비스 PBL 팀, `0302_NWflowDef.md`, 버전 3.31, 2026-03-17.
+- [5] 현대모비스 부트캠프 벡캔팀, `03_Function_definition Excel`, 버전 4.39, 2026-03-17.
+- [6] 현대모비스 부트캠프 벡캔팀, `06_Integration_Test Excel`, 버전 4.23, 2026-03-17.
+- [7] 현대모비스 부트캠프 벡캔팀, `0303_Communication_Specification Excel`, 버전 3.36, 2026-03-17.
+- [8] 현대모비스 부트캠프 벡캔팀, `00d_HARA_Worksheet Excel`, 버전 1.6, 2026-03-11.
+- [9] 현대모비스 부트캠프 벡캔팀, `00g_Master_Test_Matrix Excel`, 버전 0.2, 2026-03-15.
+- [10] 현대모비스 부트캠프 벡캔팀, `07_System_Test Excel`, 버전 5.23, 2026-03-17.
+- [11] 현대모비스 부트캠프 벡캔팀, `04_SW_Implementation Excel`, 버전 2.26, 2026-03-17.
+- [12] 현대모비스 부트캠프 벡캔팀, `05_Unit_Test Excel`, 버전 2.26, 2026-03-17.
+- [13] 현대모비스 부트캠프 벡캔팀, `0302_NWflowDef Excel`, 버전 3.31, 2026-03-17.
 - [14] Ahmed Kamel et al., `Vehicle-to-Everything (V2X) Communication for Emergency Vehicle Priority: A Comprehensive Review`, available: `https://www.kamelrobotics.com/assets/projects/v2x-evp-review/Vehicle_to_Everything__V2X__Communication_for_Emergency_Vehicle_Priority__A_Comprehensive_Review.pdf` (accessed 2026-03-19).
 - [15] Euro NCAP, `TEST PROTOCOL – AEB Car-to-Car systems v4.3.1`, available: `https://www.euroncap.com/media/80155/euro-ncap-aeb-c2c-test-protocol-v431.pdf` (accessed 2026-03-19).
 - [16] National Highway Traffic Safety Administration, `Crash Avoidance Test Reference Guide, Volume IV, Version 1: Crash Avoidance Database`, available: `https://www.nhtsa.gov/sites/nhtsa.gov/files/2025-05/crash-avoidance-test-reference-guide-volume-4-2024.pdf` (accessed 2026-03-19).
 - [17] Sensors, `Vehicle Trajectory Prediction and Collision Warning via Fusion of Multisensors and Wireless Vehicular Communications`, available: `https://www.mdpi.com/1424-8220/20/1/288` (accessed 2026-03-19).
 - [18] National Highway Traffic Safety Administration, `Integrated Vehicle-Based Safety Systems Light Vehicle Field Operational Test Final Program Report`, available: `https://rosap.ntl.bts.gov/view/dot/3973/dot_3973_DS1.pdf` (accessed 2026-03-19).
-- [19] 현대모비스 PBL 팀, `00_Project_Overview.md`, 버전 0.5, 2026-03-17.
-- [20] 현대모비스 PBL 팀, `02_Concept_design.md`, 버전 0.5, 2026-03-17.
-- [21] 현대모비스 PBL 팀, `0301_SysFuncAnalysis.md`, 버전 3.16, 2026-03-17.
-- [22] 현대모비스 PBL 팀, `0304_System_Variables.md`, 버전 3.10, 2026-03-17.
+- [19] 현대모비스 부트캠프 벡캔팀, `00_Project_Overview Excel`, 버전 0.5, 2026-03-17.
+- [20] 현대모비스 부트캠프 벡캔팀, `02_Concept_design Excel`, 버전 0.5, 2026-03-17.
+- [21] 현대모비스 부트캠프 벡캔팀, `0301_SysFuncAnalysis Excel`, 버전 3.16, 2026-03-17.
+- [22] 현대모비스 부트캠프 벡캔팀, `0304_System_Variables Excel`, 버전 3.10, 2026-03-17.
 - [23] R. J. Kiefer et al., `Developing an inverse time-to-collision crash alert timing approach`, Accident Analysis and Prevention, Vol. 37, No. 2, pp. 295-303, 2005, available: `https://doi.org/10.1016/j.aap.2004.09.003` (accessed 2026-03-19).
