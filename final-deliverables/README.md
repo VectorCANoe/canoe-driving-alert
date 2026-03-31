@@ -14,7 +14,7 @@ Use this location for the six reviewer-facing submission assets only:
 Current status:
 
 - `01_FINAL_REPORT.pdf`: fixed
-- `02_PRESENTATION.pptx`: fixed local mirror, online review link is exposed from the main README
+- `02_PRESENTATION.pptx`: fixed local mirror, online review link is the Google Slides URL exposed from the main README
 - `03_SHORT_PAPER.pdf`: source finalized, waiting for PDF export
 - `04_ECU_BOOK.pdf`: fixed
 - `05_PROJECT_RESULT_2-2.xlsx`: fixed alias mapped from `driving-alert-workproducts/excel/00~07_Docs.xlsx`
