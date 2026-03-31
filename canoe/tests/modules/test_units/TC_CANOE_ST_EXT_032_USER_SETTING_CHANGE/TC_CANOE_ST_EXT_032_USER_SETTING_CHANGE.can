@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_EXT_032_USER_SETTING_CHANGE()
 {
+  testStepPass("doc-trace", "ST_032 - 표시 설정과 음량 설정 변경이 경고 안내 정책에 즉시 반영되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -33,5 +35,6 @@ export testcase TC_CANOE_ST_EXT_032_USER_SETTING_CHANGE()
   if (!waitForObservedFailSafe(1200)) { resetValidationHarnessIfNeeded(); return; }
   assertIntEq("user-setting-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
+  testStepPass("doc-pass", "PASS - ST_032 - 표시 설정과 음량 설정 변경이 경고 안내 정책에 즉시 반영되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

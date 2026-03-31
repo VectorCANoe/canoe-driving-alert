@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_CORE_013_POLICE_DIRECTION_RIGHT()
 {
+  testStepPass("doc-trace", "ST_013 - 경찰 긴급 접근 방향(앞/좌/우/후)에 따라 클러스터와 전면 표시의 방향 정보가 정확히 일치하는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -32,5 +34,6 @@ export testcase TC_CANOE_ST_CORE_013_POLICE_DIRECTION_RIGHT()
   assertIntEq("warning-text-code", deriveExpectedEmergencyWarningCode(1, 2, 12, 20), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("render-direction", 2, (long)@UiRender::renderDirection, "renderDirection");
 
+  testStepPass("doc-pass", "PASS - ST_013 - 경찰 긴급 접근 방향(앞/좌/우/후)에 따라 클러스터와 전면 표시의 방향 정보가 정확히 일치하는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

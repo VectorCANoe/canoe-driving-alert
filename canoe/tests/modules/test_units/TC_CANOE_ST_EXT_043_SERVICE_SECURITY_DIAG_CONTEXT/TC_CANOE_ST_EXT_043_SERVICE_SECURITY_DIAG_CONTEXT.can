@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_EXT_043_SERVICE_SECURITY_DIAG_CONTEXT()
 {
+  testStepPass("doc-trace", "ST_043 - 차량 서비스, 보안, 진단 상태 변화가 시스템 시나리오에서 경고 정보 전달 가용성, fail-safe 정책, 외부 진단기 확인 결과에 일관되게 반영되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   // Verify that ST_043 remains explainable by service, security, and external diagnostic context.
   if (!resetValidationHarnessIfNeeded())
   {
@@ -49,5 +51,6 @@ export testcase TC_CANOE_ST_EXT_043_SERVICE_SECURITY_DIAG_CONTEXT()
   if (!waitForObservedFailSafe(1200)) { resetValidationHarnessIfNeeded(); return; }
   assertIntMin("fail-safe-mode", 2, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
+  testStepPass("doc-pass", "PASS - ST_043 - 차량 서비스, 보안, 진단 상태 변화가 시스템 시나리오에서 경고 정보 전달 가용성, fail-safe 정책, 외부 진단기 확인 결과에 일관되게 반영되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

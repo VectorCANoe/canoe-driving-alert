@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_EXT_042_DISPLAY_CHANNELS()
 {
+  testStepPass("doc-trace", "IT_042 - 표시 채널 출력 및 서비스 상태 연계 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(220, 900, 1300)) { return; }
   if (!waitForStableDisplayPolicy(2, 1, 1, 1, 1200)) { resetValidationHarnessIfNeeded(); return; }
@@ -23,5 +25,6 @@ export testcase TC_CANOE_IT_EXT_042_DISPLAY_CHANNELS()
   assertIntEq("it-distance-display-distance", 180, (long)@CoreState::emergencyDistanceM, "emergencyDistanceM");
   assertIntEq("it-distance-display-code", deriveExpectedEmergencyWarningCode(1, 2, 9, 72), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("it-distance-display-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+  testStepPass("doc-pass", "PASS - IT_042 - 표시 채널 출력 및 서비스 상태 연계 통합 검증");
   resetValidationHarnessIfNeeded();
 }

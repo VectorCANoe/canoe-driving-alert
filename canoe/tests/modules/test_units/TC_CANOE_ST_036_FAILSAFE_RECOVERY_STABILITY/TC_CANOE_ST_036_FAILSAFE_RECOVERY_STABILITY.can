@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_036_FAILSAFE_RECOVERY_STABILITY()
 {
+  testStepPass("doc-trace", "ST_036 - fail-safe 해제 후 경고 경로가 정상 상태로 안정적으로 복귀하는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -28,5 +30,6 @@ export testcase TC_CANOE_ST_036_FAILSAFE_RECOVERY_STABILITY()
   assertIntEq("delay-stability-recovery-observed-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
   assertIntEq("delay-stability-recovery-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - ST_036 - fail-safe 해제 후 경고 경로가 정상 상태로 안정적으로 복귀하는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

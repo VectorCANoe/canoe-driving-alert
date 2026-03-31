@@ -60,6 +60,19 @@ void mirrorLastEmergencyRx(dword tickValue)
   @CoreState::lastEmergencyRxMs = tickValue;
 }
 
+int validationCompatIngressEnabled()
+{
+  if (((int)@Test::nativeExecTierCode) > 0)
+  {
+    return 1;
+  }
+  if (clampRange((int)@Test::scenarioActiveId, 0, 255) == 100)
+  {
+    return 1;
+  }
+  return 0;
+}
+
 void publishNormalizedEmergencyIngress()
 {
   int manualAlertOverride;
@@ -83,35 +96,26 @@ void publishNormalizedEmergencyIngress()
   if (manualAlertOverride > 0)
   {
     compatEmergencyType = clampRange((int)@Inject::emergencyType, 0, 2);
-    if (compatEmergencyType == 0)
-    {
-      compatEmergencyType = clampRange(gActiveEmergencyType, 0, 2);
-    }
     compatAlertState = ((((int)@Inject::emergencyActiveCmd) > 0) && compatEmergencyType > 0) ? 1 : 0;
-    if (compatAlertState == 0)
-    {
-      compatAlertState = (compatEmergencyType > 0) ? 1 : 0;
-    }
     if (compatAlertState == 1)
     {
       compatDirection = clampRange((int)@Inject::emergencyDirection, 0, 3);
       compatEta = clampRange((int)@Inject::emergencyEtaSec, 0, 255);
       compatSourceId = clampRange((int)@Inject::emergencySourceId, 0, 255);
-      if (compatEta == 0)
-      {
-        compatEta = clampRange(gActiveEta, 0, 255);
-      }
-      if (compatSourceId == 0)
-      {
-        compatSourceId = clampRange(gActiveSourceId, 0, 255);
-      }
     }
     else
     {
       compatDirection = 0;
-      compatEta = 255;
-      compatSourceId = 255;
+      compatEta = 0;
+      compatSourceId = 0;
     }
+  }
+
+  if (compatAlertState != 1 || compatEmergencyType <= 0)
+  {
+    compatDirection = 0;
+    compatEta = 0;
+    compatSourceId = 0;
   }
 
   @CoreState::emergencyIngressDirection = compatDirection;
@@ -247,15 +251,7 @@ void updateEmergencyContext()
   if (manualAlertOverride > 0)
   {
     donorEmergencyType = clampRange((int)@Inject::emergencyType, 0, 2);
-    if (donorEmergencyType == 0)
-    {
-      donorEmergencyType = clampRange(gActiveEmergencyType, 0, 2);
-    }
     donorAlertState = (((int)@Inject::emergencyActiveCmd) > 0) ? 1 : 0;
-    if (donorAlertState == 0)
-    {
-      donorAlertState = (donorEmergencyType > 0) ? 1 : 0;
-    }
     contextValue = (donorAlertState == 1) ? donorEmergencyType : 0;
   }
   if (contextValue < 0 || contextValue > 2)
@@ -385,13 +381,13 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       else
       {
         logAlertIngressAccepted(address, port);
+        typeAndDirection = ethGetU8(buffer, 0);
+        applyEmergencyIngress(typeAndDirection & 0x3,
+                              ethGetU8(buffer, 3) & 0x1,
+                              ethGetU8(buffer, 2),
+                              ethGetU8(buffer, 1),
+                              (typeAndDirection >> 2) & 0x3);
       }
-      typeAndDirection = ethGetU8(buffer, 0);
-      applyEmergencyIngress(typeAndDirection & 0x3,
-                            ethGetU8(buffer, 3) & 0x1,
-                            ethGetU8(buffer, 2),
-                            ethGetU8(buffer, 1),
-                            (typeAndDirection >> 2) & 0x3);
     }
   }
 
@@ -419,6 +415,12 @@ void publishActiveEmergencyToV2X()
     compatEta = gActiveEta;
     compatSourceId = gActiveSourceId;
     compatAlertState = (gActiveEmergencyType > 0) ? 1 : 0;
+    if (compatAlertState != 1 || compatEmergencyType <= 0)
+    {
+      compatEmergencyDirection = 0;
+      compatEta = 0;
+      compatSourceId = 0;
+    }
     @V2X::emergencyType = compatEmergencyType;
     @V2X::emergencyDirection = compatEmergencyDirection;
     @V2X::eta = compatEta;
@@ -428,27 +430,22 @@ void publishActiveEmergencyToV2X()
   else
   {
     compatEmergencyType = clampRange((int)@Inject::emergencyType, 0, 2);
-    if (compatEmergencyType == 0)
-    {
-      compatEmergencyType = clampRange(gActiveEmergencyType, 0, 2);
-    }
     compatEmergencyDirection = clampRange((int)@Inject::emergencyDirection, 0, 3);
     compatEta = clampRange((int)@Inject::emergencyEtaSec, 0, 255);
     compatSourceId = clampRange((int)@Inject::emergencySourceId, 0, 255);
     compatAlertState = ((((int)@Inject::emergencyActiveCmd) > 0) && compatEmergencyType > 0) ? 1 : 0;
-    if (compatEta == 0)
+    if (compatAlertState != 1 || compatEmergencyType <= 0)
     {
-      compatEta = clampRange(gActiveEta, 0, 255);
-    }
-    if (compatSourceId == 0)
-    {
-      compatSourceId = clampRange(gActiveSourceId, 0, 255);
-    }
-    if (compatAlertState == 0)
-    {
-      compatAlertState = (compatEmergencyType > 0) ? 1 : 0;
+      compatEmergencyDirection = 0;
+      compatEta = 0;
+      compatSourceId = 0;
     }
   }
+  @V2X::emergencyType = compatEmergencyType;
+  @V2X::emergencyDirection = compatEmergencyDirection;
+  @V2X::eta = compatEta;
+  @V2X::sourceId = compatSourceId;
+  @V2X::alertState = compatAlertState;
   @V2X::v2xFrame = (compatAlertState == 1) ? getCompatV2xFrame(compatEmergencyType, compatEta) : 0;
   @Infotainment::emergencySound = (compatAlertState == 1 && compatEmergencyType > 0) ? 1 : 0;
   publishNormalizedEmergencyIngress();
@@ -467,6 +464,15 @@ void syncLegacyDispatchInputs()
   direction = clampRange((int)@Test::compatEmergencyDirection, 0, 3);
   eta = clampRange((int)@Test::compatEmergencyEta, 0, 255);
   sourceId = clampRange((int)@Test::compatEmergencySourceId, 0, 255);
+
+  if (validationCompatIngressEnabled() == 0)
+  {
+    policeDispatch = 0;
+    ambulanceDispatch = 0;
+    direction = 0;
+    eta = 0;
+    sourceId = 0;
+  }
 
   if (ambulanceDispatch == 1)
   {
@@ -523,6 +529,41 @@ void syncLegacyDispatchInputs()
 
   gPrevPoliceDispatch = policeDispatch;
   gPrevAmbDispatch = ambulanceDispatch;
+}
+
+void clearInactiveEmergencyLatchFast(dword nowMs)
+{
+  if (gActiveEmergencyType == 0)
+  {
+    return;
+  }
+
+  if ((nowMs - gActiveLastRxMs) < 200)
+  {
+    return;
+  }
+
+  if ((((int)@Inject::emergencyActiveCmd) != 0) &&
+      (clampRange((int)@Inject::emergencyType, 0, 2) > 0))
+  {
+    return;
+  }
+
+  if ((validationCompatIngressEnabled() == 1) &&
+      ((((int)@Test::compatPoliceDispatch) > 0) ||
+       (((int)@Test::compatAmbulanceDispatch) > 0)))
+  {
+    return;
+  }
+
+  if (((int)@Core::warningState) != 0)
+  {
+    return;
+  }
+
+  clearEmergencyState();
+  publishActiveEmergencyToV2X();
+  updateEmergencyContext();
 }
 
 void publishTransportFrames()
@@ -609,6 +650,12 @@ void recordAlertEvent()
   }
 }
 
+void refreshManualEmergencyMirrors()
+{
+  publishActiveEmergencyToV2X();
+  updateEmergencyContext();
+}
+
 on start
 {
   gEthSocket = ethOpenBackboneReceiverSocket(getV2xLocalIp());
@@ -662,6 +709,36 @@ on start
   setTimer(tEventTrace100, 100);
   setTimer(tTransport100, 100);
   write("[V2X] start");
+}
+
+on sysvar Inject::manualAlertOverrideCmd
+{
+  refreshManualEmergencyMirrors();
+}
+
+on sysvar Inject::emergencyActiveCmd
+{
+  refreshManualEmergencyMirrors();
+}
+
+on sysvar Inject::emergencyType
+{
+  refreshManualEmergencyMirrors();
+}
+
+on sysvar Inject::emergencyDirection
+{
+  refreshManualEmergencyMirrors();
+}
+
+on sysvar Inject::emergencyEtaSec
+{
+  refreshManualEmergencyMirrors();
+}
+
+on sysvar Inject::emergencySourceId
+{
+  refreshManualEmergencyMirrors();
 }
 
 /* Legacy panel compat: dispatch-level sysvar inputs only.
@@ -741,6 +818,7 @@ on timer tRxCycle
   }
 
   updateEmergencyContext();
+  clearInactiveEmergencyLatchFast(nowMs);
   setTimer(tRxCycle, 10);
 }
 

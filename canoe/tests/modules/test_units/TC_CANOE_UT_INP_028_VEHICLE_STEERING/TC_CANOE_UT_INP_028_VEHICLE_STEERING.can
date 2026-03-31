@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_INP_028_VEHICLE_STEERING()
 {
+  testStepPass("doc-trace", "UT_028 - 차량 속도(km/h), 주행 상태, 조향 각도 입력 정보를 생성");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -49,5 +51,6 @@ export testcase TC_CANOE_UT_INP_028_VEHICLE_STEERING()
   assertIntEq("s218_steeringInputNorm", 1, (long)@Core::steeringInputNorm, "steeringInputNorm");
   assertIntEq("s218_vehicleSpeedNorm", 68, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
 
+  testStepPass("doc-pass", "PASS - UT_028 - 차량 속도(km/h), 주행 상태, 조향 각도 입력 정보를 생성");
   resetValidationHarnessIfNeeded();
 }

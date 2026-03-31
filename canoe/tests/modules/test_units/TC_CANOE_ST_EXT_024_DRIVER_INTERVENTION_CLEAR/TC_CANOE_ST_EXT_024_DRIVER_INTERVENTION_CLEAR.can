@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_EXT_024_DRIVER_INTERVENTION_CLEAR()
 {
+  testStepPass("doc-trace", "ST_024 - 자동 감속 보조 활성 상태에서 운전자 개입 시 감속 보조 요청과 경고 상태가 함께 해제되는지 확인한다. (SIL Scenario 15/16/17/19)");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(17, 900, 1300)) { return; }
   if (!waitForObservedDecelState(0, 0, 1, 800) ||
@@ -18,5 +20,6 @@ export testcase TC_CANOE_ST_EXT_024_DRIVER_INTERVENTION_CLEAR()
   assertIntEq("st-driver-intervention-decel", 0, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
   assertIntEq("st-driver-intervention-gate", 1, (long)@Test::obsDecelGateReason, "ethDecelGateReason");
   assertIntEq("st-driver-intervention-emergency-clear", 0, (long)@Test::obsEmergencyContext, "ethEmergencyContext");
+  testStepPass("doc-pass", "PASS - ST_024 - 자동 감속 보조 활성 상태에서 운전자 개입 시 감속 보조 요청과 경고 상태가 함께 해제되는지 확인한다. (SIL Scenario 15/16/17/19)");
   resetValidationHarnessIfNeeded();
 }

@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_EXT_046_FAILSAFE_RECOVERY()
 {
+  testStepPass("doc-trace", "ST_046 - 전원 ON 후 정상 주행 중 경고 전달 이상이 발생하고 fail-safe 진입 후 복귀, 정지, 전원 OFF까지 연속 시나리오에서 시스템이 일관되게 동작하는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -28,5 +30,6 @@ export testcase TC_CANOE_ST_EXT_046_FAILSAFE_RECOVERY()
   assertIntEq("fail-safe-observed-recovered", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
   assertIntEq("fail-safe-recovered", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - ST_046 - 전원 ON 후 정상 주행 중 경고 전달 이상이 발생하고 fail-safe 진입 후 복귀, 정지, 전원 OFF까지 연속 시나리오에서 시스템이 일관되게 동작하는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

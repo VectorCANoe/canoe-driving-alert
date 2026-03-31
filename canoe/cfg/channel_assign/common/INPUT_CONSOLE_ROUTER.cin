@@ -54,6 +54,36 @@ void clearInputConsoleManualCompat()
   @Test::compatEmergencySourceId = 255;
 }
 
+void resetInputConsoleManualBaseline()
+{
+  @Cmd::ignitionCmd = 0;
+  @Cmd::driveStateCmd = 0;
+  @Cmd::vehicleSpeedCmd = 0;
+  @Cmd::throttlePedalPct = 0;
+  @Cmd::brakePedalPct = 0;
+  @Cmd::steeringAngleCmd = 0;
+  @Cmd::cruiseStateCmd = 0;
+  @Cmd::cruiseSetSpeedCmd = 0;
+  @Cmd::ambientModeCmd = 0;
+  @Body::ambientMode = 0;
+  @Cmd::doorLockCmd = 0;
+  @Cmd::doorOpenCmd = 0;
+  @Cmd::windowCmd = 0;
+  @Cmd::wiperCmd = 0;
+  @Cmd::turnSignalCmd = 0;
+  @Inject::crossOn = 0;
+  @Inject::crossOff = 0;
+  @Inject::emergencyActiveCmd = 0;
+  @Inject::emergencyType = 0;
+  @Inject::emergencyDirection = 0;
+  @Inject::emergencyEtaSec = 0;
+  @Inject::emergencySourceId = 0;
+  @Test::driverBeltOff = 0;
+  @Test::passengerBeltOff = 0;
+  @Test::seatBeltOverride = 0;
+  clearInputConsoleManualCompat();
+}
+
 void publishInputConsoleManualCompat()
 {
   int policePos;
@@ -608,6 +638,10 @@ on sysvar Inject::emergencyOff
     return;
   }
   @Inject::emergencyActiveCmd = 0;
+  @Inject::emergencyType = 0;
+  @Inject::emergencyDirection = 0;
+  @Inject::emergencyEtaSec = 0;
+  @Inject::emergencySourceId = 0;
   @Inject::emergencyOff = 0;
   publishInputConsoleManualCompat();
 }

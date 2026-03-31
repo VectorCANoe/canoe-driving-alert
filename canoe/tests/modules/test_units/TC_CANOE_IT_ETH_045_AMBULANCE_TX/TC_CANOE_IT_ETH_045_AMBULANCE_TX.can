@@ -15,6 +15,8 @@ variables
 */
 export testcase TC_CANOE_IT_ETH_045_AMBULANCE_TX()
 {
+  testStepPass("doc-trace", "IT_045 - 구급 긴급 알림 송신 경로 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -39,5 +41,6 @@ export testcase TC_CANOE_IT_ETH_045_AMBULANCE_TX()
   assertIntEq("it-ambulance-tx-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
   assertIntEq("it-ambulance-tx-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
+  testStepPass("doc-pass", "PASS - IT_045 - 구급 긴급 알림 송신 경로 통합 검증");
   resetValidationHarnessIfNeeded();
 }

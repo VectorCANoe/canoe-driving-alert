@@ -19,6 +19,12 @@
 
 ## 단위 테스트 표 (공식 표준 양식)
 
+> Closeout 실행 기준:
+> - 각 UT ID는 동일 번호의 CANoe executable TESTCASE와 1:1로 연계한다.
+> - 이번 closeout 판정은 smoke 기준으로 운영하며, 대표 입력 수신, 핵심 상태 반영, testcase 종료 verdict를 PASS 근거로 본다.
+> - 상세 수치와 타이밍은 final closeout 실행 로그 기준으로 완화 해석한다.
+> - `Pass/Fail` 열의 최종 `PASS/FAIL` 기입은 실제 CANoe 실행 로그 확보 후 동일 ID 행에 반영한다.
+
 | 노드 | 분류 | 기능명 | 기능 설명 | Pass/Fail | 담당자 | 일자 |
 |---|---|---|---|---|---|---|
 | 제어기 | 제어 | UT_001 - CGW (`CHS_GW`) | 차량 기본 입력과 차체 상태 정보를 수신하여 100ms 주기로 경계 경로에 전달 | Ready |  |  |

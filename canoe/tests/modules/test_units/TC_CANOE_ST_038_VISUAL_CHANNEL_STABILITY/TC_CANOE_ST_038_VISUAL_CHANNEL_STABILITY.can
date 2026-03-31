@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_038_VISUAL_CHANNEL_STABILITY()
 {
+  testStepPass("doc-trace", "ST_038 - 시각 우선 경고 모드에서 팝업 우선순위와 클러스터 동기가 안정적으로 유지되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -32,5 +34,6 @@ export testcase TC_CANOE_ST_038_VISUAL_CHANNEL_STABILITY()
   assertIntEq("channel-contention-cluster-sync", 1, (long)@CoreState::clusterSyncState, "clusterSyncState");
   assertIntEq("channel-contention-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - ST_038 - 시각 우선 경고 모드에서 팝업 우선순위와 클러스터 동기가 안정적으로 유지되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

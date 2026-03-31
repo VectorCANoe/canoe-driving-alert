@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_CORE_021_EMERGENCY_CLEAR_RESTORE()
 {
+  testStepPass("doc-trace", "ST_021 - 긴급 경고 종료 후 구간 경고가 여전히 유효하면 이전 구간 경고 맥락이 안전하게 복원되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -30,5 +32,6 @@ export testcase TC_CANOE_ST_CORE_021_EMERGENCY_CLEAR_RESTORE()
   assertIntEq("emergency-context-observed-cleared", 0, (long)@Test::obsEmergencyContext, "ethEmergencyContext");
   assertIntEq("emergency-context-cleared", 0, (long)@Core::emergencyContext, "emergencyContext");
 
+  testStepPass("doc-pass", "PASS - ST_021 - 긴급 경고 종료 후 구간 경고가 여전히 유효하면 이전 구간 경고 맥락이 안전하게 복원되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

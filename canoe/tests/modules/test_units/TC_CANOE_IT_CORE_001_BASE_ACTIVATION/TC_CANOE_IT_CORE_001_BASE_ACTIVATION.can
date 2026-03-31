@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_CORE_001_BASE_ACTIVATION()
 {
+  testStepPass("doc-trace", "IT_001 - 주행 상태 변화에 따른 기본 경고 활성, 비활성, 해제 동작 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -70,5 +72,6 @@ export testcase TC_CANOE_IT_CORE_001_BASE_ACTIVATION()
   assertIntEq("guard-alert-type", 3, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntMin("duplicate-popup-guard", 1, (long)@CoreState::duplicatePopupGuard, "duplicatePopupGuard");
 
+  testStepPass("doc-pass", "PASS - IT_001 - 주행 상태 변화에 따른 기본 경고 활성, 비활성, 해제 동작 통합 검증");
   resetValidationHarnessIfNeeded();
 }

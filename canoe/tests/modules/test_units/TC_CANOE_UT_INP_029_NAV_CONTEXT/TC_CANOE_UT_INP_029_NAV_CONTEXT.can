@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_INP_029_NAV_CONTEXT()
 {
+  testStepPass("doc-trace", "UT_029 - 구간, 방향, 거리(m), 제한속도(km/h) 입력 정보를 생성");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -49,5 +51,6 @@ export testcase TC_CANOE_UT_INP_029_NAV_CONTEXT()
 
   assertIntEq("s7_failSafeMode", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - UT_029 - 구간, 방향, 거리(m), 제한속도(km/h) 입력 정보를 생성");
   resetValidationHarnessIfNeeded();
 }

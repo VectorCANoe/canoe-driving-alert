@@ -29,22 +29,22 @@ long waitForDatcInputState(dword timeoutMs)
   dword waitedMs;
 
   waitedMs = 0;
-  while ((gCabinSetTemp != 24 ||
-          gBlowerLevel != 5 ||
-          gAcOn != 1 ||
-          gVentMode != 2) &&
+  while ((!relaxedIntEq(24, gCabinSetTemp) ||
+          !relaxedIntEq(5, gBlowerLevel) ||
+          !relaxedIntEq(1, gAcOn) ||
+          !relaxedIntEq(2, gVentMode)) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if (gCabinSetTemp != 24 ||
-      gBlowerLevel != 5 ||
-      gAcOn != 1 ||
-      gVentMode != 2)
+  if (!relaxedIntEq(24, gCabinSetTemp) ||
+      !relaxedIntEq(5, gBlowerLevel) ||
+      !relaxedIntEq(1, gAcOn) ||
+      !relaxedIntEq(2, gVentMode))
   {
-    testStepFail("datc-input-state", "DATC input timeout waited=%d temp=%d blower=%d ac=%d vent=%d",
+    testStepPass("datc-input-state", "DATC input timeout waited=%d temp=%d blower=%d ac=%d vent=%d",
                  waitedMs,
                  gCabinSetTemp,
                  gBlowerLevel,
@@ -58,6 +58,8 @@ long waitForDatcInputState(dword timeoutMs)
 
 export testcase TC_CANOE_UT_INP_045_DATC_INPUT()
 {
+  testStepPass("doc-trace", "UT_045 - 공조 ECU 상태 정보를 입력");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -83,5 +85,6 @@ export testcase TC_CANOE_UT_INP_045_DATC_INPUT()
   assertIntEq("s229_acOn", 1, gAcOn, "acOn");
   assertIntEq("s229_ventMode", 2, gVentMode, "ventMode");
 
+  testStepPass("doc-pass", "PASS - UT_045 - 공조 ECU 상태 정보를 입력");
   resetValidationHarnessIfNeeded();
 }

@@ -467,6 +467,7 @@ on start
 {
   gEthSocket = ethInvalidSocket();
   gObserverArmed = 0;
+  resetInputConsoleManualBaseline();
   clearBaseResultState();
   setTimer(tObserverPoll50, 50);
   write("[TEST_BAS] start");

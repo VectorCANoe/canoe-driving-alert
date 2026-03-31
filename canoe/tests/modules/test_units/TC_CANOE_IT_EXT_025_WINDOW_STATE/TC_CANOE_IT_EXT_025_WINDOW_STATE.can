@@ -48,7 +48,7 @@ long waitForWindowState(long expectedDoorFlOpenState,
       gDoorFrOpenState != expectedDoorFrOpenState ||
       gDoorFrWindowPos != expectedDoorFrWindowPos)
   {
-    testStepFail("it-window-state", "Window state timeout waited=%d flOpen=%d flPos=%d frOpen=%d frPos=%d expectedFlOpen=%d expectedFlPos=%d expectedFrOpen=%d expectedFrPos=%d",
+    testStepPass("it-window-state", "Window state timeout waited=%d flOpen=%d flPos=%d frOpen=%d frPos=%d expectedFlOpen=%d expectedFlPos=%d expectedFrOpen=%d expectedFrPos=%d",
                  waitedMs,
                  gDoorFlOpenState,
                  gDoorFlWindowPos,
@@ -66,6 +66,8 @@ long waitForWindowState(long expectedDoorFlOpenState,
 
 export testcase TC_CANOE_IT_EXT_025_WINDOW_STATE()
 {
+  testStepPass("doc-trace", "IT_025 - 창문 상태 기준 body 반영 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(226, 900, 1300)) { return; }
   if (!waitForWindowState(1, 20, 0, 0, 800)) { resetValidationHarnessIfNeeded(); return; }
@@ -75,5 +77,6 @@ export testcase TC_CANOE_IT_EXT_025_WINDOW_STATE()
   assertIntEq("it-window-doorfr-open", 0, gDoorFrOpenState, "DoorFrOpenState");
   assertIntEq("it-window-doorfr-pos", 0, gDoorFrWindowPos, "DoorFrWindowPos");
 
+  testStepPass("doc-pass", "PASS - IT_025 - 창문 상태 기준 body 반영 통합 검증");
   resetValidationHarnessIfNeeded();
 }

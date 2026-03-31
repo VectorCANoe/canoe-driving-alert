@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_V2_009_TIMEOUT_CLEAR()
 {
+  testStepPass("doc-trace", "IT_009 - 긴급 종료 신호 및 미수신 시 안전 해제와 복귀 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -32,5 +34,6 @@ export testcase TC_CANOE_IT_V2_009_TIMEOUT_CLEAR()
   assertIntEq("emergency-context-cleared", 0, (long)@Core::emergencyContext, "emergencyContext");
   assertIntEq("fail-safe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - IT_009 - 긴급 종료 신호 및 미수신 시 안전 해제와 복귀 통합 검증");
   resetValidationHarnessIfNeeded();
 }

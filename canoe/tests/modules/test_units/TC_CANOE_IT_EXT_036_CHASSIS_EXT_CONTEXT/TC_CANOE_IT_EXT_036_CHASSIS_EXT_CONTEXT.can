@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_EXT_036_CHASSIS_EXT_CONTEXT()
 {
+  testStepPass("doc-trace", "IT_036 - EPB, EHB, VSM, ECS, CDC 상태 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(218, 900, 1300)) { return; }
   if (!waitForCoreChassisState(68, 1, -1, -1, 800)) { resetValidationHarnessIfNeeded(); return; }
@@ -22,5 +24,6 @@ export testcase TC_CANOE_IT_EXT_036_CHASSIS_EXT_CONTEXT()
   if (!launchScenarioAndWait(237, 900, 1300)) { return; }
   if (!waitForCoreDriveState(-1, -1, 0, 800)) { resetValidationHarnessIfNeeded(); return; }
   assertIntEq("it-chassis-drive-mode", 2, (long)@CoreState::driveMode, "driveMode");
+  testStepPass("doc-pass", "PASS - IT_036 - EPB, EHB, VSM, ECS, CDC 상태 통합 검증");
   resetValidationHarnessIfNeeded();
 }

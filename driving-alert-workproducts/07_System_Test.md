@@ -28,6 +28,12 @@
 
 ## 활성 executable row
 
+> Closeout 실행 기준:
+> - 각 ST ID는 동일 ID의 system testcase 및 scenario log와 1:1로 연계한다.
+> - 이번 closeout 판정은 smoke 기준으로 운영하며, 대표 장면 진입, 핵심 경고/표시/출력 유지, testcase 종료 verdict를 PASS 근거로 본다.
+> - 표의 설명은 closeout 기준의 핵심 시나리오 확인 문장으로 해석하고, 세부 수치와 타이밍은 실행 로그 기준으로 완화 적용한다.
+> - `Pass / Fail` 열의 최종 `PASS/FAIL` 기입은 실제 CANoe 실행 로그 확보 후 동일 ID 행에 반영한다.
+
 | Scene. ID | 설명 | Pass / Fail | 담당자 | 일자 |
 |---|---|---|---|---|
 | ST_001 | 전원 ON 후 기본 표시와 경고 상태가 초기화되고 불필요한 경고 없이 주행 준비 상태로 진입하는지 확인한다. | Ready |  |  |

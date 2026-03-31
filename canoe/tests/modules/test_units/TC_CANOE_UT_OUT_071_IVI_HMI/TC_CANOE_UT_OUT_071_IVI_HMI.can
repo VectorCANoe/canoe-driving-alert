@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_OUT_071_IVI_HMI()
 {
+  testStepPass("doc-trace", "UT_071 - 경고 문구, 거리/방향, 팝업, 테마, 오디오 포커스 정보를 생성하여 표시 채널에 전달");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -69,5 +71,6 @@ export testcase TC_CANOE_UT_OUT_071_IVI_HMI()
   assertIntEq("ivi-hmi-distance-code", deriveExpectedEmergencyWarningCode(1, 2, 9, 72), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("ivi-hmi-distance-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - UT_071 - 경고 문구, 거리/방향, 팝업, 테마, 오디오 포커스 정보를 생성하여 표시 채널에 전달");
   resetValidationHarnessIfNeeded();
 }

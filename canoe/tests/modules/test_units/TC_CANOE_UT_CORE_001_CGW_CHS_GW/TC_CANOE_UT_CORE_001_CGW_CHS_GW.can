@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_CORE_001_CGW_CHS_GW()
 {
+  testStepPass("doc-trace", "UT_001 - 차량 기본 입력과 차체 상태 정보를 수신하여 100ms 주기로 경계 경로에 전달");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -77,5 +79,6 @@ export testcase TC_CANOE_UT_CORE_001_CGW_CHS_GW()
   assertIntMin("chs-gw-brake-input", 20, (long)@Core::brakePedalNorm, "brakePedalNorm");
   assertIntEq("chs-gw-brake-drive", 0, (long)@Core::driveStateNorm, "driveStateNorm");
 
+  testStepPass("doc-pass", "PASS - UT_001 - 차량 기본 입력과 차체 상태 정보를 수신하여 100ms 주기로 경계 경로에 전달");
   resetValidationHarnessIfNeeded();
 }

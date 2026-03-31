@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -16,6 +16,8 @@ variables
 */
 export testcase TC_CANOE_UT_OUT_073_HUD_DISPLAY()
 {
+  testStepPass("doc-trace", "UT_073 - 경고 문구와 팝업, 경로, 테마 정보를 수신하여 전면 표시에 반영");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -53,5 +55,6 @@ export testcase TC_CANOE_UT_OUT_073_HUD_DISPLAY()
   assertIntEq("hud-popup-active", 1, (long)@CoreState::popupActive, "popupActive");
   assertIntEq("hud-popup-priority", 1, (long)@CoreState::popupPriority, "popupPriority");
 
+  testStepPass("doc-pass", "PASS - UT_073 - 경고 문구와 팝업, 경로, 테마 정보를 수신하여 전면 표시에 반영");
   resetValidationHarnessIfNeeded();
 }

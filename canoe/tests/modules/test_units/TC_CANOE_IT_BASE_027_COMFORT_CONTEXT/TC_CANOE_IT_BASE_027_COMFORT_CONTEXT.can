@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_BASE_027_COMFORT_CONTEXT()
 {
+  testStepPass("doc-trace", "IT_027 - 실내편의 상태 반영 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -30,5 +32,6 @@ export testcase TC_CANOE_IT_BASE_027_COMFORT_CONTEXT()
   assertIntEq("comfort-context-speed", 0, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
   assertIntEq("comfort-context-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - IT_027 - 실내편의 상태 반영 통합 검증");
   resetValidationHarnessIfNeeded();
 }

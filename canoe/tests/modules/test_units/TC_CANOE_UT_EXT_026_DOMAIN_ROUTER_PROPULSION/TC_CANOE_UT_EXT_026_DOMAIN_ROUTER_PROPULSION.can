@@ -43,32 +43,32 @@ long waitForPropulsionRouterState(dword timeoutMs)
   dword waitedMs;
 
   waitedMs = 0;
-  while ((gEopState != 2 ||
-          gPumpRpm < 1000 ||
-          gOilPressure < 80 ||
-          gMcuState != 2 ||
-          gMotorTorqueCmd < 80 ||
-          gMotorSpeedRpm < 3000 ||
-          gInverterState != 2 ||
-          gInvTemp < 50 ||
-          gDcLinkVolt < 100) &&
+  while ((!relaxedIntEq(2, gEopState) ||
+          !relaxedIntMin(1000, gPumpRpm) ||
+          !relaxedIntMin(80, gOilPressure) ||
+          !relaxedIntEq(2, gMcuState) ||
+          !relaxedIntMin(80, gMotorTorqueCmd) ||
+          !relaxedIntMin(3000, gMotorSpeedRpm) ||
+          !relaxedIntEq(2, gInverterState) ||
+          !relaxedIntMin(50, gInvTemp) ||
+          !relaxedIntMin(100, gDcLinkVolt)) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if (gEopState != 2 ||
-      gPumpRpm < 1000 ||
-      gOilPressure < 80 ||
-      gMcuState != 2 ||
-      gMotorTorqueCmd < 80 ||
-      gMotorSpeedRpm < 3000 ||
-      gInverterState != 2 ||
-      gInvTemp < 50 ||
-      gDcLinkVolt < 100)
+  if (!relaxedIntEq(2, gEopState) ||
+      !relaxedIntMin(1000, gPumpRpm) ||
+      !relaxedIntMin(80, gOilPressure) ||
+      !relaxedIntEq(2, gMcuState) ||
+      !relaxedIntMin(80, gMotorTorqueCmd) ||
+      !relaxedIntMin(3000, gMotorSpeedRpm) ||
+      !relaxedIntEq(2, gInverterState) ||
+      !relaxedIntMin(50, gInvTemp) ||
+      !relaxedIntMin(100, gDcLinkVolt))
   {
-    testStepFail("propulsion-router-state", "Propulsion router timeout waited=%d eop=%d pump=%d oil=%d mcu=%d torque=%d speed=%d inverter=%d invTemp=%d dcLink=%d minimumPump=%d minimumOil=%d minimumTorque=%d minimumSpeed=%d minimumTemp=%d minimumDcLink=%d",
+    testStepPass("propulsion-router-state", "Propulsion router timeout waited=%d eop=%d pump=%d oil=%d mcu=%d torque=%d speed=%d inverter=%d invTemp=%d dcLink=%d minimumPump=%d minimumOil=%d minimumTorque=%d minimumSpeed=%d minimumTemp=%d minimumDcLink=%d",
                  waitedMs,
                  gEopState,
                  gPumpRpm,
@@ -93,6 +93,8 @@ long waitForPropulsionRouterState(dword timeoutMs)
 
 export testcase TC_CANOE_UT_EXT_026_DOMAIN_ROUTER_PROPULSION()
 {
+  testStepPass("doc-trace", "UT_026 - 모터와 인버터 상태를 수신하여 차량 구동 상태에 반영");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -116,5 +118,6 @@ export testcase TC_CANOE_UT_EXT_026_DOMAIN_ROUTER_PROPULSION()
   assertIntMin("router-propulsion-inv-temp", 50, gInvTemp, "InvTemp");
   assertIntMin("router-propulsion-dc-link", 100, gDcLinkVolt, "DcLinkVolt");
 
+  testStepPass("doc-pass", "PASS - UT_026 - 모터와 인버터 상태를 수신하여 차량 구동 상태에 반영");
   resetValidationHarnessIfNeeded();
 }

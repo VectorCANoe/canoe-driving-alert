@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_EXT_043_AUDIO_GUIDE_CHANNEL()
 {
+  testStepPass("doc-trace", "IT_043 - 오디오 안내 인지성과 입력 강건성 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(215, 900, 1700)) { return; }
   if (!waitForAudioPolicyFloor(1, 2, 20, 0, 1800)) { resetValidationHarnessIfNeeded(); return; }
@@ -23,5 +25,6 @@ export testcase TC_CANOE_IT_EXT_043_AUDIO_GUIDE_CHANNEL()
   assertIntEq("it-visual-sync-theme", 2, (long)@CoreState::themeMode, "themeMode");
   assertIntEq("it-visual-sync-popup", 1, (long)@CoreState::popupActive, "popupActive");
   assertIntEq("it-visual-sync-priority", 1, (long)@CoreState::popupPriority, "popupPriority");
+  testStepPass("doc-pass", "PASS - IT_043 - 오디오 안내 인지성과 입력 강건성 통합 검증");
   resetValidationHarnessIfNeeded();
 }

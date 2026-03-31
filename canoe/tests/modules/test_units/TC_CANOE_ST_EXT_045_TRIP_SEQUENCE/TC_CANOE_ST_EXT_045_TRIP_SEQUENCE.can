@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_EXT_045_TRIP_SEQUENCE()
 {
+  testStepPass("doc-trace", "ST_045 - 전원 ON 후 일반 구간 주행, 긴급 경고 개입, 경고 복귀, 정지, 전원 OFF까지 연속 주행 시나리오에서 시스템이 일관되게 동작하는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -29,5 +31,6 @@ export testcase TC_CANOE_ST_EXT_045_TRIP_SEQUENCE()
   assertIntEq("selected-alert-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
   assertIntEq("warning-text-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
 
+  testStepPass("doc-pass", "PASS - ST_045 - 전원 ON 후 일반 구간 주행, 긴급 경고 개입, 경고 복귀, 정지, 전원 OFF까지 연속 주행 시나리오에서 시스템이 일관되게 동작하는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

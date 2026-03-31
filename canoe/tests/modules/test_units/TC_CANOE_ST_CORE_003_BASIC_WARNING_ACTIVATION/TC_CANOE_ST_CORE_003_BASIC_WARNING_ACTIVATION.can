@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_CORE_003_BASIC_WARNING_ACTIVATION()
 {
+  testStepPass("doc-trace", "ST_003 - 일반 구간에서 단일 위험 입력이 발생하면 기본 경고가 활성되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -46,5 +48,6 @@ export testcase TC_CANOE_ST_CORE_003_BASIC_WARNING_ACTIVATION()
   assertIntEq("st003-type", 1, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("st003-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - ST_003 - 일반 구간에서 단일 위험 입력이 발생하면 기본 경고가 활성되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

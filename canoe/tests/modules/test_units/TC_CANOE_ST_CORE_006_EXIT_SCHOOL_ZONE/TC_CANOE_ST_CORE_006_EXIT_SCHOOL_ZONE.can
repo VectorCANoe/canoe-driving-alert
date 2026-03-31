@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_CORE_006_EXIT_SCHOOL_ZONE()
 {
+  testStepPass("doc-trace", "ST_006 - 스쿨존 과속 경고 상태에서 일반 구간으로 복귀하면 기본 상태로 정상 복귀되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -45,5 +47,6 @@ export testcase TC_CANOE_ST_CORE_006_EXIT_SCHOOL_ZONE()
   assertIntEq("st006-clear-type", 0, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("st006-clear-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
 
+  testStepPass("doc-pass", "PASS - ST_006 - 스쿨존 과속 경고 상태에서 일반 구간으로 복귀하면 기본 상태로 정상 복귀되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

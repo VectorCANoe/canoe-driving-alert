@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_033_DUPLICATE_POPUP_SUPPRESSION()
 {
+  testStepPass("doc-trace", "IT_033 - 팝업 과밀 억제와 우선 경고 유지 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -29,5 +31,6 @@ export testcase TC_CANOE_IT_033_DUPLICATE_POPUP_SUPPRESSION()
 
   assertIntMin("duplicate-popup-guard", 1, (long)@CoreState::duplicatePopupGuard, "duplicatePopupGuard");
 
+  testStepPass("doc-pass", "PASS - IT_033 - 팝업 과밀 억제와 우선 경고 유지 통합 검증");
   resetValidationHarnessIfNeeded();
 }

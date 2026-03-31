@@ -446,6 +446,14 @@ on timer tEngineCycle
     engineState = deriveManualEmsEngineState(ignitionState, driveState, speed, accelPedal);
   }
 
+  /* Keep the resolved baseline state visible to the warning/animation path.
+     In manual mode these must follow owner-state, not stale message globals. */
+  gIgnitionState = ignitionState;
+  gEngineState = engineState;
+  gVehicleSpeed = speed;
+  gAccelPedal = accelPedal;
+  gBrakePedal = brakePedal;
+
   gInitDone = 1;
 
   rpm = deriveEngineRpm(engineState, accelPedal, brakePedal, speed);

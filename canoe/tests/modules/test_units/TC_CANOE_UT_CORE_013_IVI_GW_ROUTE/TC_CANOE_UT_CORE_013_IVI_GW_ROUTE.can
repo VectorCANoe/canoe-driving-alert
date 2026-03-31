@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_CORE_013_IVI_GW_ROUTE()
 {
+  testStepPass("doc-trace", "UT_013 - 경고 결과를 50ms 주기로 클러스터 표시 경로에 전달");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -59,5 +61,6 @@ export testcase TC_CANOE_UT_CORE_013_IVI_GW_ROUTE()
   assertIntEq("ivi-gw-ambulance-code", deriveExpectedEmergencyWarningCode(2, 1, 8, 20), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("ivi-gw-ambulance-dir", 1, (long)@UiRender::renderDirection, "renderDirection");
 
+  testStepPass("doc-pass", "PASS - UT_013 - 경고 결과를 50ms 주기로 클러스터 표시 경로에 전달");
   resetValidationHarnessIfNeeded();
 }

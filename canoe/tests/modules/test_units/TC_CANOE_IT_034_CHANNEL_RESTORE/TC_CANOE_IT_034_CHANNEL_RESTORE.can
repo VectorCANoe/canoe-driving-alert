@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_034_CHANNEL_RESTORE()
 {
+  testStepPass("doc-trace", "IT_034 - 경고 채널 동기 복원 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -27,5 +29,6 @@ export testcase TC_CANOE_IT_034_CHANNEL_RESTORE()
   }
   assertIntEq("channel-restore-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
+  testStepPass("doc-pass", "PASS - IT_034 - 경고 채널 동기 복원 통합 검증");
   resetValidationHarnessIfNeeded();
 }

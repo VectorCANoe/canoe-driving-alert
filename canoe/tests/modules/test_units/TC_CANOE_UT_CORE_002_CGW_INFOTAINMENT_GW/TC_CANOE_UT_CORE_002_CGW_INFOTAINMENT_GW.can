@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_CORE_002_CGW_INFOTAINMENT_GW()
 {
+  testStepPass("doc-trace", "UT_002 - 구간, 방향, 거리(m), 제한속도(km/h) 정보를 수신하여 100ms 주기로 표시 경로에 전달");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -61,5 +63,6 @@ export testcase TC_CANOE_UT_CORE_002_CGW_INFOTAINMENT_GW()
   assertIntEq("info-gw-guide-right-zone", 4, (long)@Core::baseZoneContext, "baseZoneContext");
   assertIntEq("info-gw-guide-right-code", 32, (long)@Cluster::warningTextCode, "warningTextCode");
 
+  testStepPass("doc-pass", "PASS - UT_002 - 구간, 방향, 거리(m), 제한속도(km/h) 정보를 수신하여 100ms 주기로 표시 경로에 전달");
   resetValidationHarnessIfNeeded();
 }

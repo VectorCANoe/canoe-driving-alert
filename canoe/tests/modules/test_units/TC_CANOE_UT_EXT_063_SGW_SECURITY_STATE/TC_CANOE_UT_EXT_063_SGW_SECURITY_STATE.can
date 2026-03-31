@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_EXT_063_SGW_SECURITY_STATE()
 {
+  testStepPass("doc-trace", "UT_063 - 보안 게이트웨이 상태를 입력하여 진단 보안 상태와 경로 소유 해석에 반영");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   // Verify SGW semantic owner outputs only; request/response detail belongs to DCM-facing tests.
   if (!resetValidationHarnessIfNeeded())
   {
@@ -30,5 +32,6 @@ export testcase TC_CANOE_UT_EXT_063_SGW_SECURITY_STATE()
   assertIntEq("security-state", 3, (long)@Diag::SecurityState, "SecurityState");
   assertIntEq("route-owner", 1, (long)@Diag::RouteOwner, "RouteOwner");
 
+  testStepPass("doc-pass", "PASS - UT_063 - 보안 게이트웨이 상태를 입력하여 진단 보안 상태와 경로 소유 해석에 반영");
   resetValidationHarnessIfNeeded();
 }

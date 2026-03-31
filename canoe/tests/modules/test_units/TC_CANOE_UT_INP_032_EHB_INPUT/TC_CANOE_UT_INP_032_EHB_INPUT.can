@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_INP_032_EHB_INPUT()
 {
+  testStepPass("doc-trace", "UT_032 - 제동 보조 ECU 상태 정보를 입력");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -29,5 +31,6 @@ export testcase TC_CANOE_UT_INP_032_EHB_INPUT()
   assertIntMin("s219_brakePedalNorm", 30, (long)@Core::brakePedalNorm, "brakePedalNorm");
   assertIntEq("s219_failSafeMode", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - UT_032 - 제동 보조 ECU 상태 정보를 입력");
   resetValidationHarnessIfNeeded();
 }

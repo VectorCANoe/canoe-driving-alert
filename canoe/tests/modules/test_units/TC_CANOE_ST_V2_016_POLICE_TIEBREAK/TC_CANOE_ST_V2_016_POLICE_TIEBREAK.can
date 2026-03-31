@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_V2_016_POLICE_TIEBREAK()
 {
+  testStepPass("doc-trace", "ST_016 - 동일 등급의 경찰 긴급 알림이 복수 수신될 때 ETA가 더 짧은 경고가 우선 선택되고 동일 ETA에서는 SourceID 규칙이 적용되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -36,5 +38,6 @@ if (!waitForV2xIngressState(1, 1, 10, 5, 1500))
   assertIntEq("police-tiebreak-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
   assertIntEq("police-tiebreak-alert-type", 1, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
 
+  testStepPass("doc-pass", "PASS - ST_016 - 동일 등급의 경찰 긴급 알림이 복수 수신될 때 ETA가 더 짧은 경고가 우선 선택되고 동일 ETA에서는 SourceID 규칙이 적용되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

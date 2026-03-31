@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_017_AUDIO_VOLUME_POLICY()
 {
+  testStepPass("doc-trace", "IT_017 - 경보 음량 설정 반영 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -29,5 +31,6 @@ export testcase TC_CANOE_IT_017_AUDIO_VOLUME_POLICY()
   assertIntMin("audio-volume-ducking", 2, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
   assertIntMin("audio-volume-level", 20, (long)@CoreState::volumeLevel, "volumeLevel");
 
+  testStepPass("doc-pass", "PASS - IT_017 - 경보 음량 설정 반영 통합 검증");
   resetValidationHarnessIfNeeded();
 }

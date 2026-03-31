@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE()
 {
+  testStepPass("doc-trace", "UT_064 - 진단 제어 상태를 입력하여 진단 요청/응답 요약과 서비스 판단 상태에 반영");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   // Verify DCM diagnostic state plus request/response observation summary.
   if (!resetValidationHarnessIfNeeded())
   {
@@ -46,5 +48,6 @@ export testcase TC_CANOE_UT_EXT_064_DCM_DIAGNOSTIC_STATE()
   assertLongGe("response-counter", (long)@Diag::ResponseCounter, 1, "ResponseCounter");
   assertLongGe("response-time", (long)@Diag::LastResponseTimeMs, 1, "LastResponseTimeMs");
 
+  testStepPass("doc-pass", "PASS - UT_064 - 진단 제어 상태를 입력하여 진단 요청/응답 요약과 서비스 판단 상태에 반영");
   resetValidationHarnessIfNeeded();
 }

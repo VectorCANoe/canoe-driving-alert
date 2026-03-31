@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_CORE_005_ADAS_DECEL_ASSIST()
 {
+  testStepPass("doc-trace", "UT_005 - 긴급차량 방향과 접근 시간을 반영하여 위험도와 감속 보조를 판단");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -35,5 +37,6 @@ export testcase TC_CANOE_UT_CORE_005_ADAS_DECEL_ASSIST()
   assertIntEq("selected-alert-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
   assertIntEq("selected-alert-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
 
+  testStepPass("doc-pass", "PASS - UT_005 - 긴급차량 방향과 접근 시간을 반영하여 위험도와 감속 보조를 판단");
   resetValidationHarnessIfNeeded();
 }

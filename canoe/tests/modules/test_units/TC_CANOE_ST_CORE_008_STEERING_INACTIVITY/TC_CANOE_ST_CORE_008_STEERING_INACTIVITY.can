@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_CORE_008_STEERING_INACTIVITY()
 {
+  testStepPass("doc-trace", "ST_008 - 고속 구간 주행 중 무조향 조건이 지속되면 경고가 발생하고 조향 입력 복귀 후 해제되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -55,5 +57,6 @@ export testcase TC_CANOE_ST_CORE_008_STEERING_INACTIVITY()
   assertIntEq("st008-clear-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
   assertIntEq("st008-clear-type", 0, getCanonicalSelectedAlertType(), "selectedAlertType");
 
+  testStepPass("doc-pass", "PASS - ST_008 - 고속 구간 주행 중 무조향 조건이 지속되면 경고가 발생하고 조향 입력 복귀 후 해제되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

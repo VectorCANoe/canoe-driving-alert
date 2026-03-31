@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_EXT_035_DISTANCE_HISTORY()
 {
+  testStepPass("doc-trace", "IT_035 - 접근거리 표시와 경고 이력 조회 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -37,5 +39,6 @@ export testcase TC_CANOE_IT_EXT_035_DISTANCE_HISTORY()
   }
   assertIntEq("distance-history-query-code", deriveExpectedEmergencyWarningCode(1, 2, 9, 72), (long)@Test::historyQueryCode, "historyQueryCode");
 
+  testStepPass("doc-pass", "PASS - IT_035 - 접근거리 표시와 경고 이력 조회 통합 검증");
   resetValidationHarnessIfNeeded();
 }

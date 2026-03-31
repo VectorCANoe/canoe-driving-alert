@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY()
 {
+  testStepPass("doc-trace", "UT_014 - 경고 상태에 맞는 앰비언트 색상과 패턴을 50ms 주기로 출력");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -34,5 +36,6 @@ export testcase TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY()
   assertIntEq("ambient-pattern", 5, (long)@Body::ambientPattern, "ambientPattern");
   assertIntEq("fail-safe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - UT_014 - 경고 상태에 맞는 앰비언트 색상과 패턴을 50ms 주기로 출력");
   resetValidationHarnessIfNeeded();
 }

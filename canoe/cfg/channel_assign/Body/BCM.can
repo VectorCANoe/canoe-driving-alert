@@ -405,7 +405,7 @@ on timer tBodyCycle
                 (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   if (manualMode == 1)
   {
-    ambientMode = clampRange((int)@Cmd::ambientModeCmd, 0, 7);
+    ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
     ambientColor = deriveAmbientColorFromMode(ambientMode);
     ambientPattern = deriveAmbientPatternFromMode(ambientMode);
   }
@@ -569,9 +569,7 @@ on timer tBodyBase100
   manualMode = ((((int)@Test::scenarioActiveId) == 0) ||
                 (clampRange((int)@Test::nativeExecTierCode, 0, 4) == 0)) ? 1 : 0;
   driveState = gDriveState;
-  ambientMode = (manualMode == 1)
-                ? clampRange((int)@Cmd::ambientModeCmd, 0, 7)
-                : clampRange((int)@Body::ambientMode, 0, 7);
+  ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
   routingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);
   warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
   boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
@@ -671,7 +669,7 @@ on timer tBodyBase100
   {
     int ambientCmd;
 
-    ambientCmd = clampRange((int)@Cmd::ambientModeCmd, 0, 7);
+    ambientCmd = clampRange((int)@Body::ambientMode, 0, 7);
     if (ambientCmd != gLastManualAmbientCmd ||
         manualTurnCmd != gLastManualTurnCmd ||
         mLamp.TurnLampState != gLastManualTurnLampState)

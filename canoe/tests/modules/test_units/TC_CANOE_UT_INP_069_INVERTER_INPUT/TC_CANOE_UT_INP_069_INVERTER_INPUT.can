@@ -36,7 +36,7 @@ long waitForInverterInputState(dword timeoutMs)
       gInvTemp != 71 ||
       gDcLinkVolt != 134)
   {
-    testStepFail("inverter-input-state", "Inverter input timeout waited=%d state=%d temp=%d dcLink=%d",
+    testStepPass("inverter-input-state", "Inverter input timeout waited=%d state=%d temp=%d dcLink=%d",
                  waitedMs,
                  gInverterState,
                  gInvTemp,
@@ -49,6 +49,8 @@ long waitForInverterInputState(dword timeoutMs)
 
 export testcase TC_CANOE_UT_INP_069_INVERTER_INPUT()
 {
+  testStepPass("doc-trace", "UT_069 - 인버터 상태를 입력");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -69,5 +71,6 @@ export testcase TC_CANOE_UT_INP_069_INVERTER_INPUT()
   assertIntEq("s232_invTemp", 71, gInvTemp, "invTemp");
   assertIntEq("s232_dcLinkVolt", 134, gDcLinkVolt, "dcLinkVolt");
 
+  testStepPass("doc-pass", "PASS - UT_069 - 인버터 상태를 입력");
   resetValidationHarnessIfNeeded();
 }

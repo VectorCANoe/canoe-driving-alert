@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_EXT_029_CUTIN_OBJECT_RISK()
 {
+  testStepPass("doc-trace", "ST_029 - 합류 또는 끼어들기 위험이 발생할 때 위험 경고와 이벤트 기록이 일관되게 동작하는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -33,5 +35,6 @@ export testcase TC_CANOE_ST_EXT_029_CUTIN_OBJECT_RISK()
   assertIntEq("cutin-object-alert-type", 6, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
   assertIntEq("cutin-object-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
+  testStepPass("doc-pass", "PASS - ST_029 - 합류 또는 끼어들기 위험이 발생할 때 위험 경고와 이벤트 기록이 일관되게 동작하는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

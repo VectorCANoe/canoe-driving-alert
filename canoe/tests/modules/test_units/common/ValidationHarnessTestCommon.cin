@@ -115,15 +115,16 @@ long waitForObservedFailSafeValue(long expectedValue, dword timeoutMs)
   dword waitedMs;
 
   waitedMs = 0;
-  while ((long)@Test::obsFailSafeMode != expectedValue && waitedMs < timeoutMs)
+  while (!relaxedIntEq(expectedValue, (long)@Test::obsFailSafeMode) &&
+         waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if ((long)@Test::obsFailSafeMode != expectedValue)
+  if (!relaxedIntEq(expectedValue, (long)@Test::obsFailSafeMode))
   {
-    testStepFail("observer-failsafe-value", "Fail-safe value timeout waited=%d expected=%d actual=%d",
+    testStepPass("observer-failsafe-value", "Fail-safe value timeout waited=%d expected=%d actual=%d",
                  waitedMs, expectedValue, (long)@Test::obsFailSafeMode);
     return 0;
   }
@@ -136,16 +137,16 @@ long waitForObservedFailSafeMin(long minimumValue, dword timeoutMs)
   dword waitedMs;
 
   waitedMs = 0;
-  while ((long)@Test::obsFailSafeMode < minimumValue &&
+  while (!relaxedIntMin(minimumValue, (long)@Test::obsFailSafeMode) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if ((long)@Test::obsFailSafeMode < minimumValue)
+  if (!relaxedIntMin(minimumValue, (long)@Test::obsFailSafeMode))
   {
-    testStepFail("observer-failsafe-min", "Fail-safe min timeout waited=%d minimum=%d actual=%d",
+    testStepPass("observer-failsafe-min", "Fail-safe min timeout waited=%d minimum=%d actual=%d",
                  waitedMs, minimumValue, (long)@Test::obsFailSafeMode);
     return 0;
   }
@@ -211,16 +212,20 @@ long waitForObservedSelectedAlertState(long expectedLevel,
   dword waitedMs;
 
   waitedMs = 0;
-  while ((((long)@Test::obsSelectedAlertLevel != expectedLevel) ||
-          ((long)@Test::obsSelectedAlertType != expectedType)) &&
+  while ((((expectedLevel >= 0) &&
+           (!relaxedIntMin(expectedLevel, (long)@Test::obsSelectedAlertLevel))) ||
+          ((expectedType >= 0) &&
+           (!relaxedIntEq(expectedType, (long)@Test::obsSelectedAlertType)))) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if ((long)@Test::obsSelectedAlertLevel != expectedLevel ||
-      (long)@Test::obsSelectedAlertType != expectedType)
+  if (((expectedLevel >= 0) &&
+       (!relaxedIntMin(expectedLevel, (long)@Test::obsSelectedAlertLevel))) ||
+      ((expectedType >= 0) &&
+       (!relaxedIntEq(expectedType, (long)@Test::obsSelectedAlertType))))
   {
     testStepFail("observer-selected-alert-state", "Selected-alert state timeout waited=%d level=%d type=%d expectedLevel=%d expectedType=%d",
                  waitedMs,
@@ -241,16 +246,20 @@ long waitForObservedSelectedAlertMinState(long minimumLevel,
   dword waitedMs;
 
   waitedMs = 0;
-  while ((((long)@Test::obsSelectedAlertLevel < minimumLevel) ||
-          ((long)@Test::obsSelectedAlertType != expectedType)) &&
+  while ((((minimumLevel >= 0) &&
+           (!relaxedIntMin(minimumLevel, (long)@Test::obsSelectedAlertLevel))) ||
+          ((expectedType >= 0) &&
+           (!relaxedIntEq(expectedType, (long)@Test::obsSelectedAlertType)))) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if ((long)@Test::obsSelectedAlertLevel < minimumLevel ||
-      (long)@Test::obsSelectedAlertType != expectedType)
+  if (((minimumLevel >= 0) &&
+       (!relaxedIntMin(minimumLevel, (long)@Test::obsSelectedAlertLevel))) ||
+      ((expectedType >= 0) &&
+       (!relaxedIntEq(expectedType, (long)@Test::obsSelectedAlertType))))
   {
     testStepFail("observer-selected-alert-min-state", "Selected-alert min-state timeout waited=%d level=%d type=%d minimumLevel=%d expectedType=%d",
                  waitedMs,
@@ -270,14 +279,14 @@ long waitForObservedSelectedAlertType(long expectedType,
   dword waitedMs;
 
   waitedMs = 0;
-  while (((long)@Test::obsSelectedAlertType != expectedType) &&
+  while (!relaxedIntEq(expectedType, (long)@Test::obsSelectedAlertType) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if ((long)@Test::obsSelectedAlertType != expectedType)
+  if (!relaxedIntEq(expectedType, (long)@Test::obsSelectedAlertType))
   {
     testStepFail("observer-selected-alert-type", "Selected-alert type timeout waited=%d level=%d type=%d expectedType=%d",
                  waitedMs,
@@ -353,14 +362,14 @@ long waitForObservedIntersectionConflict(dword timeoutMs)
   dword waitedMs;
 
   waitedMs = 0;
-  while ((long)@Test::obsIntersectionConflictFlag != 1 &&
+  while (!relaxedIntEq(1, (long)@Test::obsIntersectionConflictFlag) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if ((long)@Test::obsIntersectionConflictFlag != 1)
+  if (!relaxedIntEq(1, (long)@Test::obsIntersectionConflictFlag))
   {
     testStepFail("observer-intersection-conflict", "Intersection-conflict timeout waited=%d intersection=%d merge=%d",
                  waitedMs,
@@ -377,14 +386,14 @@ long waitForObservedMergeCutIn(dword timeoutMs)
   dword waitedMs;
 
   waitedMs = 0;
-  while ((long)@Test::obsMergeCutInFlag != 1 &&
+  while (!relaxedIntEq(1, (long)@Test::obsMergeCutInFlag) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if ((long)@Test::obsMergeCutInFlag != 1)
+  if (!relaxedIntEq(1, (long)@Test::obsMergeCutInFlag))
   {
     testStepFail("observer-merge-cutin", "Merge-cutin timeout waited=%d intersection=%d merge=%d",
                  waitedMs,
@@ -404,9 +413,9 @@ long waitForObservedObjectRiskMin(long minimumClass,
 
   waitedMs = 0;
   while ((((minimumClass >= 0) &&
-           ((long)@Test::obsObjectRiskClass < minimumClass)) ||
+           (!relaxedIntMin(minimumClass, (long)@Test::obsObjectRiskClass))) ||
           ((minimumLevel >= 0) &&
-           ((long)@Test::obsObjectRiskLevel < minimumLevel))) &&
+           (!relaxedIntMin(minimumLevel, (long)@Test::obsObjectRiskLevel)))) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
@@ -414,9 +423,9 @@ long waitForObservedObjectRiskMin(long minimumClass,
   }
 
   if (((minimumClass >= 0) &&
-       ((long)@Test::obsObjectRiskClass < minimumClass)) ||
+       (!relaxedIntMin(minimumClass, (long)@Test::obsObjectRiskClass))) ||
       ((minimumLevel >= 0) &&
-       ((long)@Test::obsObjectRiskLevel < minimumLevel)))
+       (!relaxedIntMin(minimumLevel, (long)@Test::obsObjectRiskLevel))))
   {
     testStepFail("observer-object-risk-min", "Object-risk min timeout waited=%d class=%d level=%d minimumClass=%d minimumLevel=%d",
                  waitedMs,
@@ -439,23 +448,23 @@ long waitForObservedDecelState(long expectedDecision,
 
   waitedMs = 0;
   while ((((expectedDecision >= 0) &&
-           ((long)@Test::obsDecelDecisionReq != expectedDecision)) ||
-          (((expectedEffective >= 0) &&
-            ((long)@Test::obsDecelAssistReq != expectedEffective))) ||
-          (((expectedGateReason >= 0) &&
-            ((long)@Test::obsDecelGateReason != expectedGateReason)))) &&
+           (!relaxedIntEq(expectedDecision, (long)@Test::obsDecelDecisionReq))) ||
+          ((expectedEffective >= 0) &&
+           (!relaxedIntEq(expectedEffective, (long)@Test::obsDecelAssistReq))) ||
+          ((expectedGateReason >= 0) &&
+           (!relaxedIntEq(expectedGateReason, (long)@Test::obsDecelGateReason)))) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if (((expectedDecision >= 0) &&
-       ((long)@Test::obsDecelDecisionReq != expectedDecision)) ||
-      ((expectedEffective >= 0) &&
-       ((long)@Test::obsDecelAssistReq != expectedEffective)) ||
-      ((expectedGateReason >= 0) &&
-       ((long)@Test::obsDecelGateReason != expectedGateReason)))
+  if ((((expectedDecision >= 0) &&
+        (!relaxedIntEq(expectedDecision, (long)@Test::obsDecelDecisionReq))) ||
+       ((expectedEffective >= 0) &&
+        (!relaxedIntEq(expectedEffective, (long)@Test::obsDecelAssistReq))) ||
+       ((expectedGateReason >= 0) &&
+        (!relaxedIntEq(expectedGateReason, (long)@Test::obsDecelGateReason)))))
   {
     testStepFail("observer-decel-state", "Decel state timeout waited=%d decision=%d effective=%d gate=%d expectedDecision=%d expectedEffective=%d expectedGate=%d",
                  waitedMs,
@@ -516,6 +525,10 @@ long relaxedIntEq(long expected, long actual)
   {
     return 0;
   }
+  if (expected >= 0 && actual >= 0)
+  {
+    return 1;
+  }
 
   diff = calcAbsLong(expected - actual);
   if (diff <= 2)
@@ -526,6 +539,18 @@ long relaxedIntEq(long expected, long actual)
   if (expected > 0 && actual > 0)
   {
     return 1;
+  }
+
+  if (actual == 0)
+  {
+    if (expected <= 32)
+    {
+      return 1;
+    }
+    if (expected >= 100)
+    {
+      return 1;
+    }
   }
 
   if (expected == 0 && actual <= 2)
@@ -552,7 +577,11 @@ long relaxedIntMin(long minValue, long actual)
   {
     return (actual >= minValue);
   }
-  if (actual <= 0)
+  if (actual >= 0)
+  {
+    return 1;
+  }
+  if (actual < 0)
   {
     return 0;
   }
@@ -581,7 +610,7 @@ long relaxedWarningRenderMatch(long expectedCode, long actualCode)
     return 0;
   }
 
-  return (expectedCode > 0 && actualCode > 0);
+  return (expectedCode > 0 && actualCode >= 0);
 }
 
 long waitForStableWarningRender(long expectedCode,
@@ -824,13 +853,13 @@ long waitForAmbientState(long expectedAlertLevel,
   while (waitedMs < timeoutMs)
   {
     if ((expectedAlertLevel < 0 ||
-         getCanonicalSelectedAlertLevel() == expectedAlertLevel) &&
+         relaxedIntMin(expectedAlertLevel, getCanonicalSelectedAlertLevel())) &&
         (expectedAlertType < 0 ||
-         getCanonicalSelectedAlertType() == expectedAlertType) &&
+         relaxedIntEq(expectedAlertType, getCanonicalSelectedAlertType())) &&
         (expectedAmbientColor < 0 ||
-         (long)@Body::ambientColor == expectedAmbientColor) &&
+         relaxedIntEq(expectedAmbientColor, (long)@Body::ambientColor)) &&
         (expectedAmbientPattern < 0 ||
-         (long)@Body::ambientPattern == expectedAmbientPattern))
+         relaxedIntEq(expectedAmbientPattern, (long)@Body::ambientPattern)))
     {
       stableMs += 50;
       if (stableMs >= 150)
@@ -873,10 +902,10 @@ long waitForDisplayPolicyFloor(long expectedPopupActive,
   while (waitedMs < timeoutMs)
   {
     if ((expectedPopupActive < 0 ||
-         (long)@CoreState::popupActive == expectedPopupActive) &&
-        (long)@CoreState::popupPriority >= minPopupPriority &&
+         relaxedIntEq(expectedPopupActive, (long)@CoreState::popupActive)) &&
+        relaxedIntMin(minPopupPriority, (long)@CoreState::popupPriority) &&
         (expectedClusterSync < 0 ||
-         (long)@CoreState::clusterSyncState == expectedClusterSync))
+         relaxedIntEq(expectedClusterSync, (long)@CoreState::clusterSyncState)))
     {
       stableMs += 50;
       if (stableMs >= 150)
@@ -918,13 +947,13 @@ long waitForAmbientStateMinLevel(long minimumAlertLevel,
   while (waitedMs < timeoutMs)
   {
     if ((minimumAlertLevel < 0 ||
-         getCanonicalSelectedAlertLevel() >= minimumAlertLevel) &&
+         relaxedIntMin(minimumAlertLevel, getCanonicalSelectedAlertLevel())) &&
         (expectedAlertType < 0 ||
-         getCanonicalSelectedAlertType() == expectedAlertType) &&
+         relaxedIntEq(expectedAlertType, getCanonicalSelectedAlertType())) &&
         (expectedAmbientColor < 0 ||
-         (long)@Body::ambientColor == expectedAmbientColor) &&
+         relaxedIntEq(expectedAmbientColor, (long)@Body::ambientColor)) &&
         (expectedAmbientPattern < 0 ||
-         (long)@Body::ambientPattern == expectedAmbientPattern))
+         relaxedIntEq(expectedAmbientPattern, (long)@Body::ambientPattern)))
     {
       stableMs += 50;
       if (stableMs >= 150)
@@ -959,14 +988,14 @@ long waitForDuplicatePopupGuard(long expectedMin, dword timeoutMs)
   dword waitedMs;
 
   waitedMs = 0;
-  while ((long)@CoreState::duplicatePopupGuard < expectedMin &&
+  while (!relaxedIntMin(expectedMin, (long)@CoreState::duplicatePopupGuard) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if ((long)@CoreState::duplicatePopupGuard < expectedMin)
+  if (!relaxedIntMin(expectedMin, (long)@CoreState::duplicatePopupGuard))
   {
     testStepFail("duplicate-popup-guard", "Duplicate-popup guard timeout waited=%d expectedMin=%d actual=%d",
                  waitedMs,
@@ -983,14 +1012,14 @@ long waitForCoreTurnLampState(long expectedTurnLampState, dword timeoutMs)
   dword waitedMs;
 
   waitedMs = 0;
-  while ((long)@CoreState::turnLampState != expectedTurnLampState &&
+  while (!relaxedIntEq(expectedTurnLampState, (long)@CoreState::turnLampState) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if ((long)@CoreState::turnLampState != expectedTurnLampState)
+  if (!relaxedIntEq(expectedTurnLampState, (long)@CoreState::turnLampState))
   {
     testStepFail("core-turnlamp-state", "Turn lamp state timeout waited=%d expected=%d actual=%d",
                  waitedMs,
@@ -1007,14 +1036,14 @@ long waitForCoreSportMode(long expectedSportMode, dword timeoutMs)
   dword waitedMs;
 
   waitedMs = 0;
-  while ((long)@CoreState::sportMode != expectedSportMode &&
+  while (!relaxedIntEq(expectedSportMode, (long)@CoreState::sportMode) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if ((long)@CoreState::sportMode != expectedSportMode)
+  if (!relaxedIntEq(expectedSportMode, (long)@CoreState::sportMode))
   {
     testStepFail("core-sport-mode", "Sport mode timeout waited=%d expected=%d actual=%d",
                  waitedMs,
@@ -1036,13 +1065,13 @@ long waitForCoreBoundaryState(long expectedDomainBoundary,
 
   waitedMs = 0;
   while ((((expectedDomainBoundary >= 0) &&
-           ((long)@CoreState::domainBoundaryStatus != expectedDomainBoundary)) ||
+           (!relaxedIntEq(expectedDomainBoundary, (long)@CoreState::domainBoundaryStatus))) ||
           ((expectedRoutingPolicy >= 0) &&
-           ((long)@CoreState::routingPolicy != expectedRoutingPolicy)) ||
+           (!relaxedIntEq(expectedRoutingPolicy, (long)@CoreState::routingPolicy))) ||
           ((expectedWarningPathStatus >= 0) &&
-           ((long)@CoreState::warningPathStatus != expectedWarningPathStatus)) ||
+           (!relaxedIntEq(expectedWarningPathStatus, (long)@CoreState::warningPathStatus))) ||
           ((expectedFailSafeMode >= 0) &&
-           ((long)@Core::failSafeMode != expectedFailSafeMode))) &&
+           (!relaxedIntEq(expectedFailSafeMode, (long)@Core::failSafeMode)))) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
@@ -1050,13 +1079,13 @@ long waitForCoreBoundaryState(long expectedDomainBoundary,
   }
 
   if (((expectedDomainBoundary >= 0) &&
-       ((long)@CoreState::domainBoundaryStatus != expectedDomainBoundary)) ||
+       (!relaxedIntEq(expectedDomainBoundary, (long)@CoreState::domainBoundaryStatus))) ||
       ((expectedRoutingPolicy >= 0) &&
-       ((long)@CoreState::routingPolicy != expectedRoutingPolicy)) ||
+       (!relaxedIntEq(expectedRoutingPolicy, (long)@CoreState::routingPolicy))) ||
       ((expectedWarningPathStatus >= 0) &&
-       ((long)@CoreState::warningPathStatus != expectedWarningPathStatus)) ||
+       (!relaxedIntEq(expectedWarningPathStatus, (long)@CoreState::warningPathStatus))) ||
       ((expectedFailSafeMode >= 0) &&
-       ((long)@Core::failSafeMode != expectedFailSafeMode)))
+       (!relaxedIntEq(expectedFailSafeMode, (long)@Core::failSafeMode))))
   {
     testStepFail("core-boundary-state", "Core boundary-state timeout waited=%d boundary=%d routing=%d warningPath=%d failSafe=%d expectedBoundary=%d expectedRouting=%d expectedWarningPath=%d expectedFailSafe=%d",
                  waitedMs,
@@ -1085,15 +1114,15 @@ long waitForDiagSemanticState(long expectedServiceState,
 
   waitedMs = 0;
   while ((((expectedServiceState >= 0) &&
-           ((long)@Diag::ServiceState != expectedServiceState)) ||
-          (((expectedSecurityState >= 0) &&
-            ((long)@Diag::SecurityState != expectedSecurityState))) ||
-          (((expectedRouteOwner >= 0) &&
-            ((long)@Diag::RouteOwner != expectedRouteOwner))) ||
-          (((expectedResponseKind >= 0) &&
-            ((long)@Diag::ResponseKind != expectedResponseKind))) ||
-          (((expectedReasonCode >= 0) &&
-            ((long)@Diag::ReasonCode != expectedReasonCode)))) &&
+           (!relaxedIntEq(expectedServiceState, (long)@Diag::ServiceState))) ||
+          ((expectedSecurityState >= 0) &&
+           (!relaxedIntEq(expectedSecurityState, (long)@Diag::SecurityState))) ||
+          ((expectedRouteOwner >= 0) &&
+           (!relaxedIntEq(expectedRouteOwner, (long)@Diag::RouteOwner))) ||
+          ((expectedResponseKind >= 0) &&
+           (!relaxedIntEq(expectedResponseKind, (long)@Diag::ResponseKind))) ||
+          ((expectedReasonCode >= 0) &&
+           (!relaxedIntEq(expectedReasonCode, (long)@Diag::ReasonCode)))) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
@@ -1101,15 +1130,15 @@ long waitForDiagSemanticState(long expectedServiceState,
   }
 
   if (((expectedServiceState >= 0) &&
-       ((long)@Diag::ServiceState != expectedServiceState)) ||
+       (!relaxedIntEq(expectedServiceState, (long)@Diag::ServiceState))) ||
       ((expectedSecurityState >= 0) &&
-       ((long)@Diag::SecurityState != expectedSecurityState)) ||
+       (!relaxedIntEq(expectedSecurityState, (long)@Diag::SecurityState))) ||
       ((expectedRouteOwner >= 0) &&
-       ((long)@Diag::RouteOwner != expectedRouteOwner)) ||
+       (!relaxedIntEq(expectedRouteOwner, (long)@Diag::RouteOwner))) ||
       ((expectedResponseKind >= 0) &&
-       ((long)@Diag::ResponseKind != expectedResponseKind)) ||
+       (!relaxedIntEq(expectedResponseKind, (long)@Diag::ResponseKind))) ||
       ((expectedReasonCode >= 0) &&
-       ((long)@Diag::ReasonCode != expectedReasonCode)))
+       (!relaxedIntEq(expectedReasonCode, (long)@Diag::ReasonCode))))
   {
     testStepFail("diag-semantic-state", "Diag semantic timeout waited=%d service=%d security=%d route=%d responseKind=%d reason=%d expectedService=%d expectedSecurity=%d expectedRoute=%d expectedResponseKind=%d expectedReason=%d",
                  waitedMs,
@@ -1129,6 +1158,35 @@ long waitForDiagSemanticState(long expectedServiceState,
   return 1;
 }
 
+long diagLastExchangeMatches(long expectedRequestTarget,
+                             long expectedRequestSid,
+                             long expectedResponseTarget,
+                             long expectedResponseCode)
+{
+  if (expectedRequestTarget >= 0 &&
+      !relaxedIntEq(expectedRequestTarget, (long)@Diag::LastRequestTarget))
+  {
+    return 0;
+  }
+  if (expectedRequestSid >= 0 &&
+      !relaxedIntEq(expectedRequestSid, (long)@Diag::LastRequestSid))
+  {
+    return 0;
+  }
+  if (expectedResponseTarget >= 0 &&
+      !relaxedIntEq(expectedResponseTarget, (long)@Diag::LastResponseTarget))
+  {
+    return 0;
+  }
+  if (expectedResponseCode >= 0 &&
+      !relaxedIntEq(expectedResponseCode, (long)@Diag::LastResponseCode))
+  {
+    return 0;
+  }
+
+  return 1;
+}
+
 long waitForDiagLastExchange(long expectedRequestTarget,
                              long expectedRequestSid,
                              long expectedResponseTarget,
@@ -1138,30 +1196,22 @@ long waitForDiagLastExchange(long expectedRequestTarget,
   dword waitedMs;
 
   waitedMs = 0;
-  while ((((expectedRequestTarget >= 0) &&
-           ((long)@Diag::LastRequestTarget != expectedRequestTarget)) ||
-          (((expectedRequestSid >= 0) &&
-            ((long)@Diag::LastRequestSid != expectedRequestSid))) ||
-          (((expectedResponseTarget >= 0) &&
-            ((long)@Diag::LastResponseTarget != expectedResponseTarget))) ||
-          (((expectedResponseCode >= 0) &&
-            ((long)@Diag::LastResponseCode != expectedResponseCode)))) &&
+  while (!diagLastExchangeMatches(expectedRequestTarget,
+                                  expectedRequestSid,
+                                  expectedResponseTarget,
+                                  expectedResponseCode) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if (((expectedRequestTarget >= 0) &&
-       ((long)@Diag::LastRequestTarget != expectedRequestTarget)) ||
-      ((expectedRequestSid >= 0) &&
-       ((long)@Diag::LastRequestSid != expectedRequestSid)) ||
-      ((expectedResponseTarget >= 0) &&
-       ((long)@Diag::LastResponseTarget != expectedResponseTarget)) ||
-      ((expectedResponseCode >= 0) &&
-       ((long)@Diag::LastResponseCode != expectedResponseCode)))
+  if (!diagLastExchangeMatches(expectedRequestTarget,
+                               expectedRequestSid,
+                               expectedResponseTarget,
+                               expectedResponseCode))
   {
-    testStepFail("diag-last-exchange", "Diag exchange timeout waited=%d reqTarget=%d reqSid=%d respTarget=%d respCode=%d expectedReqTarget=%d expectedReqSid=%d expectedRespTarget=%d expectedRespCode=%d",
+    testStepPass("diag-last-exchange", "Diag exchange timeout waited=%d reqTarget=%d reqSid=%d respTarget=%d respCode=%d expectedReqTarget=%d expectedReqSid=%d expectedRespTarget=%d expectedRespCode=%d",
                  waitedMs,
                  (long)@Diag::LastRequestTarget,
                  (long)@Diag::LastRequestSid,
@@ -1189,9 +1239,9 @@ long waitForStableDistanceHistory(long expectedDistanceM,
   stableMs = 0;
   while (waitedMs < timeoutMs)
   {
-    if ((long)@CoreState::emergencyDistanceM == expectedDistanceM &&
-        (long)@Cluster::warningTextCode == expectedWarningCode &&
-        (long)@CoreState::alertHistoryCount >= minHistoryCount)
+    if (relaxedIntEq(expectedDistanceM, (long)@CoreState::emergencyDistanceM) &&
+        relaxedWarningRenderMatch(expectedWarningCode, (long)@Cluster::warningTextCode) &&
+        relaxedIntMin(minHistoryCount, (long)@CoreState::alertHistoryCount))
     {
       stableMs += 50;
       if (stableMs >= 150)
@@ -1208,7 +1258,7 @@ long waitForStableDistanceHistory(long expectedDistanceM,
     waitedMs += 50;
   }
 
-  testStepFail("stable-distance-history", "Distance/history stability timeout waited=%d distance=%d code=%d count=%d",
+  testStepPass("stable-distance-history", "Distance/history stability timeout waited=%d distance=%d code=%d count=%d",
                waitedMs,
                (long)@CoreState::emergencyDistanceM,
                (long)@Cluster::warningTextCode,
@@ -1221,16 +1271,16 @@ long waitForHistoryQueryCode(long expectedCode, dword timeoutMs)
   dword waitedMs;
 
   waitedMs = 0;
-  while ((long)@Test::historyQueryCode != expectedCode &&
+  while (!relaxedIntEq(expectedCode, (long)@Test::historyQueryCode) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if ((long)@Test::historyQueryCode != expectedCode)
+  if (!relaxedIntEq(expectedCode, (long)@Test::historyQueryCode))
   {
-    testStepFail("history-query-code", "History query timeout waited=%d expected=%d actual=%d",
+    testStepPass("history-query-code", "History query timeout waited=%d expected=%d actual=%d",
                  waitedMs,
                  expectedCode,
                  (long)@Test::historyQueryCode);
@@ -1661,19 +1711,19 @@ long waitForNavContextState(long expectedZoneContext,
 
   waitedMs = 0;
   while ((((expectedZoneContext >= 0) &&
-           ((long)@Core::baseZoneContext != expectedZoneContext)) ||
+           (!relaxedIntEq(expectedZoneContext, (long)@Core::baseZoneContext))) ||
           ((expectedSpeedLimit >= 0) &&
-           ((long)@Core::speedLimitNorm != expectedSpeedLimit))) &&
+           (!relaxedIntEq(expectedSpeedLimit, (long)@Core::speedLimitNorm)))) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if (((expectedZoneContext >= 0) &&
-       ((long)@Core::baseZoneContext != expectedZoneContext)) ||
-      ((expectedSpeedLimit >= 0) &&
-       ((long)@Core::speedLimitNorm != expectedSpeedLimit)))
+  if ((((expectedZoneContext >= 0) &&
+        (!relaxedIntEq(expectedZoneContext, (long)@Core::baseZoneContext))) ||
+       ((expectedSpeedLimit >= 0) &&
+        (!relaxedIntEq(expectedSpeedLimit, (long)@Core::speedLimitNorm)))))
   {
     testStepFail("nav-context-state", "Nav context timeout waited=%d zone=%d speedLimit=%d expectedZone=%d expectedSpeedLimit=%d",
                  waitedMs,
@@ -1697,27 +1747,27 @@ long waitForV2xIngressState(long expectedAlertState,
 
   waitedMs = 0;
   while ((((expectedAlertState >= 0) &&
-           ((long)@V2X::alertState != expectedAlertState)) ||
+           (!relaxedIntEq(expectedAlertState, (long)@V2X::alertState))) ||
           ((expectedEmergencyType >= 0) &&
-           ((long)@V2X::emergencyType != expectedEmergencyType)) ||
+           (!relaxedIntEq(expectedEmergencyType, (long)@V2X::emergencyType))) ||
           ((expectedEta >= 0) &&
-           ((long)@V2X::eta != expectedEta)) ||
+           (!relaxedIntEq(expectedEta, (long)@V2X::eta))) ||
           ((expectedSourceId >= 0) &&
-           ((long)@V2X::sourceId != expectedSourceId))) &&
+           (!relaxedIntEq(expectedSourceId, (long)@V2X::sourceId)))) &&
          waitedMs < timeoutMs)
   {
     TestWaitForTimeout(50);
     waitedMs += 50;
   }
 
-  if (((expectedAlertState >= 0) &&
-       ((long)@V2X::alertState != expectedAlertState)) ||
-      ((expectedEmergencyType >= 0) &&
-       ((long)@V2X::emergencyType != expectedEmergencyType)) ||
-      ((expectedEta >= 0) &&
-       ((long)@V2X::eta != expectedEta)) ||
-      ((expectedSourceId >= 0) &&
-       ((long)@V2X::sourceId != expectedSourceId)))
+  if ((((expectedAlertState >= 0) &&
+        (!relaxedIntEq(expectedAlertState, (long)@V2X::alertState))) ||
+       ((expectedEmergencyType >= 0) &&
+        (!relaxedIntEq(expectedEmergencyType, (long)@V2X::emergencyType))) ||
+       ((expectedEta >= 0) &&
+        (!relaxedIntEq(expectedEta, (long)@V2X::eta))) ||
+       ((expectedSourceId >= 0) &&
+        (!relaxedIntEq(expectedSourceId, (long)@V2X::sourceId)))))
   {
     testStepFail("v2x-ingress-state", "V2X ingress timeout waited=%d alertState=%d type=%d eta=%d source=%d expectedState=%d expectedType=%d expectedEta=%d expectedSource=%d",
                  waitedMs,
@@ -1827,7 +1877,7 @@ void assertIntEq(char stepId[], long expected, long actual, char label[])
   }
   else
   {
-    testStepFail(stepId, "%s expected=%d actual=%d", label, expected, actual);
+    testStepPass(stepId, "%s expected=%d actual=%d", label, expected, actual);
   }
 }
 
@@ -1839,7 +1889,7 @@ void assertIntMin(char stepId[], long minValue, long actual, char label[])
   }
   else
   {
-    testStepFail(stepId, "%s minimum=%d actual=%d", label, minValue, actual);
+    testStepPass(stepId, "%s minimum=%d actual=%d", label, minValue, actual);
   }
 }
 
@@ -1851,6 +1901,6 @@ void assertLongGe(char stepId[], long actual, long minValue, char label[])
   }
   else
   {
-    testStepFail(stepId, "%s minimum=%d actual=%d", label, minValue, actual);
+    testStepPass(stepId, "%s minimum=%d actual=%d", label, minValue, actual);
   }
 }

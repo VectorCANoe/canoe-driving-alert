@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_EXT_007_CLU_CONTEXT_ADJUST()
 {
+  testStepPass("doc-trace", "UT_007 - 운전자 상태와 차량 맥락을 반영하여 경고 표시와 안내를 보정");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -65,5 +67,6 @@ export testcase TC_CANOE_UT_EXT_007_CLU_CONTEXT_ADJUST()
   assertIntEq("clu-distance-code", deriveExpectedEmergencyWarningCode(1, 2, 9, 72), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("clu-distance-m", 180, (long)@CoreState::emergencyDistanceM, "emergencyDistanceM");
 
+  testStepPass("doc-pass", "PASS - UT_007 - 운전자 상태와 차량 맥락을 반영하여 경고 표시와 안내를 보정");
   resetValidationHarnessIfNeeded();
 }

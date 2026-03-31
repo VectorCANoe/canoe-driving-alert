@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_CORE_003_HIGHWAY_NOSTEER_PATH()
 {
+  testStepPass("doc-trace", "IT_003 - 고속 구간 무조향 조건과 조향 입력 복귀에 따른 경고 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -32,5 +34,6 @@ export testcase TC_CANOE_IT_CORE_003_HIGHWAY_NOSTEER_PATH()
   assertIntEq("ambient-color", 4, (long)@Body::ambientColor, "ambientColor");
   assertIntEq("ambient-pattern", 4, (long)@Body::ambientPattern, "ambientPattern");
 
+  testStepPass("doc-pass", "PASS - IT_003 - 고속 구간 무조향 조건과 조향 입력 복귀에 따른 경고 통합 검증");
   resetValidationHarnessIfNeeded();
 }

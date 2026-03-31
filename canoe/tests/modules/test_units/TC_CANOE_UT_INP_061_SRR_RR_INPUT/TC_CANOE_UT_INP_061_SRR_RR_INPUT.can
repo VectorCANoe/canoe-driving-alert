@@ -18,6 +18,8 @@ on message frmSrrRrStateMsg
 
 export testcase TC_CANOE_UT_INP_061_SRR_RR_INPUT()
 {
+  testStepPass("doc-trace", "UT_061 - 우후 측후방 레이더 상태를 입력");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -34,5 +36,6 @@ export testcase TC_CANOE_UT_INP_061_SRR_RR_INPUT()
   assertIntEq("s22_obsMergeCutIn", 1, waitForObservedMergeCutIn(1500), "obsMergeCutIn");
   assertIntEq("s22_mergeCutIn", 1, (long)@Test::obsMergeCutInFlag, "mergeCutInFlag");
 
+  testStepPass("doc-pass", "PASS - UT_061 - 우후 측후방 레이더 상태를 입력");
   resetValidationHarnessIfNeeded();
 }

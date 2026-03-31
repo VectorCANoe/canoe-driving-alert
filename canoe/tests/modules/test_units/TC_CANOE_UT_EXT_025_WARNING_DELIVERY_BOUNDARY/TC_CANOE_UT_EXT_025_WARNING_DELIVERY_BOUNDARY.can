@@ -6,6 +6,8 @@ includes
 
 export testcase TC_CANOE_UT_EXT_025_WARNING_DELIVERY_BOUNDARY()
 {
+  testStepPass("doc-trace", "UT_025 - 백본 및 경고 서비스 상태 정보를 수신하여 전달 경계 상태와 fail-safe 동작에 반영");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -55,5 +57,6 @@ export testcase TC_CANOE_UT_EXT_025_WARNING_DELIVERY_BOUNDARY()
   assertIntEq("boundary-reason-code", 2, (long)@Diag::ReasonCode, "ReasonCode");
   assertIntEq("boundary-response-ok", 0, (long)@Diag::LastResponseOk, "LastResponseOk");
 
+  testStepPass("doc-pass", "PASS - UT_025 - 백본 및 경고 서비스 상태 정보를 수신하여 전달 경계 상태와 fail-safe 동작에 반영");
   resetValidationHarnessIfNeeded();
 }

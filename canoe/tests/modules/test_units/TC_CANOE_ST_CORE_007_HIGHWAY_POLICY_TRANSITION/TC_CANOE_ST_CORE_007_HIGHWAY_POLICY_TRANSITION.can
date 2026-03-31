@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_CORE_007_HIGHWAY_POLICY_TRANSITION()
 {
+  testStepPass("doc-trace", "ST_007 - 일반 구간에서 고속 구간으로 전환되면 고속 구간 경고 판단 정책이 즉시 반영되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -47,5 +49,6 @@ export testcase TC_CANOE_ST_CORE_007_HIGHWAY_POLICY_TRANSITION()
   assertIntEq("st007-type", 0, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("st007-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - ST_007 - 일반 구간에서 고속 구간으로 전환되면 고속 구간 경고 판단 정책이 즉시 반영되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

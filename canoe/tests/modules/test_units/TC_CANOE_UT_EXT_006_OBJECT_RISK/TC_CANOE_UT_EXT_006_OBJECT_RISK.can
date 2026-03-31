@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_EXT_006_OBJECT_RISK()
 {
+  testStepPass("doc-trace", "UT_006 - 주변 객체와 센서 상태를 반영하여 위험 경고를 판단");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -89,5 +91,6 @@ export testcase TC_CANOE_UT_EXT_006_OBJECT_RISK()
   assertIntMin("object-degrade-failsafe", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
   assertIntEq("object-decel-off", 0, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
 
+  testStepPass("doc-pass", "PASS - UT_006 - 주변 객체와 센서 상태를 반영하여 위험 경고를 판단");
   resetValidationHarnessIfNeeded();
 }

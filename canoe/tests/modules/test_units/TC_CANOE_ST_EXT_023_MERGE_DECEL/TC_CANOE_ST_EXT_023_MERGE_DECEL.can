@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_EXT_023_MERGE_DECEL()
 {
+  testStepPass("doc-trace", "ST_023 - 합류 구간에서 긴급차량 접근과 TTC 충돌 위험이 함께 높아질 때 자동 감속 보조 요청과 경고 출력이 함께 활성되는지 확인한다. (SIL Scenario 238)");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(238, 900, 1300)) { return; }
   if (!waitForObservedDecelState(1, 1, 0, 1500) ||
@@ -21,5 +23,6 @@ export testcase TC_CANOE_ST_EXT_023_MERGE_DECEL()
   assertIntEq("st-merge-gate-clear", 0, (long)@Test::obsDecelGateReason, "ethDecelGateReason");
   assertIntEq("st-merge-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
   assertIntEq("st-merge-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  testStepPass("doc-pass", "PASS - ST_023 - 합류 구간에서 긴급차량 접근과 TTC 충돌 위험이 함께 높아질 때 자동 감속 보조 요청과 경고 출력이 함께 활성되는지 확인한다. (SIL Scenario 238)");
   resetValidationHarnessIfNeeded();
 }

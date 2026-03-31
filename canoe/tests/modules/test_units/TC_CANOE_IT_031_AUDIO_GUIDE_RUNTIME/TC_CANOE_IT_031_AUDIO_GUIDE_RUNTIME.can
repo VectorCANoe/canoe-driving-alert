@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_031_AUDIO_GUIDE_RUNTIME()
 {
+  testStepPass("doc-trace", "IT_031 - 오디오 동시 실행 환경에서 경고 인지성 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -31,5 +33,6 @@ export testcase TC_CANOE_IT_031_AUDIO_GUIDE_RUNTIME()
   assertIntMin("audio-runtime-ducking", 2, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
   assertIntEq("audio-runtime-popup-active", 0, (long)@CoreState::popupActive, "popupActive");
 
+  testStepPass("doc-pass", "PASS - IT_031 - 오디오 동시 실행 환경에서 경고 인지성 통합 검증");
   resetValidationHarnessIfNeeded();
 }

@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_030_SEATBELT_CONTEXT_ADJUST()
 {
+  testStepPass("doc-trace", "ST_030 - 안전벨트 및 운전자 상태 변화가 발생할 때 시스템 경고 안내가 맥락에 맞게 보정되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -31,5 +33,6 @@ export testcase TC_CANOE_ST_030_SEATBELT_CONTEXT_ADJUST()
   assertIntEq("context-adjust-alert-type", 3, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("context-adjust-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - ST_030 - 안전벨트 및 운전자 상태 변화가 발생할 때 시스템 경고 안내가 맥락에 맞게 보정되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

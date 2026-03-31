@@ -15,6 +15,8 @@ variables
 */
 export testcase TC_CANOE_ST_018_POLICE_TX_PERIOD()
 {
+  testStepPass("doc-trace", "ST_018 - 경찰 긴급 이벤트 발생 시 Ethernet 경로의 외부 송신 메시지가 정의된 `100ms` 주기로 연속 관찰되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -47,5 +49,6 @@ if (!waitForV2xIngressState(1, 1, 12, 11, 1500))
     - CAPL assertions here only confirm scenario contract and alert activation
   */
 
+  testStepPass("doc-pass", "PASS - ST_018 - 경찰 긴급 이벤트 발생 시 Ethernet 경로의 외부 송신 메시지가 정의된 `100ms` 주기로 연속 관찰되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

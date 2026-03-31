@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_EXT_012_OBJECT_RISK_EVENTLOG()
 {
+  testStepPass("doc-trace", "IT_012 - 객체 위험 판단, 입력 유효성 필터링 및 이벤트 기록 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -110,5 +112,6 @@ export testcase TC_CANOE_IT_EXT_012_OBJECT_RISK_EVENTLOG()
   assertIntMin("tracking-loss-risk-class", 3, (long)@Test::obsObjectRiskClass, "ethObjectRiskClass");
   assertIntMin("tracking-loss-event-code", 1381, (long)@Core::objectEventCode, "objectEventCode");
 
+  testStepPass("doc-pass", "PASS - IT_012 - 객체 위험 판단, 입력 유효성 필터링 및 이벤트 기록 통합 검증");
   resetValidationHarnessIfNeeded();
 }

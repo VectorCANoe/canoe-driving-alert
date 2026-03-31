@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_019_POWERTRAIN_PARKED_BASELINE()
 {
+  testStepPass("doc-trace", "IT_019 - 정차 및 Park 상태 기준 파워트레인 상태 반영 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -30,5 +32,6 @@ export testcase TC_CANOE_IT_019_POWERTRAIN_PARKED_BASELINE()
   assertIntEq("powertrain-parked-speed", 0, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
   assertIntEq("powertrain-parked-level", 0, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
 
+  testStepPass("doc-pass", "PASS - IT_019 - 정차 및 Park 상태 기준 파워트레인 상태 반영 통합 검증");
   resetValidationHarnessIfNeeded();
 }

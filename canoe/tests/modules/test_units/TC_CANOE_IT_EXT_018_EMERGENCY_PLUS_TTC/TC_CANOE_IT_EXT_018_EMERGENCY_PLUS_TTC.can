@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_EXT_018_EMERGENCY_PLUS_TTC()
 {
+  testStepPass("doc-trace", "IT_018 - 긴급차량 접근과 교차로/합류 TTC 충돌 위험 동시 입력 시 우선 경고 선택 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -35,5 +37,6 @@ export testcase TC_CANOE_IT_EXT_018_EMERGENCY_PLUS_TTC()
   assertIntEq("emergency-plus-ttc-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
   assertIntEq("emergency-plus-ttc-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
 
+  testStepPass("doc-pass", "PASS - IT_018 - 긴급차량 접근과 교차로/합류 TTC 충돌 위험 동시 입력 시 우선 경고 선택 통합 검증");
   resetValidationHarnessIfNeeded();
 }

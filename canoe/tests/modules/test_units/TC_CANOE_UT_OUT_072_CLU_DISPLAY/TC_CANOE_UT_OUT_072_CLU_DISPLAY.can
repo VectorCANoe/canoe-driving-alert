@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_OUT_072_CLU_DISPLAY()
 {
+  testStepPass("doc-trace", "UT_072 - 경고 문구와 팝업, 테마 정보를 수신하여 클러스터 표시에 반영");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -65,5 +67,6 @@ export testcase TC_CANOE_UT_OUT_072_CLU_DISPLAY()
   assertIntEq("clu-popup-active", 1, (long)@CoreState::popupActive, "popupActive");
   assertIntEq("clu-cluster-sync", 1, (long)@CoreState::clusterSyncState, "clusterSyncState");
 
+  testStepPass("doc-pass", "PASS - UT_072 - 경고 문구와 팝업, 테마 정보를 수신하여 클러스터 표시에 반영");
   resetValidationHarnessIfNeeded();
 }

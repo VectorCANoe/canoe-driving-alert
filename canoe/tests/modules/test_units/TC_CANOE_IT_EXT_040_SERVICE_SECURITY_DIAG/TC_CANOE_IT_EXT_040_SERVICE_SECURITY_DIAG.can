@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_EXT_040_SERVICE_SECURITY_DIAG()
 {
+  testStepPass("doc-trace", "IT_040 - 차량 서비스, 보안, 진단 상태 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   // Verify integrated service, security, and external diagnostic summary verdict.
   if (!resetValidationHarnessIfNeeded())
   {
@@ -47,5 +49,6 @@ export testcase TC_CANOE_IT_EXT_040_SERVICE_SECURITY_DIAG()
   assertLongGe("response-counter", (long)@Diag::ResponseCounter, 1, "ResponseCounter");
   assertLongGe("response-time", (long)@Diag::LastResponseTimeMs, 1, "LastResponseTimeMs");
 
+  testStepPass("doc-pass", "PASS - IT_040 - 차량 서비스, 보안, 진단 상태 통합 검증");
   resetValidationHarnessIfNeeded();
 }

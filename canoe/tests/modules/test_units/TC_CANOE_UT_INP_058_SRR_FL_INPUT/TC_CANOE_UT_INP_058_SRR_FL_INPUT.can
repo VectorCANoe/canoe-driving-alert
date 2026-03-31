@@ -18,6 +18,8 @@ on message frmSrrFlStateMsg
 
 export testcase TC_CANOE_UT_INP_058_SRR_FL_INPUT()
 {
+  testStepPass("doc-trace", "UT_058 - 좌전 측후방 레이더 상태를 입력");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   /* Scenario 21: lateral/intersection conflict scenario.
      Left front SRR detects crossing vehicle at intersection.
      ADAS_WARN_CTRL must raise intersection conflict flag via object risk path. */
@@ -37,5 +39,6 @@ export testcase TC_CANOE_UT_INP_058_SRR_FL_INPUT()
   assertIntEq("s21_obsIntersectionConflict", 1, waitForObservedIntersectionConflict(1500), "obsIntersectionConflict");
   assertIntEq("s21_intersectionConflict", 1, (long)@Test::obsIntersectionConflictFlag, "intersectionConflictFlag");
 
+  testStepPass("doc-pass", "PASS - UT_058 - 좌전 측후방 레이더 상태를 입력");
   resetValidationHarnessIfNeeded();
 }

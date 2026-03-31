@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_INP_065_ETHB_INPUT()
 {
+  testStepPass("doc-trace", "UT_065 - 백본 서비스 상태를 입력");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -24,5 +26,6 @@ export testcase TC_CANOE_UT_INP_065_ETHB_INPUT()
   assertIntEq("s18_failSafeMode", 1, (long)@Test::obsFailSafeMode, "obsFailSafeMode");
   assertIntEq("s18_coreFailSafe", 1, (long)@Core::failSafeMode, "coreFailSafeMode");
 
+  testStepPass("doc-pass", "PASS - UT_065 - 백본 서비스 상태를 입력");
   resetValidationHarnessIfNeeded();
 }

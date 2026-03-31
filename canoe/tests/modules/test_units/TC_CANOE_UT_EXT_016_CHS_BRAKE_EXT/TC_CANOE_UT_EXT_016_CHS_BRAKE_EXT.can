@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_EXT_016_CHS_BRAKE_EXT()
 {
+  testStepPass("doc-trace", "UT_016 - 전동 주차와 제동 보조 상태를 수신하여 경고 판단 경로에 전달");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -44,5 +46,6 @@ export testcase TC_CANOE_UT_EXT_016_CHS_BRAKE_EXT()
   assertIntMin("chs-brake-stop-pedal", 30, (long)@Core::brakePedalNorm, "brakePedalNorm");
   assertIntEq("chs-brake-stop-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - UT_016 - 전동 주차와 제동 보조 상태를 수신하여 경고 판단 경로에 전달");
   resetValidationHarnessIfNeeded();
 }

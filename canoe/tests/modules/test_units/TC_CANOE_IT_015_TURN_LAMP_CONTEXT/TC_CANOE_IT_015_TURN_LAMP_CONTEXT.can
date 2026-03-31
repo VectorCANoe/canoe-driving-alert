@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_015_TURN_LAMP_CONTEXT()
 {
+  testStepPass("doc-trace", "IT_015 - 방향지시등 상태 기반 경고 타입 보정 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -31,5 +33,6 @@ export testcase TC_CANOE_IT_015_TURN_LAMP_CONTEXT()
   assertIntEq("turn-lamp-context-type", 6, getCanonicalSelectedAlertType(), "selectedAlertType");
   assertIntEq("turn-lamp-context-state", 2, (long)@CoreState::turnLampState, "turnLampState");
 
+  testStepPass("doc-pass", "PASS - IT_015 - 방향지시등 상태 기반 경고 타입 보정 통합 검증");
   resetValidationHarnessIfNeeded();
 }

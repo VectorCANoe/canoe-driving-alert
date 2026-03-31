@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_EXT_028_LATERAL_OBJECT_RISK()
 {
+  testStepPass("doc-trace", "ST_028 - 교차로 측방 접근이 발생할 때 위험 경고와 이벤트 기록이 일관되게 동작하는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -33,5 +35,6 @@ export testcase TC_CANOE_ST_EXT_028_LATERAL_OBJECT_RISK()
   assertIntEq("lateral-object-alert-type", 5, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
   assertIntEq("lateral-object-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
+  testStepPass("doc-pass", "PASS - ST_028 - 교차로 측방 접근이 발생할 때 위험 경고와 이벤트 기록이 일관되게 동작하는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

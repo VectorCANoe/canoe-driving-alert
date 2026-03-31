@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_V2_005_AMBULANCE_RX()
 {
+  testStepPass("doc-trace", "IT_005 - 구급 긴급 알림 수신 및 경고 반영 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -38,5 +40,6 @@ if (!waitForV2xIngressState(1, 2, 8, 22, 1500))
   assertIntEq("source-id", 22, (long)@V2X::sourceId, "sourceId");
   assertIntEq("fail-safe-clear", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
+  testStepPass("doc-pass", "PASS - IT_005 - 구급 긴급 알림 수신 및 경고 반영 통합 검증");
   resetValidationHarnessIfNeeded();
 }

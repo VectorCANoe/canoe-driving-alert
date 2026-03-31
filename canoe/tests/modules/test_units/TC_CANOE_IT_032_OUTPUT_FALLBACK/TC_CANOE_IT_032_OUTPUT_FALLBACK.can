@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_032_OUTPUT_FALLBACK()
 {
+  testStepPass("doc-trace", "IT_032 - 출력 채널 가용성 판정 및 대체 경고 유지 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -29,5 +31,6 @@ export testcase TC_CANOE_IT_032_OUTPUT_FALLBACK()
   assertIntMin("output-fallback-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
   assertIntMin("output-fallback-mode", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
+  testStepPass("doc-pass", "PASS - IT_032 - 출력 채널 가용성 판정 및 대체 경고 유지 통합 검증");
   resetValidationHarnessIfNeeded();
 }

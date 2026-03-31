@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_035_TIMEOUT_CLEAR_RESTORE()
 {
+  testStepPass("doc-trace", "ST_035 - 긴급 경고 timeout clear 이후 이전 유효 경고가 불필요한 진동 없이 안정적으로 복원되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -29,5 +31,6 @@ export testcase TC_CANOE_ST_035_TIMEOUT_CLEAR_RESTORE()
   assertIntEq("delay-stability-restore-level", 3, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
   assertIntEq("delay-stability-restore-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
+  testStepPass("doc-pass", "PASS - ST_035 - 긴급 경고 timeout clear 이후 이전 유효 경고가 불필요한 진동 없이 안정적으로 복원되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

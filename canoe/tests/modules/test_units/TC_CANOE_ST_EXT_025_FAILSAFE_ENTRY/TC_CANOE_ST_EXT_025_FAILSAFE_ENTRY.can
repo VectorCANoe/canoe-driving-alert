@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_EXT_025_FAILSAFE_ENTRY()
 {
+  testStepPass("doc-trace", "ST_025 - 경고 전달 이상이 발생하면 자동 감속 보조가 차단되고 최소 경고 채널이 유지되며 fail-safe로 전환되는지 확인한다. (SIL Scenario 18)");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(18, 900, 1400)) { return; }
   if (!waitForObservedFailSafe(1200) ||
@@ -21,5 +23,6 @@ export testcase TC_CANOE_ST_EXT_025_FAILSAFE_ENTRY()
   assertIntEq("st-failsafe-entry-gate", 3, (long)@Test::obsDecelGateReason, "ethDecelGateReason");
   assertIntMin("st-failsafe-entry-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
   assertIntEq("st-failsafe-entry-type", 1, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  testStepPass("doc-pass", "PASS - ST_025 - 경고 전달 이상이 발생하면 자동 감속 보조가 차단되고 최소 경고 채널이 유지되며 fail-safe로 전환되는지 확인한다. (SIL Scenario 18)");
   resetValidationHarnessIfNeeded();
 }

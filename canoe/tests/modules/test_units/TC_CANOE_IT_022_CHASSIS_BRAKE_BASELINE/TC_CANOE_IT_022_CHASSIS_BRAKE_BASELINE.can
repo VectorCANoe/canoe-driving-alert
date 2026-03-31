@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_022_CHASSIS_BRAKE_BASELINE()
 {
+  testStepPass("doc-trace", "IT_022 - 제동 입력 기준 chassis 상태 반영 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -30,5 +32,6 @@ export testcase TC_CANOE_IT_022_CHASSIS_BRAKE_BASELINE()
   assertIntEq("chassis-brake-steer", 0, (long)@Core::steeringInputNorm, "steeringInputNorm");
   assertIntMin("chassis-brake-pedal", 20, (long)@Core::brakePedalNorm, "brakePedalNorm");
 
+  testStepPass("doc-pass", "PASS - IT_022 - 제동 입력 기준 chassis 상태 반영 통합 검증");
   resetValidationHarnessIfNeeded();
 }

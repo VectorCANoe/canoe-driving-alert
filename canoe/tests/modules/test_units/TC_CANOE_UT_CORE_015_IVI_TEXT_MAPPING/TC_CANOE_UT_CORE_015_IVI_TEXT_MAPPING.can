@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING()
 {
+  testStepPass("doc-trace", "UT_015 - 경고 문구와 방향 표시를 50ms 주기로 출력");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -30,5 +32,6 @@ export testcase TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING()
   assertIntEq("warning-text-code", deriveExpectedEmergencyWarningCode(1, 1, 12, 40), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("fail-safe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - UT_015 - 경고 문구와 방향 표시를 50ms 주기로 출력");
   resetValidationHarnessIfNeeded();
 }

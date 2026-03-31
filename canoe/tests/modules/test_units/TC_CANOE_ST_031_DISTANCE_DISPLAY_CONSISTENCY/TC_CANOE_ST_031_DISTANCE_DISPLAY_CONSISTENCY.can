@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_031_DISTANCE_DISPLAY_CONSISTENCY()
 {
+  testStepPass("doc-trace", "ST_031 - 긴급 접근거리 표시가 경고 안내와 함께 사용자 화면에 일관되게 반영되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -29,5 +31,6 @@ export testcase TC_CANOE_ST_031_DISTANCE_DISPLAY_CONSISTENCY()
   assertIntEq("context-adjust-code", deriveExpectedEmergencyWarningCode(1, 2, 9, 72), (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("context-adjust-failsafe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");
 
+  testStepPass("doc-pass", "PASS - ST_031 - 긴급 접근거리 표시가 경고 안내와 함께 사용자 화면에 일관되게 반영되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

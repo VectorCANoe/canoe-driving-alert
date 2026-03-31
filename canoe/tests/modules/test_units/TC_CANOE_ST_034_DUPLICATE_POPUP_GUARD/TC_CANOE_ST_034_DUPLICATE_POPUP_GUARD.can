@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_034_DUPLICATE_POPUP_GUARD()
 {
+  testStepPass("doc-trace", "ST_034 - 짧은 시간 내 동일 경고가 재진입해도 중복 팝업 억제와 경고 안내 안정성이 유지되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -29,5 +31,6 @@ export testcase TC_CANOE_ST_034_DUPLICATE_POPUP_GUARD()
 
   assertIntMin("delay-stability-guard", 1, (long)@CoreState::duplicatePopupGuard, "duplicatePopupGuard");
 
+  testStepPass("doc-pass", "PASS - ST_034 - 짧은 시간 내 동일 경고가 재진입해도 중복 팝업 억제와 경고 안내 안정성이 유지되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

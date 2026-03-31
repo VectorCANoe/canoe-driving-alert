@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_CORE_004_V2X_EVENT_MAINTAIN()
 {
+  testStepPass("doc-trace", "UT_004 - 긴급차량 접근 정보를 수신하고 1000ms 기준 유지, 해제, 타임아웃을 관리");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -30,5 +32,6 @@ export testcase TC_CANOE_UT_CORE_004_V2X_EVENT_MAINTAIN()
   assertIntEq("v2x-source-id", 99, (long)@V2X::sourceId, "sourceId");
   assertIntEq("selected-alert-level", 6, getCanonicalSelectedAlertLevel(), "selectedAlertLevel");
 
+  testStepPass("doc-pass", "PASS - UT_004 - 긴급차량 접근 정보를 수신하고 1000ms 기준 유지, 해제, 타임아웃을 관리");
   resetValidationHarnessIfNeeded();
 }

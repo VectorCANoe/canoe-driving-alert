@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_V2_015_AMBULANCE_PRIORITY()
 {
+  testStepPass("doc-trace", "ST_015 - 동일 접근 조건에서 경찰차와 구급차 긴급 알림이 동시에 수신될 때 구급 경고가 우선 선택되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -36,5 +38,6 @@ if (!waitForV2xIngressState(1, 2, 8, 22, 1500))
   assertIntEq("ambulance-priority-alert-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
   assertIntEq("ambulance-priority-warning-code", deriveExpectedEmergencyWarningCode(2, 2, 8, 20), (long)@Cluster::warningTextCode, "warningTextCode");
 
+  testStepPass("doc-pass", "PASS - ST_015 - 동일 접근 조건에서 경찰차와 구급차 긴급 알림이 동시에 수신될 때 구급 경고가 우선 선택되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_CORE_009_GUIDE_LEFT()
 {
+  testStepPass("doc-trace", "ST_009 - 유도 구간에서 좌회전 안내가 들어오면 좌측 방향 정보와 경고 안내가 일관되게 표시되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -33,5 +35,6 @@ export testcase TC_CANOE_ST_CORE_009_GUIDE_LEFT()
   assertIntEq("st009-code", 31, (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("st009-ambient-pattern", 2, (long)@Body::ambientPattern, "ambientPattern");
 
+  testStepPass("doc-pass", "PASS - ST_009 - 유도 구간에서 좌회전 안내가 들어오면 좌측 방향 정보와 경고 안내가 일관되게 표시되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }

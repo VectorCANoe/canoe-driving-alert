@@ -44,7 +44,7 @@ CMD_DEFAULTS: Dict[str, int] = {
     "Cmd::steeringAngleCmd": 0,
     "Cmd::cruiseStateCmd": 0,
     "Cmd::cruiseSetSpeedCmd": 0,
-    "Cmd::ambientModeCmd": 0,
+    "Body::ambientMode": 0,
     "Cmd::doorLockCmd": 0,
     "Cmd::doorOpenCmd": 0,
     "Cmd::windowCmd": 0,
@@ -58,6 +58,8 @@ CORE_READ_VARS: List[str] = [
     "Chassis::throttlePosition",
     "Chassis::brakePressure",
     "Chassis::steeringAngle",
+    "Display::steeringFrame",
+    "Display::animFrame",
     "Powertrain::cruiseSetSpeed",
     "Body::ambientMode",
     "Body::windowPos",
@@ -192,8 +194,10 @@ def main() -> int:
         build_step(
             "baseline_idle",
             baseline,
-            baseline["Chassis::driveState"] == 0 and baseline["Chassis::vehicleSpeed"] == 0,
-            "P idle must remain driveState=0 and vehicleSpeed=0",
+            baseline["Chassis::driveState"] == 0
+            and baseline["Chassis::vehicleSpeed"] == 0
+            and baseline["Display::steeringFrame"] == 35,
+            "P idle must remain driveState=0, vehicleSpeed=0, and steeringFrame centered",
         )
     )
 
@@ -205,8 +209,9 @@ def main() -> int:
             d_full,
             d_full["Chassis::driveState"] == 3
             and d_full["Chassis::throttlePosition"] == 100
-            and d_full["Chassis::vehicleSpeed"] >= 100,
-            "D + throttle100 should reach driveState=3, throttlePosition=100, vehicleSpeed>=100 within the baseline acceleration window",
+            and d_full["Chassis::vehicleSpeed"] >= 100
+            and d_full["Display::animFrame"] > 0,
+            "D + throttle100 should reach driveState=3, throttlePosition=100, vehicleSpeed>=100, and animFrame>0 within the baseline acceleration window",
         )
     )
 
@@ -257,8 +262,8 @@ def main() -> int:
         build_step(
             "steering_left_extreme",
             steer_left,
-            steer_left["Chassis::steeringAngle"] == 0,
-            "Steering -540 should map to the left legacy extreme",
+            steer_left["Chassis::steeringAngle"] == 0 and steer_left["Display::steeringFrame"] == 0,
+            "Steering -540 should map to the left legacy extreme and steeringFrame=0",
         )
     )
 
@@ -268,8 +273,8 @@ def main() -> int:
         build_step(
             "steering_right_extreme",
             steer_right,
-            steer_right["Chassis::steeringAngle"] == 138,
-            "Steering +540 should map to the right legacy extreme",
+            steer_right["Chassis::steeringAngle"] == 138 and steer_right["Display::steeringFrame"] == 69,
+            "Steering +540 should map to the right legacy extreme and steeringFrame=69",
         )
     )
 
@@ -295,14 +300,14 @@ def main() -> int:
     )
 
     hard_stop(client)
-    apply_cmds(client, {"Cmd::ambientModeCmd": 3}, 500)
+    apply_cmds(client, {"Body::ambientMode": 3}, 500)
     ambient = sample_core(client)
     steps.append(
         build_step(
             "ambient_manual_apply",
             ambient,
             ambient["Body::ambientMode"] == 3,
-            "ambientModeCmd=3 should reflect to Body::ambientMode=3",
+            "Body::ambientMode=3 should remain reflected at owner output",
         )
     )
 

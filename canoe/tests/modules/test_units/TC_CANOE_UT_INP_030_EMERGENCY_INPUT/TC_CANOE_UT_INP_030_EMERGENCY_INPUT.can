@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_INP_030_EMERGENCY_INPUT()
 {
+  testStepPass("doc-trace", "UT_030 - 경찰, 구급 긴급 접근 정보와 도착예정시간(s) 입력을 생성");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -45,5 +47,6 @@ if (!waitForV2xIngressState(1, 2, 8, 22, 1500))
   assertIntEq("s5_alertState", 1, (long)@V2X::alertState, "alertState");
   assertIntEq("s5_emergencyType", 2, (long)@V2X::emergencyType, "emergencyType");
 
+  testStepPass("doc-pass", "PASS - UT_030 - 경찰, 구급 긴급 접근 정보와 도착예정시간(s) 입력을 생성");
   resetValidationHarnessIfNeeded();
 }

@@ -6,6 +6,8 @@ includes
 
 export testcase TC_CANOE_UT_OUT_075_DECEL_ASSIST_REQ()
 {
+  testStepPass("doc-trace", "UT_075 - 위험도와 fail-safe 상태에 따라 자동 감속 보조 요청을 출력");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -53,5 +55,6 @@ export testcase TC_CANOE_UT_OUT_075_DECEL_ASSIST_REQ()
   assertIntEq("decel-assist-gated", 3, (long)@Test::obsDecelGateReason, "ethDecelGateReason");
   assertIntMin("decel-assist-failsafe", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
+  testStepPass("doc-pass", "PASS - UT_075 - 위험도와 fail-safe 상태에 따라 자동 감속 보조 요청을 출력");
   resetValidationHarnessIfNeeded();
 }

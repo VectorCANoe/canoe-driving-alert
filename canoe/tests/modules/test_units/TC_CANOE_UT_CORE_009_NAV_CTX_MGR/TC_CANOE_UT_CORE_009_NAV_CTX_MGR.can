@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_CORE_009_NAV_CTX_MGR()
 {
+  testStepPass("doc-trace", "UT_009 - 구간, 방향, 거리, 제한속도 정보를 받아 주행 맥락을 계산");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -72,5 +74,6 @@ export testcase TC_CANOE_UT_CORE_009_NAV_CTX_MGR()
   }
   assertIntEq("nav-guide-right-zone", 4, (long)@Core::baseZoneContext, "baseZoneContext");
 
+  testStepPass("doc-pass", "PASS - UT_009 - 구간, 방향, 거리, 제한속도 정보를 받아 주행 맥락을 계산");
   resetValidationHarnessIfNeeded();
 }

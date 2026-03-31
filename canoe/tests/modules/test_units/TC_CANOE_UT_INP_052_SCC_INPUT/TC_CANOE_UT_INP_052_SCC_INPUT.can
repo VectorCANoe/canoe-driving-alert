@@ -6,6 +6,8 @@ includes
 
 export testcase TC_CANOE_UT_INP_052_SCC_INPUT()
 {
+  testStepPass("doc-trace", "UT_052 - 주행 보조 ECU 상태 정보를 입력");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   /* Scenario 16: proximity decel scenario.
      Current DBC has no dedicated SCC state frame, so this TC closes on the
      scenario contract through the decel-assist observer and Core state. */
@@ -25,5 +27,6 @@ export testcase TC_CANOE_UT_INP_052_SCC_INPUT()
   assertIntEq("s16_decelGateReason", 0, (long)@Test::obsDecelGateReason, "decelGateReason");
   assertIntEq("s16_coreDecelAssistReq", 1, (long)@Core::decelAssistReq, "coreDecelAssistReq");
 
+  testStepPass("doc-pass", "PASS - UT_052 - 주행 보조 ECU 상태 정보를 입력");
   resetValidationHarnessIfNeeded();
 }

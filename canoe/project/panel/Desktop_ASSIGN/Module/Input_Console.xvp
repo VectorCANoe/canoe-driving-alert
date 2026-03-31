@@ -298,25 +298,27 @@
           <Property Name="UseWindowsStyle">False</Property>
         </Object>
         <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BodyGroup" ControlName="BodyGroup">
-          <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AmbientModeCombo" ControlName="AmbientModeCombo">
-            <Property Name="Name">AmbientModeCombo</Property>
-            <Property Name="Size">252, 21</Property>
-            <Property Name="Location">420, 146</Property>
-            <Property Name="DisplayLabel">Left</Property>
-            <Property Name="DescriptionSize">82, 21</Property>
+          <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AmbientModeTrack" ControlName="AmbientModeTrack">
+            <Property Name="Name">AmbientModeTrack</Property>
+            <Property Name="Size">252, 30</Property>
+            <Property Name="Location">420, 142</Property>
             <Property Name="TabIndex">0</Property>
-            <Property Name="DescriptionText">AMBIENT 0-7</Property>
-            <Property Name="UsedValueTable">PhysicalValue</Property>
-            <Property Name="SymbolConfiguration">8;16;Cmd;;;ambientModeCmd;1;;;-1;;;Value;;;0</Property>
-            <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
+            <Property Name="MaximumDouble">7</Property>
+            <Property Name="MinimumDouble">0</Property>
+            <Property Name="LargeChangeDouble">1</Property>
+            <Property Name="MaximumSize">100000, 30</Property>
+            <Property Name="Minimum">0</Property>
+            <Property Name="Maximum">7</Property>
+            <Property Name="LargeChange">1</Property>
+            <Property Name="SymbolConfiguration">8;16;Body;;;ambientMode;1;;;-1;;;Value;;;0</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AmbientModeHint" ControlName="AmbientModeHint">
             <Property Name="Name">AmbientModeHint</Property>
             <Property Name="Size">252, 14</Property>
-            <Property Name="Location">502, 168</Property>
+            <Property Name="Location">502, 172</Property>
             <Property Name="ForeColor">DimGray</Property>
             <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
-            <Property Name="Text">select numeric mode 0..7, live box should follow</Property>
+            <Property Name="Text">drag 0..7, live box should follow</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="AmbientStateLabel" ControlName="AmbientStateLabel">
             <Property Name="Name">AmbientStateLabel</Property>
@@ -1834,7 +1836,7 @@ source below</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="BaseVolumeReadBox" ControlName="BaseVolumeReadBox">
             <Property Name="Name">BaseVolumeReadBox</Property>
-            <Property Name="Size">184, 21</Property>
+            <Property Name="Size">126, 21</Property>
             <Property Name="Location">12, 208</Property>
             <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
             <Property Name="AlarmLowerBkgColor">Salmon</Property>
@@ -1846,17 +1848,17 @@ source below</Property>
             <Property Name="ReadOnlyControl">True</Property>
             <Property Name="TabIndex">0</Property>
             <Property Name="TabStopActive">False</Property>
-            <Property Name="DescriptionText">AMP base:</Property>
+            <Property Name="DescriptionText">V2X frm:</Property>
             <Property Name="ValueDecimalPlaces">0</Property>
             <Property Name="ValueDisplay">Decimal</Property>
             <Property Name="UsedValueTable">PhysicalValue</Property>
-            <Property Name="DescriptionSize">84, 21</Property>
-            <Property Name="SymbolConfiguration">8;16;CoreState;;;baseVolume;1;;;-1;;;Value;;;0</Property>
+            <Property Name="DescriptionSize">52, 21</Property>
+            <Property Name="SymbolConfiguration">8;16;V2X;;;v2xFrame;1;;;-1;;;Value;;;0</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RenderVolumeReadBox" ControlName="RenderVolumeReadBox">
             <Property Name="Name">RenderVolumeReadBox</Property>
-            <Property Name="Size">184, 21</Property>
-            <Property Name="Location">210, 208</Property>
+            <Property Name="Size">126, 21</Property>
+            <Property Name="Location">142, 208</Property>
             <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
             <Property Name="AlarmLowerBkgColor">Salmon</Property>
             <Property Name="AlarmLowerTextColor">Black</Property>
@@ -1867,12 +1869,33 @@ source below</Property>
             <Property Name="ReadOnlyControl">True</Property>
             <Property Name="TabIndex">0</Property>
             <Property Name="TabStopActive">False</Property>
-            <Property Name="DescriptionText">AMP rend:</Property>
+            <Property Name="DescriptionText">My frm:</Property>
             <Property Name="ValueDecimalPlaces">0</Property>
             <Property Name="ValueDisplay">Decimal</Property>
             <Property Name="UsedValueTable">PhysicalValue</Property>
-            <Property Name="DescriptionSize">84, 21</Property>
-            <Property Name="SymbolConfiguration">8;16;UiRender;;;renderVolumLevel;1;;;-1;;;Value;;;0</Property>
+            <Property Name="DescriptionSize">52, 21</Property>
+            <Property Name="SymbolConfiguration">8;16;V2X;;;MyCarFrame;1;;;-1;;;Value;;;0</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CrossAmbReadBox" ControlName="CrossAmbReadBox">
+            <Property Name="Name">CrossAmbReadBox</Property>
+            <Property Name="Size">126, 21</Property>
+            <Property Name="Location">272, 208</Property>
+            <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+            <Property Name="AlarmLowerBkgColor">Salmon</Property>
+            <Property Name="AlarmLowerTextColor">Black</Property>
+            <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+            <Property Name="AlarmUpperTextColor">Black</Property>
+            <Property Name="BoxBorderStyle">FixedSingle</Property>
+            <Property Name="DisplayLabel">Left</Property>
+            <Property Name="ReadOnlyControl">True</Property>
+            <Property Name="TabIndex">0</Property>
+            <Property Name="TabStopActive">False</Property>
+            <Property Name="DescriptionText">Amb frm:</Property>
+            <Property Name="ValueDecimalPlaces">0</Property>
+            <Property Name="ValueDisplay">Decimal</Property>
+            <Property Name="UsedValueTable">PhysicalValue</Property>
+            <Property Name="DescriptionSize">56, 21</Property>
+            <Property Name="SymbolConfiguration">8;16;V2X;;;AmbFrame;1;;;-1;;;Value;;;0</Property>
           </Object>
           <Property Name="Name">ContextPathGroup</Property>
           <Property Name="Size">406, 236</Property>
@@ -2226,7 +2249,7 @@ If Ack stays unchanged, the preset was not accepted. STOP releases scenario cont
             <Property Name="ColorOn">Black</Property>
             <Property Name="DecimalPlaces">0</Property>
             <Property Name="NumberIntDigits">3</Property>
-            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioLampStop;2;;;-1;;;Value;;;0</Property>
+            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioActiveId;2;;;-1;;;Value;;;0</Property>
             <Property Name="DescriptionSize">0, 0</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
@@ -2248,7 +2271,7 @@ If Ack stays unchanged, the preset was not accepted. STOP releases scenario cont
             <Property Name="ColorOn">Black</Property>
             <Property Name="DecimalPlaces">0</Property>
             <Property Name="NumberIntDigits">2</Property>
-            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioLampWarn;2;;;-1;;;Value;;;0</Property>
+            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioResult;2;;;-1;;;Value;;;0</Property>
             <Property Name="DescriptionSize">0, 0</Property>
             <Property Name="DisplayLabel">Left</Property>
             <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
@@ -2293,7 +2316,7 @@ If Ack stays unchanged, the preset was not accepted. STOP releases scenario cont
             <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Crimson&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Silver&lt;/Color&gt;</Property>
             <Property Name="UsedLEDColorOff">Silver</Property>
             <Property Name="UsedLEDColorOn">Crimson</Property>
-            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioLampRun;2;;;-1;;;Value;;;0</Property>
+            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioLampStop;2;;;-1;;;Value;;;0</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StopLedLabel" ControlName="StopLedLabel">
             <Property Name="Name">StopLedLabel</Property>
@@ -2313,7 +2336,7 @@ If Ack stays unchanged, the preset was not accepted. STOP releases scenario cont
             <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Silver&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Gold&lt;/Color&gt;</Property>
             <Property Name="UsedLEDColorOff">Silver</Property>
             <Property Name="UsedLEDColorOn">Gold</Property>
-            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioResult;2;;;-1;;;Value;;;0</Property>
+            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioLampWarn;2;;;-1;;;Value;;;0</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="WarnLedLabel" ControlName="WarnLedLabel">
             <Property Name="Name">WarnLedLabel</Property>
@@ -2333,7 +2356,7 @@ If Ack stays unchanged, the preset was not accepted. STOP releases scenario cont
             <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Silver&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;LimeGreen&lt;/Color&gt;</Property>
             <Property Name="UsedLEDColorOff">Silver</Property>
             <Property Name="UsedLEDColorOn">LimeGreen</Property>
-            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioActiveId;2;;;-1;;;Value;;;0</Property>
+            <Property Name="SymbolConfiguration">8;16;Test;;;scenarioLampRun;2;;;-1;;;Value;;;0</Property>
           </Object>
           <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RunLedLabel" ControlName="RunLedLabel">
             <Property Name="Name">RunLedLabel</Property>

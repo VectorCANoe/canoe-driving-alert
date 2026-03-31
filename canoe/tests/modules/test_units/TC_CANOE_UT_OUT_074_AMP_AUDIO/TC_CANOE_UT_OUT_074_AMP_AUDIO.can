@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_UT_OUT_074_AMP_AUDIO()
 {
+  testStepPass("doc-trace", "UT_074 - 오디오 포커스와 음성안내, TTS 상태를 수신하여 오디오 안내에 반영");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -30,5 +32,6 @@ export testcase TC_CANOE_UT_OUT_074_AMP_AUDIO()
   assertIntMin("amp-audio-volume", 20, (long)@CoreState::volumeLevel, "volumeLevel");
   assertIntEq("amp-audio-popup-clear", 0, (long)@CoreState::popupActive, "popupActive");
 
+  testStepPass("doc-pass", "PASS - UT_074 - 오디오 포커스와 음성안내, TTS 상태를 수신하여 오디오 안내에 반영");
   resetValidationHarnessIfNeeded();
 }

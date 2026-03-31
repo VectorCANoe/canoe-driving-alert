@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_BASE_030_BODY_SECURITY_CONTEXT()
 {
+  testStepPass("doc-trace", "IT_030 - 보안 상태 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -29,5 +31,6 @@ export testcase TC_CANOE_IT_BASE_030_BODY_SECURITY_CONTEXT()
   assertIntMin("body-security-diag-state", 1, (long)@Diag::SecurityState, "SecurityState");
   assertIntEq("body-security-route-owner", 1, (long)@Diag::RouteOwner, "RouteOwner");
 
+  testStepPass("doc-pass", "PASS - IT_030 - 보안 상태 통합 검증");
   resetValidationHarnessIfNeeded();
 }

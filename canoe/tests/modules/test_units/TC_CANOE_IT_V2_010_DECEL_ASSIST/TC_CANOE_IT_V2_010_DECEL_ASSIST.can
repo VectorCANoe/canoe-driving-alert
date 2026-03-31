@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_V2_010_DECEL_ASSIST()
 {
+  testStepPass("doc-trace", "IT_010 - 긴급차량 근접 위험도 기반 감속 보조 요청과 경고 출력 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -35,5 +37,6 @@ export testcase TC_CANOE_IT_V2_010_DECEL_ASSIST()
   assertIntEq("selected-alert-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
   assertIntEq("fail-safe-clear", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
+  testStepPass("doc-pass", "PASS - IT_010 - 긴급차량 근접 위험도 기반 감속 보조 요청과 경고 출력 통합 검증");
   resetValidationHarnessIfNeeded();
 }

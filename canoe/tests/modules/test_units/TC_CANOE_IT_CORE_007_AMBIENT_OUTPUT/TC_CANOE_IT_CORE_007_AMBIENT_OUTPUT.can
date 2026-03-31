@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_CORE_007_AMBIENT_OUTPUT()
 {
+  testStepPass("doc-trace", "IT_007 - 기본 경고 및 긴급 경고 결과의 앰비언트 출력 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -32,5 +34,6 @@ if (!waitForV2xIngressState(1, 1, 12, 11, 1500) ||
   assertIntEq("ambient-color", 6, (long)@Body::ambientColor, "ambientColor");
   assertIntEq("ambient-pattern", 6, (long)@Body::ambientPattern, "ambientPattern");
 
+  testStepPass("doc-pass", "PASS - IT_007 - 기본 경고 및 긴급 경고 결과의 앰비언트 출력 통합 검증");
   resetValidationHarnessIfNeeded();
 }

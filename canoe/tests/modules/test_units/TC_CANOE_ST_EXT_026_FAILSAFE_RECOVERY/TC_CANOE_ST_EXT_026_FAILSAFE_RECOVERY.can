@@ -10,10 +10,13 @@ variables
 
 export testcase TC_CANOE_ST_EXT_026_FAILSAFE_RECOVERY()
 {
+  testStepPass("doc-trace", "ST_026 - 경고 전달 이상 해제 후 시스템이 정상 경로로 복귀하는지 확인한다. (SIL Scenario 18)");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(201, 1500, 2100)) { return; }
   if (!waitForObservedFailSafe(1200)) { resetValidationHarnessIfNeeded(); return; }
   assertIntEq("st-failsafe-recovery-observed-mode", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
   assertIntEq("st-failsafe-recovery-mode", 0, (long)@Core::failSafeMode, "failSafeMode");
+  testStepPass("doc-pass", "PASS - ST_026 - 경고 전달 이상 해제 후 시스템이 정상 경로로 복귀하는지 확인한다. (SIL Scenario 18)");
   resetValidationHarnessIfNeeded();
 }

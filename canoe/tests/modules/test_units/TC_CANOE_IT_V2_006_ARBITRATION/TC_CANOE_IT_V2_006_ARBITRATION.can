@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_IT_V2_006_ARBITRATION()
 {
+  testStepPass("doc-trace", "IT_006 - 긴급 경고, 구간 경고, 긴급차량 유형 간 우선순위 통합 검증");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -105,5 +107,6 @@ if (!waitForV2xIngressState(1, 2, 8, 22, 1500))
   assertIntEq("ambulance-priority-alert-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
   assertIntEq("ambulance-priority-code", deriveExpectedEmergencyWarningCode(2, 2, 8, 20), (long)@Cluster::warningTextCode, "warningTextCode");
 
+  testStepPass("doc-pass", "PASS - IT_006 - 긴급 경고, 구간 경고, 긴급차량 유형 간 우선순위 통합 검증");
   resetValidationHarnessIfNeeded();
 }

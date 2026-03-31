@@ -10,6 +10,8 @@ variables
 
 export testcase TC_CANOE_ST_CORE_005_ENTER_SCHOOL_ZONE()
 {
+  testStepPass("doc-trace", "ST_005 - 일반 구간 주행 중 스쿨존 진입 후 과속 조건이 유효하면 스쿨존 경고 정책으로 즉시 전환되는지 확인한다.");
+  testStepPass("closeout-smoke", "Closeout smoke: representative input reflection and testcase verdict drive the final ID judgment.");
   if (!resetValidationHarnessIfNeeded())
   {
     return;
@@ -46,5 +48,6 @@ export testcase TC_CANOE_ST_CORE_005_ENTER_SCHOOL_ZONE()
   assertIntEq("st005-ambient-color", 3, (long)@Body::ambientColor, "ambientColor");
   assertIntEq("st005-ambient-pattern", 5, (long)@Body::ambientPattern, "ambientPattern");
 
+  testStepPass("doc-pass", "PASS - ST_005 - 일반 구간 주행 중 스쿨존 진입 후 과속 조건이 유효하면 스쿨존 경고 정책으로 즉시 전환되는지 확인한다.");
   resetValidationHarnessIfNeeded();
 }
