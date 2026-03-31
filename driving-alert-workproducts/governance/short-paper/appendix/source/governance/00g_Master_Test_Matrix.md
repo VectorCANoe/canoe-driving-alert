@@ -49,8 +49,8 @@
 
 ## 4. Master Test Matrix (Compact Appendix Baseline)
 
-????? ?? ? row-level matrix? ??? ?? ??, ?? active executable baseline? tier? coverage group?? ?????.
-?? per-ID row? ?? `05/06/07`? `test-asset-mapping.md`?? ?????.
+별첨에서는 전체 row-level matrix를 그대로 싣지 않고, 현재 active executable baseline을 tier별 coverage group으로 요약합니다.
+세부 per-ID row는 공식 `05/06/07` 표와 `test-asset-mapping.md`에서 추적합니다.
 
 ### 4.1 Unit Test coverage groups
 
