@@ -1,13 +1,14 @@
-\documentclass[10pt,a4paper]{article}
+\documentclass[8pt,a4paper]{article}
 \usepackage{kotex}
 \setmainhangulfont{AppleMyungjo}
 \setsanshangulfont{Apple SD Gothic Neo}
 \setmonofont{Apple SD Gothic Neo}
-\usepackage[margin=20mm]{geometry}
+\usepackage[margin=12mm]{geometry}
 \usepackage{longtable,booktabs,array,tabularx}
 \usepackage{hyperref}
 \usepackage{xurl}
 \usepackage{graphicx}
+\usepackage{adjustbox}
 \usepackage{enumitem}
 \usepackage{fancyhdr}
 \usepackage{setspace}
@@ -18,15 +19,21 @@
 \setlength{\headheight}{14pt}
 \setlength{\LTleft}{0pt}
 \setlength{\LTright}{0pt}
+\setlength{\tabcolsep}{1.8pt}
 \setlist[itemize]{leftmargin=1.5em}
 \setlist[enumerate]{leftmargin=1.8em}
 \newcounter{none}
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \sloppy
-\AtBeginEnvironment{longtable}{\footnotesize}
-\AtBeginEnvironment{tabular}{\footnotesize}
-\AtBeginEnvironment{tabularx}{\footnotesize}
+\renewcommand{\arraystretch}{0.82}
+\AtBeginEnvironment{longtable}{\tiny}
+\AtBeginEnvironment{tabular}{\tiny}
+\AtBeginEnvironment{tabularx}{\tiny}
+\BeforeBeginEnvironment{tabular}{\begin{adjustbox}{max width=\textwidth}}
+\AfterEndEnvironment{tabular}{\end{adjustbox}}
+\BeforeBeginEnvironment{tabularx}{\begin{adjustbox}{max width=\textwidth}}
+\AfterEndEnvironment{tabularx}{\end{adjustbox}}
 
 \hypersetup{
   colorlinks=true,
